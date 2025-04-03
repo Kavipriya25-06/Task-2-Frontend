@@ -1,4 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { FaEdit } from "react-icons/fa";
+import { useAuth } from "../../AuthContext";
+import config from "../../config";
+import { useNavigate } from "react-router-dom";
 
 const ManagerProjectCreate = () => {
   const [projectData, setProjectData] = useState({
@@ -16,6 +20,8 @@ const ManagerProjectCreate = () => {
 
   const [buildings, setBuildings] = useState([{ name: "", hours: "" }]);
   const [areaInput, setAreaInput] = useState("");
+  const [employees, setEmployees] = useState([]);
+  const [teamleadManager, setTeamleadManager] = useState([]);
   const [roleDropdown, setRoleDropdown] = useState("Team Lead");
 
   const handleChange = (e) => {
@@ -75,6 +81,23 @@ const ManagerProjectCreate = () => {
   //   console.log("Submitting project:", payload);
   //   // send to backend via fetch/axios here
   // };
+
+  useEffect(() => {
+    fetchTeamleadManager();
+  }, []);
+
+  const fetchTeamleadManager = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/teamlead-and-managers/`
+      );
+      const data = await response.json();
+      setTeamleadManager(data);
+      console.log("Team leads and managers", data);
+    } catch (error) {
+      console.error("Error fetching employee data:", error);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -154,62 +177,64 @@ const ManagerProjectCreate = () => {
               </div>
             </div>
             <div className="left-form-second">
-              <div
-                className="form-group-full-width"
-                style={{ gridColumn: "span 2" }}
-              >
+              <div className="building-group">
                 <label>Building(s)</label>
                 {buildings.map((b, idx) => (
                   <div className="building-row" key={idx}>
-                    <input
+                    {/* <input
                       placeholder="Building Name"
                       value={b.name}
                       onChange={(e) =>
                         handleBuildingChange(idx, "name", e.target.value)
                       }
-                    />
-                    <input
+                    /> */}
+                    {/* <input
                       placeholder="Hours"
                       value={b.hours}
                       onChange={(e) =>
                         handleBuildingChange(idx, "hours", e.target.value)
                       }
-                    />
-                    <button type="button" onClick={() => removeBuilding(idx)}>
+                    /> */}
+                    {/* <button type="button" onClick={() => removeBuilding(idx)}>
                       Delete
+                    </button> */}
+                    <button type="button" onClick={addBuilding}>
+                      +
                     </button>
                   </div>
                 ))}
-                <button type="button" onClick={addBuilding}>
-                  +
-                </button>
               </div>
 
-              <div className="form-group-full-width">
+              <div className="area-group">
                 <label>Area of Work</label>
-                <input
+                {/* <input
                   value={areaInput}
                   onChange={(e) => setAreaInput(e.target.value)}
                   onKeyDown={(e) =>
                     e.key === "Enter" && (e.preventDefault(), addAreaOfWork())
                   }
-                />
-                <div className="tags">
-                  {projectData.area_of_work.map((area) => (
-                    <span className="tag" key={area}>
-                      {area} <button onClick={() => removeArea(area)}>x</button>
-                    </span>
-                  ))}
+                /> */}
+                <div className="area-row">
+                  {/* <div className="tags">
+                    {projectData.area_of_work.map((area) => (
+                      <span className="tag" key={area}>
+                        {area}{" "}
+                        <button onClick={() => removeArea(area)}>x</button>
+                      </span>
+                    ))}
+                  </div> */}
                 </div>
               </div>
 
-              <div className="form-group-full-width">
+              <div className="subdivision-group">
                 <label>Sub Division</label>
-                <input
-                  name="subdivision"
-                  value={projectData.subdivision}
-                  onChange={handleChange}
-                />
+                <div className="subdivision-row">
+                  {/* <input
+                    name="subdivision"
+                    value={projectData.subdivision}
+                    onChange={handleChange}
+                  /> */}
+                </div>
               </div>
             </div>
           </div>
@@ -236,14 +261,33 @@ const ManagerProjectCreate = () => {
             <div className="right-form-second">
               <div className="roles-box">
                 <label>Project Roles</label>
-                <select
+                <div className="select-container">
+                  {teamleadManager.map((employee) => (
+                    <div
+                      key={employee.employee_id}
+                      className="employee-checkbox"
+                    >
+                      {employee.employee_name} - {employee.designation}
+                      <input
+                        type="checkbox"
+                        value={employee.employee_id}
+                        // checked={selectedEmployees.includes(
+                        //   employee.employee_id
+                        // )}
+                        // onChange={() =>
+                        //   handleCheckboxChange(employee.employee_id)
+                        // }
+                      />
+                    </div>
+                  ))}
+                </div>
+                {/* <select
                   value={roleDropdown}
                   onChange={(e) => setRoleDropdown(e.target.value)}
                 >
                   <option>Team Lead</option>
                   <option>Manager</option>
-                  {/* <option>Employee</option> */}
-                </select>
+                  </select>
 
                 <div className="role-checks">
                   {["Yash", "Aarav", "Kriti", "Sana"].map((name) => (
@@ -256,7 +300,7 @@ const ManagerProjectCreate = () => {
                       {name} <i>{roleDropdown}</i>
                     </label>
                   ))}
-                </div>
+                </div> */}
               </div>
 
               <div className="form-group-full-width">

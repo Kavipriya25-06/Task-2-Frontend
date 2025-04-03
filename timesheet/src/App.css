@@ -163,6 +163,11 @@ input {
   position: sticky;
   flex-shrink: 0;
   border-radius: 10px;
+  /* top: 0; */
+  left: 0;
+  right: 0;
+  z-index: 10;
+  flex-shrink: 0;
 }
 
 .table-top-bar {
@@ -1055,12 +1060,6 @@ main {
   min-width: 100px;
 }
 
-.building-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
 .building-list {
   display: flex;
   flex-direction: column;
@@ -1161,6 +1160,13 @@ button.delete-building:hover {
   grid-template-columns: 1fr 1fr;
 }
 
+.left-form-second {
+  padding: 0px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr;
+}
+
 .right-form {
   padding: 0px;
   display: grid;
@@ -1178,7 +1184,8 @@ button.delete-building:hover {
 .right-form-second {
   padding: 0px;
   display: grid;
-  gap: 10px;
+  gap: 20px;
+  grid-template-rows: 1fr 1fr;
   /* grid-template-columns: 1fr 1fr; */
 }
 
@@ -1215,6 +1222,10 @@ button.delete-building:hover {
 
 .project-form-group-small label,
 .roles-box label,
+.form-group-full-width label,
+.building-group label,
+.subdivision-group label,
+.area-group label,
 .project-form-group label {
   font-weight: 600;
   margin-bottom: 0.4rem;
@@ -1240,20 +1251,12 @@ button.delete-building:hover {
   width: 100%;
 }
 
-.building-row {
-  display: flex;
-  grid-column: span 4;
-  gap: 1rem;
-  align-items: center;
-  margin-top: 0.5rem;
-}
-
 .building-row input {
   flex: 1;
 }
 
 .building-row button {
-  background-color: #f44336;
+  background-color: #72a8ee;
   color: white;
   border: none;
   padding: 6px 12px;
@@ -1265,6 +1268,85 @@ button.delete-building:hover {
   display: flex;
   flex-direction: column;
   /* grid-column: span 2; */
+}
+
+.building-row {
+  display: flex;
+  /* grid-column: span 4; */
+  /* gap: 1rem; */
+  align-items: center;
+  margin-top: 0.5rem;
+  border: 1px solid #ddd;
+  min-height: 100px;
+  border-radius: 8px;
+  background-color: #f0f0f0;
+}
+
+.area-row {
+  display: flex;
+  align-items: center;
+  margin-top: 0.5rem;
+  border: 1px solid #ddd;
+  min-height: 70px;
+  border-radius: 8px;
+  background-color: #f0f0f0;
+}
+
+.subdivision-row {
+  display: flex;
+  align-items: center;
+  margin-top: 0.5rem;
+  border: 1px solid #ddd;
+  min-height: 40px;
+  border-radius: 8px;
+  background-color: #ffffff;
+}
+
+/* Select team lead or manager */
+.select-container {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  /* margin: 20px; */
+  max-height: 150px; /* Limit the height */
+  overflow-x: auto;
+  overflow-y: auto; /* Make the container scrollable if content exceeds height */
+  border: 1px solid #ddd;
+  /* padding: 10px; */
+  border-radius: 8px;
+}
+
+.select-container-checkbox {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  background-color: #fff;
+  width: 90%;
+  height: 60%;
+}
+
+.employee-checkbox {
+  /* margin-bottom: 10px; */
+  /* display: flex; */
+  /* flex-direction: row; */
+  display: grid; /* Aligns the checkbox and name side by side */
+  /* vertical-align: middle; */
+  grid-template-columns: 3fr 1fr;
+  font-size: smaller;
+  align-items: center; /* Vertically aligns the checkbox with the name */
+  margin-bottom: 5px;
+  margin-top: 5px;
+  margin-left: 10px;
+}
+
+.employee-checkbox input {
+  margin-right: 0px;
+}
+
+h3,
+h4 {
+  margin-bottom: 10px;
 }
 
 .role-entry {
@@ -1280,7 +1362,25 @@ button.delete-building:hover {
 }
 
 .form-group-full-width {
-  grid-column: span 2;
+  /* display: grid; */
+  padding: 0px;
+  /* grid-column: span 2; */
+}
+/* 
+.form-group-full-width label {
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: #333;
+} */
+
+.form-group-full-width textarea {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  background-color: #fff;
+  width: 90%;
+  height: 60%;
 }
 
 .button-group {
