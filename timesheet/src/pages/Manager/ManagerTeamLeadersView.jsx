@@ -1,4 +1,4 @@
-// src\pages\Manager\ManagerTeamLeaders.jsx
+// src\pages\Manager\ManagerTeamLeadersView.jsx
 
 import { useEffect, useState } from "react";
 import { FaEdit } from "react-icons/fa";
@@ -6,7 +6,7 @@ import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate } from "react-router-dom";
 
-const ManagerTeamLeaders = () => {
+const ManagerTeamLeadersView = () => {
   const { user } = useAuth();
   const [teamLeads, setTeamLeads] = useState([]);
   const [managerName, setManagerName] = useState("");
@@ -79,4 +79,4 @@ const ManagerTeamLeaders = () => {
   );
 };
 
-export default ManagerTeamLeaders;
+export default ManagerTeamLeadersView;

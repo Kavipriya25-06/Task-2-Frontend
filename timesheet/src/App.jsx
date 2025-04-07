@@ -48,6 +48,7 @@ import ManagerAttendance from "./pages/Manager/ManagerAttendance.jsx";
 import ManagerEmployees from "./pages/Manager/ManagerEmployees.jsx";
 import ManagerLeaveRequests from "./pages/Manager/ManagerLeaveRequests.jsx";
 import ManagerProjects from "./pages/Manager/ManagerProjects.jsx";
+import ManagerProjectView from "./pages/Manager/ManagerProjectView.jsx";
 import ManagerTeamLeaders from "./pages/Manager/ManagerTeamLeaders.jsx";
 import ManagerProjectCreate from "./pages/Manager/ManagerProjectCreate.jsx";
 
@@ -162,7 +163,14 @@ const App = () => {
               <Route index element={<ManagerDashboard />} />
               <Route path="detail" element={<ManagerDetailView />}>
                 <Route path="projects" element={<ManagerProjects />} />
-                <Route path="projects/create" element={<ManagerProjectCreate />} />
+                <Route
+                  path="projects/:project_id"
+                  element={<ManagerProjectView />}
+                />
+                <Route
+                  path="projects/create"
+                  element={<ManagerProjectCreate />}
+                />
                 <Route path="team-leaders" element={<ManagerTeamLeaders />} />
                 <Route path="employees" element={<ManagerEmployees />} />
                 <Route

@@ -1,10 +1,12 @@
+// src\pages\Manager\ManagerProjectView.jsx
+
 import React, { useEffect, useState } from "react";
 import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-const ManagerProjectCreate = () => {
+const ManagerProjectView = () => {
   const [projectData, setProjectData] = useState({
     project_title: "",
     project_type: "",
@@ -18,12 +20,27 @@ const ManagerProjectCreate = () => {
     project_description: "",
     project_roles: [],
   });
-
+  const [projects, setProjects] = useState({
+    project_title: "",
+    project_type: "",
+    start_date: "",
+    estimated_hours: "",
+    project_code: "",
+    discipline_code: "",
+    discipline: "",
+    area_of_work: [],
+    subdivision: "",
+    project_description: "",
+    project_roles: [],
+  });
+  const { project_id } = useParams();
   const [buildings, setBuildings] = useState([{ name: "", hours: "" }]);
   const [areaInput, setAreaInput] = useState("");
   const [employees, setEmployees] = useState([]);
   const [teamleadManager, setTeamleadManager] = useState([]);
   const [roleDropdown, setRoleDropdown] = useState("Team Lead");
+  const { user } = useAuth();
+  // console.log("User details", user);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -85,6 +102,7 @@ const ManagerProjectCreate = () => {
 
   useEffect(() => {
     fetchTeamleadManager();
+    fetchProjects();
   }, []);
 
   const fetchTeamleadManager = async () => {
@@ -94,7 +112,20 @@ const ManagerProjectCreate = () => {
       );
       const data = await response.json();
       setTeamleadManager(data);
-      console.log("Team leads and managers", data);
+      // console.log("Team leads and managers", data);
+    } catch (error) {
+      console.error("Error fetching employee data:", error);
+    }
+  };
+
+  const fetchProjects = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/projects/${project_id}/`
+      );
+      const data = await response.json();
+      setProjects(data);
+      // console.log("Projects", data);
     } catch (error) {
       console.error("Error fetching employee data:", error);
     }
@@ -103,42 +134,42 @@ const ManagerProjectCreate = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const payload = {
-      project_title,
-      project_type,
-      start_date,
-      estimated_hours,
-      project_description,
-      area_of_work: selectedAreas.join(", "), // Convert tags to string
-      project_code,
-      subdivision,
-      discipline_code,
-      discipline,
-      status: true,
-    };
+    // const payload = {
+    //   project_title,
+    //   project_type,
+    //   start_date,
+    //   estimated_hours,
+    //   project_description,
+    //   area_of_work: selectedAreas.join(", "), // Convert tags to string
+    //   project_code,
+    //   subdivision,
+    //   discipline_code,
+    //   discipline,
+    //   status: true,
+    // };
 
-    try {
-      const res = await fetch("http://127.0.0.1:8000/api/projects/create/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+    // try {
+    //   const res = await fetch(`${config.apiBaseURL}/projects/`, {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify(payload),
+    //   });
 
-      const data = await res.json();
-      if (res.ok) {
-        alert("Project created successfully!");
-      } else {
-        console.error(data);
-        alert("Failed to create project.");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
+    //   const data = await res.json();
+    //   if (res.ok) {
+    //     alert("Project created successfully!");
+    //   } else {
+    //     console.error(data);
+    //     alert("Failed to create project.");
+    //   }
+    // } catch (error) {
+    //   console.error("Error:", error);
+    // }
   };
 
   return (
     <div className="create-project-container">
-      <h2>Create Project</h2>
+      <h2>View Project</h2>
       <form onSubmit={handleSubmit}>
         <div className="input-elements">
           <div className="left-form">
@@ -147,15 +178,16 @@ const ManagerProjectCreate = () => {
                 <label>Project Title</label>
                 <input
                   name="project_title"
-                  value={projectData.project_title}
+                  value={projects.project_title}
                   onChange={handleChange}
                 />
+                {/* <div>{projects.project_title}</div> */}
               </div>
               <div className="project-form-group">
                 <label>Project Type</label>
                 <input
                   name="project_type"
-                  value={projectData.project_type}
+                  value={projects.project_type}
                   onChange={handleChange}
                 />
               </div>
@@ -164,7 +196,7 @@ const ManagerProjectCreate = () => {
                 <label>Project Code</label>
                 <input
                   name="project_code"
-                  value={projectData.project_code}
+                  value={projects.project_code}
                   onChange={handleChange}
                 />
               </div>
@@ -172,7 +204,7 @@ const ManagerProjectCreate = () => {
                 <label>Discipline Code</label>
                 <input
                   name="discipline_code"
-                  value={projectData.discipline_code}
+                  value={projects.discipline_code}
                   onChange={handleChange}
                 />
               </div>
@@ -217,7 +249,7 @@ const ManagerProjectCreate = () => {
                 /> */}
                 <div className="area-row">
                   {/* <div className="tags">
-                    {projectData.area_of_work.map((area) => (
+                    {projects.area_of_work.map((area) => (
                       <span className="tag" key={area}>
                         {area}{" "}
                         <button onClick={() => removeArea(area)}>x</button>
@@ -232,7 +264,7 @@ const ManagerProjectCreate = () => {
                 <div className="subdivision-row">
                   {/* <input
                     name="subdivision"
-                    value={projectData.subdivision}
+                    value={projects.subdivision}
                     onChange={handleChange}
                   /> */}
                 </div>
@@ -246,7 +278,7 @@ const ManagerProjectCreate = () => {
                 <input
                   type="date"
                   name="start_date"
-                  value={projectData.start_date}
+                  value={projects.start_date}
                   onChange={handleChange}
                 />
               </div>
@@ -254,7 +286,7 @@ const ManagerProjectCreate = () => {
                 <label>Estd. Hours</label>
                 <input
                   name="estimated_hours"
-                  value={projectData.estimated_hours}
+                  value={projects.estimated_hours}
                   onChange={handleChange}
                 />
               </div>
@@ -268,7 +300,7 @@ const ManagerProjectCreate = () => {
                       key={employee.employee_id}
                       className="employee-checkbox"
                     >
-                      {employee.employee_name} - {employee.designation}
+                      {/* {employee.employee_name} - {employee.designation}
                       <input
                         type="checkbox"
                         value={employee.employee_id}
@@ -278,7 +310,7 @@ const ManagerProjectCreate = () => {
                         // onChange={() =>
                         //   handleCheckboxChange(employee.employee_id)
                         // }
-                      />
+                      /> */}
                     </div>
                   ))}
                 </div>
@@ -295,7 +327,7 @@ const ManagerProjectCreate = () => {
                     <label key={name}>
                       <input
                         type="checkbox"
-                        checked={projectData.project_roles.includes(name)}
+                        checked={projects.project_roles.includes(name)}
                         onChange={() => toggleRole(name)}
                       />
                       {name} <i>{roleDropdown}</i>
@@ -308,7 +340,7 @@ const ManagerProjectCreate = () => {
                 <label>Project Description</label>
                 <textarea
                   name="project_description"
-                  value={projectData.project_description}
+                  value={projects.project_description}
                   onChange={handleChange}
                 />
               </div>
@@ -329,4 +361,4 @@ const ManagerProjectCreate = () => {
   );
 };
 
-export default ManagerProjectCreate;
+export default ManagerProjectView;

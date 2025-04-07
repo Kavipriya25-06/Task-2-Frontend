@@ -25,6 +25,10 @@ const ManagerProjects = () => {
     navigate(`create`);
   };
 
+  const handleProjectClick = (project_id) => {
+    navigate(`${project_id}`);
+  };
+
   useEffect(() => {
     fetchProjects();
   }, []);
@@ -50,7 +54,15 @@ const ManagerProjects = () => {
         <tbody>
           {projects.map((project) => (
             <tr key={project.project_id}>
-              <td>{project.project_code}</td>
+              <td
+                onClick={() => handleProjectClick(project.project_id)}
+                style={{
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                }}
+              >
+                {project.project_code}
+              </td>
               <td>{project.project_title}</td>
               <td></td>
               <td></td>

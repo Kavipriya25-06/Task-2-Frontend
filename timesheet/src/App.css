@@ -1410,3 +1410,68 @@ h4 {
   cursor: pointer;
   font-weight: bold;
 }
+
+/* Manager Team leads CSS files below*/
+.manager-team-leads {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.manager-team-leads h2 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.team-leads-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.teamlead-card {
+  background-color: #f1f1f1;
+  padding: 20px;
+  width: 250px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.teamlead-card h3 {
+  margin-bottom: 10px;
+}
+
+.teamlead-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.teamlead-stats div {
+  font-weight: bold;
+}
+
+.projects {
+  color: #000000;
+  
+}
+
+.projects-container {
+  padding: 10px;
+  border: 2px seashell;
+  background-color: #aedbf7;
+  border-radius: 10px;
+}
+
+.employees {
+  color: #000000;
+}
+
+.employees-container {
+  padding: 10px;
+  border: 2px seashell;
+  background-color: bisque;
+  border-radius: 10px;
+}
+/* Manager Team leads CSS files below*/
