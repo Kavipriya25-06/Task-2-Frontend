@@ -50,6 +50,7 @@ import ManagerLeaveRequests from "./pages/Manager/ManagerLeaveRequests.jsx";
 import ManagerProjects from "./pages/Manager/ManagerProjects.jsx";
 import ManagerProjectView from "./pages/Manager/ManagerProjectView.jsx";
 import ManagerTeamLeaders from "./pages/Manager/ManagerTeamLeaders.jsx";
+import ManagerTeamLeadersView from "./pages/Manager/ManagerTeamLeadersView.jsx";
 import ManagerProjectCreate from "./pages/Manager/ManagerProjectCreate.jsx";
 
 // Team Lead pages
@@ -77,6 +78,11 @@ const App = () => {
 
   const { user } = useAuth();
 
+  const { logout } = useAuth();
+  const handleLogout = () => {
+    logout();
+    // navigate("/"); // Redirect to login page
+  };
   const renderDashboard = () => {
     switch (selectedRole) {
       case "admin":
@@ -100,14 +106,30 @@ const App = () => {
       <div className="app-layout">
         {/* Top Bar */}
         <header className="top-bar">
+          {/* <NavLink to="/" style={{ textDecoration: "none", color: "inherit" }}>
+            <img src="\src\assets\Logo.svg" alt="Arris Logo" className="logo" />
+          </NavLink> */}
           <img src="\src\assets\Logo.svg" alt="Arris Logo" className="logo" />
 
-          {user && (
-            <RoleSwitcher
-              selectedRole={selectedRole}
-              setSelectedRole={setSelectedRole}
-            />
-          )}
+          <div style={{ alignItems: "center", display: "flex" }}>
+            <NavLink
+              to="/"
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              <img
+                src="\src\assets\logout.png"
+                alt="Logout button"
+                className="logoutbutton"
+                onClick={handleLogout}
+              />
+            </NavLink>
+            {user && (
+              <RoleSwitcher
+                selectedRole={selectedRole}
+                setSelectedRole={setSelectedRole}
+              />
+            )}
+          </div>
         </header>
 
         {/* Main Content */}
@@ -178,6 +200,10 @@ const App = () => {
                   element={<ManagerLeaveRequests />}
                 />
                 <Route path="attendance" element={<ManagerAttendance />} />
+                <Route
+                  path="team-leaders/tl"
+                  element={<ManagerTeamLeadersView />}
+                />
               </Route>
             </Route>
 

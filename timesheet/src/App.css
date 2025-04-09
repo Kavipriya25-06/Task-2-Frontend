@@ -50,6 +50,16 @@
   border-radius: 10px;
 }
 
+.logoutbutton {
+  height: 20px;
+  padding-right: 20px;
+}
+
+.leavebutton {
+  height: 20px;
+  padding-right: 10px;
+}
+
 .logo-c {
   width: 200px;
   height: 100px;
@@ -611,6 +621,115 @@ main {
   padding-top: 12px;
   border-radius: 12px;
   background-color: #f0f4ff;
+}
+
+.attendance-container {
+  padding: 20px;
+  font-family: "Arial", sans-serif;
+}
+
+.attendance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.attendance-header button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.week-navigation {
+  display: grid;
+  justify-content: space-between;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+  align-items: center;
+  /* margin-bottom: 20px; */
+}
+
+.week-navigation h3 {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.week-navigation button {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.week-navigation button:hover {
+  background-color: #45a049;
+}
+
+.attendance-table {
+  margin-top: 20px;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.attendance-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.attendance-table th,
+.attendance-table td {
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+.attendance-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.attendance-table td {
+  font-size: 14px;
+}
+
+.attendance-table td span {
+  color: #333;
+}
+
+.leave-label {
+  color: red;
+  font-weight: bold;
+}
+
+.leave-label::before {
+  content: "Sick Leave";
+  font-size: 12px;
+  color: red;
+}
+
+.attendance-table td span.leave-label {
+  color: red;
+}
+
+.attendance-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+.attendance-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.attendance-table td:last-child {
+  font-weight: bold;
+  color: #4caf50;
 }
 
 /* Container and Layout */
@@ -1454,7 +1573,6 @@ h4 {
 
 .projects {
   color: #000000;
-  
 }
 
 .projects-container {
@@ -1462,6 +1580,28 @@ h4 {
   border: 2px seashell;
   background-color: #aedbf7;
   border-radius: 10px;
+}
+
+.teamlead-projects {
+  margin-top: 20px;
+}
+
+.project-card {
+  background: #ffffff;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.project-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.project-stats {
+  font-size: 14px;
+  color: #888888;
 }
 
 .employees {
@@ -1473,5 +1613,28 @@ h4 {
   border: 2px seashell;
   background-color: bisque;
   border-radius: 10px;
+}
+
+.leaves-tab {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+
+.leaves-tab button {
+  padding: 5px;
+  border-radius: 50px;
+}
+
+.leaves-tab text {
+  color: #dc7878;
+}
+
+.leaves-tab button.active {
+  padding: 5px;
+  border-radius: 50px;
+  color: white;
+  background-color: #007bff;
 }
 /* Manager Team leads CSS files below*/

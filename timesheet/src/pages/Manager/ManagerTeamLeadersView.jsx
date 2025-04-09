@@ -12,8 +12,11 @@ const ManagerTeamLeadersView = () => {
   const [managerName, setManagerName] = useState("");
   const [selectedProject, setSelectedProject] = useState(null); // State to track selected project
   const [projects, setProjects] = useState([]);
+  const [tlProjects, setTlProjects] = useState([]);
+
   useEffect(() => {
     fetchTeamleadManager();
+    // fetchTLProjects();
   }, []);
 
   const fetchTeamleadManager = async () => {
@@ -43,13 +46,24 @@ const ManagerTeamLeadersView = () => {
     }
   };
 
+  
+
+  const fetchTLProjects = async (teamleadId) => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/teamlead_projects/${teamleadId}`
+      );
+      const data = await response.json();
+      setTlProjects(data);
+    } catch (err) {
+      console.log("Unable to fetch projects", err);
+    }
+  };
+
   const handleProjectClick = (teamleadId, ProjectId) => {
-    // Logic for handling project click
-    // In a real-world scenario, you could fetch the project details here using its ID
+
     fetchProjects(ProjectId);
     const selected = teamLeads.find((tl) => tl.teamlead_id === teamleadId);
-    // .projects.find((project) => project.name === projectName);
-
     setSelectedProject(selected); // Set selected project data
   };
 
@@ -57,7 +71,7 @@ const ManagerTeamLeadersView = () => {
     <div className="manager-team-leads">
       {/* <h2>Team Leads under Manager: {managerName}</h2> */}
       <div className="team-leads-container">
-        {teamLeads.map((teamlead) => (
+        {/* {teamLeads.map((teamlead) => (
           <div className="teamlead-card" key={teamlead.teamlead_id}>
             <h3>{teamlead.teamlead_name}</h3>
             <div className="teamlead-stats">
@@ -73,7 +87,19 @@ const ManagerTeamLeadersView = () => {
               </div>
             </div>
           </div>
-        ))}
+        ))} */}
+        <div className="teamlead-projects">
+          <h4>Projects</h4>
+          {tlProjects.map((project) => (
+            <div className="project-card" key={project.project_assign_id}>
+              <div className="project-title">{project.project.project_title}</div>
+              <div className="project-stats">
+                <span>{project.status} Tasks</span>
+                <span>{project.project_hours} hours</span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
