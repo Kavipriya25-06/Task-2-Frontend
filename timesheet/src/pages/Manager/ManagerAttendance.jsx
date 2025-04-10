@@ -26,26 +26,67 @@ const ManagerAttendance = () => {
   // Fetch Attendance Data for the week
   const fetchAttendanceData = async () => {
     try {
+      // const response = await fetch(
+      //   `${config.apiBaseURL}/attendance/${
+      //     user.employee_id
+      //   }/?start_date=${startDate.toISOString()}&end_date=${endDate.toISOString()}`
+      // );
       const response = await fetch(
-        `${config.apiBaseURL}/attendance/${
-          user.employee_id
-        }/?start_date=${startDate.toISOString()}&end_date=${endDate.toISOString()}`
+        `${config.apiBaseURL}/attendance/${user.employee_id}/`
       );
       const data = await response.json();
-      setAttendanceData(data);
-      calculateTotalHours(data);
+      console.log("Attendance data", data);
+      // setAttendanceData(data);
+      setAttendanceData(groupAttendanceByEmployee(data));
+      console.log("Grouped Attendance data", groupAttendanceByEmployee(data));
+      calculateTotalHours(groupAttendanceByEmployee(data));
+      // calculateTotalHours(data);
     } catch (err) {
       console.error("Unable to fetch attendance data", err);
     }
   };
 
+  // Group attendance data by employee
+  const groupAttendanceByEmployee = (data) => {
+    const employeeAttendance = {};
+
+    data.forEach((attendance) => {
+      const employeeId = attendance.employee;
+      if (!employeeAttendance[employeeId]) {
+        employeeAttendance[employeeId] = {
+          employee_name: attendance.employee_name,
+          attendance: {},
+        };
+      }
+      const dayOfWeek = new Date(attendance.date).toLocaleString("en-us", {
+        weekday: "short",
+      });
+      employeeAttendance[employeeId].attendance[dayOfWeek] =
+        attendance.work_duration;
+    });
+    return Object.values(employeeAttendance); // Convert object to array for rendering
+  };
+
+  // // Calculate total hours for each employee
+  // const calculateTotalHours = (data) => {
+  //   let hours = {};
+  //   data.forEach((attendance) => {
+  //     const totalDuration = attendance.work_duration;
+  //     hours[attendance.employee.employee_id] =
+  //       (hours[attendance.employee.employee_id] || 0) + totalDuration;
+  //   });
+  //   setTotalHours(hours);
+  // };
+
   // Calculate total hours for each employee
   const calculateTotalHours = (data) => {
     let hours = {};
-    data.forEach((attendance) => {
-      const totalDuration = attendance.work_duration;
-      hours[attendance.employee.employee_id] =
-        (hours[attendance.employee.employee_id] || 0) + totalDuration;
+    data.forEach((employee) => {
+      let total = 0;
+      Object.values(employee.attendance).forEach((dayHours) => {
+        total += parseFloat(dayHours || 0);
+      });
+      hours[employee.employee_id] = total;
     });
     setTotalHours(hours);
   };
@@ -56,6 +97,10 @@ const ManagerAttendance = () => {
     newDate.setDate(currentWeek.getDate() + direction * 7); // Move by 7 days
     setCurrentWeek(newDate);
   };
+
+  useEffect(() => {
+    fetchAttendanceData();
+  }, [currentWeek]);
 
   return (
     <div className="attendance-container">
@@ -90,20 +135,20 @@ const ManagerAttendance = () => {
           </thead>
           <tbody>
             {attendanceData.map((employee) => (
-              <tr key={employee.employee.employee_id}>
-                <td>{employee.employee.employee_name}</td>
+              <tr key={employee.employee_id}>
+                <td>{employee.employee_name}</td>
                 {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
-                  (day, index) => (
-                    <td key={index}>
+                  (day) => (
+                    <td key={`${employee.employee_name}-${day}`}>
                       {employee.attendance[day] ? (
                         <span>{employee.attendance[day]} hours</span>
                       ) : (
-                        <span className="leave-label">Sick Leave</span>
+                        <span className="leave-label">Absent</span>
                       )}
                     </td>
                   )
                 )}
-                <td>{totalHours[employee.employee.employee_id] || 0} hrs</td>
+                <td>{totalHours[employee.employee_id] || 0} hrs</td>
               </tr>
             ))}
           </tbody>

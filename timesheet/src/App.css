@@ -358,9 +358,9 @@ table {
 table th,
 table td {
   padding: 12px;
-  border: 1px solid #ccc;
+  border: 2px solid #ccc;
   text-align: left;
-  background: #e0e0e0;
+  background: #f3f3f3;
 }
 
 .add-user-btn {
@@ -647,7 +647,7 @@ main {
 .week-navigation {
   display: grid;
   justify-content: space-between;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 4fr 1fr;
   gap: 20px;
   align-items: center;
   /* margin-bottom: 20px; */
@@ -678,7 +678,7 @@ main {
   width: 100%;
   overflow-x: auto;
 }
-
+/* 
 .attendance-table table {
   width: 100%;
   border-collapse: collapse;
@@ -702,7 +702,7 @@ main {
 
 .attendance-table td span {
   color: #333;
-}
+} */
 
 .leave-label {
   color: red;
@@ -710,7 +710,7 @@ main {
 }
 
 .leave-label::before {
-  content: "Sick Leave";
+  /* content: "Sick Leave"; */
   font-size: 12px;
   color: red;
 }
