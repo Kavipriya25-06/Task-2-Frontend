@@ -443,9 +443,9 @@ main {
 }
 
 .dashboard-tile:hover {
-  border-color: #ff890a;
+  border-color: #757cf9;
   transform: translateY(-3px);
-  background-color: #fdfdba;
+  background-color: #d8ebf0;
 }
 
 /* HolidayCalendar.css */
@@ -459,12 +459,17 @@ main {
   align-items: center;
   margin: 20px;
 }
+.holiday-calendar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
 .calendar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
+  width: 90%;
   font-size: 22px;
   font-weight: 600;
   margin-bottom: 16px;
@@ -514,7 +519,7 @@ main {
 }
 
 .calendar-grid {
-  width: 100%;
+  width: 90%;
   display: grid;
   grid-template-columns: 60px repeat(7, 1fr);
   gap: 8px;
@@ -678,6 +683,31 @@ main {
   width: 100%;
   overflow-x: auto;
 }
+
+.attendance-tile {
+  background-color: #f2f7ff;
+  border: 1px solid #d0dce8;
+  border-radius: 8px;
+  padding: 6px 8px;
+  text-align: left;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #333;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.attendance-tile strong {
+  color: #2a5d9f;
+}
+
+.attendance-tile.no-data {
+  background-color: #f2f7ff;
+  color: #e9afaf;
+   border: 1.5px solid #dc1e1e;
+  text-align: center;
+  font-style: italic;
+}
+
 /* 
 .attendance-table table {
   width: 100%;

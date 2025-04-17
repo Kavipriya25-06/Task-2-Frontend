@@ -1,4 +1,4 @@
-// src\pages\Manager\ManagerAttendance.jsx
+// // src\pages\Manager\ManagerAttendance.jsx
 
 import React, { useEffect, useState } from "react";
 import { FaEdit } from "react-icons/fa";
@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 const ManagerAttendance = () => {
   const { user } = useAuth();
   const [attendanceData, setAttendanceData] = useState([]);
+  const [employeeData, setEmployeeData] = useState([]);
   const [currentWeek, setCurrentWeek] = useState(new Date()); // Start with current week
   const [totalHours, setTotalHours] = useState({});
 
@@ -16,77 +17,71 @@ const ManagerAttendance = () => {
   const getWeekDates = (date) => {
     const startDate = new Date(date);
     const endDate = new Date(date);
+
     startDate.setDate(startDate.getDate() + (1 - startDate.getDay())); // Set to Monday
     endDate.setDate(endDate.getDate() + (7 - endDate.getDay())); // Set to Sunday
-    return { startDate, endDate };
+
+    const formatDate = (d) => {
+      const year = d.getFullYear();
+      const month = (d.getMonth() + 1).toString().padStart(2, "0"); // Months are 0-based, so adding 1
+      const day = d.getDate().toString().padStart(2, "0");
+      return `${year}-${month}-${day}`; // Format as YYYY-MM-DD
+    };
+
+    let weekDays = [];
+    let start = new Date(startDate);
+    for (let i = 0; i < 7; i++) {
+      let day = new Date(start); // date object
+      day.setDate(start.getDate() + i);
+      weekDays.push({
+        weekday: day.toLocaleString("en-us", { weekday: "short" }),
+        date: day.toLocaleString("en-GB", { month: "2-digit", day: "2-digit" }),
+        key: day.toISOString(), // Unique key based on date
+        mapdate: formatDate(day),
+      });
+    }
+    console.log("Day keys", weekDays[0]);
+
+    return { startDate, endDate, weekDays };
   };
 
-  const { startDate, endDate } = getWeekDates(currentWeek);
+  const { startDate, endDate, weekDays } = getWeekDates(currentWeek);
 
   // Fetch Attendance Data for the week
   const fetchAttendanceData = async () => {
     try {
-      // const response = await fetch(
-      //   `${config.apiBaseURL}/attendance/${
-      //     user.employee_id
-      //   }/?start_date=${startDate.toISOString()}&end_date=${endDate.toISOString()}`
-      // );
       const response = await fetch(
-        `${config.apiBaseURL}/attendance/${user.employee_id}/`
+        `${config.apiBaseURL}/weekly-attendance/${user.employee_id}/?today=${weekDays[0].mapdate}`
       );
       const data = await response.json();
       console.log("Attendance data", data);
-      // setAttendanceData(data);
-      setAttendanceData(groupAttendanceByEmployee(data));
-      console.log("Grouped Attendance data", groupAttendanceByEmployee(data));
-      calculateTotalHours(groupAttendanceByEmployee(data));
-      // calculateTotalHours(data);
+      setAttendanceData(data);
+      calculateTotalHours(data);
     } catch (err) {
       console.error("Unable to fetch attendance data", err);
     }
   };
 
-  // Group attendance data by employee
-  const groupAttendanceByEmployee = (data) => {
-    const employeeAttendance = {};
-
-    data.forEach((attendance) => {
-      const employeeId = attendance.employee;
-      if (!employeeAttendance[employeeId]) {
-        employeeAttendance[employeeId] = {
-          employee_name: attendance.employee_name,
-          attendance: {},
-        };
-      }
-      const dayOfWeek = new Date(attendance.date).toLocaleString("en-us", {
-        weekday: "short",
-      });
-      employeeAttendance[employeeId].attendance[dayOfWeek] =
-        attendance.work_duration;
-    });
-    return Object.values(employeeAttendance); // Convert object to array for rendering
+  const fetchEmployee = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/emp-details/${user.employee_id}/`
+      );
+      const data = await response.json();
+      console.log("User data", data);
+      setEmployeeData(data);
+    } catch (err) {
+      console.error("Unable to fetch attendance data", err);
+    }
   };
-
-  // // Calculate total hours for each employee
-  // const calculateTotalHours = (data) => {
-  //   let hours = {};
-  //   data.forEach((attendance) => {
-  //     const totalDuration = attendance.work_duration;
-  //     hours[attendance.employee.employee_id] =
-  //       (hours[attendance.employee.employee_id] || 0) + totalDuration;
-  //   });
-  //   setTotalHours(hours);
-  // };
 
   // Calculate total hours for each employee
   const calculateTotalHours = (data) => {
     let hours = {};
-    data.forEach((employee) => {
-      let total = 0;
-      Object.values(employee.attendance).forEach((dayHours) => {
-        total += parseFloat(dayHours || 0);
-      });
-      hours[employee.employee_id] = total;
+    data.forEach((attendance) => {
+      const totalDuration = parseFloat(attendance.work_duration);
+      hours[attendance.employee] =
+        (hours[attendance.employee] || 0) + totalDuration;
     });
     setTotalHours(hours);
   };
@@ -101,6 +96,10 @@ const ManagerAttendance = () => {
   useEffect(() => {
     fetchAttendanceData();
   }, [currentWeek]);
+
+  useEffect(() => {
+    fetchEmployee();
+  }, [user]);
 
   return (
     <div className="attendance-container">
@@ -123,32 +122,55 @@ const ManagerAttendance = () => {
           <thead>
             <tr>
               <th>Employee</th>
-              <th>Mon</th>
-              <th>Tue</th>
-              <th>Wed</th>
-              <th>Thu</th>
-              <th>Fri</th>
-              <th>Sat</th>
-              <th>Sun</th>
+              {weekDays.map((day) => (
+                <th key={day.key}>
+                  {day.weekday} ({day.date})
+                </th>
+              ))}
               <th>Total Hours</th>
             </tr>
           </thead>
           <tbody>
-            {attendanceData.map((employee) => (
-              <tr key={employee.employee_id}>
-                <td>{employee.employee_name}</td>
-                {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
-                  (day) => (
-                    <td key={`${employee.employee_name}-${day}`}>
-                      {employee.attendance[day] ? (
-                        <span>{employee.attendance[day]} hours</span>
+            {employeeData.map((emp) => (
+              <tr key={emp.employee_id}>
+                <td>{emp.employee_name}</td>
+                {/* For each day of the week, check if attendance data exists */}
+                {weekDays.map((day) => {
+                  // Find the attendance record for this employee on this specific day
+                  const attendance = attendanceData.find(
+                    (a) =>
+                      a.employee === emp.employee_id && a.date === day.mapdate
+                  );
+
+                  return (
+                    // <td key={day.key}>
+                    //   {attendance ? `${attendance.work_duration} hrs` : "-"}
+                    // </td>
+                    <td key={day.key}>
+                      {attendance ? (
+                        <div className="attendance-tile">
+                          <div>
+                            {attendance.in_time.slice(0, 5)} -{" "}
+                            {attendance.out_time.slice(0, 5)}
+                          </div>
+                          <div>
+                            <strong>Total:</strong> {attendance.total_duration}{" "}
+                            hrs
+                          </div>
+                        </div>
                       ) : (
-                        <span className="leave-label">Absent</span>
+                        <div className="attendance-tile no-data">-</div>
                       )}
                     </td>
-                  )
-                )}
-                <td>{totalHours[employee.employee_id] || 0} hrs</td>
+                  );
+                })}
+
+                {/* Total Hours for that employee (from calculated object) */}
+                <td>
+                  {totalHours[emp.employee_id]
+                    ? `${totalHours[emp.employee_id].toFixed(2)} hrs`
+                    : "-"}
+                </td>
               </tr>
             ))}
           </tbody>
