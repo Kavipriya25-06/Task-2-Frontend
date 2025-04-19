@@ -20,72 +20,75 @@ const ManagerProjectCreate = () => {
   });
 
   const [buildings, setBuildings] = useState([{ name: "", hours: "" }]);
-  const [areaInput, setAreaInput] = useState("");
-  const [employees, setEmployees] = useState([]);
+  const [areas, setAreas] = useState([]);
+  const [formData, setFormData] = useState({
+    project_title: "",
+    project_type: "",
+    start_date: "",
+    estimated_hours: "",
+    project_description: "",
+    project_code: "",
+    subdivision: "",
+    discipline_code: "",
+    discipline: "",
+    area_of_work: [],
+  });
+
   const [teamleadManager, setTeamleadManager] = useState([]);
-  const [roleDropdown, setRoleDropdown] = useState("Team Lead");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProjectData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleBuildingChange = (index, field, value) => {
-    const newBuildings = [...buildings];
-    newBuildings[index][field] = value;
-    setBuildings(newBuildings);
+  const handleAreaChange = (e) => {
+    const selected = Array.from(e.target.selectedOptions).map(
+      (opt) => opt.value
+    );
+    setFormData((prev) => ({ ...prev, area_of_work: selected }));
   };
 
-  const addBuilding = () => {
-    setBuildings([...buildings, { name: "", hours: "" }]);
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const removeBuilding = (index) => {
-    setBuildings(buildings.filter((_, i) => i !== index));
-  };
+    const payload = {
+      ...formData,
+      area_of_work: formData.area_of_work.map(Number),
+      created_by: user.employee_id,
+    };
 
-  const addAreaOfWork = () => {
-    if (areaInput && !projectData.area_of_work.includes(areaInput)) {
-      setProjectData((prev) => ({
-        ...prev,
-        area_of_work: [...prev.area_of_work, areaInput],
-      }));
-      setAreaInput("");
+    try {
+      const response = await fetch(`${config.apiBaseURL}/projects/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert("Project created successfully!");
+        setFormData({ ...formData, project_title: "", project_code: "" });
+      } else {
+        console.error(data);
+        alert(" Failed to create project");
+      }
+    } catch (err) {
+      console.error("Request error:", err);
     }
   };
 
-  const removeArea = (area) => {
-    setProjectData((prev) => ({
-      ...prev,
-      area_of_work: prev.area_of_work.filter((a) => a !== area),
-    }));
-  };
-
-  const toggleRole = (name) => {
-    setProjectData((prev) => {
-      const exists = prev.project_roles.includes(name);
-      return {
-        ...prev,
-        project_roles: exists
-          ? prev.project_roles.filter((r) => r !== name)
-          : [...prev.project_roles, name],
-      };
-    });
-  };
-
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   const payload = {
-  //     ...projectData,
-  //     buildings,
-  //   };
-  //   console.log("Submitting project:", payload);
-  //   // send to backend via fetch/axios here
-  // };
+  const addBuilding = () => {};
 
   useEffect(() => {
     fetchTeamleadManager();
+    fetchAreas();
   }, []);
+
+  const fetchAreas = async () => {
+    const res = await fetch(`${config.apiBaseURL}/area-of-work/`);
+    const data = await res.json();
+    setAreas(data);
+  };
 
   const fetchTeamleadManager = async () => {
     try {
@@ -97,42 +100,6 @@ const ManagerProjectCreate = () => {
       console.log("Team leads and managers", data);
     } catch (error) {
       console.error("Error fetching employee data:", error);
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const payload = {
-      project_title,
-      project_type,
-      start_date,
-      estimated_hours,
-      project_description,
-      area_of_work: selectedAreas.join(", "), // Convert tags to string
-      project_code,
-      subdivision,
-      discipline_code,
-      discipline,
-      status: true,
-    };
-
-    try {
-      const res = await fetch("http://127.0.0.1:8000/api/projects/create/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json();
-      if (res.ok) {
-        alert("Project created successfully!");
-      } else {
-        console.error(data);
-        alert("Failed to create project.");
-      }
-    } catch (error) {
-      console.error("Error:", error);
     }
   };
 
@@ -178,7 +145,7 @@ const ManagerProjectCreate = () => {
               </div>
             </div>
             <div className="left-form-second">
-              <div className="building-group">
+              <div className="project-form-group">
                 <label>Building(s)</label>
                 {buildings.map((b, idx) => (
                   <div className="building-row" key={idx}>
@@ -206,17 +173,50 @@ const ManagerProjectCreate = () => {
                 ))}
               </div>
 
-              <div className="area-group">
+              <div className="project-form-group">
                 <label>Area of Work</label>
                 {/* <input
-                  value={areaInput}
-                  onChange={(e) => setAreaInput(e.target.value)}
-                  onKeyDown={(e) =>
-                    e.key === "Enter" && (e.preventDefault(), addAreaOfWork())
-                  }
+                  // className="area-input-full"
+                  type="text"
+                  name="subdivision"
+                  value={projectData.subdivision}
+                  onChange={handleChange}
                 /> */}
-                <div className="area-row">
-                  {/* <div className="tags">
+                <select
+                  multiple
+                  value={formData.area_of_work}
+                  onChange={handleAreaChange}
+                >
+                  {areas.map((area) => (
+                    <option key={area.id} value={area.id}>
+                      {area.name}
+                    </option>
+                  ))}
+                </select>
+
+                {/* <div className="area-row"> */}
+                {/* <input
+                    value={areaInput}
+                    onChange={(e) => setAreaInput(e.target.value)}
+                    onKeyDown={(e) =>
+                      e.key === "Enter" && (e.preventDefault(), addAreaOfWork())
+                    }
+                  /> */}
+                {/* <input
+                    type="text"
+                    value={areaInput}
+                    onChange={(e) => setAreaInput(e.target.value)}
+                    placeholder="Enter area and press Enter"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        addAreaOfWork();
+                      }
+                    }}
+                    className="area-input-full"
+                  /> */}
+
+                {/* <div className="tags">
                     {projectData.area_of_work.map((area) => (
                       <span className="tag" key={area}>
                         {area}{" "}
@@ -224,19 +224,26 @@ const ManagerProjectCreate = () => {
                       </span>
                     ))}
                   </div> */}
-                </div>
-              </div>
-
-              <div className="subdivision-group">
-                <label>Sub Division</label>
-                <div className="subdivision-row">
-                  {/* <input
-                    name="subdivision"
+                {/* <input
+                    type="text"
+                    name="areaInput"
                     value={projectData.subdivision}
                     onChange={handleChange}
                   /> */}
-                </div>
+                {/* </div> */}
               </div>
+
+              <div className="project-form-group">
+                <label>Sub Division</label>
+                {/* <div className="subdivision-row"> */}
+                <input
+                  // className="subdivision-row"
+                  name="subdivision"
+                  value={projectData.subdivision}
+                  onChange={handleChange}
+                />
+              </div>
+              {/* </div> */}
             </div>
           </div>
           <div className="right-form">

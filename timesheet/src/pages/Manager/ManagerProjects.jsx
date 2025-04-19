@@ -9,7 +9,12 @@ import { useNavigate } from "react-router-dom";
 const ManagerProjects = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState(0);
   const [projects, setProjects] = useState([]);
+  const [buildings, setBuildings] = useState([]);
+  const [tasks, setTasks] = useState([]);
+
+  const tabLabels = ["Projects", "Buildings", "Tasks"];
 
   const fetchProjects = async () => {
     try {
@@ -21,8 +26,36 @@ const ManagerProjects = () => {
     }
   };
 
+  const fetchBuildings = async () => {
+    try {
+      const response = await fetch(`${config.apiBaseURL}/buildings/`);
+      const data = await response.json();
+      setBuildings(data);
+    } catch (err) {
+      console.log("Unable to fetch buildings", err);
+    }
+  };
+
+  const fetchTasks = async () => {
+    try {
+      const response = await fetch(`${config.apiBaseURL}/tasks/`);
+      const data = await response.json();
+      setTasks(data);
+    } catch (err) {
+      console.log("Unable to fetch tasks", err);
+    }
+  };
+
   const handleAddClick = () => {
     navigate(`create`);
+  };
+
+  const handleAddBuildingClick = () => {
+    navigate(`/manager/detail/buildings/create`);
+  };
+
+  const handleAddTaskClick = () => {
+    navigate(`/manager/detail/tasks/create`);
   };
 
   const handleProjectClick = (project_id) => {
@@ -31,48 +64,156 @@ const ManagerProjects = () => {
 
   useEffect(() => {
     fetchProjects();
+    fetchBuildings();
+    fetchTasks();
   }, []);
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 0:
+        return (
+          <div>
+            <h2 className="employee-title">Projects</h2>
+            <div>
+              <button onClick={handleAddClick}>Create Project</button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Project code</th>
+                  <th>Project name</th>
+                  <th>Building</th>
+                  <th>Total hours</th>
+                  <th>Estimated hours</th>
+                  <th>Discipline</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {projects.map((project) => (
+                  <tr key={project.project_id}>
+                    <td
+                      onClick={() => handleProjectClick(project.project_code)}
+                      style={{
+                        cursor: "pointer",
+                        textDecoration: "underline",
+                      }}
+                    >
+                      {project.project_code}
+                    </td>
+                    <td>{project.project_title}</td>
+                    <td></td>
+                    <td></td>
+                    <td>{project.estimated_hours}</td>
+                    <td>{project.discipline}</td>
+                    <td>{project.status ? "Completed" : "In progress"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      case 1:
+        return (
+          <div>
+            <h2 className="employee-title">Buildings</h2>
+            <div>
+              <button onClick={handleAddBuildingClick}>Create Building</button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Building code</th>
+                  <th>Building name</th>
+                  {/* <th>Building Description</th> */}
+                  <th>Total hours</th>
+                  <th>Estimated hours</th>
+                  <th>Discipline</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {buildings.map((building) => (
+                  <tr key={building.building_id}>
+                    <td
+                      onClick={() => handleProjectClick(building.building_id)}
+                      style={{
+                        cursor: "pointer",
+                        textDecoration: "underline",
+                      }}
+                    >
+                      {building.building_code}
+                    </td>
+                    <td>{building.building_title}</td>
+                    {/* <td>{building.building_description}</td> */}
+                    <td></td>
+                    <td>{building.estimated_hours}</td>
+                    <td>{building.discipline}</td>
+                    <td>{building.status ? "Completed" : "In progress"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      case 2:
+        return (
+          <div>
+            <h2 className="employee-title">Tasks</h2>
+            <div>
+              <button onClick={handleAddTaskClick}>Create Task</button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Task code</th>
+                  <th>Task name</th>
+                  <th>Total hours</th>
+                  <th>Estimated hours</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tasks.map((task) => (
+                  <tr key={task.task_id}>
+                    <td
+                      onClick={() => handleProjectClick(task.task_id)}
+                      style={{
+                        cursor: "pointer",
+                        textDecoration: "underline",
+                      }}
+                    >
+                      {task.task_code}
+                    </td>
+                    <td>{task.task_title}</td>
+                    <td></td>
+                    <td>{task.estimated_hours}</td>
+                    <td>{task.priority}</td>
+                    <td>{task.status ? "Completed" : "In progress"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+    }
+  };
 
   return (
     <div>
-      <h2 className="employee-title">Projects</h2>
-      <div>
-        <button onClick={handleAddClick}>Create Project</button>
+      <div className="tab-header">
+        {tabLabels.map((label, index) => (
+          <button
+            key={label}
+            onClick={() => setActiveTab(index)}
+            className={activeTab === index ? "tab-btn active" : "tab-btn"}
+          >
+            {label}
+          </button>
+        ))}
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Project code</th>
-            <th>Project name</th>
-            <th>Building</th>
-            <th>Total hours</th>
-            <th>Estimated hours</th>
-            <th>Discipline</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {projects.map((project) => (
-            <tr key={project.project_id}>
-              <td
-                onClick={() => handleProjectClick(project.project_id)}
-                style={{
-                  cursor: "pointer",
-                  textDecoration: "underline",
-                }}
-              >
-                {project.project_code}
-              </td>
-              <td>{project.project_title}</td>
-              <td></td>
-              <td></td>
-              <td>{project.estimated_hours}</td>
-              <td>{project.discipline}</td>
-              <td>{project.status ? "Completed" : "In progress"}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div>{renderTabContent()}</div>
     </div>
   );
 };

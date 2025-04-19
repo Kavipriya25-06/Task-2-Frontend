@@ -11,11 +11,19 @@ const ManagerDetailView = () => {
   const currentTab = location.pathname.split("/").slice(1)[2];
 
   const tabs = [
-    { label: "Projects", path: "projects" },
-    { label: "Team Leaders", path: "team-leaders" },
-    { label: "Employees", path: "employees" },
-    { label: "Leave requests", path: "leave-requests" },
-    { label: "Attendance", path: "attendance" },
+    {
+      label: "Projects",
+      path: "projects",
+      tabname: ["projects", "buildings", "tasks"],
+    },
+    { label: "Team Leaders", path: "team-leaders", tabname: ["team-leaders"] },
+    { label: "Employees", path: "employees", tabname: ["employees"] },
+    {
+      label: "Leave requests",
+      path: "leave-requests",
+      tabname: ["leave-requests"],
+    },
+    { label: "Attendance", path: "attendance", tabname: ["attendance"] },
   ];
 
   return (
@@ -27,7 +35,7 @@ const ManagerDetailView = () => {
             <button
               key={idx}
               onClick={() => navigate(tab.path)}
-              className={currentTab === tab.path ? "active" : ""}
+              className={tab.tabname.includes(currentTab) ? "active" : ""}
             >
               {tab.label}
             </button>
