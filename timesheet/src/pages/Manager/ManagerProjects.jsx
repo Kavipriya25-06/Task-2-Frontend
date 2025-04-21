@@ -93,7 +93,7 @@ const ManagerProjects = () => {
                 {projects.map((project) => (
                   <tr key={project.project_id}>
                     <td
-                      onClick={() => handleProjectClick(project.project_code)}
+                      onClick={() => handleProjectClick(project.project_id)}
                       style={{
                         cursor: "pointer",
                         textDecoration: "underline",

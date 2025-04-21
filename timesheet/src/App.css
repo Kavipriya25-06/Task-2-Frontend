@@ -1481,7 +1481,8 @@ button.delete-building:hover {
   flex: 1;
 }
 
-.building-row button {
+.building-row button,
+.area-row button {
   background-color: #72a8ee;
   color: white;
   border: none;
@@ -1518,6 +1519,107 @@ button.delete-building:hover {
   background-color: #f0f0f0;
   padding: 0px;
 }
+
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50%; /* Adjust width as needed */
+  max-height: 70%; /* Limit the height to 90% of the viewport */
+  overflow-y: auto; /* Enable vertical scrolling if content exceeds height */
+  background: #fff; /* Background color */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  z-index: 1000; /* Ensure the popup is above other elements */
+  padding: 20px; /* Spacing inside the popup */
+  box-sizing: border-box; /* Include padding in width and height calculations */
+}
+
+
+/* Popup header */
+.popup h3 {
+  margin-top: 0; /* Remove default margin at the top */
+  margin-bottom: 15px; /* Add space below the heading */
+  font-size: 20px;
+  color: #444;
+}
+
+/* Table styles inside the popup */
+.popup table {
+  width: 100%; /* Full width inside the popup */
+  border-collapse: collapse; /* Remove gaps between table cells */
+  margin-top: 10px;
+  font-size: 14px; /* Slightly smaller font for better readability */
+}
+
+.popup table th,
+.popup table td {
+  text-align: left; /* Align text to the left */
+  padding: 10px; /* Add padding to table cells */
+  border: 1px solid #ddd; /* Light border for table cells */
+  word-break: break-word; /* Prevent text from overflowing */
+}
+
+/* Overlay styles */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+  z-index: 999; /* Below the popup */
+}
+
+.tag {
+  display: inline-block;
+  background: #e0e0e0;
+  padding: 5px 10px;
+  margin: 5px;
+  border-radius: 8px;
+}
+
+
+.building-tile {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  margin: 5px;
+  background-color: #d3d3d3;
+  color: #161616;
+  border-radius: 15px;
+  font-size: 14px;
+  position: relative;
+}
+
+.building-tile-small {
+  display: inline-block;
+  background: #e0e0e0;
+  padding: 5px 10px;
+  margin: 5px;
+  border-radius: 8px;
+}
+
+.tag-button {
+  margin-left: 5px;
+  background: red; /* Bubble background color */
+  color: white; /* Text color for the "X" */
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  width: 12px; /* Make it a circle */
+  height: 12px; /* Make it a circle */
+  border-radius: 50%; /* Ensure the bubble is round */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+}
+
 .area-input-full {
   /* width: 100%; */
   /* height: 10%; */

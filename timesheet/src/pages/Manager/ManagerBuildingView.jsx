@@ -4,11 +4,23 @@ import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate } from "react-router-dom";
 
-const ManagerProjectCreate = () => {
+const ManagerBuildingView = () => {
   const [teamleadManager, setTeamleadManager] = useState([]);
-  const [buildings, setBuildings] = useState([]);
+  const [buildingsAssign, setBuildingsAssign] = useState([]);
   const [areas, setAreas] = useState([]);
   const [formData, setFormData] = useState({
+    project_title: "",
+    project_type: "",
+    start_date: "",
+    estimated_hours: "",
+    project_description: "",
+    project_code: "",
+    subdivision: "",
+    discipline_code: "",
+    discipline: "",
+    area_of_work: [],
+  });
+  const [projectData, setProjectData] = useState({
     project_title: "",
     project_type: "",
     start_date: "",
@@ -98,9 +110,11 @@ const ManagerProjectCreate = () => {
 
   const fetchBuilding = async () => {
     try {
-      const response = await fetch(`${config.apiBaseURL}/buildings/`);
+      const response = await fetch(
+        `${config.apiBaseURL}/buildings-and-assigned/`
+      );
       const data = await response.json();
-      setBuildings(data);
+      setBuildingsAssign(data);
       console.log("Buildings", data);
     } catch (error) {
       console.error("Error fetching Buildings:", error);
@@ -159,7 +173,7 @@ const ManagerProjectCreate = () => {
                         {b.building_title}
                       </div>
                       <div className="building-tile-small">{b.hours} hrs</div>
-                      <button className="tag-button">×</button>
+                      <button className="tag-button">X</button>
                     </div>
                   ))}
                   <button
@@ -273,7 +287,7 @@ const ManagerProjectCreate = () => {
       {showBuildingPopup && (
         <div className="popup">
           <h4>Select Buildings</h4>
-          {buildings.map((b) => (
+          {buildingsAssign.map((b) => (
             <div key={b.building_id} style={{ marginBottom: "8px" }}>
               <input
                 type="checkbox"
@@ -371,4 +385,4 @@ const ManagerProjectCreate = () => {
   );
 };
 
-export default ManagerProjectCreate;
+export default ManagerBuildingView;
