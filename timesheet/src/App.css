@@ -268,6 +268,12 @@ input {
   width: 200px;
 }
 
+.user-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
 /* Add User Form Layout */
 .add-user-container {
   max-width: 1000px;
@@ -369,7 +375,8 @@ table td {
   background: #c7f7c7;
   border: none;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 25px;
+  margin-bottom: 10px;
 }
 
 .add-user-btn:hover {
@@ -1542,7 +1549,6 @@ button.delete-building:hover {
   box-sizing: border-box; /* Include padding in width and height calculations */
 }
 
-
 /* Popup header */
 .popup h3 {
   margin-top: 0; /* Remove default margin at the top */
@@ -1585,7 +1591,6 @@ button.delete-building:hover {
   margin: 5px;
   border-radius: 8px;
 }
-
 
 .building-tile {
   display: inline-flex;

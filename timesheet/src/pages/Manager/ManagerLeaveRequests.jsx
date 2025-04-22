@@ -115,7 +115,8 @@ const ManagerLeaveRequests = () => {
         <table>
           <thead>
             <tr>
-              <th>Employee</th>
+              <th>Employee Code</th>
+              <th>Employee Name</th>
               <th>Duration</th>
               <th>Start date</th>
               <th>End date</th>
@@ -127,6 +128,7 @@ const ManagerLeaveRequests = () => {
           <tbody>
             {filteredLeaveRequests.map((leave) => (
               <tr key={leave.leave_taken_id}>
+                <td>{leave.employee.employee_code}</td>
                 <td>{leave.employee.employee_name}</td>
                 <td>{leave.duration}</td>
                 <td>{leave.start_date}</td>

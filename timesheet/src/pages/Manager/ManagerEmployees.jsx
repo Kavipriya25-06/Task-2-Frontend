@@ -48,7 +48,8 @@ const ManagerEmployees = () => {
         <table>
           <thead>
             <tr>
-              <th>Employee</th>
+              <th>Employee Code</th>
+              <th>Employee Name</th>
               <th>Role</th>
               <th>Team Leader</th>
             </tr>
@@ -56,6 +57,7 @@ const ManagerEmployees = () => {
           <tbody>
             {teamleadData.map((teamlead) => (
               <tr key={teamlead.teamlead_id}>
+                <td>{teamlead.employee_code}</td>
                 <td>{teamlead.teamlead_name}</td>
                 <td>{teamlead.teamlead_role}</td>
                 <td>-</td>
@@ -64,6 +66,7 @@ const ManagerEmployees = () => {
             {teamleadData.flatMap((teamlead) =>
               teamlead.employees.map((employee) => (
                 <tr key={employee.employee_id}>
+                  <td>{employee.employee_code}</td>
                   <td>{employee.employee_name}</td>
                   <td>{employee.employee_role}</td>
                   <td>{teamlead.teamlead_name}</td>

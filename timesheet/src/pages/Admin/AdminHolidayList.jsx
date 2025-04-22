@@ -177,7 +177,7 @@ const HolidayList = () => {
           />
         </label>
         <label>
-          Type of Holiday:
+          Holidays:
           <input
             type="text"
             value={formData.notes}

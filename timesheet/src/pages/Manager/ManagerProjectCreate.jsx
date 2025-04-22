@@ -116,6 +116,14 @@ const ManagerProjectCreate = () => {
           <div className="left-form">
             <div className="left-form-first">
               <div className="project-form-group">
+                <label>Project Code</label>
+                <input
+                  name="project_code"
+                  value={formData.project_code}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="project-form-group">
                 <label>Project Title</label>
                 <input
                   name="project_title"
@@ -132,14 +140,6 @@ const ManagerProjectCreate = () => {
                 />
               </div>
 
-              <div className="project-form-group">
-                <label>Project Code</label>
-                <input
-                  name="project_code"
-                  value={formData.project_code}
-                  onChange={handleChange}
-                />
-              </div>
               <div className="project-form-group">
                 <label>Discipline Code</label>
                 <input

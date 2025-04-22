@@ -19,56 +19,56 @@ const EmployeeList = () => {
     }
   };
 
+  const handleAddClick = () => {
+    navigate(`add-employee`);
+  };
+
+  const handleEditClick = (employee_id) => {
+    navigate(`edit-employee/${employee_id}`);
+  };
+
   useEffect(() => {
     fetchEmployees();
   }, []);
 
   return (
     <div className="employee-table-wrapper">
-      <h2 className="employee-title">Employee Details</h2>
+      <div className="user-header">
+        <h2 className="employee-title">Employee Details</h2>
+        <button className="add-user-btn" onClick={() => handleAddClick()}>
+          Add Employee
+        </button>
+      </div>
       <table className="employee-table">
         <thead>
           <tr>
-            <th>Name</th>
+            <th>Employee Code</th>
+            <th>Employee Name</th>
             <th>Department</th>
             <th>Role</th>
             <th>Reporting Manager</th>
-            <th></th>
           </tr>
         </thead>
         <tbody>
           {employees.map((emp) => (
             <tr key={emp.employee_id}>
+              <td
+                onClick={() => handleEditClick(emp.employee_id)}
+                style={{
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                }}
+              >
+                {emp.employee_code}
+              </td>
               <td>{emp.employee_name}</td>
               <td>{emp.department}</td>
               <td>{emp.designation}</td>
               <td>{emp.reporting_manager || "-"}</td>
-              <td>
-                <button
-                  className="edit-icon-btn"
-                  onClick={() =>
-                    navigate(
-                      `/hr/detail/employee-details/edit-employee/${emp.employee_id}`
-                    )
-                  }
-                  title="Edit Employee"
-                >
-                  <FaEdit />
-                </button>
-              </td>
             </tr>
           ))}
         </tbody>
       </table>
-
-      <div className="table-footer">
-        <button
-          className="add-user-btn"
-          onClick={() => navigate("/hr/detail/employee-details/add-employee")}
-        >
-          Add Employee
-        </button>
-      </div>
     </div>
   );
 };

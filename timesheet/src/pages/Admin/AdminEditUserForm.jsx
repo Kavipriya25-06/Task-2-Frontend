@@ -13,10 +13,13 @@ const EditUserForm = () => {
   const [password, setPassword] = useState(""); // optional on edit
   const [employeeOptions, setEmployeeOptions] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
+  const [editMode, setEditMode] = useState(false); //  Add this at the top
 
   const fetchUser = async () => {
     try {
-      const response = await fetch(`${config.apiBaseURL}/users/${user_id}/`);
+      const response = await fetch(
+        `${config.apiBaseURL}/user-details/${user_id}/`
+      );
       const data = await response.json();
       setEmployeeID(data.employee_id);
       setRole(data.role);
@@ -82,7 +85,10 @@ const EditUserForm = () => {
       <form className="add-user-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label>Employee ID</label>
-          <select
+          <div>
+            {employeeID.employee_code} - {employeeID.employee_name}
+          </div>
+          {/* <select
             value={employeeID}
             onChange={(e) => setEmployeeID(e.target.value)}
             required
@@ -93,7 +99,7 @@ const EditUserForm = () => {
                 {emp.employee_id} - {emp.employee_name}
               </option>
             ))}
-          </select>
+          </select> */}
         </div>
 
         <div className="form-group">
