@@ -8,6 +8,7 @@ const ManagerProjectCreate = () => {
   const [teamleadManager, setTeamleadManager] = useState([]);
   const [buildings, setBuildings] = useState([]);
   const [areas, setAreas] = useState([]);
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     project_title: "",
     project_type: "",

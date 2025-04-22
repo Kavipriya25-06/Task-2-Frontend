@@ -1329,6 +1329,12 @@ button.delete-building:hover {
   gap: 10px;
   grid-template-columns: 1fr 1fr;
 }
+.right-form-building-first {
+  padding: 0px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr 1fr 1fr;
+}
 
 .right-form-second {
   padding: 0px;

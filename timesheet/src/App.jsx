@@ -52,8 +52,10 @@ import ManagerProjectView from "./pages/Manager/ManagerProjectView.jsx";
 import ManagerTeamLeaders from "./pages/Manager/ManagerTeamLeaders.jsx";
 import ManagerTeamLeadersView from "./pages/Manager/ManagerTeamLeadersView.jsx";
 import ManagerProjectCreate from "./pages/Manager/ManagerProjectCreate.jsx";
+import ManagerBuildingView from "./pages/Manager/ManagerBuildingView.jsx";
 import ManagerBuildingCreate from "./pages/Manager/ManagerBuildingCreate.jsx";
 import ManagerTaskCreate from "./pages/Manager/ManagerTaskCreate.jsx";
+import ManagerTaskView from "./pages/Manager/ManagerTaskView.jsx";
 
 // Team Lead pages
 import TeamLeadDashboard from "./pages/TeamLead/TeamLeadDashboard.jsx";
@@ -190,6 +192,14 @@ const App = () => {
                 <Route
                   path="projects/:project_id"
                   element={<ManagerProjectView />}
+                />
+                <Route
+                  path="buildings/:building_assign_id"
+                  element={<ManagerBuildingView />}
+                />
+                <Route
+                  path="tasks/:task_assign_id"
+                  element={<ManagerTaskView />}
                 />
                 <Route
                   path="projects/create"

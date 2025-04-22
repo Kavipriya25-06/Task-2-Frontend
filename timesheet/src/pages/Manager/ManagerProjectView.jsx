@@ -11,6 +11,7 @@ const ManagerProjectView = () => {
   const [projectData, setProjectData] = useState(null);
   const [buildings, setBuildings] = useState([]);
   const [areas, setAreas] = useState([]);
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     project_title: "",
     project_type: "",
@@ -173,7 +174,7 @@ const ManagerProjectView = () => {
                     onChange={handleChange}
                   />
                 ) : (
-                  <p></p>
+                  <p>{projectData.project_type}</p>
                 )}
               </div>
 
@@ -186,7 +187,7 @@ const ManagerProjectView = () => {
                     onChange={handleChange}
                   />
                 ) : (
-                  <p></p>
+                  <p>{projectData.project_code}</p>
                 )}
               </div>
               <div className="project-form-group">
@@ -198,7 +199,7 @@ const ManagerProjectView = () => {
                     onChange={handleChange}
                   />
                 ) : (
-                  <p></p>
+                  <p>{projectData.discipline_code}</p>
                 )}
               </div>
             </div>
@@ -224,7 +225,16 @@ const ManagerProjectView = () => {
                     </button>
                   </div>
                 ) : (
-                  <p></p>
+                  <div className="building-row">
+                    {selectedBuildings.map((b, i) => (
+                      <div key={i} className="building-tile">
+                        <div className="building-tile-small">
+                          {b.building_title}
+                        </div>
+                        <div className="building-tile-small">{b.hours} hrs</div>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
 
@@ -251,19 +261,16 @@ const ManagerProjectView = () => {
                     </button>
                   </div>
                 ) : (
-                  <p></p>
+                  <div className="tags">
+                    {areas
+                      .filter((a) => formData.area_of_work.includes(a.id))
+                      .map((a) => (
+                        <span className="tag" key={a.id}>
+                          {a.name}
+                        </span>
+                      ))}
+                  </div>
                 )}
-                {/* <select
-                  multiple
-                  value={formData.area_of_work}
-                  onChange={handleAreaChange}
-                >
-                  {areas.map((area) => (
-                    <option key={area.id} value={area.id}>
-                      {area.name}
-                    </option>
-                  ))}
-                </select> */}
               </div>
 
               <div className="project-form-group">
@@ -275,7 +282,7 @@ const ManagerProjectView = () => {
                     onChange={handleChange}
                   />
                 ) : (
-                  <p></p>
+                  <p>{projectData.subdivision}</p>
                 )}
               </div>
             </div>
@@ -292,7 +299,7 @@ const ManagerProjectView = () => {
                     onChange={handleChange}
                   />
                 ) : (
-                  <p></p>
+                  <p>{projectData.start_date}</p>
                 )}
               </div>
               <div className="project-form-group-small">
@@ -304,7 +311,7 @@ const ManagerProjectView = () => {
                     onChange={handleChange}
                   />
                 ) : (
-                  <p></p>
+                  <p>{projectData.estimated_hours}</p>
                 )}
               </div>
             </div>
@@ -337,7 +344,7 @@ const ManagerProjectView = () => {
                     onChange={handleChange}
                   />
                 ) : (
-                  <p></p>
+                  <p>{projectData.project_description}</p>
                 )}
               </div>
             </div>

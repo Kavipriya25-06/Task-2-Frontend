@@ -4,13 +4,14 @@ import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate, useParams } from "react-router-dom";
 
-const ManagerBuildingView = () => {
+const ManagerTaskView = () => {
   const { user } = useAuth();
-  const { building_assign_id } = useParams(); // from URL
+  const { task_assign_id } = useParams(); // from URL
   const [teamleadManager, setTeamleadManager] = useState([]);
   const [buildingsAssign, setBuildingsAssign] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [tasks, setTasks] = useState([]);
+  const [taskData, setTaskData] = useState([]);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [selectedTasks, setSelectedTasks] = useState([]);
   const [areas, setAreas] = useState([]);
@@ -85,7 +86,7 @@ const ManagerBuildingView = () => {
     fetchTeamleadManager();
     fetchAreas();
     fetchTasks();
-    fetchBuildingsAssign();
+    fetchTaskAssignment();
   }, []);
 
   const fetchAreas = async () => {
@@ -111,20 +112,6 @@ const ManagerBuildingView = () => {
     }
   };
 
-  const fetchBuildingsAssign = async () => {
-    try {
-      const response = await fetch(
-        `${config.apiBaseURL}/buildings-and-projects/${building_assign_id}/`
-      );
-      const data = await response.json();
-      setBuildingsAssign(data);
-      console.log("Buildings", data);
-      console.log("Projects", data.project_assign);
-    } catch (error) {
-      console.error("Error fetching Buildings:", error);
-    }
-  };
-
   const fetchTasks = async () => {
     try {
       const res = await fetch(`${config.apiBaseURL}/tasks/`);
@@ -135,15 +122,34 @@ const ManagerBuildingView = () => {
     }
   };
 
-  if (!buildingsAssign || !buildingsAssign.project_assign) {
+  const fetchTaskAssignment = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/tasks-building/${task_assign_id}/`
+      );
+      const data = await response.json();
+      setTaskData(data);
+      console.log("Task Assignment:", data);
+    } catch (error) {
+      console.error("Error fetching task assignment:", error);
+    }
+  };
+
+  if (
+    !taskData ||
+    !taskData.building_assign ||
+    !taskData.building_assign.project_assign
+  ) {
     return <p>Loading...</p>;
   }
 
-  const { project } = buildingsAssign.project_assign;
+  const project = taskData.building_assign.project_assign.project;
+  const building = taskData.building_assign.building;
+  const task = taskData.task;
 
   return (
     <div className="create-project-container">
-      <h2>Building {buildingsAssign.building.building_title}</h2>
+      <h2>Task details </h2>
       <form onSubmit={handleSubmit}>
         <div className="input-elements">
           <div className="left-form">
@@ -158,62 +164,28 @@ const ManagerBuildingView = () => {
               </div>
               <div className="project-form-group">
                 <label>Building Code</label>
-                <p>{buildingsAssign.building.building_code}</p>
+                <p>{building?.building_code || ""}</p>
               </div>
               <div className="project-form-group">
                 <label>Building Title</label>
-                <p>{buildingsAssign.building.building_title}</p>
+                <p>{building?.building_title || ""}</p>
+              </div>
+              <div className="project-form-group">
+                <label>Task Title</label>
+                <p>{task?.task_title || "N/A"}</p>
+              </div>
+              <div className="project-form-group">
+                <label>Task Code</label>
+                <p>{task?.task_code || "N/A"}</p>
               </div>
             </div>
             <div className="left-form-second">
               <div className="project-form-group">
-                <label>Building Desciption</label>
-                <p>{buildingsAssign.building.building_description}</p>
+                <label>Task Desciption</label>
+                <p>{task?.task_description || "N/A"}</p>
               </div>
-              <div className="project-form-group">
-                <label>Assign Task</label>
-                <div className="select-container">
-                  {tasks.map((task) => (
-                    <div key={task.task_id}>
-                      <input
-                        type="checkbox"
-                        value={task.task_id}
-                        onChange={(e) => {
-                          const checked = e.target.checked;
-                          if (checked) {
-                            setSelectedTasks((prev) => [...prev, task.task_id]);
-                          } else {
-                            setSelectedTasks((prev) =>
-                              prev.filter((id) => id !== task.task_id)
-                            );
-                          }
-                        }}
-                      />
-                      {task.task_title}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="right-form">
-            <div className="right-form-building-first">
-              <div className="project-form-group-small">
-                <label>Start Date</label>
-                <p>{project?.start_date || ""}</p>
-              </div>
-              <div className="project-form-group-small">
-                <label>Project Hours</label>
-                <p>{project?.estimated_hours || ""}</p>
-              </div>
-              <div className="project-form-group-small">
-                <label>Building Hours</label>
-                <p>{project?.estimated_hours || ""}</p>
-              </div>
-            </div>
-            <div className="right-form-second">
               <div className="roles-box">
-                <label>Building Roles</label>
+                <label>Task Roles</label>
                 <div className="select-container">
                   {teamleadManager.map((emp) => (
                     <div key={emp.employee_id}>
@@ -239,7 +211,46 @@ const ManagerBuildingView = () => {
                   ))}
                 </div>
               </div>
+              <div className="project-form-group">
+                <label>Attachments</label>
+                {task?.attachments ? (
+                  <a
+                    href={task.attachments}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View Attachment
+                  </a>
+                ) : (
+                  <p>No attachments</p>
+                )}
+              </div>
             </div>
+          </div>
+          <div className="right-form">
+            <div className="right-form-building-first">
+              <div className="project-form-group-small">
+                <label>Start Date</label>
+                <p>{taskData?.start_date || ""}</p>
+              </div>
+              <div className="project-form-group-small">
+                <label>End Date</label>
+                <p>{taskData?.end_date || ""}</p>
+              </div>
+              <div className="project-form-group-small">
+                <label>Project Hours</label>
+                <p>{project?.estimated_hours || ""}</p>
+              </div>
+              <div className="project-form-group-small">
+                <label>Building Hours</label>
+                <p>{taskData.building_assign?.building_hours || ""}</p>
+              </div>
+              <div className="project-form-group-small">
+                <label>Task Hours</label>
+                <p>{taskData?.task_hours || ""}</p>
+              </div>
+            </div>
+            <div className="right-form-second"></div>
           </div>
         </div>
 
@@ -256,4 +267,4 @@ const ManagerBuildingView = () => {
   );
 };
 
-export default ManagerBuildingView;
+export default ManagerTaskView;
