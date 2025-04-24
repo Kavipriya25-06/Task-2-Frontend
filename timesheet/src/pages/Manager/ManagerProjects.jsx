@@ -108,7 +108,7 @@ const ManagerProjects = () => {
                     <td>{project.estimated_hours}</td>
                     <td>-</td>
                     <td>{project.discipline}</td>
-                    <td>{project.status ? "Completed" : "In progress"}</td>
+                    <td>{project.status ? "In progress" : "Completed"}</td>
                   </tr>
                 ))}
               </tbody>

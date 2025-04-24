@@ -6,9 +6,11 @@ import { useNavigate } from "react-router-dom";
 
 const ManagerProjectCreate = () => {
   const [teamleadManager, setTeamleadManager] = useState([]);
+  const [selectedTeamleadManager, setSelectedTeamleadManager] = useState([]);
   const [buildings, setBuildings] = useState([]);
   const [areas, setAreas] = useState([]);
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     project_title: "",
     project_type: "",
@@ -32,24 +34,38 @@ const ManagerProjectCreate = () => {
     console.log("Form data", formData);
   };
 
-  const handleAreaChange = (e) => {
-    const selected = Array.from(e.target.selectedOptions).map(
-      (opt) => opt.value
-    );
-    setFormData((prev) => ({ ...prev, area_of_work: selected }));
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Form data", formData);
+    console.log("Area of work data", selectedAreas);
+    console.log("buildings data", selectedBuildings);
+    console.log("teamleads data", selectedTeamleadManager);
+
+    if (formData.length <= 0) {
+      console.alert("Empty form");
+      return;
+    }
 
     const payload = {
-      ...formData,
-      area_of_work: formData.area_of_work.map(Number),
-      created_by: user.employee_id,
+      project: {
+        ...formData,
+        area_of_work: formData.area_of_work,
+        created_by: user.employee_id,
+      },
+      assign: {
+        employee: selectedTeamleadManager,
+        status: "pending",
+      },
+      buildings: selectedBuildings.map((b) => ({
+        building_id: b.building_id,
+        building_hours: b.hours,
+        status: "pending",
+      })),
     };
+    console.log("Final payload to send:", payload);
 
     try {
-      const response = await fetch(`${config.apiBaseURL}/projects/`, {
+      const response = await fetch(`${config.apiBaseURL}/projects/create/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -57,11 +73,10 @@ const ManagerProjectCreate = () => {
 
       const data = await response.json();
       if (response.ok) {
-        alert("Project created successfully!");
-        setFormData({ ...formData, project_title: "", project_code: "" });
+        alert("All steps completed!");
+        navigate("/manager/detail/projects/");
       } else {
-        console.error(data);
-        alert(" Failed to create project");
+        alert("Error: " + data.error);
       }
     } catch (err) {
       console.error("Request error:", err);
@@ -177,9 +192,11 @@ const ManagerProjectCreate = () => {
                 <div className="area-row">
                   <div className="tags">
                     {areas
-                      .filter((a) => formData.area_of_work.includes(a.id))
+                      .filter((a) =>
+                        formData.area_of_work.includes(a.area_name)
+                      )
                       .map((a) => (
-                        <span className="tag" key={a.id}>
+                        <span className="tag" key={a.area_name}>
                           {a.name}
                           <button className="tag-button">×</button>
                         </span>
@@ -190,17 +207,6 @@ const ManagerProjectCreate = () => {
                     +
                   </button>
                 </div>
-                {/* <select
-                  multiple
-                  value={formData.area_of_work}
-                  onChange={handleAreaChange}
-                >
-                  {areas.map((area) => (
-                    <option key={area.id} value={area.id}>
-                      {area.name}
-                    </option>
-                  ))}
-                </select> */}
               </div>
 
               <div className="project-form-group">
@@ -244,7 +250,23 @@ const ManagerProjectCreate = () => {
                       className="employee-checkbox"
                     >
                       {employee.employee_name} - {employee.designation}
-                      <input type="checkbox" value={employee.employee_id} />
+                      <input
+                        type="checkbox"
+                        value={employee.employee_id}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          if (checked) {
+                            setSelectedTeamleadManager((prev) => [
+                              ...prev,
+                              employee.employee_id,
+                            ]);
+                          } else {
+                            setSelectedTeamleadManager((prev) =>
+                              prev.filter((id) => id !== employee.employee_id)
+                            );
+                          }
+                        }}
+                      />
                     </div>
                   ))}
                 </div>
@@ -288,7 +310,7 @@ const ManagerProjectCreate = () => {
                   if (checked && !existing) {
                     setSelectedBuildings((prev) => [
                       ...prev,
-                      { ...b, hours: "" },
+                      { ...b, hours: 0 },
                     ]);
                   } else {
                     setSelectedBuildings((prev) =>
@@ -332,18 +354,18 @@ const ManagerProjectCreate = () => {
         <div className="popup">
           <h4>Select Area of Work</h4>
           {areas.map((a) => (
-            <div key={a.id}>
+            <div key={a.area_name}>
               <input
                 type="checkbox"
-                value={a.id}
-                checked={selectedAreas.includes(a.id)}
+                value={a.area_name}
+                checked={selectedAreas.includes(a.area_name)}
                 onChange={(e) => {
                   const checked = e.target.checked;
                   if (checked) {
-                    setSelectedAreas((prev) => [...prev, a.id]);
+                    setSelectedAreas((prev) => [...prev, a.area_name]);
                   } else {
                     setSelectedAreas((prev) =>
-                      prev.filter((id) => id !== a.id)
+                      prev.filter((area_name) => area_name !== a.area_name)
                     );
                   }
                 }}

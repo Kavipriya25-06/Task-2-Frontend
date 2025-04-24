@@ -1281,7 +1281,7 @@ button.delete-building:hover {
   background-color: #f7f9fc;
   /* max-width: 1200px; */
   /* min-width: 1100px; */ /* Come back here Suriya to check */
-  margin: 0 auto;
+  /* margin: 0 auto; */
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
