@@ -50,6 +50,8 @@ import ManagerEmployees from "./pages/Manager/ManagerEmployees.jsx";
 import ManagerLeaveRequests from "./pages/Manager/ManagerLeaveRequests.jsx";
 import ManagerProjects from "./pages/Manager/ManagerProjects.jsx";
 import ManagerProjectView from "./pages/Manager/ManagerProjectView.jsx";
+import ManagerBuildingView from "./pages/Manager/ManagerBuildingView.jsx";
+import ManagerTaskView from "./pages/Manager/ManagerTaskView.jsx";
 import ManagerTeamLeaders from "./pages/Manager/ManagerTeamLeaders.jsx";
 import ManagerTeamLeadersView from "./pages/Manager/ManagerTeamLeadersView.jsx";
 import ManagerProjectCreate from "./pages/Manager/ManagerProjectCreate.jsx";
@@ -208,7 +210,15 @@ const App = () => {
                   path="buildings/create"
                   element={<ManagerBuildingCreate />}
                 />
+                <Route
+                  path="buildings/:building_assign_id"
+                  element={<ManagerBuildingView />}
+                />
                 <Route path="tasks/create" element={<ManagerTaskCreate />} />
+                <Route
+                  path="tasks/:task_assign_id"
+                  element={<ManagerTaskView />}
+                />
                 <Route path="team-leaders" element={<ManagerTeamLeaders />} />
                 <Route path="employees" element={<ManagerEmployees />} />
                 <Route
@@ -228,7 +238,10 @@ const App = () => {
               <Route index element={<TeamLeadDashboard />} />
               <Route path="detail" element={<TeamLeadDetailView />}>
                 <Route path="projects" element={<TeamLeadProjects />} />
-                <Route path="projects/create" element={<TeamLeadProjectCreate />} />
+                <Route
+                  path="projects/create"
+                  element={<TeamLeadProjectCreate />}
+                />
                 <Route
                   path="buildings/create"
                   element={<TeamLeadBuildingCreate />}
@@ -238,9 +251,13 @@ const App = () => {
                   path="time-sheet-entry"
                   element={<TeamLeadTimeSheetEntry />}
                 />
-                <Route path ="time-sheet-entry/createdaily" element={<TeamLeadDailyTimeSheetEntry/>}
+                <Route
+                  path="time-sheet-entry/createdaily"
+                  element={<TeamLeadDailyTimeSheetEntry />}
                 />
-                <Route path ="time-sheet-entry/createweekly" element={<TeamLeadWeeklyTimeSheetEntry/>}
+                <Route
+                  path="time-sheet-entry/createweekly"
+                  element={<TeamLeadWeeklyTimeSheetEntry />}
                 />
                 <Route path="employees" element={<TeamLeadEmployees />} />
                 <Route
@@ -269,7 +286,7 @@ const App = () => {
                   path="leave-requests"
                   element={<EmployeeLeaveRequests />}
                 />
-                <Route path ="tasks/detail" element={<EmployeeTaskDetail/>}/>
+                <Route path="tasks/detail" element={<EmployeeTaskDetail />} />
               </Route>
             </Route>
           </Routes>

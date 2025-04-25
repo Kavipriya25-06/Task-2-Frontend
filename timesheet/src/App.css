@@ -1321,6 +1321,7 @@ button.delete-building:hover {
   display: grid;
   gap: 10px;
   grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr;
 }
 
 .right-form {
@@ -1683,6 +1684,7 @@ button.delete-building:hover {
   flex-direction: column;
   width: 90%;
   /* margin: 20px; */
+  min-height: 100px;
   max-height: 150px; /* Limit the height */
   overflow-x: auto;
   overflow-y: auto; /* Make the container scrollable if content exceeds height */

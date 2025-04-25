@@ -6,8 +6,11 @@ import { useNavigate, useParams } from "react-router-dom";
 
 const ManagerBuildingView = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const [editMode, setEditMode] = useState(false); //  Add this at the top
   const { building_assign_id } = useParams(); // from URL
   const [teamleadManager, setTeamleadManager] = useState([]);
+  const [availableTeamleadManager, setAvailableTeamleadManager] = useState([]);
   const [buildingsAssign, setBuildingsAssign] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [tasks, setTasks] = useState([]);
@@ -114,7 +117,7 @@ const ManagerBuildingView = () => {
   const fetchBuildingsAssign = async () => {
     try {
       const response = await fetch(
-        `${config.apiBaseURL}/buildings-and-projects/${building_assign_id}/`
+        `${config.apiBaseURL}/buildings-screen/${building_assign_id}/`
       );
       const data = await response.json();
       setBuildingsAssign(data);
@@ -143,56 +146,63 @@ const ManagerBuildingView = () => {
 
   return (
     <div className="create-project-container">
-      <h2>Building {buildingsAssign.building.building_title}</h2>
+      <h2>Building {buildingsAssign.building?.building_title}</h2>
       <form onSubmit={handleSubmit}>
         <div className="input-elements">
           <div className="left-form">
             <div className="left-form-first">
               <div className="project-form-group">
-                <label>Project Title</label>
-                <p>{project?.project_title || ""}</p>
-              </div>
-              <div className="project-form-group">
                 <label>Project Code</label>
                 <p>{project?.project_code || ""}</p>
               </div>
               <div className="project-form-group">
+                <label>Project Title</label>
+                <p>{project?.project_title || ""}</p>
+              </div>
+              <div className="project-form-group">
                 <label>Building Code</label>
-                <p>{buildingsAssign.building.building_code}</p>
+                <p>{buildingsAssign.building?.building_code}</p>
               </div>
               <div className="project-form-group">
                 <label>Building Title</label>
-                <p>{buildingsAssign.building.building_title}</p>
+                <p>{buildingsAssign.building?.building_title}</p>
               </div>
             </div>
             <div className="left-form-second">
               <div className="project-form-group">
                 <label>Building Desciption</label>
-                <p>{buildingsAssign.building.building_description}</p>
+                <p>{buildingsAssign.building?.building_description}</p>
               </div>
               <div className="project-form-group">
                 <label>Assign Task</label>
-                <div className="select-container">
-                  {tasks.map((task) => (
-                    <div key={task.task_id}>
-                      <input
-                        type="checkbox"
-                        value={task.task_id}
-                        onChange={(e) => {
-                          const checked = e.target.checked;
-                          if (checked) {
-                            setSelectedTasks((prev) => [...prev, task.task_id]);
-                          } else {
-                            setSelectedTasks((prev) =>
-                              prev.filter((id) => id !== task.task_id)
-                            );
-                          }
-                        }}
-                      />
-                      {task.task_title}
-                    </div>
-                  ))}
-                </div>
+                {editMode ? (
+                  <div className="select-container">
+                    {tasks.map((task) => (
+                      <div key={task.task_id}>
+                        <input
+                          type="checkbox"
+                          value={task.task_id}
+                          onChange={(e) => {
+                            const checked = e.target.checked;
+                            if (checked) {
+                              setSelectedTasks((prev) => [
+                                ...prev,
+                                task.task_id,
+                              ]);
+                            } else {
+                              setSelectedTasks((prev) =>
+                                prev.filter((id) => id !== task.task_id)
+                              );
+                            }
+                          }}
+                        />
+                        {task.task_title}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p>{buildingsAssign.task || ""}</p>
+                )}
               </div>
             </div>
           </div>
@@ -208,36 +218,63 @@ const ManagerBuildingView = () => {
               </div>
               <div className="project-form-group-small">
                 <label>Building Hours</label>
-                <p>{project?.estimated_hours || ""}</p>
+                {editMode ? (
+                  <input
+                    name="estimated_hours"
+                    value={formData.building_hours}
+                    onChange={handleChange}
+                  />
+                ) : (
+                  <p>{buildingsAssign.building_hours || ""}</p>
+                )}
               </div>
             </div>
             <div className="right-form-second">
               <div className="roles-box">
                 <label>Building Roles</label>
-                <div className="select-container">
-                  {teamleadManager.map((emp) => (
-                    <div key={emp.employee_id}>
-                      <input
-                        type="checkbox"
-                        value={emp.employee_id}
-                        onChange={(e) => {
-                          const checked = e.target.checked;
-                          if (checked) {
-                            setSelectedEmployees((prev) => [
-                              ...prev,
-                              emp.employee_id,
-                            ]);
-                          } else {
-                            setSelectedEmployees((prev) =>
-                              prev.filter((id) => id !== emp.employee_id)
-                            );
-                          }
-                        }}
-                      />
-                      {emp.employee_name} - {emp.designation}
-                    </div>
-                  ))}
-                </div>
+                {editMode ? (
+                  <div className="select-container">
+                    {teamleadManager.map((employee) => (
+                      <div
+                        key={employee.employee_id}
+                        className="employee-checkbox"
+                      >
+                        {employee.employee_name} - {employee.designation}
+                        <input
+                          type="checkbox"
+                          value={employee.employee_id}
+                          checked={availableTeamleadManager.some(
+                            (e) => e.employee_id === employee.employee_id
+                          )}
+                          onChange={(e) => {
+                            const checked = e.target.checked;
+                            if (checked) {
+                              setAvailableTeamleadManager((prev) => [
+                                ...prev,
+                                employee,
+                              ]);
+                            } else {
+                              setAvailableTeamleadManager((prev) =>
+                                prev.filter(
+                                  (emp) =>
+                                    emp.employee_id !== employee.employee_id
+                                )
+                              );
+                            }
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="select-container">
+                    {availableTeamleadManager.map((emp) => (
+                      <p key={emp.employee_id}>
+                        {emp.employee_name} - {emp.designation}
+                      </p>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>

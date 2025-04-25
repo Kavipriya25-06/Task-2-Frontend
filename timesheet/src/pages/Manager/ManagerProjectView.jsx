@@ -7,7 +7,9 @@ import config from "../../config";
 import { useNavigate, useParams } from "react-router-dom";
 
 const ManagerProjectView = () => {
+  const navigate = useNavigate();
   const [teamleadManager, setTeamleadManager] = useState([]);
+  const [availableTeamleadManager, setAvailableTeamleadManager] = useState([]);
   const [projectData, setProjectData] = useState(null);
   const [buildings, setBuildings] = useState([]);
   const [areas, setAreas] = useState([]);
@@ -27,7 +29,9 @@ const ManagerProjectView = () => {
   const [showBuildingPopup, setShowBuildingPopup] = useState(false);
   const [showAreaPopup, setShowAreaPopup] = useState(false);
   const [selectedBuildings, setSelectedBuildings] = useState([]);
+  const [availableBuildings, setAvailableBuildings] = useState([]);
   const [selectedAreas, setSelectedAreas] = useState([]);
+  const [availableAreas, setAvailableAreas] = useState([]);
   const { project_id } = useParams();
   const [editMode, setEditMode] = useState(false); //  Add this at the top
 
@@ -37,6 +41,7 @@ const ManagerProjectView = () => {
     console.log("Form data", formData);
   };
   console.log("Project ID from URL:", project_id);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -64,6 +69,10 @@ const ManagerProjectView = () => {
     } catch (err) {
       console.error("Request error:", err);
     }
+  };
+
+  const buildingClick = (building_assign_id) => {
+    navigate(`/manager/detail/buildings/${building_assign_id}`);
   };
 
   const handleUpdate = async () => {
@@ -133,11 +142,17 @@ const ManagerProjectView = () => {
   const fetchProjectData = async () => {
     try {
       const response = await fetch(
-        `${config.apiBaseURL}/projects/${project_id}/`
+        `${config.apiBaseURL}/projects-screen/${project_id}/`
       );
       const data = await response.json();
       setProjectData(data);
+      setAvailableBuildings(data.assigns[0].buildings);
+      setAvailableTeamleadManager(data.assigns[0].employee);
+      setAvailableAreas(data.area_of_work);
+
       console.log("Project data", data);
+      console.log("Project assign data", data.assigns);
+      console.log("buildings assign data", data.assigns[0].buildings); // Check here later Suriya
       setFormData(data); // clone for edit
     } catch (error) {
       console.error("Failed to fetch project:", error);
@@ -149,7 +164,7 @@ const ManagerProjectView = () => {
   return (
     <div className="create-project-container">
       <h2>Project: {projectData.project_title}</h2>
-      <form onSubmit={handleSubmit}>
+      <div>
         <div className="input-elements">
           <div className="left-form">
             <div className="left-form-first">
@@ -208,12 +223,15 @@ const ManagerProjectView = () => {
                 <label>Building(s)</label>
                 {editMode ? (
                   <div className="building-row">
-                    {selectedBuildings.map((b, i) => (
+                    {availableBuildings.map((b, i) => (
                       <div key={i} className="building-tile">
                         <div className="building-tile-small">
-                          {b.building_title}
+                          {console.log("building individual", b)}
+                          {b.building.building_title}
                         </div>
-                        <div className="building-tile-small">{b.hours} hrs</div>
+                        <div className="building-tile-small">
+                          {b.building_hours} hrs
+                        </div>
                         <button className="tag-button">×</button>
                       </div>
                     ))}
@@ -226,12 +244,18 @@ const ManagerProjectView = () => {
                   </div>
                 ) : (
                   <div className="building-row">
-                    {selectedBuildings.map((b, i) => (
+                    {availableBuildings.map((b, i) => (
                       <div key={i} className="building-tile">
-                        <div className="building-tile-small">
-                          {b.building_title}
+                        <div
+                          onClick={() => buildingClick(b.building_assign_id)}
+                          className="building-tile-small"
+                        >
+                          {console.log("building individual", b)}
+                          {b.building?.building_title}
                         </div>
-                        <div className="building-tile-small">{b.hours} hrs</div>
+                        <div className="building-tile-small">
+                          {b.building_hours} hrs
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -244,9 +268,11 @@ const ManagerProjectView = () => {
                   <div className="area-row">
                     <div className="tags">
                       {areas
-                        .filter((a) => formData.area_of_work.includes(a.id))
+                        .filter((a) =>
+                          formData.area_of_work.includes(a.area_name)
+                        )
                         .map((a) => (
-                          <span className="tag" key={a.id}>
+                          <span className="tag" key={a.area_name}>
                             {a.name}
                             <button className="tag-button">×</button>
                           </span>
@@ -263,10 +289,13 @@ const ManagerProjectView = () => {
                 ) : (
                   <div className="tags">
                     {areas
-                      .filter((a) => formData.area_of_work.includes(a.id))
+                      .filter((a) =>
+                        formData.area_of_work.includes(a.area_name)
+                      )
                       .map((a) => (
-                        <span className="tag" key={a.id}>
+                        <span className="tag" key={a.area_name}>
                           {a.name}
+                          <button className="tag-button">×</button>
                         </span>
                       ))}
                   </div>
@@ -326,12 +355,40 @@ const ManagerProjectView = () => {
                         className="employee-checkbox"
                       >
                         {employee.employee_name} - {employee.designation}
-                        <input type="checkbox" value={employee.employee_id} />
+                        <input
+                          type="checkbox"
+                          value={employee.employee_id}
+                          checked={availableTeamleadManager.some(
+                            (e) => e.employee_id === employee.employee_id
+                          )}
+                          onChange={(e) => {
+                            const checked = e.target.checked;
+                            if (checked) {
+                              setAvailableTeamleadManager((prev) => [
+                                ...prev,
+                                employee,
+                              ]);
+                            } else {
+                              setAvailableTeamleadManager((prev) =>
+                                prev.filter(
+                                  (emp) =>
+                                    emp.employee_id !== employee.employee_id
+                                )
+                              );
+                            }
+                          }}
+                        />
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p></p>
+                  <div className="select-container">
+                    {availableTeamleadManager.map((emp) => (
+                      <p key={emp.employee_id}>
+                        {emp.employee_name} - {emp.designation}
+                      </p>
+                    ))}
+                  </div>
                 )}
               </div>
 
@@ -354,20 +411,32 @@ const ManagerProjectView = () => {
         <div className="form-buttons">
           {editMode ? (
             <>
-              <button onClick={handleUpdate} className="btn-green">
+              <button
+                type="submit"
+                onClick={handleUpdate}
+                className="btn-green"
+              >
                 Save
               </button>
-              <button onClick={() => setEditMode(false)} className="btn-red">
+              <button
+                type="reset"
+                onClick={() => setEditMode(false)}
+                className="btn-red"
+              >
                 Cancel
               </button>
             </>
           ) : (
-            <button onClick={() => setEditMode(true)} className="btn-orange">
+            <button
+              type="edit"
+              onClick={() => setEditMode(true)}
+              className="btn-orange"
+            >
               Edit
             </button>
           )}
         </div>
-      </form>
+      </div>
       {showBuildingPopup && (
         <div className="popup">
           <h4>Select Buildings</h4>
