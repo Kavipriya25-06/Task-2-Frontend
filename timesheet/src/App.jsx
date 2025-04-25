@@ -5,6 +5,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import "normalize.css";
 import "./App.css";
+import "./index.css";
 import { useAuth } from "./AuthContext";
 import {
   BrowserRouter as Router,
@@ -52,10 +53,8 @@ import ManagerProjectView from "./pages/Manager/ManagerProjectView.jsx";
 import ManagerTeamLeaders from "./pages/Manager/ManagerTeamLeaders.jsx";
 import ManagerTeamLeadersView from "./pages/Manager/ManagerTeamLeadersView.jsx";
 import ManagerProjectCreate from "./pages/Manager/ManagerProjectCreate.jsx";
-import ManagerBuildingView from "./pages/Manager/ManagerBuildingView.jsx";
 import ManagerBuildingCreate from "./pages/Manager/ManagerBuildingCreate.jsx";
 import ManagerTaskCreate from "./pages/Manager/ManagerTaskCreate.jsx";
-import ManagerTaskView from "./pages/Manager/ManagerTaskView.jsx";
 
 // Team Lead pages
 import TeamLeadDashboard from "./pages/TeamLead/TeamLeadDashboard.jsx";
@@ -66,6 +65,12 @@ import TeamLeadEmployees from "./pages/TeamLead/TeamLeadEmployees.jsx";
 import TeamLeadLeaveRequests from "./pages/TeamLead/TeamLeadLeaveRequests.jsx";
 import TeamLeadProjects from "./pages/TeamLead/TeamLeadProjects.jsx";
 import TeamLeadTimeSheetEntry from "./pages/TeamLead/TeamLeadTimeSheetEntry.jsx";
+import TeamLeadProjectCreate from "./pages/TeamLead/TeamLeadProjectCreate.jsx";
+import TeamLeadBuildingCreate from "./pages/TeamLead/TeamLeadBuildingCreate.jsx";
+import TeamLeadTaskCreate from "./pages/TeamLead/TeamLeadTaskCreate.jsx";
+import TeamLeadLeaveRequestForm from "./pages/TeamLead/TeamLeadLeaveRequestForm.jsx";
+import TeamLeadDailyTimeSheetEntry from "./pages/TeamLead/TeamLeadDailyTimeSheetEntry.jsx";
+import TeamLeadWeeklyTimeSheetEntry from "./pages/TeamLead/TeamLeadWeeklyTimeSheet.jsx";
 
 // Employee pages
 import EmployeeDashboard from "./pages/Employee/EmployeeDashboard.jsx";
@@ -74,6 +79,8 @@ import EmployeeDetailView from "./pages/Employee/EmployeeDetailView.jsx";
 import EmployeeLeaveRequests from "./pages/Employee/EmployeeLeaveRequests.jsx";
 import EmployeeTasks from "./pages/Employee/EmployeeTasks.jsx";
 import EmployeeTimeSheetEntry from "./pages/Employee/EmployeeTimeSheetEntry.jsx";
+import EmployeeTaskDetail from "./pages/Employee/EmployeeTaskDetail.jsx";
+
 
 const App = () => {
   const [selectedRole, setSelectedRole] = useState(() => {
@@ -194,14 +201,6 @@ const App = () => {
                   element={<ManagerProjectView />}
                 />
                 <Route
-                  path="buildings/:building_assign_id"
-                  element={<ManagerBuildingView />}
-                />
-                <Route
-                  path="tasks/:task_assign_id"
-                  element={<ManagerTaskView />}
-                />
-                <Route
                   path="projects/create"
                   element={<ManagerProjectCreate />}
                 />
@@ -229,15 +228,30 @@ const App = () => {
               <Route index element={<TeamLeadDashboard />} />
               <Route path="detail" element={<TeamLeadDetailView />}>
                 <Route path="projects" element={<TeamLeadProjects />} />
+                <Route path="projects/create" element={<TeamLeadProjectCreate />} />
+                <Route
+                  path="buildings/create"
+                  element={<TeamLeadBuildingCreate />}
+                />
+                <Route path="tasks/create" element={<TeamLeadTaskCreate />} />
                 <Route
                   path="time-sheet-entry"
                   element={<TeamLeadTimeSheetEntry />}
+                />
+                <Route path ="time-sheet-entry/createdaily" element={<TeamLeadDailyTimeSheetEntry/>}
+                />
+                <Route path ="time-sheet-entry/createweekly" element={<TeamLeadWeeklyTimeSheetEntry/>}
                 />
                 <Route path="employees" element={<TeamLeadEmployees />} />
                 <Route
                   path="leave-requests"
                   element={<TeamLeadLeaveRequests />}
                 />
+                <Route
+                  path="leave-requests/create"
+                  element={<TeamLeadLeaveRequestForm />}
+                />
+
                 <Route path="attendance" element={<TeamLeadAttendance />} />
               </Route>
             </Route>
@@ -255,6 +269,7 @@ const App = () => {
                   path="leave-requests"
                   element={<EmployeeLeaveRequests />}
                 />
+                <Route path ="tasks/detail" element={<EmployeeTaskDetail/>}/>
               </Route>
             </Route>
           </Routes>
