@@ -13,7 +13,9 @@ const EmployeeTasks = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await fetch(`${config.apiBaseURL}/tasks-by-employee/${user.employee_id}`);
+        const response = await fetch(
+          `${config.apiBaseURL}/tasks-by-employee/${user.employee_id}`
+        );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

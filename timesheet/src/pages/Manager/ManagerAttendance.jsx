@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 const ManagerAttendance = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [attendanceData, setAttendanceData] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
   const [currentWeek, setCurrentWeek] = useState(new Date()); // Start with current week
@@ -93,6 +94,10 @@ const ManagerAttendance = () => {
     setCurrentWeek(newDate);
   };
 
+  const handleAttendanceClick = () => {
+    navigate(`attendance-admin/`);
+  };
+
   useEffect(() => {
     fetchAttendanceData();
   }, [currentWeek]);
@@ -113,7 +118,9 @@ const ManagerAttendance = () => {
           <button onClick={() => handleWeekChange(1)}> &gt;</button>
         </div>
         <div>
-          <button>Attendance Admin</button>
+          <button onClick={() => handleAttendanceClick()}>
+            Attendance Admin
+          </button>
         </div>
       </div>
 

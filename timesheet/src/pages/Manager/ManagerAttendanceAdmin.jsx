@@ -9,9 +9,23 @@ import { useNavigate } from "react-router-dom";
 const ManagerAttendanceAdmin = () => {
   const { user } = useAuth();
   const [attendanceData, setAttendanceData] = useState([]);
+  const [attendanceAdminData, setAttendanceAdminData] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
   const [currentWeek, setCurrentWeek] = useState(new Date()); // Start with current week
   const [totalHours, setTotalHours] = useState({});
+  const [showAddPopup, setShowAddPopup] = useState(false);
+  const [newAttendance, setNewAttendance] = useState({
+    employee: "",
+    shift: "",
+    date: "",
+    in_time: "",
+    out_time: "",
+    work_duration: "",
+    ot: "",
+    total_duration: "",
+    status: "Present",
+    remarks: "",
+  });
 
   // Get the start and end date of the week
   const getWeekDates = (date) => {
@@ -62,6 +76,48 @@ const ManagerAttendanceAdmin = () => {
     }
   };
 
+  const fetchAttendanceAdmin = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/attendance-admin/${user.employee_id}/`
+      );
+      const data = await response.json();
+      console.log("Attendance data", data);
+      setAttendanceAdminData(data);
+    } catch (err) {
+      console.error("Unable to fetch attendance data", err);
+    }
+  };
+
+  const handleAddAttendance = async (e) => {
+    e.preventDefault();
+
+    const payload = {
+      ...newAttendance,
+      modified_by: user.employee_id,
+      modified_on: new Date().toISOString(),
+    };
+
+    try {
+      const response = await fetch(`${config.apiBaseURL}/biometric-data/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        alert("Attendance added!");
+        setShowAddPopup(false);
+        fetchAttendanceAdmin(); // Refresh the list
+      } else {
+        const data = await response.json();
+        alert("Failed to add attendance: " + data.error);
+      }
+    } catch (err) {
+      console.error("Error adding attendance:", err);
+    }
+  };
+
   const fetchEmployee = async () => {
     try {
       const response = await fetch(
@@ -99,36 +155,81 @@ const ManagerAttendanceAdmin = () => {
 
   useEffect(() => {
     fetchEmployee();
+    fetchAttendanceAdmin();
   }, [user]);
+
+  useEffect(() => {
+    if (newAttendance.in_time && newAttendance.out_time) {
+      const [inHours, inMinutes] = newAttendance.in_time.split(":").map(Number);
+      const [outHours, outMinutes] = newAttendance.out_time
+        .split(":")
+        .map(Number);
+
+      // Parse OT in HH:MM format
+      let otMinutes = 0;
+      if (newAttendance.ot && newAttendance.ot.includes(":")) {
+        const [otHrs, otMins] = newAttendance.ot.split(":").map(Number);
+        otMinutes = (otHrs || 0) * 60 + (otMins || 0);
+      } else {
+        otMinutes = parseFloat(newAttendance.ot || 0) * 60; // fallback for decimal OT
+      }
+
+      let start = new Date(0, 0, 0, inHours, inMinutes);
+      let end = new Date(0, 0, 0, outHours, outMinutes);
+
+      if (end < start) {
+        // handle overnight shifts
+        end.setDate(end.getDate() + 1);
+      }
+
+      const diffMs = end - start;
+      const diffHrs = (diffMs / 1000 / 60 / 60).toFixed(2);
+
+      const ot = parseFloat(newAttendance.ot || 0);
+      const totalDuration = (parseFloat(diffHrs) + ot).toFixed(2);
+
+      const diffHrsDecimal = diffMs / 1000 / 60 / 60;
+
+      // Work Duration in HH:MM
+      const workHours = Math.floor(diffHrsDecimal);
+      const workMinutes = Math.round((diffHrsDecimal - workHours) * 60);
+      const workDurationFormatted = `${workHours}:${workMinutes
+        .toString()
+        .padStart(2, "0")}`;
+
+      // OT is assumed to be entered in HH:MM or in decimal, adjust accordingly
+      const otDecimal = otMinutes / 60;
+
+      const totalDecimal = diffHrsDecimal + otDecimal;
+
+      const totalHours = Math.floor(totalDecimal);
+      const totalMinutes = Math.round((totalDecimal - totalHours) * 60);
+      const totalDurationFormatted = `${totalHours}:${totalMinutes
+        .toString()
+        .padStart(2, "0")}`;
+
+      setNewAttendance((prev) => ({
+        ...prev,
+        // work_duration: workDurationFormatted,
+        // total_duration: totalDurationFormatted,
+        work_duration: diffHrsDecimal.toFixed(2), // Decimal for payload
+        total_duration: totalDecimal.toFixed(2), // Decimal for payload
+        work_duration_display: workDurationFormatted, // HH:MM for UI
+        total_duration_display: totalDurationFormatted,
+      }));
+    }
+  }, [newAttendance.in_time, newAttendance.out_time, newAttendance.ot]);
 
   return (
     <div className="attendance-container">
       <div className="attendance-header">
         <h2>Attendance Admin</h2>
-        {/* <div className="week-navigation">
-          <button onClick={() => handleWeekChange(-1)}>&lt;</button>
-          <h3>
-            {startDate.toLocaleDateString("en-GB")} -{" "}
-            {endDate.toLocaleDateString("en-GB")}
-          </h3>
-          <button onClick={() => handleWeekChange(1)}> &gt;</button>
-        </div> */}
-        {/* <div>
-          <button>Attendance Admin</button>
-        </div> */}
       </div>
 
       <div className="attendance-table">
         <table>
           <thead>
             <tr>
-              {/* <th>Employee</th>
-              {weekDays.map((day) => (
-                <th key={day.key}>
-                  {day.weekday} ({day.date})
-                </th>
-              ))}
-              <th>Total Hours</th> */}
               <th>Employee</th>
               <th>Date</th>
               <th>Start Time</th>
@@ -137,15 +238,161 @@ const ManagerAttendanceAdmin = () => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
+            {attendanceAdminData.map((att) => (
+              <tr key={att.biometric_id}>
+                <td>{att.employee_name}</td>
+                <td>
+                  {new Date(att.date).toLocaleString("en-IN", {
+                    month: "2-digit",
+                    day: "2-digit",
+                    year: "numeric",
+                  })}
+                </td>
+                <td>{att.in_time}</td>
+                <td>{att.out_time}</td>
+                <td>
+                  {new Date(att.modified_on)?.toLocaleString("en-IN", {
+                    month: "2-digit",
+                    day: "2-digit",
+                    year: "numeric",
+                  })}
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
+        {showAddPopup && (
+          <div className="att-popup">
+            <h3>Add Attendance Record</h3>
+            <form onSubmit={handleAddAttendance}>
+              <label>Employee</label>
+              <select
+                value={newAttendance.employee}
+                onChange={(e) => {
+                  const selectedEmp = employeeData.find(
+                    (emp) => emp.employee_id === e.target.value
+                  );
+                  setNewAttendance({
+                    ...newAttendance,
+                    employee: selectedEmp.employee_id,
+                    employee_code: selectedEmp.employee_code,
+                    employee_name: selectedEmp.employee_name,
+                  });
+                }}
+              >
+                <option value="">Select Employee</option>
+                {employeeData.map((emp) => (
+                  <option key={emp.employee_id} value={[emp.employee_id]}>
+                    {emp.employee_name}
+                  </option>
+                ))}
+              </select>
+
+              <label>Shift</label>
+              <input
+                type="text"
+                value={newAttendance.shift}
+                onChange={(e) =>
+                  setNewAttendance({ ...newAttendance, shift: e.target.value })
+                }
+              />
+
+              <label>Date</label>
+              <input
+                type="date"
+                value={newAttendance.date}
+                onChange={(e) =>
+                  setNewAttendance({ ...newAttendance, date: e.target.value })
+                }
+              />
+
+              <label>In Time</label>
+              <input
+                type="time"
+                value={newAttendance.in_time}
+                onChange={(e) =>
+                  setNewAttendance({
+                    ...newAttendance,
+                    in_time: e.target.value,
+                  })
+                }
+              />
+
+              <label>Out Time</label>
+              <input
+                type="time"
+                value={newAttendance.out_time}
+                onChange={(e) =>
+                  setNewAttendance({
+                    ...newAttendance,
+                    out_time: e.target.value,
+                  })
+                }
+              />
+
+              <label>Work Duration</label>
+              <input
+                type="text"
+                value={newAttendance.work_duration_display || ""}
+                readOnly
+              />
+
+              <label>OT</label>
+              <input
+                type="number"
+                value={newAttendance.ot}
+                onChange={(e) =>
+                  setNewAttendance({ ...newAttendance, ot: e.target.value })
+                }
+              />
+
+              <label>Total Duration</label>
+              <input
+                type="text"
+                value={newAttendance.total_duration_display || ""}
+                readOnly
+              />
+
+              <label>Status</label>
+              <select
+                value={newAttendance.status}
+                onChange={(e) =>
+                  setNewAttendance({ ...newAttendance, status: e.target.value })
+                }
+              >
+                <option value="Present">Present</option>
+                <option value="Absent">Absent</option>
+                <option value="WFH">WFH</option>
+                <option value="OD">OD</option>
+              </select>
+
+              <label>Remarks</label>
+              <textarea
+                value={newAttendance.remarks}
+                onChange={(e) =>
+                  setNewAttendance({
+                    ...newAttendance,
+                    remarks: e.target.value,
+                  })
+                }
+              />
+
+              <button type="submit" className="btn-green">
+                Submit
+              </button>
+              <button
+                onClick={() => setShowAddPopup(false)}
+                className="btn-red"
+              >
+                Cancel
+              </button>
+            </form>
+          </div>
+        )}
+
+        <button onClick={() => setShowAddPopup(true)} className="btn-green">
+          + Add Attendance
+        </button>
       </div>
     </div>
   );

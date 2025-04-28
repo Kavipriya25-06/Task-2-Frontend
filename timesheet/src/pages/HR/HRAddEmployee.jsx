@@ -1,4 +1,4 @@
-import React, { useState ,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import config from "../../config";
 import { cleanFormData } from "../../utils/cleanFormData";
@@ -23,7 +23,7 @@ const AddEmployee = () => {
     total_years: "",
     total_months: "",
   });
-  
+
   const [errors, setErrors] = useState({
     contact_number: "",
     personal_email: "",
@@ -35,7 +35,6 @@ const AddEmployee = () => {
     passport_number: "",
     employee_email: "",
     emergency_contact_number: "",
-
   });
   const [formData, setFormData] = useState({
     employee_code: "",
@@ -85,14 +84,16 @@ const AddEmployee = () => {
   useEffect(() => {
     const fetchManagers = async () => {
       try {
-        const response = await fetch(`${config.apiBaseURL}/teamlead-and-managers/`);
+        const response = await fetch(
+          `${config.apiBaseURL}/teamlead-and-managers/`
+        );
         const data = await response.json();
-        setManagers(data);  // Store managers data
+        setManagers(data); // Store managers data
       } catch (error) {
         console.error("Error fetching managers:", error);
       }
     };
-  
+
     fetchManagers();
   }, []);
 
@@ -102,7 +103,6 @@ const AddEmployee = () => {
       attachments: prev.attachments.filter((_, i) => i !== index),
     }));
   };
-  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -129,7 +129,7 @@ const AddEmployee = () => {
     if (name === "personal_email") {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       setFormData((prev) => ({ ...prev, [name]: value }));
-  
+
       if (value && !emailRegex.test(value)) {
         setErrors((prev) => ({
           ...prev,
@@ -143,11 +143,11 @@ const AddEmployee = () => {
 
     if (name === "aadhaar_number") {
       const numericValue = value.replace(/\D/g, ""); // Allow only digits
-    
+
       if (numericValue.length <= 12) {
         setFormData((prev) => ({ ...prev, [name]: numericValue }));
       }
-    
+
       if (numericValue.length > 0 && numericValue.length !== 12) {
         setErrors((prev) => ({
           ...prev,
@@ -162,7 +162,7 @@ const AddEmployee = () => {
     if (name === "PAN") {
       const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i;
       setFormData((prev) => ({ ...prev, [name]: value.toUpperCase() }));
-    
+
       if (value && !panRegex.test(value)) {
         setErrors((prev) => ({
           ...prev,
@@ -193,7 +193,7 @@ const AddEmployee = () => {
     if (name === "pf_number") {
       const pfRegex = /^[A-Za-z0-9]{5,22}$/;
       setFormData((prev) => ({ ...prev, [name]: value }));
-    
+
       if (value && !pfRegex.test(value)) {
         setErrors((prev) => ({
           ...prev,
@@ -224,7 +224,7 @@ const AddEmployee = () => {
     if (name === "passport_number") {
       const passportRegex = /^[A-Z]{1,2}[0-9]{6,7}$/i;
       setFormData((prev) => ({ ...prev, [name]: value.toUpperCase() }));
-    
+
       if (value && !passportRegex.test(value)) {
         setErrors((prev) => ({
           ...prev,
@@ -235,11 +235,11 @@ const AddEmployee = () => {
       }
       return;
     }
-  
+
     if (name === "employee_email") {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       setFormData((prev) => ({ ...prev, [name]: value }));
-    
+
       if (value && !emailRegex.test(value)) {
         setErrors((prev) => ({
           ...prev,
@@ -250,7 +250,7 @@ const AddEmployee = () => {
       }
       return;
     }
-    
+
     if (name === "emergency_contact_number") {
       const numericValue = value.replace(/\D/g, ""); // Allow only digits
       if (numericValue.length <= 10) {
@@ -259,28 +259,30 @@ const AddEmployee = () => {
       if (numericValue.length > 0 && numericValue.length !== 10) {
         setErrors((prev) => ({
           ...prev,
-          emergency_contact_number: "Emergency contact number must be exactly 10 digits.",
+          emergency_contact_number:
+            "Emergency contact number must be exactly 10 digits.",
         }));
       } else {
         setErrors((prev) => ({ ...prev, emergency_contact_number: "" }));
       }
       return;
     }
-    
-
 
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-
   const handleExperienceChange = (e) => {
     const { name, value } = e.target;
     const updated = { ...experienceUI, [name]: value };
-  
+
     // Calculate months and update formData
-    let arrisMonths = (parseInt(updated.arris_years || 0) * 12) + parseInt(updated.arris_months || 0);
-    let totalMonths = (parseInt(updated.total_years || 0) * 12) + parseInt(updated.total_months || 0);
-  
+    let arrisMonths =
+      parseInt(updated.arris_years || 0) * 12 +
+      parseInt(updated.arris_months || 0);
+    let totalMonths =
+      parseInt(updated.total_years || 0) * 12 +
+      parseInt(updated.total_months || 0);
+
     setExperienceUI(updated);
     setFormData((prev) => ({
       ...prev,
@@ -288,12 +290,10 @@ const AddEmployee = () => {
       total_experience: totalMonths,
     }));
   };
-  
-
 
   const handleFileChange = (e) => {
     const { name, files: selectedFiles } = e.target;
-  
+
     if (name === "attachments") {
       setFiles((prev) => ({
         ...prev,
@@ -308,8 +308,6 @@ const AddEmployee = () => {
       }));
     }
   };
-  
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -327,42 +325,41 @@ const AddEmployee = () => {
     ];
 
     const cleanedData = cleanFormData(formData, fieldsToNullify);
- // Initialize FormData
- const formPayload = new FormData();
+    // Initialize FormData
+    const formPayload = new FormData();
 
- // Append cleaned text fields
- Object.entries(cleanedData).forEach(([key, value]) => {
-   formPayload.append(key, value);
- });
+    // Append cleaned text fields
+    Object.entries(cleanedData).forEach(([key, value]) => {
+      formPayload.append(key, value);
+    });
 
- // Append files
- if (files.profile_picture) {
-   formPayload.append("profile_picture", files.profile_picture);
- }
- if (files.attachments) {
-   formPayload.append("attachments", files.attachments); // If multiple files: loop through
- }
+    // Append files
+    if (files.profile_picture) {
+      formPayload.append("profile_picture", files.profile_picture);
+    }
+    if (files.attachments) {
+      formPayload.append("attachments", files.attachments); // If multiple files: loop through
+    }
 
- try {
-   const response = await fetch(`${config.apiBaseURL}/employees/`, {
-     method: "POST",
-     body: formPayload, // No Content-Type header, browser handles it
-   });
+    try {
+      const response = await fetch(`${config.apiBaseURL}/employees/`, {
+        method: "POST",
+        body: formPayload, // No Content-Type header, browser handles it
+      });
 
-   if (!response.ok) throw new Error("Failed to add employee");
+      if (!response.ok) throw new Error("Failed to add employee");
 
-   navigate("/hr/detail/employee-details");
- } catch (error) {
-   console.error("Error submitting employee data:", error);
- }
-};
+      navigate("/hr/detail/employee-details");
+    } catch (error) {
+      console.error("Error submitting employee data:", error);
+    }
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
       case 0:
         return (
           <div className="tab-content">
-
             <div className="profile-picture-wrapper">
               <label>Profile picture</label>
               <div className="profile-picture-container">
@@ -374,21 +371,28 @@ const AddEmployee = () => {
                   onChange={handleFileChange}
                   name="profile_picture"
                 />
-                <label htmlFor="profile-picture-input" className="profile-picture-label">
+                <label
+                  htmlFor="profile-picture-input"
+                  className="profile-picture-label"
+                >
                   <img
                     src={
                       files.profile_picture
                         ? URL.createObjectURL(files.profile_picture)
-                        : usePlaceholder 
+                        : usePlaceholder
                     }
                     alt="Profile Preview"
                     className="profile-picture"
                   />
                   <div className="camera-icon-overlay">
-                    <img 
-                      src={cameraIcon} 
-                      alt="Camera Icon" 
-                      style={{ width: "20px", height: "20px", objectFit: "contain" }} 
+                    <img
+                      src={cameraIcon}
+                      alt="Camera Icon"
+                      style={{
+                        width: "20px",
+                        height: "20px",
+                        objectFit: "contain",
+                      }}
                     />
                   </div>
                 </label>
@@ -396,40 +400,41 @@ const AddEmployee = () => {
             </div>
 
             <div className="attachments-wrapper">
-  <label>Attachments</label>
-  <div className="attachments-box">
-    {files.attachments && files.attachments.length > 0 && (
-      <div className="attachments-list">
-        {files.attachments.map((file, index) => (
-          <div key={index} className="attachment-item">
-            <span className="attachment-name">{file.name}</span>
-            <button
-              type="button"
-              className="remove-attachment"
-              onClick={() => removeAttachment(index)}
-            >
-              &times;
-            </button>
-          </div>
-        ))}
-      </div>
-    )}
+              <label>Attachments</label>
+              <div className="attachments-box">
+                {files.attachments && files.attachments.length > 0 && (
+                  <div className="attachments-list">
+                    {files.attachments.map((file, index) => (
+                      <div key={index} className="attachment-item">
+                        <span className="attachment-name">{file.name}</span>
+                        <button
+                          type="button"
+                          className="remove-attachment"
+                          onClick={() => removeAttachment(index)}
+                        >
+                          &times;
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
-    <input
-      type="file"
-      id="attachments-input"
-      name="attachments"
-      multiple
-      style={{ display: 'none' }}
-      onChange={handleFileChange}
-    />
-    <label htmlFor="attachments-input" className="add-attachment-button">
-      +
-    </label>
-  </div>
-</div>
-
-
+                <input
+                  type="file"
+                  id="attachments-input"
+                  name="attachments"
+                  multiple
+                  style={{ display: "none" }}
+                  onChange={handleFileChange}
+                />
+                <label
+                  htmlFor="attachments-input"
+                  className="add-attachment-button"
+                >
+                  +
+                </label>
+              </div>
+            </div>
 
             <div className="individual-tabs">
               <label>Employee Code</label>
@@ -473,7 +478,7 @@ const AddEmployee = () => {
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
                 <option value="Others">Others</option>
-              </select> 
+              </select>
             </div>
             <div className="individual-tabs">
               <label>Date of Birth</label>
@@ -528,9 +533,9 @@ const AddEmployee = () => {
                 placeholder="Aadhaar"
                 className={errors.aadhaar_number ? "input-error" : ""}
               />
-               {errors.aadhaar_number && (
-                  <span className="error-message">{errors.aadhaar_number}</span>
-                )}
+              {errors.aadhaar_number && (
+                <span className="error-message">{errors.aadhaar_number}</span>
+              )}
             </div>
             <div className="individual-tabs">
               <label>PAN Number</label>
@@ -541,7 +546,9 @@ const AddEmployee = () => {
                 placeholder="PAN Number"
                 className={errors.PAN ? "input-error" : ""}
               />
-              {errors.PAN && <span className="error-message">{errors.PAN}</span>}
+              {errors.PAN && (
+                <span className="error-message">{errors.PAN}</span>
+              )}
             </div>
             <div className="individual-tabs">
               <label>UAN</label>
@@ -552,7 +559,9 @@ const AddEmployee = () => {
                 placeholder="UAN"
                 className={errors.UAN ? "input-error" : ""}
               />
-              {errors.UAN && <span className="error-message">{errors.UAN}</span>}
+              {errors.UAN && (
+                <span className="error-message">{errors.UAN}</span>
+              )}
             </div>
             <div className="individual-tabs">
               <label>PF Number</label>
@@ -563,7 +572,9 @@ const AddEmployee = () => {
                 placeholder="PF Number"
                 className={errors.pf_number ? "input-error" : ""}
               />
-               {errors.pf_number && <span className="error-message">{errors.pf_number}</span>}
+              {errors.pf_number && (
+                <span className="error-message">{errors.pf_number}</span>
+              )}
             </div>
             <div className="individual-tabs">
               <label>ESI Number</label>
@@ -574,7 +585,9 @@ const AddEmployee = () => {
                 placeholder="ESI Number"
                 className={errors.esi_number ? "input-error" : ""}
               />
-              {errors.esi_number && <span className="error-message">{errors.esi_number}</span>}
+              {errors.esi_number && (
+                <span className="error-message">{errors.esi_number}</span>
+              )}
             </div>
             <div className="individual-tabs">
               <label>Passport Number</label>
@@ -585,7 +598,9 @@ const AddEmployee = () => {
                 placeholder="Passport Number"
                 className={errors.passport_number ? "input-error" : ""}
               />
-               {errors.passport_number && <span className="error-message">{errors.passport_number}</span>}
+              {errors.passport_number && (
+                <span className="error-message">{errors.passport_number}</span>
+              )}
             </div>
             <div className="individual-tabs">
               <label>Passport validity</label>
@@ -650,7 +665,7 @@ const AddEmployee = () => {
                 <option value="Parttime">Part-Time</option>
                 <option value="Internship">Internship</option>
                 <option value="Contract">Contract</option>
-              </select>  
+              </select>
             </div>
             <div className="individual-tabs">
               <label>Designation</label>
@@ -670,10 +685,14 @@ const AddEmployee = () => {
                 // placeholder="Department"
               >
                 <option value="">Select Department</option>
-                <option value="Structural-Detailing">Structural-Detailing</option>
+                <option value="Structural-Detailing">
+                  Structural-Detailing
+                </option>
                 <option value="Structural-Design">Structural-Design</option>
                 <option value="Piping">Piping</option>
-                <option value="Electrical&Instrumentation">Electrical&Instrumentation</option>
+                <option value="Electrical&Instrumentation">
+                  Electrical&Instrumentation
+                </option>
               </select>
             </div>
             <div className="individual-tabs">
@@ -706,34 +725,58 @@ const AddEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>Arris Experience</label>
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <select name="arris_years" value={experienceUI.arris_years} onChange={handleExperienceChange}>
+              <div style={{ display: "flex", gap: "10px" }}>
+                <select
+                  name="arris_years"
+                  value={experienceUI.arris_years}
+                  onChange={handleExperienceChange}
+                >
                   <option value="">Years</option>
-                  {[...Array(31).keys()].map(year => (
-                    <option key={year} value={year}>{year} Years</option>
+                  {[...Array(31).keys()].map((year) => (
+                    <option key={year} value={year}>
+                      {year} Years
+                    </option>
                   ))}
                 </select>
-                <select name="arris_months" value={experienceUI.arris_months} onChange={handleExperienceChange}>
+                <select
+                  name="arris_months"
+                  value={experienceUI.arris_months}
+                  onChange={handleExperienceChange}
+                >
                   <option value="">Months</option>
-                  {[...Array(12).keys()].map(month => (
-                    <option key={month} value={month}>{month} Months</option>
+                  {[...Array(12).keys()].map((month) => (
+                    <option key={month} value={month}>
+                      {month} Months
+                    </option>
                   ))}
                 </select>
               </div>
             </div>
             <div className="individual-tabs">
               <label>Total Experience</label>
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <select name="total_years" value={experienceUI.total_years} onChange={handleExperienceChange}>
+              <div style={{ display: "flex", gap: "10px" }}>
+                <select
+                  name="total_years"
+                  value={experienceUI.total_years}
+                  onChange={handleExperienceChange}
+                >
                   <option value="">Years</option>
-                  {[...Array(31).keys()].map(year => (
-                    <option key={year} value={year}>{year} Years</option>
+                  {[...Array(31).keys()].map((year) => (
+                    <option key={year} value={year}>
+                      {year} Years
+                    </option>
                   ))}
                 </select>
-                <select name="total_months" value={experienceUI.total_months} onChange={handleExperienceChange}>
+                <select
+                  name="total_months"
+                  value={experienceUI.total_months}
+                  onChange={handleExperienceChange}
+                >
                   <option value="">Months</option>
-                  {[...Array(12).keys()].map(month => (
-                    <option key={month} value={month}>{month} Months</option>
+                  {[...Array(12).keys()].map((month) => (
+                    <option key={month} value={month}>
+                      {month} Months
+                    </option>
                   ))}
                 </select>
               </div>
@@ -833,7 +876,9 @@ const AddEmployee = () => {
                 className={errors.emergency_contact_number ? "input-error" : ""}
               />
               {errors.emergency_contact_number && (
-                <span className="error-message">{errors.emergency_contact_number}</span>
+                <span className="error-message">
+                  {errors.emergency_contact_number}
+                </span>
               )}
             </div>
             <div className="individual-tabs">

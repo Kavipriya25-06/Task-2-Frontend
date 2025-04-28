@@ -24,6 +24,7 @@ const EditUserForm = () => {
       setEmployeeID(data.employee_id);
       setRole(data.role);
       setEmail(data.email);
+      setPassword(data.password);
     } catch (error) {
       console.error("Error fetching user", error);
     }
@@ -79,7 +80,24 @@ const EditUserForm = () => {
   return (
     <div className="add-user-container">
       <div className="table-top-bar">
-        <div>Edit User</div>
+        <div>
+          {editMode ? (
+            <div className="table-top-bar-header">
+              <div>Edit user</div>
+            </div>
+          ) : (
+            <div className="table-top-bar-header">
+              <div style={{ paddingRight: "250px" }}>View user</div>
+              <button
+                type="edit"
+                onClick={() => setEditMode(true)}
+                className="btn-orange"
+              >
+                Edit
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <form className="add-user-form" onSubmit={handleSubmit}>
@@ -88,85 +106,91 @@ const EditUserForm = () => {
           <div>
             {employeeID.employee_code} - {employeeID.employee_name}
           </div>
-          {/* <select
-            value={employeeID}
-            onChange={(e) => setEmployeeID(e.target.value)}
-            required
-          >
-            <option value="">Select Employee</option>
-            {employeeOptions.map((emp) => (
-              <option key={emp.employee_id} value={emp.employee_id}>
-                {emp.employee_id} - {emp.employee_name}
-              </option>
-            ))}
-          </select> */}
         </div>
 
         <div className="form-group">
           <label>Role</label>
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            required
-          >
-            <option value="">Select Role</option>
-            {roleOptions.map((r) => (
-              <option key={r.value} value={r.value}>
-                {r.label}
-              </option>
-            ))}
-          </select>
+          {editMode ? (
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              required
+            >
+              <option value="">Select Role</option>
+              {roleOptions.map((r) => (
+                <option key={r.value} value={r.value}>
+                  {r.label}
+                </option>
+              ))}
+            </select>
+          ) : (
+              <div className="uneditable">{ role}</div>
+          )}
         </div>
 
         <div className="form-group">
           <label>Email</label>
-          <input
-            className="input"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+          {editMode ? (
+            <input
+              className="input"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          ) : (
+              <div className="uneditable">{ email}</div>
+          )}
         </div>
 
         <div className="form-group" style={{ position: "relative" }}>
           <label>Password</label>
-          <input
-            className="input"
-            type={showPassword ? "text" : "password"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <span
-            onClick={() => setShowPassword((prev) => !prev)}
-            style={{
-              position: "absolute",
-              right: "12px",
-              top: "55%",
-              transform: "translateX(-50%)",
-              cursor: "pointer",
-              fontSize: "14px",
-              color: "#007bff",
-              userSelect: "none",
-            }}
-          >
-            {showPassword ? "Hide" : "Show"}
-          </span>
+          {editMode ? (
+            <div>
+              <input
+                className="input"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <span
+                onClick={() => setShowPassword((prev) => !prev)}
+                style={{
+                  position: "absolute",
+                  right: "12px",
+                  top: "55%",
+                  transform: "translateX(-50%)",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  color: "#007bff",
+                  userSelect: "none",
+                }}
+              >
+                {showPassword ? "Hide" : "Show"}
+              </span>
+            </div>
+          ) : (
+              <div className="uneditable">{ password}</div>
+          )}
         </div>
 
-        <div className="form-buttons">
-          <button type="submit" className="btn btn-green">
-            Update
-          </button>
-          <button
-            type="button"
-            className="btn btn-orange"
-            onClick={handleCancel}
-          >
-            Cancel
-          </button>
-        </div>
+        {editMode ? (
+          <div className="form-buttons">
+            <button type="submit" className="btn btn-green">
+              Update
+            </button>
+            <button
+              type="button"
+              className="btn btn-orange"
+              onClick={handleCancel}
+            >
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <div className="uneditable"></div>
+        )}
       </form>
     </div>
   );

@@ -5,8 +5,7 @@ import { useNavigate } from "react-router-dom";
 import TeamLeadDailyTimeSheetEntry from "./TeamLeadDailyTimeSheetEntry";
 import TeamLeadWeeklyTimeSheetEntry from "./TeamLeadWeeklyTimeSheet";
 
-
-const TeamLeadTimeSheetEntry = () =>  {
+const TeamLeadTimeSheetEntry = () => {
   const [calendarData, setCalendarData] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -100,24 +99,28 @@ const TeamLeadTimeSheetEntry = () =>  {
       const weekNumber = week.find((day) => day)?.week_of_year || "-";
       rows.push(
         <React.Fragment key={`week-${weekNumber}-${i}`}>
-          <div className="week-number" onClick={() => navigate(`createweekly`)}>W-{weekNumber}</div>
+          <div className="week-number" onClick={() => navigate(`createweekly`)}>
+            W-{weekNumber}
+          </div>
           {week.map((entry, idx) =>
             entry ? (
               <div
                 key={entry.calendar_id}
-                className={`calendar-cell1 ${entry.is_weekend ? "weekend" : ""} ${entry.is_holiday ? "holiday" : ""}`}
+                className={`calendar-cell1 ${
+                  entry.is_weekend ? "weekend" : ""
+                } ${entry.is_holiday ? "holiday" : ""}`}
                 data-note={entry.notes || ""}
               >
                 <div className="day-number">{entry.day}</div>
                 <div
-                className="day-circle"
-                onClick={() => navigate(`createdaily`)}
-                style={{ cursor: "pointer" }}
-              ></div>
+                  className="day-circle"
+                  onClick={() => navigate(`createdaily`)}
+                  style={{ cursor: "pointer" }}
+                ></div>
                 {entry.notes && (
                   <div className="holiday-note1">{entry.notes}</div>
                 )}
-                 <div className="bottom-right-circle"></div>
+                <div className="bottom-right-circle"></div>
               </div>
             ) : (
               <div key={`empty-${i + idx}`} className="calendar-cell empty" />

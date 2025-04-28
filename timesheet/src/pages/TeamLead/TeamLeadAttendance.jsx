@@ -180,5 +180,4 @@ const TeamLeadAttendance = () => {
   );
 };
 
-
 export default TeamLeadAttendance;

@@ -21,17 +21,37 @@ const EmployeeTaskDetail = () => {
 
         <div style={styles.projectInfo}>
           <p>
-            <strong>Project Title :</strong> {task.building_assign.project_assign.project?.project_title || "N/A"} &nbsp;&nbsp;
-            <strong>Project Type :</strong> {task.building_assign.project_assign.project?.project_type || "N/A"} &nbsp;&nbsp;
+            <strong>Project Title :</strong>{" "}
+            {task.building_assign.project_assign.project?.project_title ||
+              "N/A"}{" "}
+            &nbsp;&nbsp;
+            <strong>Project Type :</strong>{" "}
+            {task.building_assign.project_assign.project?.project_type || "N/A"}{" "}
+            &nbsp;&nbsp;
             <strong>Start Date :</strong>{" "}
-            <input type="text" value={task.start_date || "N/A"} readOnly style={styles.input} />{" "}
+            <input
+              type="text"
+              value={task.start_date || "N/A"}
+              readOnly
+              style={styles.input}
+            />{" "}
             &nbsp;&nbsp;
             <br></br>
             <strong>Estimated Hours :</strong>{" "}
-            <input type="text" value={task?.task_hours || "N/A"} readOnly style={styles.input} />{" "}
+            <input
+              type="text"
+              value={task?.task_hours || "N/A"}
+              readOnly
+              style={styles.input}
+            />{" "}
             &nbsp;&nbsp;
             <strong>Total Hours :</strong>{" "}
-            <input type="text" value={task.project?.total_hours || "N/A"} readOnly style={styles.input} />
+            <input
+              type="text"
+              value={task.project?.total_hours || "N/A"}
+              readOnly
+              style={styles.input}
+            />
           </p>
         </div>
 
@@ -47,7 +67,9 @@ const EmployeeTaskDetail = () => {
             </thead>
             <tbody>
               <tr>
-                <td style={styles.tableCell}>{task.task?.task_title || "N/A"}</td>
+                <td style={styles.tableCell}>
+                  {task.task?.task_title || "N/A"}
+                </td>
                 <td style={styles.tableCell}>{task.task_hours || "N/A"}</td>
               </tr>
             </tbody>

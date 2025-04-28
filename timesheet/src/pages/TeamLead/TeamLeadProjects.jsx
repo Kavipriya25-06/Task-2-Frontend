@@ -46,7 +46,6 @@ const TeamLeadProjects = () => {
     }
   };
 
-
   const handleAddClick = () => {
     navigate(`create`);
   };
@@ -58,7 +57,6 @@ const TeamLeadProjects = () => {
   const handleAddTaskClick = () => {
     navigate(`/teamlead/detail/tasks/create`);
   };
-
 
   const handleProjectClick = (project_id) => {
     navigate(`${project_id}`);

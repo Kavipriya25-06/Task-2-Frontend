@@ -3,7 +3,7 @@ import { useAuth } from "../../AuthContext";
 import config from "../../config";
 
 const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
-    const { user } = useAuth(); 
+  const { user } = useAuth();
 
   const [formData, setFormData] = useState({
     leaveType: leaveType,
@@ -23,17 +23,16 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
     });
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const apiURL = `${config.apiBaseURL}/leaves-taken/`; 
+    const apiURL = `${config.apiBaseURL}/leaves-taken/`;
 
     const leaveTypeMap = {
-      "Sick": "sick_leave",
-      "Casual": "casual_leave",
+      Sick: "sick_leave",
+      Casual: "casual_leave",
       "Comp off": "comp_off",
-      "Earned": "earned_leave",
+      Earned: "earned_leave",
       "": "others", // Default if no match
     };
 
@@ -76,60 +75,103 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
 
   return (
     <div className="form-container1">
-      <p className="form-subtitle1">Fill the required fields below to apply for annual leave.</p>
+      <p className="form-subtitle1">
+        Fill the required fields below to apply for annual leave.
+      </p>
       <form onSubmit={handleSubmit} className="form1">
         <div className="form-group1">
           <label className="label1">Leave Type</label>
           <select
-                name="leaveType"
-                value={formData.leaveType}
-                onChange={handleChange}
-                className="select1"
-            >
-                {/* <option value="">Select Leave Type</option> */}
-                <option value="Sick">Sick</option>
-                <option value="Casual">Casual</option>
-                <option value="Comp off">Comp off</option>
-                <option value="Earned">Earned</option>
-                <option value="">Others</option>
-            </select>
+            name="leaveType"
+            value={formData.leaveType}
+            onChange={handleChange}
+            className="select1"
+          >
+            {/* <option value="">Select Leave Type</option> */}
+            <option value="Sick">Sick</option>
+            <option value="Casual">Casual</option>
+            <option value="Comp off">Comp off</option>
+            <option value="Earned">Earned</option>
+            <option value="">Others</option>
+          </select>
         </div>
 
         <div className="row1">
           <div className="form-group-half1">
             <label className="label1">Start Date</label>
-            <input type="date" name="startDate" value={formData.startDate} onChange={handleChange} className="input1" />
+            <input
+              type="date"
+              name="startDate"
+              value={formData.startDate}
+              onChange={handleChange}
+              className="input1"
+            />
           </div>
           <div className="form-group-half1">
             <label className="label1">End Date</label>
-            <input type="date" name="endDate" value={formData.endDate} onChange={handleChange} className="input1" />
+            <input
+              type="date"
+              name="endDate"
+              value={formData.endDate}
+              onChange={handleChange}
+              className="input1"
+            />
           </div>
         </div>
 
         <div className="row1">
           <div className="form-group-half1">
             <label className="label1">Duration</label>
-            <input type="text" name="duration" value={formData.duration} onChange={handleChange} className="input1" />
+            <input
+              type="text"
+              name="duration"
+              value={formData.duration}
+              onChange={handleChange}
+              className="input1"
+            />
           </div>
           <div className="form-group-half1">
             <label className="label1">Resumption Date</label>
-            <input type="date" name="resumptionDate" value={formData.resumptionDate} onChange={handleChange} className="input1" />
+            <input
+              type="date"
+              name="resumptionDate"
+              value={formData.resumptionDate}
+              onChange={handleChange}
+              className="input1"
+            />
           </div>
         </div>
 
         <div className="form-group1">
           <label className="label1">Reason for leave</label>
-          <textarea name="reason" value={formData.reason} onChange={handleChange} className="textarea1" />
+          <textarea
+            name="reason"
+            value={formData.reason}
+            onChange={handleChange}
+            className="textarea1"
+          />
         </div>
 
         <div className="form-group1">
-          <label className="label1">Attach handover document (pdf, jpg format)</label>
-          <input type="file" name="attachment" accept=".pdf,.jpg,.jpeg,.png" onChange={handleChange} className="file-input1" />
+          <label className="label1">
+            Attach handover document (pdf, jpg format)
+          </label>
+          <input
+            type="file"
+            name="attachment"
+            accept=".pdf,.jpg,.jpeg,.png"
+            onChange={handleChange}
+            className="file-input1"
+          />
         </div>
 
         <div className="button-group1">
-          <button type="submit" className="submit-button1">Submit</button>
-          <button type="button" onClick={onClose} className="cancel-button1">Cancel</button>
+          <button type="submit" className="submit-button1">
+            Submit
+          </button>
+          <button type="button" onClick={onClose} className="cancel-button1">
+            Cancel
+          </button>
         </div>
       </form>
     </div>
@@ -137,4 +179,3 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
 };
 
 export default EmployeeLeaveRequestForm;
-

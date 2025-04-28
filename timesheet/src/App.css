@@ -184,6 +184,13 @@ input {
   padding: 10px 20px;
   background: #e0e0e0;
   display: flex;
+  flex-direction: row;
+}
+
+.table-top-bar-header {
+  display: flex;
+  flex-direction: row;
+  justify-content:right;
 }
 
 .main-content {
@@ -646,6 +653,70 @@ main {
   align-items: center;
 }
 
+.att-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  padding: 20px;
+  z-index: 1000;
+  width: 400px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  max-height: 70%;
+  overflow-y: auto;
+}
+
+.att-popup h3 {
+  margin-top: 0;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.att-popup form {
+  display: flex;
+  flex-direction: column;
+}
+
+.att-popup label {
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.att-popup input,
+.att-popup select,
+.att-popup textarea {
+  margin-top: 5px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.att-popup button {
+  margin-top: 15px;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.att-popup .btn-green {
+  background-color: #28a745;
+  color: white;
+}
+
+.att-popup .btn-red {
+  background-color: #dc3545;
+  color: white;
+  margin-left: 10px;
+}
+
+.att-popup button:hover {
+  opacity: 0.9;
+}
+
 .attendance-header button {
   background-color: #007bff;
   color: white;
@@ -822,6 +893,7 @@ main {
 
 .form-group input,
 .form-group select,
+.form-group uneditable,
 .form-group textarea {
   padding: 10px 12px;
   border-radius: 8px;

@@ -1,91 +1,90 @@
 /* TeamLead TimeSheet Entry */
 
 .calendar-cell1 {
-    position: relative;
-    min-height: 60px;
-    border: 1px solid #ddd;
-    padding: 5px;
-    background: #fafafa;
-  
-    display: flex;             /* ENABLE FLEXBOX */
-    align-items: center;       /* CENTER vertically */
-    justify-content: center;   /* CENTER horizontally */
-    flex-direction: column;
-    overflow: hidden;
-  }
-  
-  .calendar-cell1.weekend {
-    background: #fef4f4;
-    border: 2px solid #ffa500;
-  }
+  position: relative;
+  min-height: 60px;
+  border: 1px solid #ddd;
+  padding: 5px;
+  background: #fafafa;
 
-  .calendar-cell1.holiday {
-    border: 2px solid #ffa500; /* Orange border for holidays */
-  }
+  display: flex; /* ENABLE FLEXBOX */
+  align-items: center; /* CENTER vertically */
+  justify-content: center; /* CENTER horizontally */
+  flex-direction: column;
+  overflow: hidden;
+}
 
-  .calendar-cell1.holiday:hover .holiday-note1 {
-    display: block;
-  }
-  
-  .day-number {
-    position: absolute;
-    top: 4px;
-    right: 6px;
-    font-size: 12px;
-    font-weight: bold;
-    color: #333;
-  }
-  
-  .day-circle {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: #e0e0e0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: bold;
-    color: #333;
-  }
-  
-  .holiday-note1 {
-    display: none;
-    position: absolute;   /* Positioned inside box */
-    /* bottom: 6px; */
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 10px;
-    color: #ffa500;
-    background: white;    /* Optional: Add background to make it readable */
-    padding: 2px 4px;
-    border-radius: 4px;
-    white-space: nowrap;
-  }
-  
-  .calendar-grid2 {
-    width: 80%;
-    
-    display: grid;
-    grid-template-columns: 60px repeat(7, 1fr);
-    gap: 8px;
-    background-color: white;
-    border-radius: 12px;
-    padding: 12px;
-  }
+.calendar-cell1.weekend {
+  background: #fef4f4;
+  border: 2px solid #ffa500;
+}
 
-  .bottom-right-circle {
-    position: absolute;
-    bottom: 4px;
-    right: 6px;
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    background: #579f6a; /* You can change color dynamically if needed */
-  }
-  
+.calendar-cell1.holiday {
+  border: 2px solid #ffa500; /* Orange border for holidays */
+}
 
-  /* TemaLeadLeaveRequest */
+.calendar-cell1.holiday:hover .holiday-note1 {
+  display: block;
+}
+
+.day-number {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #333;
+}
+
+.day-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}
+
+.holiday-note1 {
+  display: none;
+  position: absolute; /* Positioned inside box */
+  /* bottom: 6px; */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: #ffa500;
+  background: white; /* Optional: Add background to make it readable */
+  padding: 2px 4px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.calendar-grid2 {
+  width: 80%;
+
+  display: grid;
+  grid-template-columns: 60px repeat(7, 1fr);
+  gap: 8px;
+  background-color: white;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.bottom-right-circle {
+  position: absolute;
+  bottom: 4px;
+  right: 6px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #579f6a; /* You can change color dynamically if needed */
+}
+
+/* TemaLeadLeaveRequest */
 
 .team-lead-container {
   /* padding: 20px; */
@@ -135,10 +134,7 @@
   font-size: 14px;
 }
 
-
 /* TeamLeadLeaveRequestForm */
-
-
 
 .form-container1 {
   padding: 20px;
@@ -249,7 +245,6 @@
   outline: none;
 }
 
-
 /* TeamLeadDailyTimesheetEntry */
 
 .submit-button2 {
@@ -277,12 +272,11 @@
   margin-top: 20px; /* Optional spacing from table */
 }
 
-.timesheet-info{
+.timesheet-info {
   display: flex;
   gap: 20px;
   margin-bottom: 10px;
 }
-
 
 /* Employee Tasks */
 
@@ -315,7 +309,6 @@
   color: red;
   font-size: 12px;
 }
-
 
 /* .individual-tabs select {
   padding: 10px;
@@ -365,8 +358,6 @@
   justify-content: center;
 }
 
-
-
 /* Attachements */
 
 .attachments-wrapper {
@@ -385,7 +376,7 @@
   align-items: center;
   justify-content: flex-end;
   padding: 0 10px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .plus-icon {

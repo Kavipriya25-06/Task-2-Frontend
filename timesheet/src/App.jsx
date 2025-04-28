@@ -46,6 +46,7 @@ import ManagerDashboard from "./pages/Manager/ManagerDashboard.jsx";
 import ManagerLayout from "./pages/Manager/ManagerLayout.jsx";
 import ManagerDetailView from "./pages/Manager/ManagerDetailView.jsx";
 import ManagerAttendance from "./pages/Manager/ManagerAttendance.jsx";
+import ManagerAttendanceAdmin from "./pages/Manager/ManagerAttendanceAdmin.jsx";
 import ManagerEmployees from "./pages/Manager/ManagerEmployees.jsx";
 import ManagerLeaveRequests from "./pages/Manager/ManagerLeaveRequests.jsx";
 import ManagerProjects from "./pages/Manager/ManagerProjects.jsx";
@@ -229,6 +230,10 @@ const App = () => {
                 />
                 <Route path="attendance" element={<ManagerAttendance />} />
                 <Route
+                  path="attendance/attendance-admin"
+                  element={<ManagerAttendanceAdmin />}
+                />
+                <Route
                   path="team-leaders/tl"
                   element={<ManagerTeamLeadersView />}
                 />
@@ -283,11 +288,11 @@ const App = () => {
                   path="time-sheet-entry"
                   element={<EmployeeTimeSheetEntry />}
                 />
-                 <Route
+                <Route
                   path="time-sheet-entry/createdaily"
                   element={<EmployeeDailyTimeSheetEntry />}
                 />
-                 <Route
+                <Route
                   path="time-sheet-entry/createweekly"
                   element={<EmployeeWeeklyTimeSheetEntry />}
                 />
@@ -297,7 +302,7 @@ const App = () => {
                   path="leave-requests"
                   element={<EmployeeLeaveRequests />}
                 />
-                 <Route
+                <Route
                   path="leave-requests/create"
                   element={<EmployeeLeaveRequestForm />}
                 />
