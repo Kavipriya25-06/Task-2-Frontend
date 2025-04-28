@@ -325,3 +325,140 @@
   width: 95%; 
   box-sizing: border-box; 
 } */
+
+.profile-picture-wrapper {
+  margin-bottom: 20px;
+}
+
+.profile-picture-container {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+.profile-picture-label {
+  display: block;
+  cursor: pointer;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.profile-picture {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #e0e0e0;
+  border: 1px solid #ccc;
+}
+
+.camera-icon-overlay {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+/* Attachements */
+
+.attachments-wrapper {
+  margin-bottom: 20px;
+}
+
+.attachments-upload-box {
+  width: 100%;
+  max-width: 450px;
+  height: 100px;
+  background-color: #e8f0fe;
+  border-radius: 8px;
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.plus-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.attachments-list {
+  margin-top: 10px;
+  padding-left: 20px;
+  font-size: 14px;
+  color: #333;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  flex-grow: 1;
+}
+
+.attachments-list li {
+  list-style-type: disc;
+}
+
+.attachments-box {
+  position: relative;
+  background: #e8f0fe;
+  padding: 10px;
+  border-radius: 8px;
+  min-height: 100px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.attachment-item {
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 5px 10px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  max-width: 150px;
+  overflow: hidden;
+}
+
+.attachment-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 8px;
+}
+
+.remove-attachment {
+  background: none;
+  border: none;
+  color: red;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.add-attachment-button {
+  background: #e8f0fe;
+  border: 1px dashed #999;
+  border-radius: 8px;
+  padding: 20px;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  min-height: 80px;
+  color: #333;
+}

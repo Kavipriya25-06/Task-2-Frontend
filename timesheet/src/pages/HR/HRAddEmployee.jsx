@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import config from "../../config";
 import { cleanFormData } from "../../utils/cleanFormData";
+import usePlaceholder from "../../assets/user.png";
+import cameraIcon from "../../assets/camera.png";
+import plusIcon from "../../assets/plus.png";
 
 const tabLabels = [
   "Employee details",
@@ -13,8 +16,26 @@ const tabLabels = [
 const AddEmployee = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(0);
+  const [managers, setManagers] = useState([]);
+  const [experienceUI, setExperienceUI] = useState({
+    arris_years: "",
+    arris_months: "",
+    total_years: "",
+    total_months: "",
+  });
+  
   const [errors, setErrors] = useState({
     contact_number: "",
+    personal_email: "",
+    aadhaar_number: "",
+    PAN: "",
+    UAN: "",
+    pf_number: "",
+    esi_number: "",
+    passport_number: "",
+    employee_email: "",
+    emergency_contact_number: "",
+
   });
   const [formData, setFormData] = useState({
     employee_code: "",
@@ -61,6 +82,28 @@ const AddEmployee = () => {
     attachments: null,
   });
 
+  useEffect(() => {
+    const fetchManagers = async () => {
+      try {
+        const response = await fetch(`${config.apiBaseURL}/teamlead-and-managers/`);
+        const data = await response.json();
+        setManagers(data);  // Store managers data
+      } catch (error) {
+        console.error("Error fetching managers:", error);
+      }
+    };
+  
+    fetchManagers();
+  }, []);
+
+  const removeAttachment = (index) => {
+    setFiles((prev) => ({
+      ...prev,
+      attachments: prev.attachments.filter((_, i) => i !== index),
+    }));
+  };
+  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -82,19 +125,191 @@ const AddEmployee = () => {
       }
       return;
     }
+
+    if (name === "personal_email") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      setFormData((prev) => ({ ...prev, [name]: value }));
   
+      if (value && !emailRegex.test(value)) {
+        setErrors((prev) => ({
+          ...prev,
+          personal_email: "Invalid email format.",
+        }));
+      } else {
+        setErrors((prev) => ({ ...prev, personal_email: "" }));
+      }
+      return;
+    }
+
+    if (name === "aadhaar_number") {
+      const numericValue = value.replace(/\D/g, ""); // Allow only digits
+    
+      if (numericValue.length <= 12) {
+        setFormData((prev) => ({ ...prev, [name]: numericValue }));
+      }
+    
+      if (numericValue.length > 0 && numericValue.length !== 12) {
+        setErrors((prev) => ({
+          ...prev,
+          aadhaar_number: "Aadhaar number must be exactly 12 digits.",
+        }));
+      } else {
+        setErrors((prev) => ({ ...prev, aadhaar_number: "" }));
+      }
+      return;
+    }
+
+    if (name === "PAN") {
+      const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i;
+      setFormData((prev) => ({ ...prev, [name]: value.toUpperCase() }));
+    
+      if (value && !panRegex.test(value)) {
+        setErrors((prev) => ({
+          ...prev,
+          PAN: "Invalid PAN format (ABCDE1234F).",
+        }));
+      } else {
+        setErrors((prev) => ({ ...prev, PAN: "" }));
+      }
+      return;
+    }
+
+    if (name === "UAN") {
+      const numericValue = value.replace(/\D/g, "");
+      if (numericValue.length <= 12) {
+        setFormData((prev) => ({ ...prev, [name]: numericValue }));
+      }
+      if (numericValue.length > 0 && numericValue.length !== 12) {
+        setErrors((prev) => ({
+          ...prev,
+          UAN: "UAN must be exactly 12 digits.",
+        }));
+      } else {
+        setErrors((prev) => ({ ...prev, UAN: "" }));
+      }
+      return;
+    }
+
+    if (name === "pf_number") {
+      const pfRegex = /^[A-Za-z0-9]{5,22}$/;
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    
+      if (value && !pfRegex.test(value)) {
+        setErrors((prev) => ({
+          ...prev,
+          pf_number: "PF number must be 5-22 alphanumeric characters.",
+        }));
+      } else {
+        setErrors((prev) => ({ ...prev, pf_number: "" }));
+      }
+      return;
+    }
+
+    if (name === "esi_number") {
+      const numericValue = value.replace(/\D/g, "");
+      if (numericValue.length <= 10) {
+        setFormData((prev) => ({ ...prev, [name]: numericValue }));
+      }
+      if (numericValue.length > 0 && numericValue.length !== 10) {
+        setErrors((prev) => ({
+          ...prev,
+          esi_number: "ESI number must be exactly 10 digits.",
+        }));
+      } else {
+        setErrors((prev) => ({ ...prev, esi_number: "" }));
+      }
+      return;
+    }
+
+    if (name === "passport_number") {
+      const passportRegex = /^[A-Z]{1,2}[0-9]{6,7}$/i;
+      setFormData((prev) => ({ ...prev, [name]: value.toUpperCase() }));
+    
+      if (value && !passportRegex.test(value)) {
+        setErrors((prev) => ({
+          ...prev,
+          passport_number: "Invalid passport format (e.g., A1234567).",
+        }));
+      } else {
+        setErrors((prev) => ({ ...prev, passport_number: "" }));
+      }
+      return;
+    }
+  
+    if (name === "employee_email") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    
+      if (value && !emailRegex.test(value)) {
+        setErrors((prev) => ({
+          ...prev,
+          employee_email: "Invalid official email format.",
+        }));
+      } else {
+        setErrors((prev) => ({ ...prev, employee_email: "" }));
+      }
+      return;
+    }
+    
+    if (name === "emergency_contact_number") {
+      const numericValue = value.replace(/\D/g, ""); // Allow only digits
+      if (numericValue.length <= 10) {
+        setFormData((prev) => ({ ...prev, [name]: numericValue }));
+      }
+      if (numericValue.length > 0 && numericValue.length !== 10) {
+        setErrors((prev) => ({
+          ...prev,
+          emergency_contact_number: "Emergency contact number must be exactly 10 digits.",
+        }));
+      } else {
+        setErrors((prev) => ({ ...prev, emergency_contact_number: "" }));
+      }
+      return;
+    }
+    
 
 
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e) => {
-    const { name, files: selectedFiles } = e.target;
-    setFiles((prev) => ({
+
+  const handleExperienceChange = (e) => {
+    const { name, value } = e.target;
+    const updated = { ...experienceUI, [name]: value };
+  
+    // Calculate months and update formData
+    let arrisMonths = (parseInt(updated.arris_years || 0) * 12) + parseInt(updated.arris_months || 0);
+    let totalMonths = (parseInt(updated.total_years || 0) * 12) + parseInt(updated.total_months || 0);
+  
+    setExperienceUI(updated);
+    setFormData((prev) => ({
       ...prev,
-      [name]: name === "attachments" ? selectedFiles : selectedFiles[0],
+      arris_experience: arrisMonths,
+      total_experience: totalMonths,
     }));
   };
+  
+
+
+  const handleFileChange = (e) => {
+    const { name, files: selectedFiles } = e.target;
+  
+    if (name === "attachments") {
+      setFiles((prev) => ({
+        ...prev,
+        attachments: prev.attachments
+          ? [...prev.attachments, ...Array.from(selectedFiles)]
+          : Array.from(selectedFiles),
+      }));
+    } else {
+      setFiles((prev) => ({
+        ...prev,
+        [name]: selectedFiles[0],
+      }));
+    }
+  };
+  
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -112,25 +327,110 @@ const AddEmployee = () => {
     ];
 
     const cleanedData = cleanFormData(formData, fieldsToNullify);
+ // Initialize FormData
+ const formPayload = new FormData();
 
-    try {
-      const response = await fetch(`${config.apiBaseURL}/employees/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(cleanedData),
-      });
-      if (!response.ok) throw new Error("Failed to add employee");
-      navigate("/hr/detail/employee-details");
-    } catch (error) {
-      console.error("Error submitting employee data:", error);
-    }
-  };
+ // Append cleaned text fields
+ Object.entries(cleanedData).forEach(([key, value]) => {
+   formPayload.append(key, value);
+ });
+
+ // Append files
+ if (files.profile_picture) {
+   formPayload.append("profile_picture", files.profile_picture);
+ }
+ if (files.attachments) {
+   formPayload.append("attachments", files.attachments); // If multiple files: loop through
+ }
+
+ try {
+   const response = await fetch(`${config.apiBaseURL}/employees/`, {
+     method: "POST",
+     body: formPayload, // No Content-Type header, browser handles it
+   });
+
+   if (!response.ok) throw new Error("Failed to add employee");
+
+   navigate("/hr/detail/employee-details");
+ } catch (error) {
+   console.error("Error submitting employee data:", error);
+ }
+};
 
   const renderTabContent = () => {
     switch (activeTab) {
       case 0:
         return (
           <div className="tab-content">
+
+            <div className="profile-picture-wrapper">
+              <label>Profile picture</label>
+              <div className="profile-picture-container">
+                <input
+                  type="file"
+                  accept="image/*"
+                  id="profile-picture-input"
+                  style={{ display: "none" }}
+                  onChange={handleFileChange}
+                  name="profile_picture"
+                />
+                <label htmlFor="profile-picture-input" className="profile-picture-label">
+                  <img
+                    src={
+                      files.profile_picture
+                        ? URL.createObjectURL(files.profile_picture)
+                        : usePlaceholder 
+                    }
+                    alt="Profile Preview"
+                    className="profile-picture"
+                  />
+                  <div className="camera-icon-overlay">
+                    <img 
+                      src={cameraIcon} 
+                      alt="Camera Icon" 
+                      style={{ width: "20px", height: "20px", objectFit: "contain" }} 
+                    />
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div className="attachments-wrapper">
+  <label>Attachments</label>
+  <div className="attachments-box">
+    {files.attachments && files.attachments.length > 0 && (
+      <div className="attachments-list">
+        {files.attachments.map((file, index) => (
+          <div key={index} className="attachment-item">
+            <span className="attachment-name">{file.name}</span>
+            <button
+              type="button"
+              className="remove-attachment"
+              onClick={() => removeAttachment(index)}
+            >
+              &times;
+            </button>
+          </div>
+        ))}
+      </div>
+    )}
+
+    <input
+      type="file"
+      id="attachments-input"
+      name="attachments"
+      multiple
+      style={{ display: 'none' }}
+      onChange={handleFileChange}
+    />
+    <label htmlFor="attachments-input" className="add-attachment-button">
+      +
+    </label>
+  </div>
+</div>
+
+
+
             <div className="individual-tabs">
               <label>Employee Code</label>
               <input
@@ -200,7 +500,11 @@ const AddEmployee = () => {
                 value={formData.personal_email}
                 onChange={handleChange}
                 placeholder="Personal Email"
+                className={errors.personal_email ? "input-error" : ""}
               />
+              {errors.personal_email && (
+                <span className="error-message">{errors.personal_email}</span>
+              )}
             </div>
             <div className="individual-tabs">
               <label>Phone Number</label>
@@ -222,7 +526,11 @@ const AddEmployee = () => {
                 value={formData.aadhaar_number}
                 onChange={handleChange}
                 placeholder="Aadhaar"
+                className={errors.aadhaar_number ? "input-error" : ""}
               />
+               {errors.aadhaar_number && (
+                  <span className="error-message">{errors.aadhaar_number}</span>
+                )}
             </div>
             <div className="individual-tabs">
               <label>PAN Number</label>
@@ -231,7 +539,9 @@ const AddEmployee = () => {
                 value={formData.PAN}
                 onChange={handleChange}
                 placeholder="PAN Number"
+                className={errors.PAN ? "input-error" : ""}
               />
+              {errors.PAN && <span className="error-message">{errors.PAN}</span>}
             </div>
             <div className="individual-tabs">
               <label>UAN</label>
@@ -240,7 +550,9 @@ const AddEmployee = () => {
                 value={formData.UAN}
                 onChange={handleChange}
                 placeholder="UAN"
+                className={errors.UAN ? "input-error" : ""}
               />
+              {errors.UAN && <span className="error-message">{errors.UAN}</span>}
             </div>
             <div className="individual-tabs">
               <label>PF Number</label>
@@ -249,7 +561,9 @@ const AddEmployee = () => {
                 value={formData.pf_number}
                 onChange={handleChange}
                 placeholder="PF Number"
+                className={errors.pf_number ? "input-error" : ""}
               />
+               {errors.pf_number && <span className="error-message">{errors.pf_number}</span>}
             </div>
             <div className="individual-tabs">
               <label>ESI Number</label>
@@ -258,7 +572,9 @@ const AddEmployee = () => {
                 value={formData.esi_number}
                 onChange={handleChange}
                 placeholder="ESI Number"
+                className={errors.esi_number ? "input-error" : ""}
               />
+              {errors.esi_number && <span className="error-message">{errors.esi_number}</span>}
             </div>
             <div className="individual-tabs">
               <label>Passport Number</label>
@@ -267,7 +583,9 @@ const AddEmployee = () => {
                 value={formData.passport_number}
                 onChange={handleChange}
                 placeholder="Passport Number"
+                className={errors.passport_number ? "input-error" : ""}
               />
+               {errors.passport_number && <span className="error-message">{errors.passport_number}</span>}
             </div>
             <div className="individual-tabs">
               <label>Passport validity</label>
@@ -321,12 +639,18 @@ const AddEmployee = () => {
           <div className="tab-content">
             <div className="individual-tabs">
               <label>Employment Type</label>
-              <input
+              <select
                 name="employment_type"
                 value={formData.employment_type}
                 onChange={handleChange}
-                placeholder="Employment Type"
-              />
+                // placeholder="Employment Type"
+              >
+                <option value="">Select Employment Type</option>
+                <option value="Fulltime">Full-Time</option>
+                <option value="Parttime">Part-Time</option>
+                <option value="Internship">Internship</option>
+                <option value="Contract">Contract</option>
+              </select>  
             </div>
             <div className="individual-tabs">
               <label>Designation</label>
@@ -339,12 +663,18 @@ const AddEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>Department</label>
-              <input
+              <select
                 name="department"
                 value={formData.department}
                 onChange={handleChange}
-                placeholder="Department"
-              />
+                // placeholder="Department"
+              >
+                <option value="">Select Department</option>
+                <option value="Structural-Detailing">Structural-Detailing</option>
+                <option value="Structural-Design">Structural-Design</option>
+                <option value="Piping">Piping</option>
+                <option value="Electrical&Instrumentation">Electrical&Instrumentation</option>
+              </select>
             </div>
             <div className="individual-tabs">
               <label>Qualification</label>
@@ -376,24 +706,39 @@ const AddEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>Arris Experience</label>
-              <input
-                type="number"
-                name="arris_experience"
-                value={formData.arris_experience}
-                onChange={handleChange}
-                placeholder="Arris Experience"
-              />
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <select name="arris_years" value={experienceUI.arris_years} onChange={handleExperienceChange}>
+                  <option value="">Years</option>
+                  {[...Array(31).keys()].map(year => (
+                    <option key={year} value={year}>{year} Years</option>
+                  ))}
+                </select>
+                <select name="arris_months" value={experienceUI.arris_months} onChange={handleExperienceChange}>
+                  <option value="">Months</option>
+                  {[...Array(12).keys()].map(month => (
+                    <option key={month} value={month}>{month} Months</option>
+                  ))}
+                </select>
+              </div>
             </div>
             <div className="individual-tabs">
               <label>Total Experience</label>
-              <input
-                type="number"
-                name="total_experience"
-                value={formData.total_experience}
-                onChange={handleChange}
-                placeholder="Total Experience"
-              />
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <select name="total_years" value={experienceUI.total_years} onChange={handleExperienceChange}>
+                  <option value="">Years</option>
+                  {[...Array(31).keys()].map(year => (
+                    <option key={year} value={year}>{year} Years</option>
+                  ))}
+                </select>
+                <select name="total_months" value={experienceUI.total_months} onChange={handleExperienceChange}>
+                  <option value="">Months</option>
+                  {[...Array(12).keys()].map(month => (
+                    <option key={month} value={month}>{month} Months</option>
+                  ))}
+                </select>
+              </div>
             </div>
+
             <div className="individual-tabs">
               <label>Probation confirmation date</label>
               <input
@@ -410,16 +755,27 @@ const AddEmployee = () => {
                 value={formData.employee_email}
                 onChange={handleChange}
                 placeholder="Official Email"
+                className={errors.employee_email ? "input-error" : ""}
               />
+              {errors.employee_email && (
+                <span className="error-message">{errors.employee_email}</span>
+              )}
             </div>
             <div className="individual-tabs">
               <label>Reporting Manager</label>
-              <input
+              <select
                 name="reporting_manager"
                 value={formData.reporting_manager}
                 onChange={handleChange}
-                placeholder="Reporting Manager"
-              />
+                // placeholder="Reporting Manager"
+              >
+                <option value="">Select Reporting Manager</option>
+                {managers.map((manager) => (
+                  <option key={manager.employee_id} value={manager.employee_id}>
+                    {manager.employee_code} - {manager.employee_name}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         );
@@ -474,7 +830,11 @@ const AddEmployee = () => {
                 value={formData.emergency_contact_number}
                 onChange={handleChange}
                 placeholder="Emergency Contact Number"
+                className={errors.emergency_contact_number ? "input-error" : ""}
               />
+              {errors.emergency_contact_number && (
+                <span className="error-message">{errors.emergency_contact_number}</span>
+              )}
             </div>
             <div className="individual-tabs">
               <label>Blood Group</label>
