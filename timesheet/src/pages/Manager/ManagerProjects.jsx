@@ -145,11 +145,11 @@ const ManagerProjects = () => {
                 {buildings.map((building) => (
                   <tr key={building.building_id}>
                     <td
-                      onClick={() => handleProjectClick(building.building_id)}
-                      style={{
-                        cursor: "pointer",
-                        textDecoration: "underline",
-                      }}
+                      // onClick={() => handleProjectClick(building.building_id)}
+                      // style={{
+                      //   cursor: "pointer",
+                      //   textDecoration: "underline",
+                      // }}
                     >
                       {building.building_code}
                     </td>
@@ -191,11 +191,11 @@ const ManagerProjects = () => {
                 {tasks.map((task) => (
                   <tr key={task.task_id}>
                     <td
-                      onClick={() => handleProjectClick(task.task_id)}
-                      style={{
-                        cursor: "pointer",
-                        textDecoration: "underline",
-                      }}
+                      // onClick={() => handleProjectClick(task.task_id)}
+                      // style={{
+                      //   cursor: "pointer",
+                      //   textDecoration: "underline",
+                      // }}
                     >
                       {task.task_code}
                     </td>

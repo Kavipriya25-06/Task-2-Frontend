@@ -163,7 +163,22 @@ const ManagerProjectView = () => {
 
   return (
     <div className="create-project-container">
-      <h2>Project: {projectData.project_title}</h2>
+      <div className="project-header">
+        <h2>Project: {projectData.project_title}</h2>
+        <div>
+          {!editMode ? (
+            <button
+              type="edit"
+              onClick={() => setEditMode(true)}
+              className="btn-orange"
+            >
+              Edit
+            </button>
+          ) : (
+            <div></div>
+          )}
+        </div>
+      </div>
       <div>
         <div className="input-elements">
           <div className="left-form">
@@ -427,13 +442,14 @@ const ManagerProjectView = () => {
               </button>
             </>
           ) : (
-            <button
-              type="edit"
-              onClick={() => setEditMode(true)}
-              className="btn-orange"
-            >
-              Edit
-            </button>
+            // <button
+            //   type="edit"
+            //   onClick={() => setEditMode(true)}
+            //   className="btn-orange"
+            // >
+            //   Edit
+            // </button>
+            <div></div>
           )}
         </div>
       </div>

@@ -55,6 +55,29 @@ const ManagerBuildingView = () => {
     setFormData((prev) => ({ ...prev, area_of_work: selected }));
   };
 
+  const handleUpdate = async (building_assign_id) => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/null/${building_assign_id}/`,
+        {
+          method: "PUT", // or PATCH
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      if (response.ok) {
+        alert("Project updated!");
+        setEditMode(false);
+        // fetchProjectData(); // refresh
+      } else {
+        alert("Failed to update project");
+      }
+    } catch (err) {
+      console.error("Update error:", err);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -144,10 +167,22 @@ const ManagerBuildingView = () => {
 
   const { project } = buildingsAssign.project_assign;
 
+  const taskClick = (task_assign_id) => {
+    navigate(`/manager/detail/tasks/${task_assign_id}`);
+  };
   return (
     <div className="create-project-container">
-      <h2>Building {buildingsAssign.building?.building_title}</h2>
-      <form onSubmit={handleSubmit}>
+      <div className="project-header">
+        <h2>Building {buildingsAssign.building?.building_title}</h2>
+        <button
+          type="edit"
+          onClick={() => setEditMode(true)}
+          className="btn-orange"
+        >
+          Edit
+        </button>
+      </div>
+      <div>
         <div className="input-elements">
           <div className="left-form">
             <div className="left-form-first">
@@ -201,7 +236,21 @@ const ManagerBuildingView = () => {
                     ))}
                   </div>
                 ) : (
-                  <p>{buildingsAssign.task || ""}</p>
+                  <div className="select-container">
+                    {buildingsAssign.tasks.map((t) => (
+                      <div key={t.task_assign_id} className="task-tile">
+                        <div
+                          onClick={() => taskClick(t.task_assign_id)}
+                          className="building-tile-small"
+                        >
+                          {t.task.task_code}
+                        </div>
+                        <div className="building-tile-small">
+                          {t.task_hours} hours
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
             </div>
@@ -281,14 +330,28 @@ const ManagerBuildingView = () => {
         </div>
 
         <div className="form-buttons">
-          <button type="submit" className="btn-green">
-            Save
-          </button>
-          <button type="reset" className="btn-red">
-            Cancel
-          </button>
+          {editMode ? (
+            <>
+              <button
+                type="submit"
+                onClick={handleUpdate}
+                className="btn-green"
+              >
+                Save
+              </button>
+              <button
+                type="reset"
+                onClick={() => setEditMode(false)}
+                className="btn-red"
+              >
+                Cancel
+              </button>
+            </>
+          ) : (
+            <div></div>
+          )}
         </div>
-      </form>
+      </div>
     </div>
   );
 };

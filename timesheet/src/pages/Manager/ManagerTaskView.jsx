@@ -7,6 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 const ManagerTaskView = () => {
   const { user } = useAuth();
   const { task_assign_id } = useParams(); // from URL
+  const [editMode, setEditMode] = useState(false); //  Add this at the top
   const [teamleadManager, setTeamleadManager] = useState([]);
   const [buildingsAssign, setBuildingsAssign] = useState([]);
   const [employees, setEmployees] = useState([]);
@@ -155,12 +156,12 @@ const ManagerTaskView = () => {
           <div className="left-form">
             <div className="left-form-first">
               <div className="project-form-group">
-                <label>Project Title</label>
-                <p>{project?.project_title || ""}</p>
-              </div>
-              <div className="project-form-group">
                 <label>Project Code</label>
                 <p>{project?.project_code || ""}</p>
+              </div>
+              <div className="project-form-group">
+                <label>Project Title</label>
+                <p>{project?.project_title || ""}</p>
               </div>
               <div className="project-form-group">
                 <label>Building Code</label>
@@ -171,12 +172,12 @@ const ManagerTaskView = () => {
                 <p>{building?.building_title || ""}</p>
               </div>
               <div className="project-form-group">
-                <label>Task Title</label>
-                <p>{task?.task_title || "N/A"}</p>
-              </div>
-              <div className="project-form-group">
                 <label>Task Code</label>
                 <p>{task?.task_code || "N/A"}</p>
+              </div>
+              <div className="project-form-group">
+                <label>Task Title</label>
+                <p>{task?.task_title || "N/A"}</p>
               </div>
             </div>
             <div className="left-form-second">
@@ -186,30 +187,36 @@ const ManagerTaskView = () => {
               </div>
               <div className="roles-box">
                 <label>Task Roles</label>
-                <div className="select-container">
-                  {teamleadManager.map((emp) => (
-                    <div key={emp.employee_id}>
-                      <input
-                        type="checkbox"
-                        value={emp.employee_id}
-                        onChange={(e) => {
-                          const checked = e.target.checked;
-                          if (checked) {
-                            setSelectedEmployees((prev) => [
-                              ...prev,
-                              emp.employee_id,
-                            ]);
-                          } else {
-                            setSelectedEmployees((prev) =>
-                              prev.filter((id) => id !== emp.employee_id)
-                            );
-                          }
-                        }}
-                      />
-                      {emp.employee_name} - {emp.designation}
-                    </div>
-                  ))}
-                </div>
+                {editMode ? (
+                  <div className="select-container">
+                    {teamleadManager.map((emp) => (
+                      <div key={emp.employee_id}>
+                        <input
+                          type="checkbox"
+                          value={emp.employee_id}
+                          onChange={(e) => {
+                            const checked = e.target.checked;
+                            if (checked) {
+                              setSelectedEmployees((prev) => [
+                                ...prev,
+                                emp.employee_id,
+                              ]);
+                            } else {
+                              setSelectedEmployees((prev) =>
+                                prev.filter((id) => id !== emp.employee_id)
+                              );
+                            }
+                          }}
+                        />
+                        {emp.employee_name} - {emp.designation}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div>
+                    <div>Emp_0002</div>
+                  </div>
+                )}
               </div>
               <div className="project-form-group">
                 <label>Attachments</label>
