@@ -306,3 +306,22 @@
   background-color: #f2f2f2;
   font-weight: bold;
 }
+
+.input-error {
+  border: 1px solid red;
+}
+
+.error-message {
+  color: red;
+  font-size: 12px;
+}
+
+
+/* .individual-tabs select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #eef3fc;
+  width: 95%; 
+  box-sizing: border-box; 
+} */

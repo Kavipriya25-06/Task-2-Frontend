@@ -1,9 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const TeamLeadWeeklyTimeSheetEntry = () => {
   const { date } = useParams(); // Format: YYYY-MM-DD
   const navigate = useNavigate();
+
+  const [rows, setRows] = useState([
+    { project: '', task: '', hours: '' }
+  ]);
+
+  const handleRowChange = (index, field, value) => {
+    const updatedRows = [...rows];
+    updatedRows[index][field] = value;
+    setRows(updatedRows);
+  };
+
+  const handleAddRow = () => {
+    setRows([...rows, { project: '', task: '', hours: '' }]);
+  };
 
   return (
     <div className="weekly-timesheet-container">
@@ -25,14 +39,18 @@ const TeamLeadWeeklyTimeSheetEntry = () => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td><input type="text" placeholder="Enter project" /></td>
-            <td><input type="text" placeholder="Enter task" /></td>
-            <td><input type="number" placeholder="Hours" /></td>
+        {rows.map((row, index) => (
+          <tr key={index}>
+            <td><input type="text" placeholder="Enter project" value={row.project} onChange={(e) => handleRowChange(index, 'project', e.target.value)} /></td>
+            <td><input type="text" placeholder="Enter task"  value={row.task}  onChange={(e) => handleRowChange(index, 'task', e.target.value)} /></td>
+            <td><input type="number" placeholder="Hours" value={row.hours} onChange={(e) => handleRowChange(index, 'hours', e.target.value)} /></td>
           </tr>
+          ))}
         </tbody>
       </table>
-      <h1>+</h1>
+      <div style={{ fontSize: '24px', cursor: 'pointer', marginTop: '10px' }} onClick={handleAddRow}>
+        +
+      </div>
       <div className="button-container">
       {/* <button onClick={() => navigate(-1)} className="cancel-button1">Back</button> */}
       <button className="save-button2">Save</button>

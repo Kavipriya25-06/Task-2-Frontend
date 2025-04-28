@@ -13,6 +13,9 @@ const tabLabels = [
 const AddEmployee = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(0);
+  const [errors, setErrors] = useState({
+    contact_number: "",
+  });
   const [formData, setFormData] = useState({
     employee_code: "",
     employee_name: "",
@@ -60,6 +63,28 @@ const AddEmployee = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    if (name === "contact_number") {
+      // Allow only numbers
+      const numericValue = value.replace(/\D/g, "");
+      // Set the value but only up to 10 digits
+      if (numericValue.length <= 10) {
+        setFormData((prev) => ({ ...prev, [name]: numericValue }));
+      }
+      // Validation message
+      if (numericValue.length > 0 && numericValue.length !== 10) {
+        setErrors((prev) => ({
+          ...prev,
+          contact_number: "Phone number must be exactly 10 digits.",
+        }));
+      } else {
+        setErrors((prev) => ({ ...prev, contact_number: "" }));
+      }
+      return;
+    }
+  
+
+
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -138,12 +163,17 @@ const AddEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>Gender</label>
-              <input
+              <select
                 name="gender"
                 value={formData.gender}
                 onChange={handleChange}
-                placeholder="Gender"
-              />
+                // placeholder="Gender"
+              >
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Others">Others</option>
+              </select> 
             </div>
             <div className="individual-tabs">
               <label>Date of Birth</label>
@@ -179,7 +209,11 @@ const AddEmployee = () => {
                 value={formData.contact_number}
                 onChange={handleChange}
                 placeholder="Phone Number"
+                className={errors.contact_number ? "input-error" : ""}
               />
+              {errors.contact_number && (
+                <span className="error-message">{errors.contact_number}</span>
+              )}
             </div>
             <div className="individual-tabs">
               <label>Aadhaar</label>

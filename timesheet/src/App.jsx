@@ -82,7 +82,9 @@ import EmployeeLeaveRequests from "./pages/Employee/EmployeeLeaveRequests.jsx";
 import EmployeeTasks from "./pages/Employee/EmployeeTasks.jsx";
 import EmployeeTimeSheetEntry from "./pages/Employee/EmployeeTimeSheetEntry.jsx";
 import EmployeeTaskDetail from "./pages/Employee/EmployeeTaskDetail.jsx";
-
+import EmployeeDailyTimeSheetEntry from "./pages/Employee/EmployeeDailyTimeSheetEntry.jsx";
+import EmployeeWeeklyTimeSheetEntry from "./pages/Employee/EmployeeWeeklyTimeSheetEntry.jsx";
+import EmployeeLeaveRequestForm from "./pages/Employee/EmployeeLeaveRequestForm.jsx";
 
 const App = () => {
   const [selectedRole, setSelectedRole] = useState(() => {
@@ -281,10 +283,23 @@ const App = () => {
                   path="time-sheet-entry"
                   element={<EmployeeTimeSheetEntry />}
                 />
+                 <Route
+                  path="time-sheet-entry/createdaily"
+                  element={<EmployeeDailyTimeSheetEntry />}
+                />
+                 <Route
+                  path="time-sheet-entry/createweekly"
+                  element={<EmployeeWeeklyTimeSheetEntry />}
+                />
+
                 <Route path="tasks" element={<EmployeeTasks />} />
                 <Route
                   path="leave-requests"
                   element={<EmployeeLeaveRequests />}
+                />
+                 <Route
+                  path="leave-requests/create"
+                  element={<EmployeeLeaveRequestForm />}
                 />
                 <Route path="tasks/detail" element={<EmployeeTaskDetail />} />
               </Route>

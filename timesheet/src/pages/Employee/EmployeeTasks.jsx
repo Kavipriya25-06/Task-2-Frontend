@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import config from "../../config";
+import { useAuth } from "../../AuthContext";
 
 const EmployeeTasks = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/tasks-building/");
+        const response = await fetch(`${config.apiBaseURL}/tasks-by-employee/${user.employee_id}`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -53,8 +56,16 @@ const EmployeeTasks = () => {
               <tr key={index} onClick={() => handleTaskClick(task)}>
                 <td>{task.task?.task_title || "N/A"}</td>
                 <td>{task.task_hours || "N/A"}</td>
-                <td>{task.building?.building_code || "N/A"}</td>
-                <td>{task.project?.project_name || "N/A"}</td>
+                <td>
+                  {task.building_assign.building
+                    ? `${task.building_assign.building.building_id} - ${task.building_assign.building.building_title}`
+                    : "N/A"}
+                </td>
+                <td>
+                  {task.building_assign.project_assign.project
+                    ? `${task.building_assign.project_assign.project.project_id} - ${task.building_assign.project_assign.project.project_title}`
+                    : "N/A"}
+                </td>
                 <td>{task.start_date || "N/A"}</td>
               </tr>
             ))}

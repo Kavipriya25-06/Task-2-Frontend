@@ -1,7 +1,7 @@
 import React, { useState }  from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
-const TeamLeadDailyTimeSheetEntry = () => {
+const EmployeeDailyTimeSheetEntry = () => {
   const { date } = useParams(); // Format: YYYY-MM-DD
   const navigate = useNavigate();
 
@@ -18,6 +18,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
   const handleAddRow = () => {
     setRows([...rows, { project: '', task: '', hours: '' }]);
   };
+
 
   return (
     <div className="daily-timesheet-container">
@@ -41,16 +42,15 @@ const TeamLeadDailyTimeSheetEntry = () => {
         <tbody>
         {rows.map((row, index) => (
           <tr key={index}>
-            <td><input type="text" placeholder="Enter project" value={row.project} onChange={(e) => handleRowChange(index, 'project', e.target.value)} /></td>
-            <td><input type="text" placeholder="Enter task" value={row.task} onChange={(e) => handleRowChange(index, 'task', e.target.value)} /></td>
-            <td><input type="number" placeholder="Hours"  value={row.hours}  onChange={(e) => handleRowChange(index, 'hours', e.target.value)} /></td>
+            <td><input type="text" placeholder="Enter project" value={row.project} onChange={(e) => handleRowChange(index, 'project', e.target.value)}/></td>
+            <td><input type="text" placeholder="Enter task"  value={row.task}  onChange={(e) => handleRowChange(index, 'task', e.target.value)} /></td>
+            <td><input type="number" placeholder="Hours" value={row.hours} onChange={(e) => handleRowChange(index, 'hours', e.target.value)} /></td>
           </tr>
-          ))}
+            ))}
         </tbody>
         <div style={{ fontSize: '24px', cursor: 'pointer', marginTop: '10px' }} onClick={handleAddRow}>
         +
       </div>
-
       </table>
       <div className="button-container">
       {/* <button onClick={() => navigate(-1)} className="cancel-button1">Back</button> */}
@@ -61,4 +61,4 @@ const TeamLeadDailyTimeSheetEntry = () => {
   );
 };
 
-export default TeamLeadDailyTimeSheetEntry;
+export default EmployeeDailyTimeSheetEntry;
