@@ -103,7 +103,7 @@ const EditUserForm = () => {
       <form className="add-user-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label>Employee ID</label>
-          <div>
+          <div className="uneditable">
             {employeeID.employee_code} - {employeeID.employee_name}
           </div>
         </div>
@@ -124,7 +124,7 @@ const EditUserForm = () => {
               ))}
             </select>
           ) : (
-              <div className="uneditable">{ role}</div>
+            <div className="uneditable">{role}</div>
           )}
         </div>
 
@@ -139,7 +139,7 @@ const EditUserForm = () => {
               required
             />
           ) : (
-              <div className="uneditable">{ email}</div>
+            <div className="uneditable">{email}</div>
           )}
         </div>
 
@@ -171,25 +171,31 @@ const EditUserForm = () => {
               </span>
             </div>
           ) : (
-              <div className="uneditable">{ password}</div>
+            <div className="uneditable">
+              {password ? "*".repeat(password.length) : ""}
+            </div>
           )}
         </div>
 
         {editMode ? (
           <div className="form-buttons">
-            <button type="submit" className="btn btn-green">
+            <button
+              type="submit"
+              className="btn btn-green"
+              onClick={() => setEditMode(false)}
+            >
               Update
             </button>
             <button
               type="button"
               className="btn btn-orange"
-              onClick={handleCancel}
+              onClick={() => setEditMode(false)}
             >
               Cancel
             </button>
           </div>
         ) : (
-          <div className="uneditable"></div>
+          <div></div>
         )}
       </form>
     </div>

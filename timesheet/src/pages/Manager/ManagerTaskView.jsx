@@ -14,6 +14,7 @@ const ManagerTaskView = () => {
   const [tasks, setTasks] = useState([]);
   const [taskData, setTaskData] = useState([]);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
+  const [availableEmployees, setAvailableEmployees] = useState([]);
   const [selectedTasks, setSelectedTasks] = useState([]);
   const [areas, setAreas] = useState([]);
   const [formData, setFormData] = useState({
@@ -130,6 +131,7 @@ const ManagerTaskView = () => {
       );
       const data = await response.json();
       setTaskData(data);
+      setAvailableEmployees(data.employee);
       console.log("Task Assignment:", data);
     } catch (error) {
       console.error("Error fetching task assignment:", error);
@@ -150,7 +152,20 @@ const ManagerTaskView = () => {
 
   return (
     <div className="create-project-container">
-      <h2>Task details </h2>
+      <div className="project-header">
+        <h2>Task details </h2>
+        {editMode ? (
+          <div></div>
+        ) : (
+          <button
+            type="edit"
+            onClick={() => setEditMode(true)}
+            className="btn-orange"
+          >
+            Edit
+          </button>
+        )}
+      </div>
       <form onSubmit={handleSubmit}>
         <div className="input-elements">
           <div className="left-form">
@@ -213,8 +228,12 @@ const ManagerTaskView = () => {
                     ))}
                   </div>
                 ) : (
-                  <div>
-                    <div>Emp_0002</div>
+                  <div className="select-container">
+                    {availableEmployees.map((emp) => (
+                      <p key={emp.employee_id}>
+                        {emp.employee_name} - {emp.designation}
+                      </p>
+                    ))}
                   </div>
                 )}
               </div>
@@ -254,21 +273,33 @@ const ManagerTaskView = () => {
               </div>
               <div className="project-form-group-small">
                 <label>Task Hours</label>
-                <p>{taskData?.task_hours || ""}</p>
+                {editMode ? (
+                  <input
+                    name="task_hours"
+                    value={formData.task_hours}
+                    onChange={handleChange}
+                  />
+                ) : (
+                  <p>{taskData?.task_hours || ""}</p>
+                )}
               </div>
             </div>
             <div className="right-form-second"></div>
           </div>
         </div>
 
-        <div className="form-buttons">
-          <button type="submit" className="btn-green">
-            Save
-          </button>
-          <button type="reset" className="btn-red">
-            Cancel
-          </button>
-        </div>
+        {editMode ? (
+          <div className="form-buttons">
+            <button type="submit" className="btn-green">
+              Save
+            </button>
+            <button type="reset" className="btn-red">
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <div></div>
+        )}
       </form>
     </div>
   );

@@ -341,6 +341,7 @@ const ManagerAttendanceAdmin = () => {
               <input
                 type="number"
                 value={newAttendance.ot}
+                defaultValue={0}
                 onChange={(e) =>
                   setNewAttendance({ ...newAttendance, ot: e.target.value })
                 }

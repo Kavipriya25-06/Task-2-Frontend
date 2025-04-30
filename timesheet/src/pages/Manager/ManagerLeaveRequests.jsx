@@ -103,7 +103,7 @@ const ManagerLeaveRequests = () => {
             key={label}
             onClick={() => {
               setActiveTab(index);
-              filterLeaveRequests();
+              // filterLeaveRequests();
             }}
             className={activeTab === index ? "button active" : "button"}
           >
@@ -122,7 +122,7 @@ const ManagerLeaveRequests = () => {
               <th>End date</th>
               <th>Leave type</th>
               <th>Reason</th>
-              <th>Actions</th>
+              {activeTab === 0 && <th>Actions</th>}
             </tr>
           </thead>
           <tbody>
@@ -135,20 +135,22 @@ const ManagerLeaveRequests = () => {
                 <td>{leave.end_date}</td>
                 <td>{leave.leave_type}</td>
                 <td>{leave.reason}</td>
-                <td>
-                  <img
-                    src="\src\assets\approve.png"
-                    alt="approve button"
-                    className="leavebutton"
-                    onClick={() => handleApprove(leave.leave_taken_id)}
-                  />
-                  <img
-                    src="\src\assets\reject.png"
-                    alt="reject button"
-                    className="leavebutton"
-                    onClick={() => handleReject(leave.leave_taken_id)}
-                  />
-                </td>
+                {activeTab === 0 && (
+                  <td>
+                    <img
+                      src="\src\assets\approve.png"
+                      alt="approve button"
+                      className="leavebutton"
+                      onClick={() => handleApprove(leave.leave_taken_id)}
+                    />
+                    <img
+                      src="\src\assets\reject.png"
+                      alt="reject button"
+                      className="leavebutton"
+                      onClick={() => handleReject(leave.leave_taken_id)}
+                    />
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

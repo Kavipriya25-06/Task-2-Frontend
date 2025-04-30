@@ -34,6 +34,10 @@ const ManagerProjectCreate = () => {
     console.log("Form data", formData);
   };
 
+  const handleCancel = () => {
+    navigate("/manager/detail/projects/");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Form data", formData);
@@ -41,8 +45,12 @@ const ManagerProjectCreate = () => {
     console.log("buildings data", selectedBuildings);
     console.log("teamleads data", selectedTeamleadManager);
 
-    if (formData.length <= 0) {
-      console.alert("Empty form");
+    if (
+      Object.values(formData).every(
+        (value) => value === "" || value.length === 0
+      )
+    ) {
+      alert("Empty form");
       return;
     }
 
@@ -175,7 +183,19 @@ const ManagerProjectCreate = () => {
                         {b.building_title}
                       </div>
                       <div className="building-tile-small">{b.hours} hrs</div>
-                      <button className="tag-button">×</button>
+                      <button
+                        className="tag-button"
+                        type="button"
+                        onClick={() =>
+                          setSelectedBuildings((prev) =>
+                            prev.filter(
+                              (item) => item.building_id !== b.building_id
+                            )
+                          )
+                        }
+                      >
+                        ×
+                      </button>
                     </div>
                   ))}
                   <button
@@ -196,10 +216,25 @@ const ManagerProjectCreate = () => {
                         formData.area_of_work.includes(a.area_name)
                       )
                       .map((a) => (
-                        <span className="tag" key={a.area_name}>
-                          {a.name}
-                          <button className="tag-button">×</button>
-                        </span>
+                        <div>
+                          <span className="tag" key={a.area_name}>
+                            {a.name}
+                          </span>
+                          <button
+                            className="tag-button"
+                            type="button"
+                            onClick={() =>
+                              setFormData((prev) => ({
+                                ...prev,
+                                area_of_work: prev.area_of_work.filter(
+                                  (area) => area !== a.area_name
+                                ),
+                              }))
+                            }
+                          >
+                            ×
+                          </button>
+                        </div>
                       ))}
                   </div>
 
@@ -288,8 +323,8 @@ const ManagerProjectCreate = () => {
           <button type="submit" className="btn-green">
             Create
           </button>
-          <button type="reset" className="btn-red">
-            Delete
+          <button onClick={() => handleCancel()} className="btn-red">
+            Cancel
           </button>
         </div>
       </form>
@@ -297,7 +332,15 @@ const ManagerProjectCreate = () => {
         <div className="popup">
           <h4>Select Buildings</h4>
           {buildings.map((b) => (
-            <div key={b.building_id} style={{ marginBottom: "8px" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "8px",
+              }}
+              key={b.building_id}
+              // style={{ marginBottom: "8px" }}
+            >
               <input
                 type="checkbox"
                 value={b.building_id}

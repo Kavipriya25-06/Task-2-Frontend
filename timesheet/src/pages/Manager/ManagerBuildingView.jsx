@@ -144,6 +144,7 @@ const ManagerBuildingView = () => {
       );
       const data = await response.json();
       setBuildingsAssign(data);
+      setAvailableTeamleadManager(data.employee);
       console.log("Buildings", data);
       console.log("Projects", data.project_assign);
     } catch (error) {
@@ -174,13 +175,17 @@ const ManagerBuildingView = () => {
     <div className="create-project-container">
       <div className="project-header">
         <h2>Building {buildingsAssign.building?.building_title}</h2>
-        <button
-          type="edit"
-          onClick={() => setEditMode(true)}
-          className="btn-orange"
-        >
-          Edit
-        </button>
+        {editMode ? (
+          <div></div>
+        ) : (
+          <button
+            type="edit"
+            onClick={() => setEditMode(true)}
+            className="btn-orange"
+          >
+            Edit
+          </button>
+        )}
       </div>
       <div>
         <div className="input-elements">
