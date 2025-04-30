@@ -2,6 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import config from "../../config";
 import { cleanFormData } from "../../utils/cleanFormData";
+import cameraIcon from "../../assets/camera.png";
+import userPlaceholder from "../../assets/user.png";
+import plusIcon from "../../assets/plus.png";
+
+
 
 const tabLabels = [
   "Employee details",
@@ -15,6 +20,12 @@ const EditEmployee = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(0);
+
+  const [profilePictureUrl, setProfilePictureUrl] = useState(null);
+  const [attachments, setAttachments] = useState([]);
+  const [selectedProfilePicture, setSelectedProfilePicture] = useState(null);
+
+
   const [formData, setFormData] = useState({
     employee_code: "",
     employee_name: "",
@@ -62,21 +73,37 @@ const EditEmployee = () => {
 
   const fetchEmployee = async () => {
     try {
-      const response = await fetch(
-        `${config.apiBaseURL}/employees/${employee_id}/`
-      );
+      const response = await fetch(`${config.apiBaseURL}/employees/${employee_id}/`);
       const data = await response.json();
       setFormData(data);
+      
+      // 👇 Set Profile Picture if exists
+      if (data.profile_picture) {
+        setProfilePictureUrl(config.apiBaseURL + data.profile_picture); 
+      }
+  
+      // 👇 Fetch Attachments separately
+      const attachResponse = await fetch(`${config.apiBaseURL}/attachments/employee/${employee_id}`);
+      const attachData = await attachResponse.json();
+      console.log(attachData, "attachments");
+      setAttachments(attachData);  // assuming attachData is a list of attachments
+  
       setLoading(false);
     } catch (error) {
       console.error("Error fetching employee:", error);
     }
   };
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
+  const handleAttachmentChange = (e) => {
+    setNewAttachments(Array.from(e.target.files));
+  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -104,12 +131,36 @@ const EditEmployee = () => {
           body: JSON.stringify(cleanedData),
         }
       );
-      if (!response.ok) throw new Error("Failed to add employee");
+
+      if (selectedProfilePicture) {
+        const formData = new FormData();
+        formData.append("profile_picture", selectedProfilePicture);
+  
+        const imageUploadResponse = await fetch(`${config.apiBaseURL}/employees/${employee_id}/`, {
+          method: "PATCH",
+          body: formData,
+        });
+  
+        if (!imageUploadResponse.ok) throw new Error("Failed to upload profile picture");
+      }
+
+      if (newAttachments.length > 0) {
+        const formData = new FormData();
+        newAttachments.forEach((file) => formData.append("attachments", file));
+        formData.append("employee_id", employee_id);
+        await fetch(`${config.apiBaseURL}/attachments/`, {
+          method: "POST",
+          body: formData,
+        });
+      }
+
+      if (!response.ok) throw new Error("Failed to update employee");
       navigate("/hr/detail/employee-details");
     } catch (error) {
       console.error("Error submitting employee data:", error);
     }
   };
+
   if (loading) return <p>Loading employee data...</p>;
 
   const renderTabContent = () => {
@@ -117,6 +168,91 @@ const EditEmployee = () => {
       case 0:
         return (
           <div className="tab-content">
+
+
+  <div className="profile-picture-wrapper">
+    <img
+      src={selectedProfilePicture ? URL.createObjectURL(selectedProfilePicture) : profilePictureUrl || userPlaceholder}
+      alt="Profile"
+      className="profile-picture-img"
+    />
+
+    {/* Hidden file input */}
+    <input
+      type="file"
+      accept="image/*"
+      id="profile-picture-input"
+      className="profile-picture-input"
+      onChange={(e) => setSelectedProfilePicture(e.target.files[0])}
+    />
+
+    {/* Camera Icon */}
+    <label htmlFor="profile-picture-input" className="camera-icon-label">
+      <img
+        src={cameraIcon}
+        alt="Edit"
+        className="camera-icon-img"
+      />
+    </label>
+  </div>
+
+
+
+  <div className="attachments-box">
+    <h4>Attachments:</h4>
+    <ul className="attachments-list">
+      {attachments.map((file, index) => {
+        const filename = file.file.split("/").pop().split("_").slice(1).join("_"); // Extract original name
+        return (
+          <li key={file.id} className="attachment-item">
+            <a href={config.apiBaseURL + file.file} target="_blank" rel="noopener noreferrer">
+              {filename}
+            </a>
+            <button
+              className="remove-attachment"
+              onClick={async () => {
+                try {
+                  await fetch(`${config.apiBaseURL}/attachments/${file.id}/`, {
+                    method: "DELETE",
+                  });
+                  setAttachments(prev => prev.filter(att => att.id !== file.id));
+                } catch (error) {
+                  console.error("Failed to delete attachment:", error);
+                }
+              }}
+            >
+              &times;
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+
+     {/* Hidden file input for new attachments */}
+  <input
+    type="file"
+    multiple
+    id="new-attachments-input"
+    className="profile-picture-input"
+    style={{ display: "none" }}
+    onChange={(e) => setNewAttachments(Array.from(e.target.files))}
+  />
+
+  {/* Plus icon button */}
+  <label htmlFor="new-attachments-input" className="add-attachment-button">
+    <img
+      src={plusIcon}
+      alt="Add Attachments"
+      className="add-attachment-icon"
+    />
+  </label>
+  </div>
+
+
+
+
+
+
             <div className="individual-tabs">
               <label>Employee Code</label>
               <input

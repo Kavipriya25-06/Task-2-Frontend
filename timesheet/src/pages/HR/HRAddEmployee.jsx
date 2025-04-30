@@ -322,6 +322,15 @@ const AddEmployee = () => {
       "year_of_passing",
       "arris_experience",
       "total_experience",
+      "personal_email",     
+      "employee_email",     
+      "contact_number",     
+      "aadhaar_number",     
+      "PAN",                
+      "UAN",                
+      "pf_number",          
+      "esi_number",         
+      "passport_number",    
     ];
 
     const cleanedData = cleanFormData(formData, fieldsToNullify);
@@ -330,30 +339,57 @@ const AddEmployee = () => {
 
     // Append cleaned text fields
     Object.entries(cleanedData).forEach(([key, value]) => {
-      formPayload.append(key, value);
+      if (value !== null && value !== undefined) {
+        formPayload.append(key, value);
+      }
+    });
+    
+
+   // Append profile picture if available
+  if (files.profile_picture) {
+    formPayload.append("profile_picture", files.profile_picture);
+  }
+
+  try {
+    //  Step 1: Post Employee data
+    const response = await fetch(`${config.apiBaseURL}/employees/`, {
+      method: "POST",
+      body: formPayload,
     });
 
-    // Append files
-    if (files.profile_picture) {
-      formPayload.append("profile_picture", files.profile_picture);
-    }
-    if (files.attachments) {
-      formPayload.append("attachments", files.attachments); // If multiple files: loop through
-    }
+    if (!response.ok) throw new Error("Failed to add employee");
 
-    try {
-      const response = await fetch(`${config.apiBaseURL}/employees/`, {
-        method: "POST",
-        body: formPayload, // No Content-Type header, browser handles it
-      });
+    const responseData = await response.json();
+    const newEmployeeId = responseData.data.employee_id;  //  Get employee_id from response
 
-      if (!response.ok) throw new Error("Failed to add employee");
+    console.log("Employee created with ID:", newEmployeeId);
 
-      navigate("/hr/detail/employee-details");
-    } catch (error) {
-      console.error("Error submitting employee data:", error);
+    //  Step 2: Post Attachments if available
+    if (files.attachments && files.attachments.length > 0) {
+      for (let file of files.attachments) {
+        const attachmentPayload = new FormData();
+        attachmentPayload.append("file", file);                  // correct field
+        attachmentPayload.append("employee", newEmployeeId);  //  append employee_id for each file
+    
+        const res = await fetch(`${config.apiBaseURL}/attachments/`, {
+          method: "POST",
+          body: attachmentPayload,
+        });
+    
+        if (!res.ok) throw new Error("One of the attachments failed to upload");
+      }
+    
+      console.log(" All attachments uploaded");
     }
-  };
+    
+
+    // After everything success
+    navigate("/hr/detail/employee-details");
+
+  } catch (error) {
+    console.error("Error during employee creation or attachment upload:", error);
+  }
+};
 
   const renderTabContent = () => {
     switch (activeTab) {
