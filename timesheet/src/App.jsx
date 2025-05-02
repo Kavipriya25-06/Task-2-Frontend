@@ -65,9 +65,11 @@ import TeamLeadDashboard from "./pages/TeamLead/TeamLeadDashboard.jsx";
 import TeamLeadLayout from "./pages/TeamLead/TeamLeadLayout.jsx";
 import TeamLeadDetailView from "./pages/TeamLead/TeamLeadDetailView.jsx";
 import TeamLeadAttendance from "./pages/TeamLead/TeamLeadAttendance.jsx";
+import TeamLeadAttendanceAdmin from "./pages/TeamLead/TeamLeadAttendanceAdmin.jsx";
 import TeamLeadEmployees from "./pages/TeamLead/TeamLeadEmployees.jsx";
 import TeamLeadLeaveRequests from "./pages/TeamLead/TeamLeadLeaveRequests.jsx";
 import TeamLeadProjects from "./pages/TeamLead/TeamLeadProjects.jsx";
+import TeamLeadProjectView from "./pages/TeamLead/TeamLeadProjectView.jsx";
 import TeamLeadTimeSheetEntry from "./pages/TeamLead/TeamLeadTimeSheetEntry.jsx";
 import TeamLeadProjectCreate from "./pages/TeamLead/TeamLeadProjectCreate.jsx";
 import TeamLeadBuildingCreate from "./pages/TeamLead/TeamLeadBuildingCreate.jsx";
@@ -75,6 +77,7 @@ import TeamLeadTaskCreate from "./pages/TeamLead/TeamLeadTaskCreate.jsx";
 import TeamLeadLeaveRequestForm from "./pages/TeamLead/TeamLeadLeaveRequestForm.jsx";
 import TeamLeadDailyTimeSheetEntry from "./pages/TeamLead/TeamLeadDailyTimeSheetEntry.jsx";
 import TeamLeadWeeklyTimeSheetEntry from "./pages/TeamLead/TeamLeadWeeklyTimeSheet.jsx";
+import TeamLeadApprovalScreen from "./pages/TeamLead/TeamLeadApprovalScreen.jsx";
 
 // Employee pages
 import EmployeeDashboard from "./pages/Employee/EmployeeDashboard.jsx";
@@ -235,14 +238,15 @@ const App = () => {
                   element={<ManagerAttendanceAdmin />}
                 />
                 <Route
+                path="attendance/timesheetapproval/:employee_id/:date"
+                element={<ManagerApprovalScreen />}
+                />
+                <Route
                   path="team-leaders/tl"
                   element={<ManagerTeamLeadersView />}
                 />
               </Route>
-              <Route
-                path="timesheetapproval/:employee_id/:date"
-                element={<ManagerApprovalScreen />}
-              />
+              
 
             </Route>
 
@@ -251,6 +255,10 @@ const App = () => {
               <Route index element={<TeamLeadDashboard />} />
               <Route path="detail" element={<TeamLeadDetailView />}>
                 <Route path="projects" element={<TeamLeadProjects />} />
+                <Route
+                  path="projects/:project_id"
+                  element={<TeamLeadProjectView />}
+                />
                 <Route
                   path="projects/create"
                   element={<TeamLeadProjectCreate />}
@@ -283,6 +291,14 @@ const App = () => {
                 />
 
                 <Route path="attendance" element={<TeamLeadAttendance />} />
+                <Route
+                  path="attendance/attendance-admin"
+                  element={<TeamLeadAttendanceAdmin />}
+                />
+                  <Route
+                path="attendance/timesheetapproval/:employee_id/:date"
+                element={<TeamLeadApprovalScreen />}
+                />
               </Route>
             </Route>
 

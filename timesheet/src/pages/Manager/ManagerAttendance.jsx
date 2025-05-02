@@ -157,7 +157,7 @@ const ManagerAttendance = () => {
   key={day.key}
   onClick={() => {
     if (attendance) {
-      navigate(`/manager/timesheetapproval/${emp.employee_id}/${day.mapdate}`);
+      navigate(`/manager/detail/attendance/timesheetapproval/${emp.employee_id}/${day.mapdate}`);
     }
   }}
   style={{ cursor: attendance ? "pointer" : "default" }}

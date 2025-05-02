@@ -12,6 +12,7 @@ const TeamLeadAttendance = () => {
   const [employeeData, setEmployeeData] = useState([]);
   const [currentWeek, setCurrentWeek] = useState(new Date()); // Start with current week
   const [totalHours, setTotalHours] = useState({});
+  const navigate = useNavigate();
 
   // Get the start and end date of the week
   const getWeekDates = (date) => {
@@ -93,6 +94,10 @@ const TeamLeadAttendance = () => {
     setCurrentWeek(newDate);
   };
 
+  const handleAttendanceClick = () => {
+    navigate(`attendance-admin/`);
+  };
+
   useEffect(() => {
     fetchAttendanceData();
   }, [currentWeek]);
@@ -113,7 +118,7 @@ const TeamLeadAttendance = () => {
           <button onClick={() => handleWeekChange(1)}> &gt;</button>
         </div>
         <div>
-          <button>Attendance Admin</button>
+          <button onClick={() => handleAttendanceClick()}>Attendance Admin</button>
         </div>
       </div>
 
@@ -146,22 +151,30 @@ const TeamLeadAttendance = () => {
                     // <td key={day.key}>
                     //   {attendance ? `${attendance.work_duration} hrs` : "-"}
                     // </td>
-                    <td key={day.key}>
-                      {attendance ? (
-                        <div className="attendance-tile">
-                          <div>
-                            {attendance.in_time.slice(0, 5)} -{" "}
-                            {attendance.out_time.slice(0, 5)}
-                          </div>
-                          <div>
-                            <strong>Total:</strong> {attendance.total_duration}{" "}
-                            hrs
-                          </div>
+
+                    <td
+                    key={day.key}
+                    onClick={() => {
+                      if (attendance) {
+                        navigate(`/teamlead/detail/attendance/timesheetapproval/${emp.employee_id}/${day.mapdate}`);
+                      }
+                    }}
+                    style={{ cursor: attendance ? "pointer" : "default" }}
+                  >
+                    {attendance ? (
+                      <div className="attendance-tile">
+                        <div>
+                          {attendance.in_time.slice(0, 5)} - {attendance.out_time.slice(0, 5)}
                         </div>
-                      ) : (
-                        <div className="attendance-tile no-data">-</div>
-                      )}
-                    </td>
+                        <div>
+                          <strong>Total:</strong> {attendance.total_duration} hrs
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="attendance-tile no-data">-</div>
+                    )}
+                  </td>
+
                   );
                 })}
 

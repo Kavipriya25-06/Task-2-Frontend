@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import config from "../../config"; // adjust path to your config
 
-const ManagerApprovalScreen = () => {
+const TeamLeadApprovalScreen = () => {
   const { date, employee_id } = useParams();
   const [rows, setRows] = useState([{ project: "", task: "", hours: "" }]);
 
@@ -115,4 +115,4 @@ const ManagerApprovalScreen = () => {
   );
 };
 
-export default ManagerApprovalScreen;
+export default TeamLeadApprovalScreen;

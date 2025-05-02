@@ -84,9 +84,10 @@ const TeamLeadProjects = () => {
                 <tr>
                   <th>Project code</th>
                   <th>Project name</th>
-                  <th>Building</th>
-                  <th>Total hours</th>
+                  {/* <th>Building</th> */}
+                  
                   <th>Estimated hours</th>
+                  <th>Total hours</th>
                   <th>Discipline</th>
                   <th>Status</th>
                 </tr>
@@ -104,9 +105,9 @@ const TeamLeadProjects = () => {
                       {project.project_code}
                     </td>
                     <td>{project.project_title}</td>
-                    <td></td>
-                    <td></td>
+                    {/* <td></td> */}
                     <td>{project.estimated_hours}</td>
+                    <td></td>
                     <td>{project.discipline}</td>
                     <td>{project.status ? "Completed" : "In progress"}</td>
                   </tr>
@@ -129,31 +130,31 @@ const TeamLeadProjects = () => {
                 <tr>
                   <th>Building code</th>
                   <th>Building name</th>
-                  {/* <th>Building Description</th> */}
-                  <th>Total hours</th>
+                  <th>Building Description</th>
+                  {/* <th>Total hours</th>
                   <th>Estimated hours</th>
                   <th>Discipline</th>
-                  <th>Status</th>
+                  <th>Status</th> */}
                 </tr>
               </thead>
               <tbody>
                 {buildings.map((building) => (
                   <tr key={building.building_id}>
                     <td
-                      onClick={() => handleProjectClick(building.building_id)}
-                      style={{
-                        cursor: "pointer",
-                        textDecoration: "underline",
-                      }}
+                      // onClick={() => handleProjectClick(building.building_id)}
+                      // style={{
+                      //   cursor: "pointer",
+                      //   textDecoration: "underline",
+                      // }}
                     >
                       {building.building_code}
                     </td>
                     <td>{building.building_title}</td>
-                    {/* <td>{building.building_description}</td> */}
-                    <td></td>
+                    <td>{building.building_description}</td>
+                    {/* <td></td>
                     <td>{building.estimated_hours}</td>
                     <td>{building.discipline}</td>
-                    <td>{building.status ? "Completed" : "In progress"}</td>
+                    <td>{building.status ? "Completed" : "In progress"}</td> */}
                   </tr>
                 ))}
               </tbody>
@@ -174,29 +175,31 @@ const TeamLeadProjects = () => {
                 <tr>
                   <th>Task code</th>
                   <th>Task name</th>
-                  <th>Total hours</th>
-                  <th>Estimated hours</th>
+                  <th>Task Description</th>
+                  {/* <th>Total hours</th>
+                  <th>Estimated hours</th> */}
                   <th>Priority</th>
-                  <th>Status</th>
+                  {/* <th>Status</th> */}
                 </tr>
               </thead>
               <tbody>
                 {tasks.map((task) => (
                   <tr key={task.task_id}>
                     <td
-                      onClick={() => handleProjectClick(task.task_id)}
-                      style={{
-                        cursor: "pointer",
-                        textDecoration: "underline",
-                      }}
+                      // onClick={() => handleProjectClick(task.task_id)}
+                      // style={{
+                      //   cursor: "pointer",
+                      //   textDecoration: "underline",
+                      // }}
                     >
                       {task.task_code}
                     </td>
                     <td>{task.task_title}</td>
-                    <td></td>
-                    <td>{task.estimated_hours}</td>
+                    <td>{task.task_description}</td>
+                    {/* <td></td>
+                    <td>{task.estimated_hours}</td> */}
                     <td>{task.priority}</td>
-                    <td>{task.status ? "Completed" : "In progress"}</td>
+                    {/* <td>{task.status ? "Completed" : "In progress"}</td> */}
                   </tr>
                 ))}
               </tbody>
