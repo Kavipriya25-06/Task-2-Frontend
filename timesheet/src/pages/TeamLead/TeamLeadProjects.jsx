@@ -73,9 +73,11 @@ const TeamLeadProjects = () => {
       case 0:
         return (
           <div>
+           <div className="user-header">
             <h2 className="employee-title">Projects</h2>
             <div>
-              <button onClick={handleAddClick}>Create Project</button>
+              <button className="add-user-btn" onClick={handleAddClick}>Create Project</button>
+            </div>
             </div>
             <table>
               <thead>
@@ -116,9 +118,11 @@ const TeamLeadProjects = () => {
       case 1:
         return (
           <div>
+            <div className="user-header">
             <h2 className="employee-title">Buildings</h2>
             <div>
-              <button onClick={handleAddBuildingClick}>Create Building</button>
+              <button className="add-user-btn" onClick={handleAddBuildingClick}>Create Building</button>
+            </div>
             </div>
             <table>
               <thead>
@@ -159,9 +163,11 @@ const TeamLeadProjects = () => {
       case 2:
         return (
           <div>
+            <div className="user-header">
             <h2 className="employee-title">Tasks</h2>
             <div>
-              <button onClick={handleAddTaskClick}>Create Task</button>
+              <button className="add-user-btn" onClick={handleAddTaskClick}>Create Task</button>
+            </div>
             </div>
             <table>
               <thead>

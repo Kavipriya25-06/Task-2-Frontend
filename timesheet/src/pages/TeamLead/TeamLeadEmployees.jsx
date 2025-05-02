@@ -48,9 +48,10 @@ const TeamLeadEmployees = () => {
         <table>
           <thead>
             <tr>
-              <th>Employee</th>
+              <th>Employee Code</th>
+              <th>Employee Name</th>
               <th>Role</th>
-              <th>Team Leader</th>
+              {/* <th>Team Leader</th> */}
             </tr>
           </thead>
           <tbody>

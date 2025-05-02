@@ -118,7 +118,7 @@ const TeamLeadProjectCreate = () => {
     };
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/projects/create/", {
+      const res = await fetch(`${config.apiBaseURL}/api/projects/create/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -143,6 +143,16 @@ const TeamLeadProjectCreate = () => {
         <div className="input-elements">
           <div className="left-form">
             <div className="left-form-first">
+
+            <div className="project-form-group">
+                <label>Project Code</label>
+                <input
+                  name="project_code"
+                  value={projectData.project_code}
+                  onChange={handleChange}
+                />
+              </div>
+
               <div className="project-form-group">
                 <label>Project Title</label>
                 <input
@@ -159,15 +169,7 @@ const TeamLeadProjectCreate = () => {
                   onChange={handleChange}
                 />
               </div>
-
-              <div className="project-form-group">
-                <label>Project Code</label>
-                <input
-                  name="project_code"
-                  value={projectData.project_code}
-                  onChange={handleChange}
-                />
-              </div>
+              
               <div className="project-form-group">
                 <label>Discipline Code</label>
                 <input

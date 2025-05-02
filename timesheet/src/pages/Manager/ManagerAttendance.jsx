@@ -153,22 +153,28 @@ const ManagerAttendance = () => {
                     // <td key={day.key}>
                     //   {attendance ? `${attendance.work_duration} hrs` : "-"}
                     // </td>
-                    <td key={day.key}>
-                      {attendance ? (
-                        <div className="attendance-tile">
-                          <div>
-                            {attendance.in_time.slice(0, 5)} -{" "}
-                            {attendance.out_time.slice(0, 5)}
-                          </div>
-                          <div>
-                            <strong>Total:</strong> {attendance.total_duration}{" "}
-                            hrs
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="attendance-tile no-data">-</div>
-                      )}
-                    </td>
+                    <td
+  key={day.key}
+  onClick={() => {
+    if (attendance) {
+      navigate(`/manager/timesheetapproval/${emp.employee_id}/${day.mapdate}`);
+    }
+  }}
+  style={{ cursor: attendance ? "pointer" : "default" }}
+>
+  {attendance ? (
+    <div className="attendance-tile">
+      <div>
+        {attendance.in_time.slice(0, 5)} - {attendance.out_time.slice(0, 5)}
+      </div>
+      <div>
+        <strong>Total:</strong> {attendance.total_duration} hrs
+      </div>
+    </div>
+  ) : (
+    <div className="attendance-tile no-data">-</div>
+  )}
+</td>
                   );
                 })}
 

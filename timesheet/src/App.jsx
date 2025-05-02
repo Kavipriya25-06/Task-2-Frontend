@@ -58,6 +58,7 @@ import ManagerTeamLeadersView from "./pages/Manager/ManagerTeamLeadersView.jsx";
 import ManagerProjectCreate from "./pages/Manager/ManagerProjectCreate.jsx";
 import ManagerBuildingCreate from "./pages/Manager/ManagerBuildingCreate.jsx";
 import ManagerTaskCreate from "./pages/Manager/ManagerTaskCreate.jsx";
+import ManagerApprovalScreen from "./pages/Manager/ManagerApprovalScreen.jsx";
 
 // Team Lead pages
 import TeamLeadDashboard from "./pages/TeamLead/TeamLeadDashboard.jsx";
@@ -238,6 +239,11 @@ const App = () => {
                   element={<ManagerTeamLeadersView />}
                 />
               </Route>
+              <Route
+                path="timesheetapproval/:employee_id/:date"
+                element={<ManagerApprovalScreen />}
+              />
+
             </Route>
 
             {/* Team leader layout with Dashboard and DetailView*/}

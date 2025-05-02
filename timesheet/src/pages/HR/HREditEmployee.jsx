@@ -24,6 +24,7 @@ const EditEmployee = () => {
   const [profilePictureUrl, setProfilePictureUrl] = useState(null);
   const [attachments, setAttachments] = useState([]);
   const [selectedProfilePicture, setSelectedProfilePicture] = useState(null);
+  const [newAttachments, setNewAttachments] = useState([]);
 
 
   const [formData, setFormData] = useState({
@@ -101,7 +102,8 @@ const EditEmployee = () => {
   };
 
   const handleAttachmentChange = (e) => {
-    setNewAttachments(Array.from(e.target.files));
+    const files = Array.from(e.target.files);
+    setNewAttachments((prev) => [...prev, ...files]);
   };
 
 
@@ -145,13 +147,26 @@ const EditEmployee = () => {
       }
 
       if (newAttachments.length > 0) {
-        const formData = new FormData();
-        newAttachments.forEach((file) => formData.append("attachments", file));
-        formData.append("employee_id", employee_id);
-        await fetch(`${config.apiBaseURL}/attachments/`, {
-          method: "POST",
-          body: formData,
-        });
+        for (const file of newAttachments) {
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("employee", employee_id);
+      
+          const uploadRes = await fetch(`${config.apiBaseURL}/attachments/`, {
+            method: "POST",
+            body: formData,
+          });
+      
+          if (!uploadRes.ok) {
+            console.error("Failed to upload file:", file.name);
+          }
+        }
+      
+        // Refresh the list after all uploads
+        const attachResponse = await fetch(`${config.apiBaseURL}/attachments/employee/${employee_id}`);
+        const attachData = await attachResponse.json();
+        setAttachments(attachData);
+        setNewAttachments([]);
       }
 
       if (!response.ok) throw new Error("Failed to update employee");
@@ -170,86 +185,113 @@ const EditEmployee = () => {
           <div className="tab-content">
 
 
-  <div className="profile-picture-wrapper">
-    <img
-      src={selectedProfilePicture ? URL.createObjectURL(selectedProfilePicture) : profilePictureUrl || userPlaceholder}
-      alt="Profile"
-      className="profile-picture-img"
-    />
+            <div className="profile-picture-wrapper">
+              <img
+                src={selectedProfilePicture ? URL.createObjectURL(selectedProfilePicture) : profilePictureUrl || userPlaceholder}
+                alt="Profile"
+                className="profile-picture-img"
+              />
 
-    {/* Hidden file input */}
-    <input
-      type="file"
-      accept="image/*"
-      id="profile-picture-input"
-      className="profile-picture-input"
-      onChange={(e) => setSelectedProfilePicture(e.target.files[0])}
-    />
+              {/* Hidden file input */}
+              <input
+                type="file"
+                accept="image/*"
+                id="profile-picture-input"
+                className="profile-picture-input"
+                onChange={(e) => setSelectedProfilePicture(e.target.files[0])}
+              />
 
-    {/* Camera Icon */}
-    <label htmlFor="profile-picture-input" className="camera-icon-label">
-      <img
-        src={cameraIcon}
-        alt="Edit"
-        className="camera-icon-img"
-      />
-    </label>
-  </div>
-
-
-
-  <div className="attachments-box">
-    <h4>Attachments:</h4>
-    <ul className="attachments-list">
-      {attachments.map((file, index) => {
-        const filename = file.file.split("/").pop().split("_").slice(1).join("_"); // Extract original name
-        return (
-          <li key={file.id} className="attachment-item">
-            <a href={config.apiBaseURL + file.file} target="_blank" rel="noopener noreferrer">
-              {filename}
-            </a>
-            <button
-              className="remove-attachment"
-              onClick={async () => {
-                try {
-                  await fetch(`${config.apiBaseURL}/attachments/${file.id}/`, {
-                    method: "DELETE",
-                  });
-                  setAttachments(prev => prev.filter(att => att.id !== file.id));
-                } catch (error) {
-                  console.error("Failed to delete attachment:", error);
-                }
-              }}
-            >
-              &times;
-            </button>
-          </li>
-        );
-      })}
-    </ul>
-
-     {/* Hidden file input for new attachments */}
-  <input
-    type="file"
-    multiple
-    id="new-attachments-input"
-    className="profile-picture-input"
-    style={{ display: "none" }}
-    onChange={(e) => setNewAttachments(Array.from(e.target.files))}
-  />
-
-  {/* Plus icon button */}
-  <label htmlFor="new-attachments-input" className="add-attachment-button">
-    <img
-      src={plusIcon}
-      alt="Add Attachments"
-      className="add-attachment-icon"
-    />
-  </label>
-  </div>
+              {/* Camera Icon */}
+              <label htmlFor="profile-picture-input" className="camera-icon-label">
+                <img
+                  src={cameraIcon}
+                  alt="Edit"
+                  className="camera-icon-img"
+                />
+              </label>
+            </div>
 
 
 
+            <div className="attachments-box">
+              <h4>Attachments:</h4>
+              <ul className="attachments-list">
+                {attachments.map((file, index) => {
+                  const filename = file.file.split("/").pop().split("_").slice(1).join("_"); // Extract original name
+                  return (
+                    <li key={file.id} className="attachment-item">
+                      <a href={config.apiBaseURL + file.file} target="_blank" rel="noopener noreferrer">
+                        {filename}
+                      </a>
+                      <button
+                        className="remove-attachment"
+                        onClick={async () => {
+                          try {
+                            await fetch(`${config.apiBaseURL}/attachments/${file.id}/`, {
+                              method: "DELETE",
+                            });
+                            setAttachments(prev => prev.filter(att => att.id !== file.id));
+                          } catch (error) {
+                            console.error("Failed to delete attachment:", error);
+                          }
+                        }}
+                      >
+                        &times;
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+
+              {newAttachments.length > 0 && (
+            <>
+              <h5>New Attachments (to be uploaded):</h5>
+              <ul className="attachments-list">
+                {newAttachments.map((file, index) => (
+                  <li key={`new-${index}`} className="attachment-item">
+                    {file.name}
+                    <button
+                      type="button"
+                      className="remove-attachment"
+                      onClick={() =>
+                        setNewAttachments((prev) =>
+                          prev.filter((_, i) => i !== index)
+                        )
+                      }
+                    >
+                      &times;
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+
+              {/* Hidden file input for new attachments */}
+              <input
+            type="file"
+            multiple
+            id="new-attachments-input"
+            className="profile-picture-input"
+            style={{ display: "none" }}
+            onChange={(e) => {
+              const files = Array.from(e.target.files);
+              setNewAttachments((prev) => [...prev, ...files]);
+
+              // Reset input so user can re-select same files
+              e.target.value = "";
+            }}
+          />
+
+            {/* Plus icon button */}
+            <label htmlFor="new-attachments-input" className="add-attachment-button">
+              <img
+                src={plusIcon}
+                alt="Add Attachments"
+                className="add-attachment-icon"
+              />
+            </label>
+            </div>
 
 
 
