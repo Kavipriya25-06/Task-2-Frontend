@@ -7,17 +7,24 @@ const HRDetailView = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const currentTab = location.pathname.split("/").slice(1)[2];
+  const tabs = [
+    { label: "Employees Details", path: "employee-details" },
+    { label: "Holidays", path: "holidays" },
+  ];
 
   return (
     <div className="admin-page">
       <div className="main-content">
         <nav className="sidebar">
-          <button
-            onClick={() => navigate("employee-details")}
-            className={currentTab === "employee-details" ? "active" : ""}
-          >
-            Employees Details
-          </button>
+          {tabs.map((tab, idx) => (
+            <button
+              key={idx}
+              onClick={() => navigate(tab.path)}
+              className={currentTab === tab.path ? "active" : ""}
+            >
+              {tab.label}
+            </button>
+          ))}
         </nav>
 
         <section className="table-section">

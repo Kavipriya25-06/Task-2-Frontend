@@ -162,7 +162,7 @@ const HolidayCalendar = () => {
         </select>
         <button
           className="calendar-title-btn"
-          onClick={() => navigate("holidays/holiday-list")}
+          onClick={() => navigate("holiday-list")}
         >
           Holiday list {year}
         </button>
