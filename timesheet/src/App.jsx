@@ -178,9 +178,7 @@ const App = () => {
                   path="users/edit-user/:user_id"
                   element={<EditUserForm />}
                 />
-                <Route path="reports" element={<Reports />} />
-                <Route path="holidays" element={<HolidayCalendar />} />
-                <Route path="holidays/holiday-list" element={<HolidayList />} />
+                {/* <Route path="reports" element={<Reports />} /> */}
               </Route>
             </Route>
 
@@ -197,6 +195,8 @@ const App = () => {
                   path="employee-details/edit-employee/:employee_id"
                   element={<EditEmployee />}
                 />
+                <Route path="holidays" element={<HolidayCalendar />} />
+                <Route path="holidays/holiday-list" element={<HolidayList />} />
               </Route>
             </Route>
 
@@ -238,16 +238,14 @@ const App = () => {
                   element={<ManagerAttendanceAdmin />}
                 />
                 <Route
-                path="attendance/timesheetapproval/:employee_id/:date"
-                element={<ManagerApprovalScreen />}
+                  path="attendance/timesheetapproval/:employee_id/:date"
+                  element={<ManagerApprovalScreen />}
                 />
                 <Route
                   path="team-leaders/tl"
                   element={<ManagerTeamLeadersView />}
                 />
               </Route>
-              
-
             </Route>
 
             {/* Team leader layout with Dashboard and DetailView*/}
@@ -295,9 +293,9 @@ const App = () => {
                   path="attendance/attendance-admin"
                   element={<TeamLeadAttendanceAdmin />}
                 />
-                  <Route
-                path="attendance/timesheetapproval/:employee_id/:date"
-                element={<TeamLeadApprovalScreen />}
+                <Route
+                  path="attendance/timesheetapproval/:employee_id/:date"
+                  element={<TeamLeadApprovalScreen />}
                 />
               </Route>
             </Route>
