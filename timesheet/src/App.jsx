@@ -40,6 +40,8 @@ import HRDetailView from "./pages/HR/HRDetailView.jsx";
 import AddEmployee from "./pages/HR/HRAddEmployee.jsx";
 import EditEmployee from "./pages/HR/HREditEmployee.jsx";
 import EmployeeList from "./pages/HR/HREmployeeList.jsx";
+import HRHolidayCalendar from "./pages/HR/HRHolidayCalendar.jsx";
+import HRHolidayList from "./pages/HR/HRHolidayList.jsx";
 
 // Manager pages
 import ManagerDashboard from "./pages/Manager/ManagerDashboard.jsx";
@@ -195,8 +197,11 @@ const App = () => {
                   path="employee-details/edit-employee/:employee_id"
                   element={<EditEmployee />}
                 />
-                <Route path="holidays" element={<HolidayCalendar />} />
-                <Route path="holidays/holiday-list" element={<HolidayList />} />
+                <Route path="holidays" element={<HRHolidayCalendar />} />
+                <Route
+                  path="holidays/holiday-list"
+                  element={<HRHolidayList />}
+                />
               </Route>
             </Route>
 
