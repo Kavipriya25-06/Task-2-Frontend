@@ -937,6 +937,13 @@ main {
   align-items: center;
 }
 
+.uneditable-textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f5f5f5;
+}
+
 /* Textarea Sizing */
 /* textarea {
   resize: vertical;

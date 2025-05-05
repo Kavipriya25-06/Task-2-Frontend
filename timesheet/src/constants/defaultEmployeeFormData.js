@@ -24,6 +24,7 @@ export const defaultEmployeeFormData = {
   qualification: "",
   year_of_passing: "",
   previous_company_name: "",
+  previous_experience: "",
   arris_experience: "",
   total_experience: "",
   probation_confirmation_date: "",

@@ -27,6 +27,8 @@ const AddEmployee = () => {
     arris_months: "",
     total_years: "",
     total_months: "",
+    previous_years: "",
+    previous_months: "",
   });
 
   const { formData, setFormData, errors, setErrors, handleChange } =
@@ -70,12 +72,16 @@ const AddEmployee = () => {
     let totalMonths =
       parseInt(updated.total_years || 0) * 12 +
       parseInt(updated.total_months || 0);
+    let previousMonths =
+      parseInt(updated.previous_years || 0) * 12 +
+      parseInt(updated.previous_months || 0);
 
     setExperienceUI(updated);
     setFormData((prev) => ({
       ...prev,
       arris_experience: arrisMonths,
       total_experience: totalMonths,
+      previous_experience: previousMonths,
     }));
   };
 
@@ -525,6 +531,35 @@ const AddEmployee = () => {
                 onChange={handleChange}
                 placeholder="Previous Company Name"
               />
+            </div>
+            <div className="individual-tabs">
+              <label>Previous Experience</label>
+              <div style={{ display: "flex", gap: "10px" }}>
+                <select
+                  name="previous_years"
+                  value={experienceUI.previous_years}
+                  onChange={handleExperienceChange}
+                >
+                  <option value="">Years</option>
+                  {[...Array(31).keys()].map((year) => (
+                    <option key={year} value={year}>
+                      {year} Years
+                    </option>
+                  ))}
+                </select>
+                <select
+                  name="previous_months"
+                  value={experienceUI.previous_months}
+                  onChange={handleExperienceChange}
+                >
+                  <option value="">Months</option>
+                  {[...Array(12).keys()].map((month) => (
+                    <option key={month} value={month}>
+                      {month} Months
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
             <div className="individual-tabs">
               <label>Arris Experience</label>
