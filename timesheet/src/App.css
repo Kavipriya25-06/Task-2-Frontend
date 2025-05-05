@@ -1018,6 +1018,11 @@ main {
   /* margin: 20px; */
 }
 
+.camera-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
 .tab-header {
   display: flex;
   gap: 10px;

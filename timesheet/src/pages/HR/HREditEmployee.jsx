@@ -1,3 +1,5 @@
+// src\pages\HR\HREditEmployee.jsx
+
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import config from "../../config";
@@ -5,8 +7,9 @@ import { cleanFormData } from "../../utils/cleanFormData";
 import cameraIcon from "../../assets/camera.png";
 import userPlaceholder from "../../assets/user.png";
 import plusIcon from "../../assets/plus.png";
-
-
+import { useAttachmentManager } from "../../constants/useAttachmentManager";
+import { useEmployeeFormHandler } from "../../constants/useEmployeeFormHandler";
+import { defaultEmployeeFormData } from "../../constants/defaultEmployeeFormData";
 
 const tabLabels = [
   "Employee details",
@@ -20,92 +23,104 @@ const EditEmployee = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(0);
+  const [managers, setManagers] = useState([]);
 
-  const [profilePictureUrl, setProfilePictureUrl] = useState(null);
-  const [attachments, setAttachments] = useState([]);
-  const [selectedProfilePicture, setSelectedProfilePicture] = useState(null);
-  const [newAttachments, setNewAttachments] = useState([]);
+  const [editMode, setEditMode] = useState(false); //  Add this at the top
+  const {
+    attachments,
+    setAttachments,
+    newAttachments,
+    handleAttachmentChange,
+    removeExistingAttachment,
+    removeNewAttachment,
+    profilePicture,
+    setProfilePicture,
+    profilePictureUrl,
+    setProfilePictureUrl,
+  } = useAttachmentManager([]);
 
-
-  const [formData, setFormData] = useState({
-    employee_code: "",
-    employee_name: "",
-    fathers_name: "",
-    gender: "",
-    dob: "",
-    doj: "",
-    contact_number: "",
-    personal_email: "",
-    aadhaar_number: "",
-    PAN: "",
-    UAN: "",
-    pf_number: "",
-    esi_number: "",
-    passport_number: "",
-    passport_validity: "",
-    status: "active",
-    remarks: "",
-    permanent_address: "",
-    local_address: "",
-    employment_type: "",
-    designation: "",
-    department: "",
-    qualification: "",
-    year_of_passing: "",
-    previous_company_name: "",
-    arris_experience: "",
-    total_experience: "",
-    probation_confirmation_date: "",
-    employee_email: "",
-    reporting_manager: "",
-    resignation_date: "",
-    relieving_date: "",
-    account_number: "",
-    ifsc_code: "",
-    bank_name: "",
-    emergency_contact_name: "",
-    emergency_contact_number: "",
-    blood_group: "",
+  const [experienceUI, setExperienceUI] = useState({
+    arris_years: "",
+    arris_months: "",
+    total_years: "",
+    total_months: "",
   });
+
+  const { formData, setFormData, errors, setErrors, handleChange } =
+    useEmployeeFormHandler({
+      defaultEmployeeFormData,
+    });
 
   useEffect(() => {
     fetchEmployee();
+    fetchManagers();
   }, [employee_id]);
 
   const fetchEmployee = async () => {
     try {
-      const response = await fetch(`${config.apiBaseURL}/employees/${employee_id}/`);
+      const response = await fetch(
+        `${config.apiBaseURL}/employees/${employee_id}/`
+      );
       const data = await response.json();
       setFormData(data);
-      
-      // 👇 Set Profile Picture if exists
+
+      // Set Profile Picture if exists
       if (data.profile_picture) {
-        setProfilePictureUrl(config.apiBaseURL + data.profile_picture); 
+        setProfilePictureUrl(config.apiBaseURL + data.profile_picture);
       }
-  
-      // 👇 Fetch Attachments separately
-      const attachResponse = await fetch(`${config.apiBaseURL}/attachments/employee/${employee_id}`);
+
+      // Set experience years/months
+      setExperienceUI({
+        arris_years: Math.floor((data.arris_experience || 0) / 12),
+        arris_months: (data.arris_experience || 0) % 12,
+        total_years: Math.floor((data.total_experience || 0) / 12),
+        total_months: (data.total_experience || 0) % 12,
+      });
+
+      // Fetch Attachments separately
+      const attachResponse = await fetch(
+        `${config.apiBaseURL}/attachments/employee/${employee_id}`
+      );
       const attachData = await attachResponse.json();
       console.log(attachData, "attachments");
-      setAttachments(attachData);  // assuming attachData is a list of attachments
-  
+      setAttachments(attachData); // assuming attachData is a list of attachments
+
       setLoading(false);
     } catch (error) {
       console.error("Error fetching employee:", error);
     }
   };
-  
 
-  const handleChange = (e) => {
+  const fetchManagers = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/teamlead-and-managers/`
+      );
+      const data = await response.json();
+      setManagers(data); // Store managers data
+    } catch (error) {
+      console.error("Error fetching managers:", error);
+    }
+  };
+
+  const handleExperienceChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+    const updated = { ...experienceUI, [name]: value };
 
-  const handleAttachmentChange = (e) => {
-    const files = Array.from(e.target.files);
-    setNewAttachments((prev) => [...prev, ...files]);
-  };
+    const arrisMonths =
+      parseInt(updated.arris_years || 0) * 12 +
+      parseInt(updated.arris_months || 0);
+    const totalMonths =
+      parseInt(updated.total_years || 0) * 12 +
+      parseInt(updated.total_months || 0);
 
+    setExperienceUI(updated);
+    setFormData((prev) => ({
+      ...prev,
+      arris_experience: arrisMonths,
+      total_experience: totalMonths,
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -120,6 +135,15 @@ const EditEmployee = () => {
       "year_of_passing",
       "arris_experience",
       "total_experience",
+      "personal_email",
+      "employee_email",
+      "contact_number",
+      "aadhaar_number",
+      "PAN",
+      "UAN",
+      "pf_number",
+      "esi_number",
+      "passport_number",
     ];
 
     const cleanedData = cleanFormData(formData, fieldsToNullify);
@@ -134,16 +158,20 @@ const EditEmployee = () => {
         }
       );
 
-      if (selectedProfilePicture) {
-        const formData = new FormData();
-        formData.append("profile_picture", selectedProfilePicture);
-  
-        const imageUploadResponse = await fetch(`${config.apiBaseURL}/employees/${employee_id}/`, {
-          method: "PATCH",
-          body: formData,
-        });
-  
-        if (!imageUploadResponse.ok) throw new Error("Failed to upload profile picture");
+      if (profilePicture) {
+        const picturePayload = new FormData();
+        picturePayload.append("profile_picture", profilePicture);
+
+        const imageUploadResponse = await fetch(
+          `${config.apiBaseURL}/employees/${employee_id}/`,
+          {
+            method: "PATCH",
+            body: picturePayload,
+          }
+        );
+
+        if (!imageUploadResponse.ok)
+          throw new Error("Failed to upload profile picture");
       }
 
       if (newAttachments.length > 0) {
@@ -151,22 +179,24 @@ const EditEmployee = () => {
           const formData = new FormData();
           formData.append("file", file);
           formData.append("employee", employee_id);
-      
+
           const uploadRes = await fetch(`${config.apiBaseURL}/attachments/`, {
             method: "POST",
             body: formData,
           });
-      
+
           if (!uploadRes.ok) {
             console.error("Failed to upload file:", file.name);
           }
         }
-      
+
         // Refresh the list after all uploads
-        const attachResponse = await fetch(`${config.apiBaseURL}/attachments/employee/${employee_id}`);
+        const attachResponse = await fetch(
+          `${config.apiBaseURL}/attachments/employee/${employee_id}`
+        );
         const attachData = await attachResponse.json();
         setAttachments(attachData);
-        setNewAttachments([]);
+        // setNewAttachments([]);
       }
 
       if (!response.ok) throw new Error("Failed to update employee");
@@ -183,11 +213,13 @@ const EditEmployee = () => {
       case 0:
         return (
           <div className="tab-content">
-
-
             <div className="profile-picture-wrapper">
               <img
-                src={selectedProfilePicture ? URL.createObjectURL(selectedProfilePicture) : profilePictureUrl || userPlaceholder}
+                src={
+                  profilePicture
+                    ? URL.createObjectURL(profilePicture)
+                    : profilePictureUrl || userPlaceholder
+                }
                 alt="Profile"
                 className="profile-picture-img"
               />
@@ -198,41 +230,55 @@ const EditEmployee = () => {
                 accept="image/*"
                 id="profile-picture-input"
                 className="profile-picture-input"
-                onChange={(e) => setSelectedProfilePicture(e.target.files[0])}
+                onChange={(e) => setProfilePicture(e.target.files[0])}
               />
 
               {/* Camera Icon */}
-              <label htmlFor="profile-picture-input" className="camera-icon-label">
-                <img
-                  src={cameraIcon}
-                  alt="Edit"
-                  className="camera-icon-img"
-                />
+              <label
+                htmlFor="profile-picture-input"
+                className="camera-icon-label"
+              >
+                <img src={cameraIcon} alt="Edit" className="camera-icon-img" />
               </label>
             </div>
-
-
 
             <div className="attachments-box">
               <h4>Attachments:</h4>
               <ul className="attachments-list">
                 {attachments.map((file, index) => {
-                  const filename = file.file.split("/").pop().split("_").slice(1).join("_"); // Extract original name
+                  const filename = file.file
+                    .split("/")
+                    .pop()
+                    .split("_")
+                    .slice(1)
+                    .join("_"); // Extract original name
                   return (
                     <li key={file.id} className="attachment-item">
-                      <a href={config.apiBaseURL + file.file} target="_blank" rel="noopener noreferrer">
+                      <a
+                        href={config.apiBaseURL + file.file}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         {filename}
                       </a>
                       <button
                         className="remove-attachment"
                         onClick={async () => {
                           try {
-                            await fetch(`${config.apiBaseURL}/attachments/${file.id}/`, {
-                              method: "DELETE",
-                            });
-                            setAttachments(prev => prev.filter(att => att.id !== file.id));
+                            await fetch(
+                              `${config.apiBaseURL}/attachments/${file.id}/`,
+                              {
+                                method: "DELETE",
+                              }
+                            );
+                            setAttachments((prev) =>
+                              prev.filter((att) => att.id !== file.id)
+                            );
                           } catch (error) {
-                            console.error("Failed to delete attachment:", error);
+                            console.error(
+                              "Failed to delete attachment:",
+                              error
+                            );
                           }
                         }}
                       >
@@ -244,56 +290,47 @@ const EditEmployee = () => {
               </ul>
 
               {newAttachments.length > 0 && (
-            <>
-              <h5>New Attachments (to be uploaded):</h5>
-              <ul className="attachments-list">
-                {newAttachments.map((file, index) => (
-                  <li key={`new-${index}`} className="attachment-item">
-                    {file.name}
-                    <button
-                      type="button"
-                      className="remove-attachment"
-                      onClick={() =>
-                        setNewAttachments((prev) =>
-                          prev.filter((_, i) => i !== index)
-                        )
-                      }
-                    >
-                      &times;
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
+                <>
+                  <h5>New Attachments (to be uploaded):</h5>
+                  <ul className="attachments-list">
+                    {newAttachments.map((file, index) => (
+                      <li key={`new-${index}`} className="attachment-item">
+                        {file.name}
+                        <button
+                          type="button"
+                          className="remove-attachment"
+                          onClick={() => removeNewAttachment(index)}
+                        >
+                          &times;
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
 
               {/* Hidden file input for new attachments */}
               <input
-            type="file"
-            multiple
-            id="new-attachments-input"
-            className="profile-picture-input"
-            style={{ display: "none" }}
-            onChange={(e) => {
-              const files = Array.from(e.target.files);
-              setNewAttachments((prev) => [...prev, ...files]);
-
-              // Reset input so user can re-select same files
-              e.target.value = "";
-            }}
-          />
-
-            {/* Plus icon button */}
-            <label htmlFor="new-attachments-input" className="add-attachment-button">
-              <img
-                src={plusIcon}
-                alt="Add Attachments"
-                className="add-attachment-icon"
+                type="file"
+                multiple
+                id="new-attachments-input"
+                className="profile-picture-input"
+                style={{ display: "none" }}
+                onChange={handleAttachmentChange}
               />
-            </label>
+
+              {/* Plus icon button */}
+              <label
+                htmlFor="new-attachments-input"
+                className="add-attachment-button"
+              >
+                <img
+                  src={plusIcon}
+                  alt="Add Attachments"
+                  className="add-attachment-icon"
+                />
+              </label>
             </div>
-
-
 
             <div className="individual-tabs">
               <label>Employee Code</label>
@@ -327,12 +364,16 @@ const EditEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>Gender</label>
-              <input
+              <select
                 name="gender"
                 value={formData.gender}
                 onChange={handleChange}
-                placeholder="Gender"
-              />
+              >
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Others">Others</option>
+              </select>
             </div>
             <div className="individual-tabs">
               <label>Date of Birth</label>
@@ -359,7 +400,11 @@ const EditEmployee = () => {
                 value={formData.personal_email}
                 onChange={handleChange}
                 placeholder="Personal Email"
+                className={errors.personal_email ? "input-error" : ""}
               />
+              {errors.personal_email && (
+                <span className="error-message">{errors.personal_email}</span>
+              )}
             </div>
             <div className="individual-tabs">
               <label>Phone Number</label>
@@ -368,7 +413,11 @@ const EditEmployee = () => {
                 value={formData.contact_number}
                 onChange={handleChange}
                 placeholder="Phone Number"
+                className={errors.contact_number ? "input-error" : ""}
               />
+              {errors.contact_number && (
+                <span className="error-message">{errors.contact_number}</span>
+              )}
             </div>
             <div className="individual-tabs">
               <label>Aadhaar</label>
@@ -377,7 +426,11 @@ const EditEmployee = () => {
                 value={formData.aadhaar_number}
                 onChange={handleChange}
                 placeholder="Aadhaar"
+                className={errors.aadhaar_number ? "input-error" : ""}
               />
+              {errors.aadhaar_number && (
+                <span className="error-message">{errors.aadhaar_number}</span>
+              )}
             </div>
             <div className="individual-tabs">
               <label>PAN Number</label>
@@ -386,7 +439,11 @@ const EditEmployee = () => {
                 value={formData.PAN}
                 onChange={handleChange}
                 placeholder="PAN Number"
+                className={errors.PAN ? "input-error" : ""}
               />
+              {errors.PAN && (
+                <span className="error-message">{errors.PAN}</span>
+              )}
             </div>
             <div className="individual-tabs">
               <label>UAN</label>
@@ -395,7 +452,11 @@ const EditEmployee = () => {
                 value={formData.UAN}
                 onChange={handleChange}
                 placeholder="UAN"
+                className={errors.UAN ? "input-error" : ""}
               />
+              {errors.UAN && (
+                <span className="error-message">{errors.UAN}</span>
+              )}
             </div>
             <div className="individual-tabs">
               <label>PF Number</label>
@@ -404,7 +465,11 @@ const EditEmployee = () => {
                 value={formData.pf_number}
                 onChange={handleChange}
                 placeholder="PF Number"
+                className={errors.pf_number ? "input-error" : ""}
               />
+              {errors.pf_number && (
+                <span className="error-message">{errors.pf_number}</span>
+              )}
             </div>
             <div className="individual-tabs">
               <label>ESI Number</label>
@@ -413,7 +478,11 @@ const EditEmployee = () => {
                 value={formData.esi_number}
                 onChange={handleChange}
                 placeholder="ESI Number"
+                className={errors.esi_number ? "input-error" : ""}
               />
+              {errors.esi_number && (
+                <span className="error-message">{errors.esi_number}</span>
+              )}
             </div>
             <div className="individual-tabs">
               <label>Passport Number</label>
@@ -422,7 +491,11 @@ const EditEmployee = () => {
                 value={formData.passport_number}
                 onChange={handleChange}
                 placeholder="Passport Number"
+                className={errors.passport_number ? "input-error" : ""}
               />
+              {errors.passport_number && (
+                <span className="error-message">{errors.passport_number}</span>
+              )}
             </div>
             <div className="individual-tabs">
               <label>Passport validity</label>
@@ -531,22 +604,61 @@ const EditEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>Arris Experience</label>
-              <input
-                type="number"
-                name="arris_experience"
-                value={formData.arris_experience}
-                onChange={handleChange}
-                placeholder="Arris Experience"
-              />
+              <div style={{ display: "flex", gap: "10px" }}>
+                <select
+                  name="arris_years"
+                  value={experienceUI.arris_years}
+                  onChange={handleExperienceChange}
+                >
+                  <option value="">Years</option>
+                  {[...Array(31).keys()].map((year) => (
+                    <option key={year} value={year}>
+                      {year} Years
+                    </option>
+                  ))}
+                </select>
+                <select
+                  name="arris_months"
+                  value={experienceUI.arris_months}
+                  onChange={handleExperienceChange}
+                >
+                  <option value="">Months</option>
+                  {[...Array(12).keys()].map((month) => (
+                    <option key={month} value={month}>
+                      {month} Months
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
             <div className="individual-tabs">
               <label>Total Experience</label>
-              <input
-                name="total_experience"
-                value={formData.total_experience}
-                onChange={handleChange}
-                placeholder="Total Experience"
-              />
+              <div style={{ display: "flex", gap: "10px" }}>
+                <select
+                  name="total_years"
+                  value={experienceUI.total_years}
+                  onChange={handleExperienceChange}
+                >
+                  <option value="">Years</option>
+                  {[...Array(31).keys()].map((year) => (
+                    <option key={year} value={year}>
+                      {year} Years
+                    </option>
+                  ))}
+                </select>
+                <select
+                  name="total_months"
+                  value={experienceUI.total_months}
+                  onChange={handleExperienceChange}
+                >
+                  <option value="">Months</option>
+                  {[...Array(12).keys()].map((month) => (
+                    <option key={month} value={month}>
+                      {month} Months
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
             <div className="individual-tabs">
               <label>Probation confirmation date</label>
@@ -564,16 +676,26 @@ const EditEmployee = () => {
                 value={formData.employee_email}
                 onChange={handleChange}
                 placeholder="Official Email"
+                className={errors.employee_email ? "input-error" : ""}
               />
+              {errors.employee_email && (
+                <span className="error-message">{errors.employee_email}</span>
+              )}
             </div>
             <div className="individual-tabs">
               <label>Reporting Manager</label>
-              <input
+              <select
                 name="reporting_manager"
                 value={formData.reporting_manager}
                 onChange={handleChange}
-                placeholder="Reporting Manager"
-              />
+              >
+                <option value="">Select Reporting Manager</option>
+                {managers.map((manager) => (
+                  <option key={manager.employee_id} value={manager.employee_id}>
+                    {manager.employee_code} - {manager.employee_name}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         );
@@ -628,7 +750,13 @@ const EditEmployee = () => {
                 value={formData.emergency_contact_number}
                 onChange={handleChange}
                 placeholder="Emergency Contact Number"
+                className={errors.emergency_contact_number ? "input-error" : ""}
               />
+              {errors.emergency_contact_number && (
+                <span className="error-message">
+                  {errors.emergency_contact_number}
+                </span>
+              )}
             </div>
             <div className="individual-tabs">
               <label>Blood Group</label>

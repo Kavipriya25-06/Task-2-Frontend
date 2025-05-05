@@ -3,13 +3,22 @@
 import { useNavigate } from "react-router-dom";
 import "./Breadcrumbs.css";
 
-const Breadcrumbs = ({ crumbs = [], showBack = false }) => {
+const Breadcrumbs = ({ crumbs = [], showBack = false, backPath = null }) => {
   const navigate = useNavigate();
 
   return (
     <div className="breadcrumbs-container">
       {showBack && (
-        <button className="back-button" onClick={() => navigate(-1)}>
+        <button
+          className="back-button"
+          onClick={() => {
+            if (backPath) {
+              navigate(backPath);
+            } else {
+              navigate(-1); // Go back one step by default
+            }
+          }}
+        >
           ← Back
         </button>
       )}
