@@ -61,6 +61,8 @@ import ManagerProjectCreate from "./pages/Manager/ManagerProjectCreate.jsx";
 import ManagerBuildingCreate from "./pages/Manager/ManagerBuildingCreate.jsx";
 import ManagerTaskCreate from "./pages/Manager/ManagerTaskCreate.jsx";
 import ManagerApprovalScreen from "./pages/Manager/ManagerApprovalScreen.jsx";
+import ManagerLeaveApplication from "./pages/Manager/ManagerLeaveApplication.jsx";
+import ManagerLeaveRequestForm from "./pages/Manager/ManagerLeaveRequestForm.jsx";
 
 // Team Lead pages
 import TeamLeadDashboard from "./pages/TeamLead/TeamLeadDashboard.jsx";
@@ -237,6 +239,10 @@ const App = () => {
                   path="leave-requests"
                   element={<ManagerLeaveRequests />}
                 />
+                 <Route
+                  path="leave-requests/create"
+                  element={<ManagerLeaveRequestForm />}
+                />
                 <Route path="attendance" element={<ManagerAttendance />} />
                 <Route
                   path="attendance/attendance-admin"
@@ -250,6 +256,8 @@ const App = () => {
                   path="team-leaders/tl"
                   element={<ManagerTeamLeadersView />}
                 />
+                <Route path ="leave-requests/Leaveapplication" element ={<ManagerLeaveApplication/>} />
+
               </Route>
             </Route>
 
