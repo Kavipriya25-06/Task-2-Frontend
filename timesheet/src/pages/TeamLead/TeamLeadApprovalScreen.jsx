@@ -12,6 +12,12 @@ const TeamLeadApprovalScreen = () => {
     total_duration: "0.00"
   });
 
+  const [status, setStatus] = useState({
+  approved: false,
+  rejected: false
+});
+
+
   useEffect(() => {
     const fetchTimesheetData = async () => {
       try {
@@ -31,6 +37,13 @@ const TeamLeadApprovalScreen = () => {
           let inTime = records[0].start_time || "--:--";
           let outTime = records[0].end_time || "--:--";
 
+
+          setStatus({
+            approved: records[0].approved,
+            rejected: records[0].rejected
+          });
+
+
           const timesheetRows = records.map((entry) => {
             const project =
               entry.task_assign?.building_assign?.project_assign?.project
@@ -43,6 +56,7 @@ const TeamLeadApprovalScreen = () => {
             totalHours += hours;
 
             return {
+              timesheet_id:entry.timesheet_id,
               project,
               task,
               hours: hours.toString()
@@ -83,6 +97,67 @@ const TeamLeadApprovalScreen = () => {
   // const handleAddRow = () => {
   //   setRows([...rows, { project: "", task: "", hours: "" }]);
   // };
+
+  const handleApprove = async () => {
+    try {
+      for (let row of rows) {
+        const timesheetId = row.timesheet_id;
+        const patchData = { approved: true };
+  
+        const response = await fetch(
+          `${config.apiBaseURL}/timesheet/${timesheetId}/`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(patchData)
+          }
+        );
+  
+        if (!response.ok) {
+          console.error(`Failed to approve timesheet ID ${timesheetId}`);
+        }
+      }
+  
+      // alert("All rows approved successfully!");
+      setStatus({ approved: true, rejected: false }); 
+    } catch (err) {
+      console.error("Error approving timesheets", err);
+      alert("Error occurred while approving.");
+    }
+  };
+
+  const handleReject = async () => {
+    try {
+      for (let row of rows) {
+        const timesheetId = row.timesheet_id;
+        const patchData = { rejected: true, approved: false };  // optional to reset approved
+  
+        const response = await fetch(
+          `${config.apiBaseURL}/timesheet/${timesheetId}/`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(patchData)
+          }
+        );
+  
+        if (!response.ok) {
+          console.error(`Failed to reject timesheet ID ${timesheetId}`);
+        }
+      }
+  
+      // alert("All rows rejected successfully!");
+      setStatus({ approved: false, rejected: true });
+    } catch (err) {
+      console.error("Error rejecting timesheets", err);
+      alert("Error occurred while rejecting.");
+    }
+  };
+  
 
   return (
     <div className="daily-timesheet-container">
@@ -142,11 +217,20 @@ const TeamLeadApprovalScreen = () => {
         +
       </div> */}
 
-      <div className="button-container">
-        <button className="save-button2">Reject</button>
-        <button className="submit-button2">Approve</button>
+    <div className="button-container">
+        {status.approved ? (  //  CHANGE: conditionally render approved button
+          <button className="submit-button2" disabled>Approved</button>
+        ) : status.rejected ? (  //  CHANGE: conditionally render rejected button
+          <button className="save-button2" disabled>Rejected</button>
+        ) : (
+          <>
+            <button className="save-button2" onClick={handleReject}>Reject</button>
+            <button className="submit-button2" onClick={handleApprove}>Approve</button>
+          </>
+        )}
       </div>
     </div>
+
   );
 };
 
