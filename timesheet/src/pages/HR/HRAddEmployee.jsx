@@ -1,3 +1,5 @@
+// src\pages\HR\HRAddEmployee.jsx
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import config from "../../config";
@@ -5,6 +7,9 @@ import { cleanFormData } from "../../utils/cleanFormData";
 import usePlaceholder from "../../assets/user.png";
 import cameraIcon from "../../assets/camera.png";
 import plusIcon from "../../assets/plus.png";
+import { useAttachmentManager } from "../../constants/useAttachmentManager";
+import { useEmployeeFormHandler } from "../../constants/useEmployeeFormHandler";
+import { defaultEmployeeFormData } from "../../constants/defaultEmployeeFormData";
 
 const tabLabels = [
   "Employee details",
@@ -22,253 +27,38 @@ const AddEmployee = () => {
     arris_months: "",
     total_years: "",
     total_months: "",
+    previous_years: "",
+    previous_months: "",
   });
 
-  const [errors, setErrors] = useState({
-    contact_number: "",
-    personal_email: "",
-    aadhaar_number: "",
-    PAN: "",
-    UAN: "",
-    pf_number: "",
-    esi_number: "",
-    passport_number: "",
-    employee_email: "",
-    emergency_contact_number: "",
-  });
-  const [formData, setFormData] = useState({
-    employee_code: "",
-    employee_name: "",
-    fathers_name: "",
-    gender: "",
-    dob: "",
-    doj: "",
-    contact_number: "",
-    personal_email: "",
-    aadhaar_number: "",
-    PAN: "",
-    UAN: "",
-    pf_number: "",
-    esi_number: "",
-    passport_number: "",
-    passport_validity: "",
-    status: "active",
-    remarks: "",
-    permanent_address: "",
-    local_address: "",
-    employment_type: "",
-    designation: "",
-    department: "",
-    qualification: "",
-    year_of_passing: "",
-    previous_company_name: "",
-    arris_experience: "",
-    total_experience: "",
-    probation_confirmation_date: "",
-    employee_email: "",
-    reporting_manager: "",
-    resignation_date: "",
-    relieving_date: "",
-    account_number: "",
-    ifsc_code: "",
-    bank_name: "",
-    emergency_contact_name: "",
-    emergency_contact_number: "",
-    blood_group: "",
-  });
-  const [files, setFiles] = useState({
-    profile_picture: null,
-    attachments: null,
-  });
+  const { formData, setFormData, errors, setErrors, handleChange } =
+    useEmployeeFormHandler({
+      defaultEmployeeFormData,
+    });
+
+  const {
+    newAttachments,
+    handleAttachmentChange,
+    removeNewAttachment,
+    getAttachmentName,
+    profilePicture,
+    setProfilePicture,
+  } = useAttachmentManager([]);
 
   useEffect(() => {
-    const fetchManagers = async () => {
-      try {
-        const response = await fetch(
-          `${config.apiBaseURL}/teamlead-and-managers/`
-        );
-        const data = await response.json();
-        setManagers(data); // Store managers data
-      } catch (error) {
-        console.error("Error fetching managers:", error);
-      }
-    };
-
     fetchManagers();
   }, []);
 
-  const removeAttachment = (index) => {
-    setFiles((prev) => ({
-      ...prev,
-      attachments: prev.attachments.filter((_, i) => i !== index),
-    }));
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    if (name === "contact_number") {
-      // Allow only numbers
-      const numericValue = value.replace(/\D/g, "");
-      // Set the value but only up to 10 digits
-      if (numericValue.length <= 10) {
-        setFormData((prev) => ({ ...prev, [name]: numericValue }));
-      }
-      // Validation message
-      if (numericValue.length > 0 && numericValue.length !== 10) {
-        setErrors((prev) => ({
-          ...prev,
-          contact_number: "Phone number must be exactly 10 digits.",
-        }));
-      } else {
-        setErrors((prev) => ({ ...prev, contact_number: "" }));
-      }
-      return;
+  const fetchManagers = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/teamlead-and-managers/`
+      );
+      const data = await response.json();
+      setManagers(data); // Store managers data
+    } catch (error) {
+      console.error("Error fetching managers:", error);
     }
-
-    if (name === "personal_email") {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      setFormData((prev) => ({ ...prev, [name]: value }));
-
-      if (value && !emailRegex.test(value)) {
-        setErrors((prev) => ({
-          ...prev,
-          personal_email: "Invalid email format.",
-        }));
-      } else {
-        setErrors((prev) => ({ ...prev, personal_email: "" }));
-      }
-      return;
-    }
-
-    if (name === "aadhaar_number") {
-      const numericValue = value.replace(/\D/g, ""); // Allow only digits
-
-      if (numericValue.length <= 12) {
-        setFormData((prev) => ({ ...prev, [name]: numericValue }));
-      }
-
-      if (numericValue.length > 0 && numericValue.length !== 12) {
-        setErrors((prev) => ({
-          ...prev,
-          aadhaar_number: "Aadhaar number must be exactly 12 digits.",
-        }));
-      } else {
-        setErrors((prev) => ({ ...prev, aadhaar_number: "" }));
-      }
-      return;
-    }
-
-    if (name === "PAN") {
-      const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i;
-      setFormData((prev) => ({ ...prev, [name]: value.toUpperCase() }));
-
-      if (value && !panRegex.test(value)) {
-        setErrors((prev) => ({
-          ...prev,
-          PAN: "Invalid PAN format (ABCDE1234F).",
-        }));
-      } else {
-        setErrors((prev) => ({ ...prev, PAN: "" }));
-      }
-      return;
-    }
-
-    if (name === "UAN") {
-      const numericValue = value.replace(/\D/g, "");
-      if (numericValue.length <= 12) {
-        setFormData((prev) => ({ ...prev, [name]: numericValue }));
-      }
-      if (numericValue.length > 0 && numericValue.length !== 12) {
-        setErrors((prev) => ({
-          ...prev,
-          UAN: "UAN must be exactly 12 digits.",
-        }));
-      } else {
-        setErrors((prev) => ({ ...prev, UAN: "" }));
-      }
-      return;
-    }
-
-    if (name === "pf_number") {
-      const pfRegex = /^[A-Za-z0-9]{5,22}$/;
-      setFormData((prev) => ({ ...prev, [name]: value }));
-
-      if (value && !pfRegex.test(value)) {
-        setErrors((prev) => ({
-          ...prev,
-          pf_number: "PF number must be 5-22 alphanumeric characters.",
-        }));
-      } else {
-        setErrors((prev) => ({ ...prev, pf_number: "" }));
-      }
-      return;
-    }
-
-    if (name === "esi_number") {
-      const numericValue = value.replace(/\D/g, "");
-      if (numericValue.length <= 10) {
-        setFormData((prev) => ({ ...prev, [name]: numericValue }));
-      }
-      if (numericValue.length > 0 && numericValue.length !== 10) {
-        setErrors((prev) => ({
-          ...prev,
-          esi_number: "ESI number must be exactly 10 digits.",
-        }));
-      } else {
-        setErrors((prev) => ({ ...prev, esi_number: "" }));
-      }
-      return;
-    }
-
-    if (name === "passport_number") {
-      const passportRegex = /^[A-Z]{1,2}[0-9]{6,7}$/i;
-      setFormData((prev) => ({ ...prev, [name]: value.toUpperCase() }));
-
-      if (value && !passportRegex.test(value)) {
-        setErrors((prev) => ({
-          ...prev,
-          passport_number: "Invalid passport format (e.g., A1234567).",
-        }));
-      } else {
-        setErrors((prev) => ({ ...prev, passport_number: "" }));
-      }
-      return;
-    }
-
-    if (name === "employee_email") {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      setFormData((prev) => ({ ...prev, [name]: value }));
-
-      if (value && !emailRegex.test(value)) {
-        setErrors((prev) => ({
-          ...prev,
-          employee_email: "Invalid official email format.",
-        }));
-      } else {
-        setErrors((prev) => ({ ...prev, employee_email: "" }));
-      }
-      return;
-    }
-
-    if (name === "emergency_contact_number") {
-      const numericValue = value.replace(/\D/g, ""); // Allow only digits
-      if (numericValue.length <= 10) {
-        setFormData((prev) => ({ ...prev, [name]: numericValue }));
-      }
-      if (numericValue.length > 0 && numericValue.length !== 10) {
-        setErrors((prev) => ({
-          ...prev,
-          emergency_contact_number:
-            "Emergency contact number must be exactly 10 digits.",
-        }));
-      } else {
-        setErrors((prev) => ({ ...prev, emergency_contact_number: "" }));
-      }
-      return;
-    }
-
-    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleExperienceChange = (e) => {
@@ -282,31 +72,17 @@ const AddEmployee = () => {
     let totalMonths =
       parseInt(updated.total_years || 0) * 12 +
       parseInt(updated.total_months || 0);
+    let previousMonths =
+      parseInt(updated.previous_years || 0) * 12 +
+      parseInt(updated.previous_months || 0);
 
     setExperienceUI(updated);
     setFormData((prev) => ({
       ...prev,
       arris_experience: arrisMonths,
       total_experience: totalMonths,
+      previous_experience: previousMonths,
     }));
-  };
-
-  const handleFileChange = (e) => {
-    const { name, files: selectedFiles } = e.target;
-
-    if (name === "attachments") {
-      setFiles((prev) => ({
-        ...prev,
-        attachments: prev.attachments
-          ? [...prev.attachments, ...Array.from(selectedFiles)]
-          : Array.from(selectedFiles),
-      }));
-    } else {
-      setFiles((prev) => ({
-        ...prev,
-        [name]: selectedFiles[0],
-      }));
-    }
   };
 
   const handleSubmit = async (e) => {
@@ -322,15 +98,15 @@ const AddEmployee = () => {
       "year_of_passing",
       "arris_experience",
       "total_experience",
-      "personal_email",     
-      "employee_email",     
-      "contact_number",     
-      "aadhaar_number",     
-      "PAN",                
-      "UAN",                
-      "pf_number",          
-      "esi_number",         
-      "passport_number",    
+      "personal_email",
+      "employee_email",
+      "contact_number",
+      "aadhaar_number",
+      "PAN",
+      "UAN",
+      "pf_number",
+      "esi_number",
+      "passport_number",
     ];
 
     const cleanedData = cleanFormData(formData, fieldsToNullify);
@@ -343,53 +119,55 @@ const AddEmployee = () => {
         formPayload.append(key, value);
       }
     });
-    
 
-   // Append profile picture if available
-  if (files.profile_picture) {
-    formPayload.append("profile_picture", files.profile_picture);
-  }
-
-  try {
-    //  Step 1: Post Employee data
-    const response = await fetch(`${config.apiBaseURL}/employees/`, {
-      method: "POST",
-      body: formPayload,
-    });
-
-    if (!response.ok) throw new Error("Failed to add employee");
-
-    const responseData = await response.json();
-    const newEmployeeId = responseData.data.employee_id;  //  Get employee_id from response
-
-    console.log("Employee created with ID:", newEmployeeId);
-
-    //  Step 2: Post Attachments if available
-    if (files.attachments && files.attachments.length > 0) {
-      for (let file of files.attachments) {
-        const attachmentPayload = new FormData();
-        attachmentPayload.append("file", file);                  // correct field
-        attachmentPayload.append("employee", newEmployeeId);  //  append employee_id for each file
-    
-        const res = await fetch(`${config.apiBaseURL}/attachments/`, {
-          method: "POST",
-          body: attachmentPayload,
-        });
-    
-        if (!res.ok) throw new Error("One of the attachments failed to upload");
-      }
-    
-      console.log(" All attachments uploaded");
+    // Append profile picture if available
+    if (profilePicture) {
+      formPayload.append("profile_picture", profilePicture);
     }
-    
 
-    // After everything success
-    navigate("/hr/detail/employee-details");
+    try {
+      //  Step 1: Post Employee data
+      const response = await fetch(`${config.apiBaseURL}/employees/`, {
+        method: "POST",
+        body: formPayload,
+      });
 
-  } catch (error) {
-    console.error("Error during employee creation or attachment upload:", error);
-  }
-};
+      if (!response.ok) throw new Error("Failed to add employee");
+
+      const responseData = await response.json();
+      const newEmployeeId = responseData.data.employee_id; //  Get employee_id from response
+
+      console.log("Employee created with ID:", newEmployeeId);
+
+      //  Step 2: Post Attachments if available
+
+      if (newAttachments && newAttachments.length > 0) {
+        for (let file of newAttachments) {
+          const attachmentPayload = new FormData();
+          attachmentPayload.append("file", file); // correct field
+          attachmentPayload.append("employee", newEmployeeId); //  append employee_id for each file
+
+          const res = await fetch(`${config.apiBaseURL}/attachments/`, {
+            method: "POST",
+            body: attachmentPayload,
+          });
+
+          if (!res.ok)
+            throw new Error("One of the attachments failed to upload");
+        }
+
+        console.log(" All attachments uploaded");
+      }
+
+      // After everything success
+      navigate("/hr/detail/employee-details");
+    } catch (error) {
+      console.error(
+        "Error during employee creation or attachment upload:",
+        error
+      );
+    }
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -404,8 +182,7 @@ const AddEmployee = () => {
                   accept="image/*"
                   id="profile-picture-input"
                   style={{ display: "none" }}
-                  onChange={handleFileChange}
-                  name="profile_picture"
+                  onChange={(e) => setProfilePicture(e.target.files[0])}
                 />
                 <label
                   htmlFor="profile-picture-input"
@@ -413,8 +190,8 @@ const AddEmployee = () => {
                 >
                   <img
                     src={
-                      files.profile_picture
-                        ? URL.createObjectURL(files.profile_picture)
+                      profilePicture
+                        ? URL.createObjectURL(profilePicture)
                         : usePlaceholder
                     }
                     alt="Profile Preview"
@@ -424,11 +201,7 @@ const AddEmployee = () => {
                     <img
                       src={cameraIcon}
                       alt="Camera Icon"
-                      style={{
-                        width: "20px",
-                        height: "20px",
-                        objectFit: "contain",
-                      }}
+                      className="camera-icon"
                     />
                   </div>
                 </label>
@@ -438,15 +211,15 @@ const AddEmployee = () => {
             <div className="attachments-wrapper">
               <label>Attachments</label>
               <div className="attachments-box">
-                {files.attachments && files.attachments.length > 0 && (
+                {newAttachments.length > 0 && (
                   <div className="attachments-list">
-                    {files.attachments.map((file, index) => (
+                    {newAttachments.map((file, index) => (
                       <div key={index} className="attachment-item">
                         <span className="attachment-name">{file.name}</span>
                         <button
                           type="button"
                           className="remove-attachment"
-                          onClick={() => removeAttachment(index)}
+                          onClick={() => removeNewAttachment(index)}
                         >
                           &times;
                         </button>
@@ -461,7 +234,7 @@ const AddEmployee = () => {
                   name="attachments"
                   multiple
                   style={{ display: "none" }}
-                  onChange={handleFileChange}
+                  onChange={handleAttachmentChange}
                 />
                 <label
                   htmlFor="attachments-input"
@@ -758,6 +531,35 @@ const AddEmployee = () => {
                 onChange={handleChange}
                 placeholder="Previous Company Name"
               />
+            </div>
+            <div className="individual-tabs">
+              <label>Previous Experience</label>
+              <div style={{ display: "flex", gap: "10px" }}>
+                <select
+                  name="previous_years"
+                  value={experienceUI.previous_years}
+                  onChange={handleExperienceChange}
+                >
+                  <option value="">Years</option>
+                  {[...Array(31).keys()].map((year) => (
+                    <option key={year} value={year}>
+                      {year} Years
+                    </option>
+                  ))}
+                </select>
+                <select
+                  name="previous_months"
+                  value={experienceUI.previous_months}
+                  onChange={handleExperienceChange}
+                >
+                  <option value="">Months</option>
+                  {[...Array(12).keys()].map((month) => (
+                    <option key={month} value={month}>
+                      {month} Months
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
             <div className="individual-tabs">
               <label>Arris Experience</label>

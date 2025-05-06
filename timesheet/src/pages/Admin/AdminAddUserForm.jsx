@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import config from "../../config";
 import roleOptions from "../../constants/roleOptions";
+import Breadcrumbs from "../../components/Breadcrumbs";
 
 const AddUserForm = ({ onCancel, onSave }) => {
   const [employeeID, setEmployeeID] = useState("");
@@ -16,7 +17,9 @@ const AddUserForm = ({ onCancel, onSave }) => {
 
   const fetchEmployee = async () => {
     try {
-      const response = await fetch(`${config.apiBaseURL}/employees/`);
+      const response = await fetch(
+        `${config.apiBaseURL}/unassigned-employees/`
+      );
       const data = await response.json();
       setEmployeeOptions(data);
     } catch (error) {
@@ -40,7 +43,11 @@ const AddUserForm = ({ onCancel, onSave }) => {
       });
 
       if (!response.ok) {
-        throw new Error(`Error adding user: ${response.statusText}`);
+        // throw new Error(`Error adding user: ${response.statusText}`);
+        const errorData = await response.json();
+        throw new Error(
+          `Error adding user: ${errorData.detail || response.statusText}`
+        );
       }
 
       console.log("User added successfully");
@@ -57,6 +64,15 @@ const AddUserForm = ({ onCancel, onSave }) => {
 
   return (
     <div className="add-user-container">
+      <Breadcrumbs
+        crumbs={[
+          { label: "Admin", link: "/admin" },
+          { label: "Users", link: "/admin/detail/users" },
+          { label: "Add User" }, // or "Edit User"
+        ]}
+        showBack={true}
+      />
+
       <div className="table-top-bar">
         <div>Add User</div>
       </div>
@@ -65,13 +81,22 @@ const AddUserForm = ({ onCancel, onSave }) => {
           <label>Employee ID</label>
           <select
             value={employeeID}
-            onChange={(e) => setEmployeeID(e.target.value)}
+            onChange={(e) => {
+              const selectedID = e.target.value;
+              setEmployeeID(selectedID);
+              const selectedEmployee = employeeOptions.find(
+                (emp) => emp.employee_id === selectedID
+              );
+              if (selectedEmployee) {
+                setEmail(selectedEmployee.employee_email || "");
+              }
+            }}
             required
           >
             <option value="">Select Employee</option>
             {employeeOptions.map((emp) => (
               <option key={emp.employee_id} value={emp.employee_id}>
-                {emp.employee_id} - {emp.employee_name}
+                {emp.employee_code} - {emp.employee_name}
               </option>
             ))}
           </select>
@@ -131,9 +156,14 @@ const AddUserForm = ({ onCancel, onSave }) => {
         </div>
 
         <div className="form-buttons">
-          <button type="submit" className="btn btn-green">
+          <button
+            type="submit"
+            className="btn btn-green"
+            disabled={!employeeID || !role || !email || !password}
+          >
             Save
           </button>
+
           <button
             type="button"
             className="btn btn-orange"

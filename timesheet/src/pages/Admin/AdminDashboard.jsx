@@ -19,8 +19,8 @@ const AdminDashboard = () => {
   const tiles = [
     { label: "Users", path: "detail/users" },
     // { label: "Assign Role", path: "detail/assign-role" },
-    { label: "Reports", path: "detail/reports" },
-    { label: "Holidays", path: "detail/holidays" },
+    // { label: "Reports", path: "detail/reports" },
+    // { label: "Holidays", path: "detail/holidays" },
   ];
 
   // Current tab from path name

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import config from "../../config";
 import roleOptions from "../../constants/roleOptions";
+import Breadcrumbs from "../../components/Breadcrumbs";
 
 const EditUserForm = () => {
   const { user_id } = useParams();
@@ -79,6 +80,14 @@ const EditUserForm = () => {
 
   return (
     <div className="add-user-container">
+      <Breadcrumbs
+        crumbs={[
+          { label: "Admin", link: "/admin" },
+          { label: "Users", link: "/admin/detail/users" },
+          { label: "View User" }, // or "Edit User"
+        ]}
+        showBack={true}
+      />
       <div className="table-top-bar">
         <div>
           {editMode ? (

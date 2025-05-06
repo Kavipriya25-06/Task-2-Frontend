@@ -40,6 +40,8 @@ import HRDetailView from "./pages/HR/HRDetailView.jsx";
 import AddEmployee from "./pages/HR/HRAddEmployee.jsx";
 import EditEmployee from "./pages/HR/HREditEmployee.jsx";
 import EmployeeList from "./pages/HR/HREmployeeList.jsx";
+import HRHolidayCalendar from "./pages/HR/HRHolidayCalendar.jsx";
+import HRHolidayList from "./pages/HR/HRHolidayList.jsx";
 
 // Manager pages
 import ManagerDashboard from "./pages/Manager/ManagerDashboard.jsx";
@@ -58,15 +60,20 @@ import ManagerTeamLeadersView from "./pages/Manager/ManagerTeamLeadersView.jsx";
 import ManagerProjectCreate from "./pages/Manager/ManagerProjectCreate.jsx";
 import ManagerBuildingCreate from "./pages/Manager/ManagerBuildingCreate.jsx";
 import ManagerTaskCreate from "./pages/Manager/ManagerTaskCreate.jsx";
+import ManagerApprovalScreen from "./pages/Manager/ManagerApprovalScreen.jsx";
+import ManagerLeaveApplication from "./pages/Manager/ManagerLeaveApplication.jsx";
+import ManagerLeaveRequestForm from "./pages/Manager/ManagerLeaveRequestForm.jsx";
 
 // Team Lead pages
 import TeamLeadDashboard from "./pages/TeamLead/TeamLeadDashboard.jsx";
 import TeamLeadLayout from "./pages/TeamLead/TeamLeadLayout.jsx";
 import TeamLeadDetailView from "./pages/TeamLead/TeamLeadDetailView.jsx";
 import TeamLeadAttendance from "./pages/TeamLead/TeamLeadAttendance.jsx";
+import TeamLeadAttendanceAdmin from "./pages/TeamLead/TeamLeadAttendanceAdmin.jsx";
 import TeamLeadEmployees from "./pages/TeamLead/TeamLeadEmployees.jsx";
 import TeamLeadLeaveRequests from "./pages/TeamLead/TeamLeadLeaveRequests.jsx";
 import TeamLeadProjects from "./pages/TeamLead/TeamLeadProjects.jsx";
+import TeamLeadProjectView from "./pages/TeamLead/TeamLeadProjectView.jsx";
 import TeamLeadTimeSheetEntry from "./pages/TeamLead/TeamLeadTimeSheetEntry.jsx";
 import TeamLeadProjectCreate from "./pages/TeamLead/TeamLeadProjectCreate.jsx";
 import TeamLeadBuildingCreate from "./pages/TeamLead/TeamLeadBuildingCreate.jsx";
@@ -74,6 +81,7 @@ import TeamLeadTaskCreate from "./pages/TeamLead/TeamLeadTaskCreate.jsx";
 import TeamLeadLeaveRequestForm from "./pages/TeamLead/TeamLeadLeaveRequestForm.jsx";
 import TeamLeadDailyTimeSheetEntry from "./pages/TeamLead/TeamLeadDailyTimeSheetEntry.jsx";
 import TeamLeadWeeklyTimeSheetEntry from "./pages/TeamLead/TeamLeadWeeklyTimeSheet.jsx";
+import TeamLeadApprovalScreen from "./pages/TeamLead/TeamLeadApprovalScreen.jsx";
 
 // Employee pages
 import EmployeeDashboard from "./pages/Employee/EmployeeDashboard.jsx";
@@ -174,9 +182,7 @@ const App = () => {
                   path="users/edit-user/:user_id"
                   element={<EditUserForm />}
                 />
-                <Route path="reports" element={<Reports />} />
-                <Route path="holidays" element={<HolidayCalendar />} />
-                <Route path="holidays/holiday-list" element={<HolidayList />} />
+                {/* <Route path="reports" element={<Reports />} /> */}
               </Route>
             </Route>
 
@@ -192,6 +198,11 @@ const App = () => {
                 <Route
                   path="employee-details/edit-employee/:employee_id"
                   element={<EditEmployee />}
+                />
+                <Route path="holidays" element={<HRHolidayCalendar />} />
+                <Route
+                  path="holidays/holiday-list"
+                  element={<HRHolidayList />}
                 />
               </Route>
             </Route>
@@ -228,15 +239,25 @@ const App = () => {
                   path="leave-requests"
                   element={<ManagerLeaveRequests />}
                 />
+                 <Route
+                  path="leave-requests/create"
+                  element={<ManagerLeaveRequestForm />}
+                />
                 <Route path="attendance" element={<ManagerAttendance />} />
                 <Route
                   path="attendance/attendance-admin"
                   element={<ManagerAttendanceAdmin />}
                 />
                 <Route
+                  path="attendance/timesheetapproval/:employee_id/:date"
+                  element={<ManagerApprovalScreen />}
+                />
+                <Route
                   path="team-leaders/tl"
                   element={<ManagerTeamLeadersView />}
                 />
+                <Route path ="leave-requests/Leaveapplication" element ={<ManagerLeaveApplication/>} />
+
               </Route>
             </Route>
 
@@ -245,6 +266,10 @@ const App = () => {
               <Route index element={<TeamLeadDashboard />} />
               <Route path="detail" element={<TeamLeadDetailView />}>
                 <Route path="projects" element={<TeamLeadProjects />} />
+                <Route
+                  path="projects/:project_id"
+                  element={<TeamLeadProjectView />}
+                />
                 <Route
                   path="projects/create"
                   element={<TeamLeadProjectCreate />}
@@ -277,6 +302,14 @@ const App = () => {
                 />
 
                 <Route path="attendance" element={<TeamLeadAttendance />} />
+                <Route
+                  path="attendance/attendance-admin"
+                  element={<TeamLeadAttendanceAdmin />}
+                />
+                <Route
+                  path="attendance/timesheetapproval/:employee_id/:date"
+                  element={<TeamLeadApprovalScreen />}
+                />
               </Route>
             </Route>
 

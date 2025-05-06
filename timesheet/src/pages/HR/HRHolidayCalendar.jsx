@@ -1,14 +1,11 @@
+// src\pages\Admin\HolidayCalendar.jsx
+
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate } from "react-router-dom";
-import TeamLeadDailyTimeSheetEntry from "./TeamLeadDailyTimeSheetEntry";
-import TeamLeadWeeklyTimeSheetEntry from "./TeamLeadWeeklyTimeSheet";
 
-const TeamLeadTimeSheetEntry = () => {
-  const { user } = useAuth();
+const HRHolidayCalendar = () => {
   const [calendarData, setCalendarData] = useState([]);
-  const [biometricData,setBiometricData] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
@@ -26,21 +23,8 @@ const TeamLeadTimeSheetEntry = () => {
     }
   };
 
-  const fetchBiometricData = async () => {
-    try {
-      const response = await fetch(
-        `${config.apiBaseURL}/biometric-data/by_employee/${user.employee_id}/`
-      );
-      const data = await response.json();
-      setBiometricData(data);
-    } catch (error) {
-      console.error("Error fetching biometric data:", error);
-    }
-  };
-
   useEffect(() => {
     fetchCalendarData(selectedYear);
-    fetchBiometricData();
     const updated = new Date(currentDate);
     updated.setFullYear(selectedYear);
     setCurrentDate(updated);
@@ -114,39 +98,19 @@ const TeamLeadTimeSheetEntry = () => {
       const weekNumber = week.find((day) => day)?.week_of_year || "-";
       rows.push(
         <React.Fragment key={`week-${weekNumber}-${i}`}>
-          <div className="week-number" onClick={() => navigate(`createweekly`)}>
-            W-{weekNumber}
-          </div>
+          <div className="week-number">W-{weekNumber}</div>
           {week.map((entry, idx) =>
             entry ? (
               <div
                 key={entry.calendar_id}
-                className={`calendar-cell1 ${
+                className={`calendar-cell ${
                   entry.is_weekend ? "weekend" : ""
                 } ${entry.is_holiday ? "holiday" : ""}`}
-                data-note={entry.notes || ""}
               >
                 <div className="day-number">{entry.day}</div>
-                <div
-                  className="day-circle"
-                  onClick={() => {
-                    const clickedDate = `${entry.year}-${String(entry.month).padStart(2, "0")}-${String(entry.day).padStart(2, "0")}`;
-                    navigate(`viewbiometric/${clickedDate}`);
-                  }}
-                  style={{ cursor: "pointer" }}
-                >
-                  {/**  Show work_duration from biometric data */}
-                  {(() => {
-                      const dateStr = `${entry.year}-${String(entry.month).padStart(2, "0")}-${String(entry.day).padStart(2, "0")}`;
-                      const dayBio = biometricData.find((b) => b.date === dateStr);
-                      return dayBio ? dayBio.work_duration : "";
-                  })()}
-                </div>
-                
                 {entry.notes && (
-                  <div className="holiday-note1">{entry.notes}</div>
+                  <div className="holiday-note">{entry.notes}</div>
                 )}
-                <div className="bottom-right-circle"></div>
               </div>
             ) : (
               <div key={`empty-${i + idx}`} className="calendar-cell empty" />
@@ -196,12 +160,12 @@ const TeamLeadTimeSheetEntry = () => {
             </option>
           ))}
         </select>
-        {/* <button
+        <button
           className="calendar-title-btn"
-          onClick={() => navigate("/admin/detail/holidays/holiday-list")}
+          onClick={() => navigate("holiday-list")}
         >
           Holiday list {year}
-        </button> */}
+        </button>
       </div>
 
       {/* <div className="calendar-grid">
@@ -224,4 +188,5 @@ const TeamLeadTimeSheetEntry = () => {
     </div>
   );
 };
-export default TeamLeadTimeSheetEntry;
+
+export default HRHolidayCalendar;

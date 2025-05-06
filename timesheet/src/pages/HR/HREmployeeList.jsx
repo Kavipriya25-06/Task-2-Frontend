@@ -7,6 +7,8 @@ import { FaEdit } from "react-icons/fa";
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
+  const [filteredEmployees, setFilteredEmployees] = useState([]);
+  const [searchText, setSearchText] = useState("");
   const navigate = useNavigate();
 
   const fetchEmployees = async () => {
@@ -14,6 +16,7 @@ const EmployeeList = () => {
       const response = await fetch(`${config.apiBaseURL}/employees/`);
       const data = await response.json();
       setEmployees(data);
+      setFilteredEmployees(data);
     } catch (error) {
       console.error("Error fetching employees:", error);
     }
@@ -31,10 +34,35 @@ const EmployeeList = () => {
     fetchEmployees();
   }, []);
 
+  // Search filter logic
+  useEffect(() => {
+    const lowerSearch = searchText.toLowerCase();
+    const filtered = employees.filter((u) => {
+      const code = u.employee_code?.toLowerCase() || "";
+      const name = u.employee_name?.toLowerCase() || "";
+      const email = u.reporting_manager?.toLowerCase() || "";
+      return (
+        code.includes(lowerSearch) ||
+        name.includes(lowerSearch) ||
+        email.includes(lowerSearch)
+      );
+    });
+    setFilteredEmployees(filtered);
+  }, [searchText, employees]);
+
   return (
     <div className="employee-table-wrapper">
       <div className="user-header">
         <h2 className="employee-title">Employee Details</h2>
+        <div className="search-bar-container">
+          <input
+            type="text"
+            placeholder="Search by code, name, or reporting manager"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            className="search-bar"
+          />
+        </div>
         <button className="add-user-btn" onClick={() => handleAddClick()}>
           Add Employee
         </button>
@@ -50,7 +78,7 @@ const EmployeeList = () => {
           </tr>
         </thead>
         <tbody>
-          {employees.map((emp) => (
+          {filteredEmployees.map((emp) => (
             <tr key={emp.employee_id}>
               <td
                 onClick={() => handleEditClick(emp.employee_id)}
