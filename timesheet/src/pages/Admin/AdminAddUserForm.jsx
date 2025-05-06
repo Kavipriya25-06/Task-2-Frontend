@@ -78,7 +78,7 @@ const AddUserForm = ({ onCancel, onSave }) => {
       </div>
       <form className="add-user-form" onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Employee ID</label>
+          <label>Employee Code</label>
           <select
             value={employeeID}
             onChange={(e) => {
@@ -124,8 +124,9 @@ const AddUserForm = ({ onCancel, onSave }) => {
             className="input"
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            // onChange={(e) => setEmail(e.target.value)}
             required
+            disabled
           />
         </div>
 
