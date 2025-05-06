@@ -17,108 +17,96 @@ const TeamLeadApprovalScreen = () => {
   rejected: false
 });
 
-
 useEffect(() => {
-  const fetchTimesheetData = async () => {
+  const fetchBiometricTaskData = async () => {
     try {
-      const response = await fetch(`${config.apiBaseURL}/timesheet-employee-daily/${employee_id}/?today=${date}`);
+      const response = await fetch(
+        `${config.apiBaseURL}/biometric-daily-task/${employee_id}/?today=${date}`
+      );
       const data = await response.json();
-      const records = data;
-
-      if (records.length > 0) {
-        let timesheetRows = [];
-        setStatus({
-          approved: records[0].approved,
-          rejected: records[0].rejected
-        });
-
-        records.forEach((entry) => {
-          const project =
-            entry.task_assign?.building_assign?.project_assign?.project?.project_title || "";
-
-          const task =
-            entry.task_assign?.task?.task_title || "";
-
-          const hours = parseFloat(entry.task_hours || "0");
-
-          timesheetRows.push({
-            timesheet_id: entry.timesheet_id,
-            project,
-            task,
-            hours: hours.toString()
-          });
-        });
-
-        setRows(timesheetRows);
-      } else {
-        setRows([{ project: "", task: "", hours: "" }]);
-      }
-    } catch (err) {
-      console.error("Error fetching timesheet data", err);
-      setRows([{ project: "", task: "", hours: "" }]);
-    }
-  };
-
-  fetchTimesheetData();
-}, [employee_id, date]);
-
-
-useEffect(() => {
-  const fetchBiometricData = async () => {
-    try {
-      const response = await fetch(`${config.apiBaseURL}/biometric-daily/${employee_id}/?today=${date}`);
-      console.log("Biometric response status:", response.status);
-
-      if (!response.ok) {
-        console.warn("Biometric API response not OK:", response.status);
-        setAttendanceDetails({
-          in_time: "--:--",
-          out_time: "--:--",
-          total_duration: "0.00"
-        });
-        return;  // Stop here
-      }
-
-      const data = await response.json();
-      console.log("Biometric data:", data);
+      console.log("Biometric task data:", data);
 
       if (data && data.length > 0) {
-        // Step 1: Find the latest record by modified_on
+        // Step 1: Find latest biometric record for the day
         let latestRecord = data[0];
-
         data.forEach(record => {
           if (new Date(record.modified_on) > new Date(latestRecord.modified_on)) {
             latestRecord = record;
           }
         });
 
-        //  Step 2: Set that latest record in state
+        // Step 2: Set attendance details from the latest record
         setAttendanceDetails({
           in_time: latestRecord.in_time || "--:--",
           out_time: latestRecord.out_time || "--:--",
           total_duration: latestRecord.total_duration || "0.00"
         });
 
+        // Step 3: Prepare rows from timesheets
+        let timesheetRows = [];
+        if (latestRecord.timesheets && latestRecord.timesheets.length > 0) {
+          latestRecord.timesheets.forEach(entry => {
+            const project =
+              entry.task_assign?.building_assign?.project_assign?.project?.project_title || "";
+
+            const task =
+              entry.task_assign?.task?.task_title || "";
+
+            const hours = parseFloat(entry.task_hours || "0");
+
+            timesheetRows.push({
+              timesheet_id: entry.timesheet_id,
+              project,
+              task,
+              hours: hours.toString()
+            });
+          });
+
+          // If at least one timesheet, set status from the first one
+          setStatus({
+            approved: latestRecord.timesheets[0].approved,
+            rejected: latestRecord.timesheets[0].rejected
+          });
+        } else {
+          // No timesheets found
+          timesheetRows = [{ project: "", task: "", hours: "" }];
+          setStatus({
+            approved: false,
+            rejected: false
+          });
+        }
+
+        setRows(timesheetRows);
+
       } else {
-        console.warn("Biometric data is empty");
+        // No data found
         setAttendanceDetails({
           in_time: "--:--",
           out_time: "--:--",
           total_duration: "0.00"
         });
+        setRows([{ project: "", task: "", hours: "" }]);
+        setStatus({
+          approved: false,
+          rejected: false
+        });
       }
-
     } catch (err) {
-      console.error("Error fetching biometric data:", err);
+      console.error("Error fetching biometric task data", err);
       setAttendanceDetails({
         in_time: "--:--",
         out_time: "--:--",
         total_duration: "0.00"
       });
+      setRows([{ project: "", task: "", hours: "" }]);
+      setStatus({
+        approved: false,
+        rejected: false
+      });
     }
   };
 
-  fetchBiometricData();
+  fetchBiometricTaskData();
 }, [employee_id, date]);
 
   const handleRowChange = (index, field, value) => {
