@@ -18,74 +18,107 @@ const TeamLeadApprovalScreen = () => {
 });
 
 
-  useEffect(() => {
-    const fetchTimesheetData = async () => {
-      try {
-        const response = await fetch(`${config.apiBaseURL}/timesheet-employee-daily/${employee_id}/?today=${date}`);
-        const data = await response.json();
+useEffect(() => {
+  const fetchTimesheetData = async () => {
+    try {
+      const response = await fetch(`${config.apiBaseURL}/timesheet-employee-daily/${employee_id}/?today=${date}`);
+      const data = await response.json();
+      const records = data;
 
-        // Filter records matching employee_id and date
-        // const records = data.filter(
-        //   (entry) => entry.employee === employee_id && entry.date === date
-        // );
-        const records = data
+      if (records.length > 0) {
+        let timesheetRows = [];
+        setStatus({
+          approved: records[0].approved,
+          rejected: records[0].rejected
+        });
 
-        if (records.length > 0) {
-          // Extract start_time, end_time, total_duration
-          // For total_duration, we'll sum up task_hours
-          let totalHours = 0;
-          let inTime = records[0].start_time || "--:--";
-          let outTime = records[0].end_time || "--:--";
+        records.forEach((entry) => {
+          const project =
+            entry.task_assign?.building_assign?.project_assign?.project?.project_title || "";
 
+          const task =
+            entry.task_assign?.task?.task_title || "";
 
-          setStatus({
-            approved: records[0].approved,
-            rejected: records[0].rejected
+          const hours = parseFloat(entry.task_hours || "0");
+
+          timesheetRows.push({
+            timesheet_id: entry.timesheet_id,
+            project,
+            task,
+            hours: hours.toString()
           });
+        });
 
-
-          const timesheetRows = records.map((entry) => {
-            const project =
-              entry.task_assign?.building_assign?.project_assign?.project
-                ?.project_title || "";
-
-            const task =
-              entry.task_assign?.task?.task_title || "";
-
-            const hours = parseFloat(entry.task_hours || "0");
-            totalHours += hours;
-
-            return {
-              timesheet_id:entry.timesheet_id,
-              project,
-              task,
-              hours: hours.toString()
-            };
-          });
-
-          setAttendanceDetails({
-            in_time: inTime,
-            out_time: outTime,
-            total_duration: totalHours.toFixed(2)
-          });
-
-          setRows(timesheetRows);
-        } else {
-          // No records → reset
-          setAttendanceDetails({
-            in_time: "--:--",
-            out_time: "--:--",
-            total_duration: "0.00"
-          });
-          setRows([{ project: "", task: "", hours: "" }]);
-        }
-      } catch (err) {
-        console.error("Error fetching timesheet data", err);
+        setRows(timesheetRows);
+      } else {
         setRows([{ project: "", task: "", hours: "" }]);
       }
-    };
+    } catch (err) {
+      console.error("Error fetching timesheet data", err);
+      setRows([{ project: "", task: "", hours: "" }]);
+    }
+  };
 
-    fetchTimesheetData();
+  fetchTimesheetData();
+}, [employee_id, date]);
+
+
+useEffect(() => {
+  const fetchBiometricData = async () => {
+    try {
+      const response = await fetch(`${config.apiBaseURL}/biometric-daily/${employee_id}/?today=${date}`);
+      console.log("Biometric response status:", response.status);
+
+      if (!response.ok) {
+        console.warn("Biometric API response not OK:", response.status);
+        setAttendanceDetails({
+          in_time: "--:--",
+          out_time: "--:--",
+          total_duration: "0.00"
+        });
+        return;  // Stop here
+      }
+
+      const data = await response.json();
+      console.log("Biometric data:", data);
+
+      if (data && data.length > 0) {
+        // Step 1: Find the latest record by modified_on
+        let latestRecord = data[0];
+
+        data.forEach(record => {
+          if (new Date(record.modified_on) > new Date(latestRecord.modified_on)) {
+            latestRecord = record;
+          }
+        });
+
+        //  Step 2: Set that latest record in state
+        setAttendanceDetails({
+          in_time: latestRecord.in_time || "--:--",
+          out_time: latestRecord.out_time || "--:--",
+          total_duration: latestRecord.total_duration || "0.00"
+        });
+
+      } else {
+        console.warn("Biometric data is empty");
+        setAttendanceDetails({
+          in_time: "--:--",
+          out_time: "--:--",
+          total_duration: "0.00"
+        });
+      }
+
+    } catch (err) {
+      console.error("Error fetching biometric data:", err);
+      setAttendanceDetails({
+        in_time: "--:--",
+        out_time: "--:--",
+        total_duration: "0.00"
+      });
+    }
+  };
+
+  fetchBiometricData();
 }, [employee_id, date]);
 
   const handleRowChange = (index, field, value) => {

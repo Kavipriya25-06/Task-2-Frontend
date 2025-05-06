@@ -131,7 +131,7 @@ const TeamLeadTimeSheetEntry = () => {
                   className="day-circle"
                   onClick={() => {
                     const clickedDate = `${entry.year}-${String(entry.month).padStart(2, "0")}-${String(entry.day).padStart(2, "0")}`;
-                    navigate(`viewbiometric/${clickedDate}`);
+                    navigate(`createdaily/${clickedDate}`);
                   }}
                   style={{ cursor: "pointer" }}
                 >
