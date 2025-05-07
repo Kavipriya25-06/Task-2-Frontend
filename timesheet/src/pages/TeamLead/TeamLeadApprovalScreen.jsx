@@ -182,7 +182,7 @@ useEffect(() => {
 
   return (
     <div className="daily-timesheet-container">
-      <h3>Daily Timesheet Entry</h3>
+      {/* <h3>Daily Timesheet Entry</h3> */}
       <div className="timesheet-info">
         <p><strong>Employee ID:</strong> {employee_id}</p>
         <p><strong>Date:</strong> {date}</p>
@@ -203,40 +203,15 @@ useEffect(() => {
           {rows.map((row, index) => (
             <tr key={index}>
               <td>{row.project}
-                {/* <input
-                  type="text"
-                  placeholder="Enter project"
-                  value={row.project}
-                  // onChange={(e) => handleRowChange(index, "project", e.target.value)}
-                /> */}
               </td>
               <td> {row.task}
-                {/* <input
-                  // type="text"
-                  placeholder="Enter task"
-                  value={row.task}
-                  // onChange={(e) => handleRowChange(index, "task", e.target.value)}
-                /> */}
               </td>
               <td>{row.hours}
-                {/* <input
-                  type="number"
-                  placeholder="Hours"
-                  value={row.hours}
-                  // onChange={(e) => handleRowChange(index, "hours", e.target.value)}
-                /> */}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-
-      {/* <div
-        style={{ fontSize: "24px", cursor: "pointer", marginTop: "10px" }}
-        onClick={handleAddRow}
-      >
-        +
-      </div> */}
 
     <div className="button-container">
         {status.approved ? (  //  CHANGE: conditionally render approved button
