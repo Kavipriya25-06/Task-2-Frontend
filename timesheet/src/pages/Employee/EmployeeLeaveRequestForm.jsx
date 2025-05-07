@@ -74,7 +74,7 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
   };
 
   return (
-    <div className="form-container1">
+    <div className="form-container">
       <p className="form-subtitle1">
         Fill the required fields below to apply for annual leave.
       </p>
@@ -97,7 +97,7 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
         </div>
 
         <div className="row1">
-          <div className="form-group-half1">
+          <div className="form-group-half">
             <label className="label1">Start Date</label>
             <input
               type="date"

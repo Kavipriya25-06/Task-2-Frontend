@@ -226,8 +226,8 @@ const ManagerAttendanceAdmin = () => {
         <h2>Attendance Admin</h2>
       </div>
 
-      <div className="attendance-table">
-        <table>
+      <div>
+        <table className="holiday-table">
           <thead>
             <tr>
               <th>Employee</th>
@@ -377,21 +377,19 @@ const ManagerAttendanceAdmin = () => {
                   })
                 }
               />
-
-              <button type="submit" className="btn-green">
-                Submit
-              </button>
-              <button
-                onClick={() => setShowAddPopup(false)}
-                className="btn-red"
-              >
-                Cancel
-              </button>
+              <div className="btn-container">
+                <button type="submit" className="btn-save">
+                  Submit
+                </button>
+                <button onClick={() => setShowAddPopup(false)} className="btn-cancel">
+                  Cancel
+                </button>
+              </div>
             </form>
           </div>
         )}
 
-        <button onClick={() => setShowAddPopup(true)} className="btn-green">
+        <button onClick={() => setShowAddPopup(true)} className="btn-save">
           + Add Attendance
         </button>
       </div>

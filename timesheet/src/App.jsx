@@ -30,8 +30,8 @@ import AdminDetailView from "./pages/Admin/AdminDetailView.jsx";
 import AddUserForm from "./pages/Admin/AdminAddUserForm.jsx";
 import EditUserForm from "./pages/Admin/AdminEditUserForm.jsx";
 import Reports from "./pages/Admin/AdminReports.jsx";
-import HolidayCalendar from "./pages/Admin/AdminHolidayCalendar.jsx";
-import HolidayList from "./pages/Admin/AdminHolidayList.jsx";
+// import HolidayCalendar from "./pages/Admin/AdminHolidayCalendar.jsx";
+// import HolidayList from "./pages/Admin/AdminHolidayList.jsx";
 
 // HR pages
 import HRDashboard from "./pages/HR/HRDashboard.jsx";
@@ -40,6 +40,8 @@ import HRDetailView from "./pages/HR/HRDetailView.jsx";
 import AddEmployee from "./pages/HR/HRAddEmployee.jsx";
 import EditEmployee from "./pages/HR/HREditEmployee.jsx";
 import EmployeeList from "./pages/HR/HREmployeeList.jsx";
+import HolidayCalendar from "./pages/HR/HRHolidayCalendar.jsx";
+import HolidayList from "./pages/HR/HRHolidayList.jsx";
 
 // Manager pages
 import ManagerDashboard from "./pages/Manager/ManagerDashboard.jsx";
@@ -58,6 +60,7 @@ import ManagerTeamLeadersView from "./pages/Manager/ManagerTeamLeadersView.jsx";
 import ManagerProjectCreate from "./pages/Manager/ManagerProjectCreate.jsx";
 import ManagerBuildingCreate from "./pages/Manager/ManagerBuildingCreate.jsx";
 import ManagerTaskCreate from "./pages/Manager/ManagerTaskCreate.jsx";
+import ManagerLeadApprovalScreen from "./pages/Manager/ManagerLeadApprovalScreen.jsx";
 
 // Team Lead pages
 import TeamLeadDashboard from "./pages/TeamLead/TeamLeadDashboard.jsx";
@@ -67,6 +70,7 @@ import TeamLeadAttendance from "./pages/TeamLead/TeamLeadAttendance.jsx";
 import TeamLeadEmployees from "./pages/TeamLead/TeamLeadEmployees.jsx";
 import TeamLeadLeaveRequests from "./pages/TeamLead/TeamLeadLeaveRequests.jsx";
 import TeamLeadProjects from "./pages/TeamLead/TeamLeadProjects.jsx";
+import TeamLeadProjectView from "./pages/TeamLead/TeamLeadProjectView.jsx";
 import TeamLeadTimeSheetEntry from "./pages/TeamLead/TeamLeadTimeSheetEntry.jsx";
 import TeamLeadProjectCreate from "./pages/TeamLead/TeamLeadProjectCreate.jsx";
 import TeamLeadBuildingCreate from "./pages/TeamLead/TeamLeadBuildingCreate.jsx";
@@ -74,6 +78,7 @@ import TeamLeadTaskCreate from "./pages/TeamLead/TeamLeadTaskCreate.jsx";
 import TeamLeadLeaveRequestForm from "./pages/TeamLead/TeamLeadLeaveRequestForm.jsx";
 import TeamLeadDailyTimeSheetEntry from "./pages/TeamLead/TeamLeadDailyTimeSheetEntry.jsx";
 import TeamLeadWeeklyTimeSheetEntry from "./pages/TeamLead/TeamLeadWeeklyTimeSheet.jsx";
+import TeamLeadApprovalScreen from "./pages/TeamLead/TeamLeadApprovalScreen.jsx";
 
 // Employee pages
 import EmployeeDashboard from "./pages/Employee/EmployeeDashboard.jsx";
@@ -175,8 +180,8 @@ const App = () => {
                   element={<EditUserForm />}
                 />
                 <Route path="reports" element={<Reports />} />
-                <Route path="holidays" element={<HolidayCalendar />} />
-                <Route path="holidays/holiday-list" element={<HolidayList />} />
+                {/* <Route path="holidays" element={<HolidayCalendar />} />
+                <Route path="holidays/holiday-list" element={<HolidayList />} /> */}
               </Route>
             </Route>
 
@@ -185,6 +190,8 @@ const App = () => {
               <Route index element={<HRDashboard />} />
               <Route path="detail" element={<HRDetailView />}>
                 <Route path="employee-details" element={<EmployeeList />} />
+                <Route path="holidays" element={<HolidayCalendar />} />
+                <Route path="holidays/holiday-list" element={<HolidayList />} />
                 <Route
                   path="employee-details/add-employee"
                   element={<AddEmployee />}
@@ -237,6 +244,10 @@ const App = () => {
                   path="team-leaders/tl"
                   element={<ManagerTeamLeadersView />}
                 />
+                <Route
+                  path="team-leaders/approvalscreen"
+                  element={<ManagerLeadApprovalScreen />}
+                />
               </Route>
             </Route>
 
@@ -250,6 +261,10 @@ const App = () => {
                   element={<TeamLeadProjectCreate />}
                 />
                 <Route
+                  path="projects/:project_id"
+                  element={<TeamLeadProjectView />}
+                />
+                <Route
                   path="buildings/create"
                   element={<TeamLeadBuildingCreate />}
                 />
@@ -261,6 +276,10 @@ const App = () => {
                 <Route
                   path="time-sheet-entry/createdaily"
                   element={<TeamLeadDailyTimeSheetEntry />}
+                />
+                <Route
+                  path="time-sheet-entry/approvalscreen"
+                  element={<TeamLeadApprovalScreen />}
                 />
                 <Route
                   path="time-sheet-entry/createweekly"
@@ -277,6 +296,11 @@ const App = () => {
                 />
 
                 <Route path="attendance" element={<TeamLeadAttendance />} />
+
+                {/* <Route
+                  path="approvalscreen"
+                  element={<TeamLeadApprovalScreen />}
+                /> */}
               </Route>
             </Route>
 
@@ -306,7 +330,7 @@ const App = () => {
                   path="leave-requests/create"
                   element={<EmployeeLeaveRequestForm />}
                 />
-                <Route path="tasks/detail" element={<EmployeeTaskDetail />} />
+                  <Route path="tasks/:task_assign_id" element={<EmployeeTaskDetail />} />
               </Route>
             </Route>
           </Routes>

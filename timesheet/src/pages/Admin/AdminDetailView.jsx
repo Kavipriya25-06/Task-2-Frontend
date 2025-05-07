@@ -23,8 +23,8 @@ const AdminDetailView = () => {
   const tabs = [
     { label: "Users", path: "users" },
     // { label: "Assign Role", path: "assign-role" },
-    { label: "Reports", path: "reports" },
-    { label: "Holidays", path: "holidays" },
+    // { label: "Reports", path: "reports" },
+    // { label: "Holidays", path: "holidays" },
   ];
 
   return (

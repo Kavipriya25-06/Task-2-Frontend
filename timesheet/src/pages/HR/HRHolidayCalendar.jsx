@@ -1,11 +1,10 @@
+// src\pages\Admin\HolidayCalendar.jsx
+
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate } from "react-router-dom";
-import TeamLeadDailyTimeSheetEntry from "./TeamLeadDailyTimeSheetEntry";
-import TeamLeadWeeklyTimeSheetEntry from "./TeamLeadWeeklyTimeSheet";
 
-const TeamLeadTimeSheetEntry = () => {
+const HolidayCalendar = () => {
   const [calendarData, setCalendarData] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -94,34 +93,24 @@ const TeamLeadTimeSheetEntry = () => {
     const filledData = new Array(offset).fill(null).concat(monthData);
 
     const rows = [];
-    const status = "pending"; // e.g., "Pending"
     for (let i = 0; i < filledData.length; i += 7) {
       const week = filledData.slice(i, i + 7);
       const weekNumber = week.find((day) => day)?.week_of_year || "-";
       rows.push(
         <React.Fragment key={`week-${weekNumber}-${i}`}>
-          <div className="week-number" onClick={() => navigate(`createweekly`)}>
-            W-{weekNumber}
-          </div>
+          <div className="week-number">W-{weekNumber}</div>
           {week.map((entry, idx) =>
             entry ? (
               <div
                 key={entry.calendar_id}
-                className={`calendar-cell1 ${
+                className={`calendar-cell ${
                   entry.is_weekend ? "weekend" : ""
                 } ${entry.is_holiday ? "holiday" : ""}`}
-                data-note={entry.notes || ""}
               >
                 <div className="day-number">{entry.day}</div>
-                <div
-                  className="day-circle"
-                  onClick={() => navigate(`createdaily`)}
-                  style={{ cursor: "pointer" }}
-                ></div>
                 {entry.notes && (
-                  <div className="holiday-note1">{entry.notes}</div>
+                  <div className="holiday-note">{entry.notes}</div>
                 )}
-                <div className={`bottom-right-circle ${status.toLowerCase()}`}></div>
               </div>
             ) : (
               <div key={`empty-${i + idx}`} className="calendar-cell empty" />
@@ -135,12 +124,12 @@ const TeamLeadTimeSheetEntry = () => {
 
   return (
     <div className="holiday-calendar">
-      <div className="calendar-headers">
-        <button  className="left" onClick={handlePrevMonth}>&lt;</button>
+      <div className="calendar-header">
+        <button className="left" onClick={handlePrevMonth}>&lt;</button>
         <h3>
           {monthName} {selectedYear}
         </h3>
-        <button  className="right" onClick={handleNextMonth}>&gt;</button>
+        <button className="right" onClick={handleNextMonth}>&gt;</button>
         {/* Let this be here for now */}
         {/* <button onClick={handlePrevYear} className="calendar-nav-btn">
           ◀ Year
@@ -171,12 +160,12 @@ const TeamLeadTimeSheetEntry = () => {
             </option>
           ))}
         </select>
-        {/* <button
+        <button
           className="calendar-title-btn"
-          onClick={() => navigate("/admin/detail/holidays/holiday-list")}
+          onClick={() => navigate("/hr/detail/holidays/holiday-list")}
         >
           Holiday list {year}
-        </button> */}
+        </button>
       </div>
 
       {/* <div className="calendar-grid">
@@ -190,16 +179,18 @@ const TeamLeadTimeSheetEntry = () => {
       <div className="calendar-grid">
         <div className="calendar-day-label">Week</div>
         {daysInWeek.map((day) => (
-           <div
-           className={`calendar-day-label ${day === 'Sun' ? 'sunday' : ''}`}
-           key={day}
-         >
-           {day}
-         </div>
+          <div
+            className={`calendar-day-label ${day === 'Sun' ? 'sunday' : ''}`}
+            key={day}
+          >
+            {day}
+          </div>
+        
         ))}
         {renderCalendar()}
       </div>
     </div>
   );
 };
-export default TeamLeadTimeSheetEntry;
+
+export default HolidayCalendar;

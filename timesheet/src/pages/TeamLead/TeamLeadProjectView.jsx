@@ -6,6 +6,9 @@ import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate, useParams } from "react-router-dom";
 
+
+
+
 const TeamLeadProjectView = () => {
   const [projectData, setProjectData] = useState({
     project_title: "",
@@ -39,6 +42,13 @@ const TeamLeadProjectView = () => {
   const [employees, setEmployees] = useState([]);
   const [teamleadManager, setTeamleadManager] = useState([]);
   const [roleDropdown, setRoleDropdown] = useState("Team Lead");
+  const [editMode, setEditMode] = useState(false); 
+  const [showBuildingPopup, setShowBuildingPopup] = useState(false);
+  const [selectedBuildings, setSelectedBuildings] = useState([]);
+  const [tempBuilding, setTempBuilding] = useState({ name: '', hours: '' });
+
+
+  
   const { user } = useAuth();
   // console.log("User details", user);
 
@@ -167,76 +177,126 @@ const TeamLeadProjectView = () => {
     // }
   };
 
+  if (!projects) return <p>Loading...</p>;
+
   return (
     <div className="create-project-container">
-      <h2>View Project</h2>
+
+      <div className="project-header">
+         <h2>{editMode ? "Edit Project" : "View Project"}</h2>
+        {editMode ? (
+                  <div></div>
+                ) : (
+                  <button
+                    type="edit"
+                    onClick={() => setEditMode(true)}
+                    className="btn-orange"
+                  >
+                    <FaEdit className="edit-icon" />
+                  </button>
+                )}
+      </div>
       <form onSubmit={handleSubmit}>
         <div className="input-elements">
           <div className="left-form">
             <div className="left-form-first">
               <div className="project-form-group">
                 <label>Project Title</label>
-                <input
-                  name="project_title"
-                  value={projects.project_title}
-                  onChange={handleChange}
-                />
-                {/* <div>{projects.project_title}</div> */}
+                {editMode ? (
+                  <input
+                    name="project_title"
+                    value={projects.project_title}
+                    onChange={handleChange}
+                  />
+                ) : (
+                  <p>{projects.project_title}</p>
+                )}
               </div>
               <div className="project-form-group">
                 <label>Project Type</label>
-                <input
-                  name="project_type"
-                  value={projects.project_type}
-                  onChange={handleChange}
-                />
+                {editMode ? (
+                  <input
+                    name="project_type"
+                    value={projects.project_type}
+                    onChange={handleChange}
+                  />
+                ) : (
+                  <p>{projects.project_type}</p>
+                )}
               </div>
 
               <div className="project-form-group">
                 <label>Project Code</label>
-                <input
-                  name="project_code"
-                  value={projects.project_code}
-                  onChange={handleChange}
-                />
+                {editMode ? (
+                  <input
+                    name="project_code"
+                    value={projects.project_code}
+                    onChange={handleChange}
+                  />
+                ) : (
+                  <p>{projects.project_code}</p>
+                )}
               </div>
               <div className="project-form-group">
                 <label>Discipline Code</label>
-                <input
-                  name="discipline_code"
-                  value={projects.discipline_code}
-                  onChange={handleChange}
-                />
+                {editMode ? (
+                  <input
+                    name="discipline_code"
+                    value={projects.discipline_code}
+                    onChange={handleChange}
+                  />
+                ) : (
+                  <p>{projects.discipline_code}</p>
+                )}
               </div>
             </div>
+            <div className="form-group-full-width">
+              <label>Project Description</label>
+              {editMode ? (
+                <textarea
+                  name="project_description"
+                  value={projects.project_description}
+                  onChange={handleChange}
+                />
+              ) : (
+                <p>{projects.project_description || "No description available."}</p>
+              )}
+            </div>
+
             <div className="left-form-second">
-              <div className="building-group">
-                <label>Building(s)</label>
-                {buildings.map((b, idx) => (
-                  <div className="building-row" key={idx}>
-                    {/* <input
-                      placeholder="Building Name"
-                      value={b.name}
-                      onChange={(e) =>
-                        handleBuildingChange(idx, "name", e.target.value)
-                      }
-                    /> */}
-                    {/* <input
-                      placeholder="Hours"
-                      value={b.hours}
-                      onChange={(e) =>
-                        handleBuildingChange(idx, "hours", e.target.value)
-                      }
-                    /> */}
-                    {/* <button type="button" onClick={() => removeBuilding(idx)}>
-                      Delete
-                    </button> */}
-                    <button type="button" onClick={addBuilding}>
-                      +
-                    </button>
-                  </div>
-                ))}
-              </div>
+            <div className="building-group">
+  <label>Building(s)</label>
+
+  {buildings.map((b, idx) => (
+    <div className="building-row" key={idx}>
+      <span className="building-tile">
+        {b.name}
+        {b.hours && ` - ${b.hours} hrus`}
+      </span>
+
+      {editMode && b.name && b.hours && (
+        <button
+          className="tag-buttons"
+          onClick={() => removeBuilding(idx)}
+        >
+          ×
+        </button>
+      )}
+       {editMode && (
+    <button
+      className="plus-buttons"
+      onClick={() => setShowBuildingPopup(true)}
+    >
+      +
+    </button>
+  )}
+    </div>
+  ))}
+</div>
+
+
+
+
 
               <div className="area-group">
                 <label>Area of Work</label>
@@ -336,25 +396,87 @@ const TeamLeadProjectView = () => {
                 </div> */}
               </div>
 
-              <div className="form-group-full-width">
+              {/* <div className="form-group-full-width">
                 <label>Project Description</label>
                 <textarea
                   name="project_description"
                   value={projects.project_description}
                   onChange={handleChange}
                 />
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
+        {showBuildingPopup && (
+  <div className="popup">
+    <h4>Add Building</h4>
+
+    <input
+      type="text"
+      placeholder="Building Name"
+      value={tempBuilding.name}
+      onChange={(e) =>
+        setTempBuilding({ ...tempBuilding, name: e.target.value })
+      }
+    />
+
+    <input
+      type="number"
+      placeholder="Hours"
+      value={tempBuilding.hours}
+      onChange={(e) =>
+        setTempBuilding({ ...tempBuilding, hours: e.target.value })
+      }
+    />
+
+    <button
+      className="btn-save"
+      onClick={() => {
+        if (tempBuilding.name) {
+          setBuildings([...buildings, tempBuilding]);
+          setTempBuilding({ name: '', hours: '' });
+          setShowBuildingPopup(false);
+        }
+      }}
+    >
+      Done
+    </button>
+
+    <button
+      className="btn-cancel"
+      onClick={() => {
+        setTempBuilding({ name: '', hours: '' });
+        setShowBuildingPopup(false);
+      }}
+    >
+      Cancel
+    </button>
+  </div>
+)}
+
+
+
 
         <div className="form-buttons">
-          <button type="submit" className="btn-green">
-            Create
-          </button>
-          <button type="reset" className="btn-red">
-            Delete
-          </button>
+          {editMode ? (
+            <>
+              <button
+                type="submit"
+                className="btn-save"
+              >
+                Create
+              </button>
+              <button
+                type="reset"
+                onClick={() => setEditMode(false)}
+                className="btn-cancel"
+              >
+                Delete
+              </button>
+            </>
+          ) : (
+            <div></div>
+          )}
         </div>
       </form>
     </div>

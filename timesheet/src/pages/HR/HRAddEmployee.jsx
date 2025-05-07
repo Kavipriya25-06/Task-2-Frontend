@@ -952,12 +952,12 @@ const AddEmployee = () => {
         {renderTabContent()}
 
         <div className="form-buttons">
-          <button type="submit" className="btn btn-green">
+          <button type="submit" className="btn-green">
             Save
           </button>
           <button
             type="button"
-            className="btn btn-orange"
+            className="btn-red"
             onClick={() => navigate("/hr/detail/employee-details")}
           >
             Cancel

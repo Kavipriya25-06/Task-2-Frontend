@@ -136,7 +136,7 @@ const AddUserForm = ({ onCancel, onSave }) => {
           </button>
           <button
             type="button"
-            className="btn btn-orange"
+            className="btn btn-red"
             onClick={handleCancel}
           >
             Cancel

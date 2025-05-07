@@ -32,8 +32,8 @@ const EmployeeTasks = () => {
     fetchTasks();
   }, []);
 
-  const handleTaskClick = (task) => {
-    navigate("detail", { state: { task } });
+  const handleTaskClick = (task_assign_id) => {
+    navigate(`/employee/detail/tasks/${task_assign_id}`);
   };
 
   if (loading) return <p>Loading tasks...</p>;
@@ -43,7 +43,7 @@ const EmployeeTasks = () => {
     <div className="employee-tasks-wrapper">
       <div className="task-list">
         <h3>Employee Tasks</h3>
-        <table className="employee-tasks-table">
+        <table className="employee-table">
           <thead>
             <tr>
               <th>Task</th>
@@ -55,8 +55,16 @@ const EmployeeTasks = () => {
           </thead>
           <tbody>
             {tasks.map((task, index) => (
-              <tr key={index} onClick={() => handleTaskClick(task)}>
-                <td>{task.task?.task_title || "N/A"}</td>
+              <tr key={task.task_id}>
+                
+                <td 
+                key={index} onClick={() => handleTaskClick(task.task_assign_id)}
+                style={{
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                }}>
+                  {task.task?.task_title || "N/A"}
+                </td>
                 <td>{task.task_hours || "N/A"}</td>
                 <td>
                   {task.building_assign.building

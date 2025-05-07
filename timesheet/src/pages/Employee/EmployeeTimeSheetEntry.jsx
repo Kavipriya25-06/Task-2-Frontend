@@ -95,6 +95,7 @@ const EmployeeTimeSheetEntry = () => {
     const filledData = new Array(offset).fill(null).concat(monthData);
 
     const rows = [];
+    const status = "pending"; 
     for (let i = 0; i < filledData.length; i += 7) {
       const week = filledData.slice(i, i + 7);
       const weekNumber = week.find((day) => day)?.week_of_year || "-";
@@ -121,8 +122,8 @@ const EmployeeTimeSheetEntry = () => {
                 {entry.notes && (
                   <div className="holiday-note1">{entry.notes}</div>
                 )}
-                <div className="bottom-right-circle"></div>
-              </div>
+                <div className={`bottom-right-circle ${status.toLowerCase()}`}></div>
+                </div>
             ) : (
               <div key={`empty-${i + idx}`} className="calendar-cell empty" />
             )
@@ -136,11 +137,11 @@ const EmployeeTimeSheetEntry = () => {
   return (
     <div className="holiday-calendar">
       <div className="calendar-header">
-        <button onClick={handlePrevMonth}>&lt;</button>
+        <button className="left" onClick={handlePrevMonth}>&lt;</button>
         <h3>
           {monthName} {selectedYear}
         </h3>
-        <button onClick={handleNextMonth}>&gt;</button>
+        <button className="right" onClick={handleNextMonth}>&gt;</button>
         {/* Let this be here for now */}
         {/* <button onClick={handlePrevYear} className="calendar-nav-btn">
           ◀ Year

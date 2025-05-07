@@ -3,6 +3,7 @@ import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 const ManagerTaskView = () => {
   const { user } = useAuth();
@@ -84,6 +85,10 @@ const ManagerTaskView = () => {
     }
   };
 
+  const location = useLocation();
+  const isManagerPage = location.pathname.startsWith("/manager");
+
+
   useEffect(() => {
     fetchTeamleadManager();
     fetchAreas();
@@ -138,33 +143,34 @@ const ManagerTaskView = () => {
     }
   };
 
-  if (
-    !taskData ||
-    !taskData.building_assign ||
-    !taskData.building_assign.project_assign
-  ) {
-    return <p>Loading...</p>;
-  }
+  // if (
+  //   !taskData ||
+  //   !taskData.building_assign ||
+  //   !taskData.building_assign.project_assign
+  // ) {
+  //   return <p>Loading...</p>;
+  // }
 
-  const project = taskData.building_assign.project_assign.project;
-  const building = taskData.building_assign.building;
-  const task = taskData.task;
+  const project = taskData?.building_assign?.project_assign?.project;
+  const building = taskData?.building_assign?.building;
+  const task = taskData?.task;
 
   return (
     <div className="create-project-container">
       <div className="project-header">
-        <h2>Task details </h2>
+        <h2>Task Details </h2>
         {editMode ? (
           <div></div>
-        ) : (
-          <button
-            type="edit"
-            onClick={() => setEditMode(true)}
-            className="btn-orange"
-          >
-            Edit
-          </button>
-        )}
+          ) : (
+              <button
+                type="button"
+                onClick={() => setEditMode(true)}
+                className="btn-orange edit-btn"
+              >
+                <FaEdit className="edit-icon" />
+              </button>
+          )}
+
       </div>
       <form onSubmit={handleSubmit}>
         <div className="input-elements">
@@ -197,14 +203,14 @@ const ManagerTaskView = () => {
             </div>
             <div className="left-form-second">
               <div className="project-form-group">
-                <label>Task Desciption</label>
+                <label className="taskdescription">Task Description</label>
                 <p>{task?.task_description || "N/A"}</p>
               </div>
               <div className="roles-box">
-                <label>Task Roles</label>
+                <label className="taskroles">Task Roles</label>
                 {editMode ? (
                   <div className="select-container">
-                    {teamleadManager.map((emp) => (
+                    {teamleadManager?.map((emp) => (
                       <div key={emp.employee_id}>
                         <input
                           type="checkbox"
@@ -229,7 +235,7 @@ const ManagerTaskView = () => {
                   </div>
                 ) : (
                   <div className="select-container">
-                    {availableEmployees.map((emp) => (
+                    {availableEmployees?.map((emp) => (
                       <p key={emp.employee_id}>
                         {emp.employee_name} - {emp.designation}
                       </p>
@@ -238,14 +244,19 @@ const ManagerTaskView = () => {
                 )}
               </div>
               <div className="project-form-group">
-                <label>Attachments</label>
+                <label className="attaches">Attachments</label>
                 {task?.attachments ? (
                   <a
                     href={task.attachments}
                     target="_blank"
                     rel="noopener noreferrer"
-                  >
-                    View Attachment
+                    className="view-attachment-link"
+                  ><img
+                    src="/src/assets/pin svg.svg" // replace this with your actual image path
+                    alt="Attachment"
+                    style={{ width: "16px", height: "16px", marginRight: "5px", verticalAlign: "middle" }}
+                  />
+                   View Attachment
                   </a>
                 ) : (
                   <p>No attachments</p>
@@ -269,7 +280,7 @@ const ManagerTaskView = () => {
               </div>
               <div className="project-form-group-small">
                 <label>Building Hours</label>
-                <p>{taskData.building_assign?.building_hours || ""}</p>
+                <p>{taskData?.building_assign?.building_hours || ""}</p>
               </div>
               <div className="project-form-group-small">
                 <label>Task Hours</label>
@@ -284,16 +295,15 @@ const ManagerTaskView = () => {
                 )}
               </div>
             </div>
-            <div className="right-form-second"></div>
           </div>
         </div>
 
         {editMode ? (
           <div className="form-buttons">
-            <button type="submit" className="btn-green">
+            <button type="submit" className="btn-save">
               Save
             </button>
-            <button type="reset" className="btn-red">
+            <button type="reset"  onClick={() => setEditMode(false)} className="btn-cancel">
               Cancel
             </button>
           </div>

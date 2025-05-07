@@ -112,7 +112,7 @@ const ManagerLeaveRequests = () => {
         ))}
       </div>
       <div>
-        <table>
+        <table className="leaves-table">
           <thead>
             <tr>
               <th>Employee Code</th>

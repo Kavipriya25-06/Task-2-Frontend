@@ -45,7 +45,7 @@ const TeamLeadEmployees = () => {
     <div className="manager-employees">
       <div className="employee-list">
         <h3>Employees: {totalEmployees}</h3>
-        <table>
+        <table className="employee-table">
           <thead>
             <tr>
               <th>Employee</th>

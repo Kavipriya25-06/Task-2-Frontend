@@ -13,6 +13,10 @@ const ManagerTaskCreate = () => {
     setTaskData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleCancel = () => {
+    navigate("/manager/detail/projects/");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -63,15 +67,17 @@ const ManagerTaskCreate = () => {
           </div>
           <div className="table-bottom-elements">
             <div>
-              <label>Task Description</label>
-              <input
+              <label>Task Description</label><br />
+              <textarea
                 name="task_description"
                 value={taskData.task_description || ""}
                 onChange={handleChange}
+                rows={4}
+                className="textarea"
               />
             </div>
             <div>
-              <label>Priority</label>
+              <label>Priority</label><br />
               <select
                 name="priority"
                 value={taskData.priority || ""}
@@ -85,6 +91,7 @@ const ManagerTaskCreate = () => {
               </select>
             </div>
           </div>
+
         </div>
         <div className="form-buttons">
           <button type="submit" className="btn-green">
@@ -93,7 +100,7 @@ const ManagerTaskCreate = () => {
           <button
             type="reset"
             className="btn-red"
-            onClick={() => setTaskData({})}
+            onClick={() => handleCancel()}
           >
             Delete
           </button>

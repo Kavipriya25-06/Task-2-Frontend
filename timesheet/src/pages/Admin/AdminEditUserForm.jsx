@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import config from "../../config";
 import roleOptions from "../../constants/roleOptions";
+import { FaEdit } from "react-icons/fa";
+
 
 const EditUserForm = () => {
   const { user_id } = useParams();
@@ -87,13 +89,13 @@ const EditUserForm = () => {
             </div>
           ) : (
             <div className="table-top-bar-header">
-              <div style={{ paddingRight: "250px" }}>View user</div>
+              <div className="view-label">View user</div>
               <button
                 type="edit"
                 onClick={() => setEditMode(true)}
                 className="btn-orange"
               >
-                Edit
+              <FaEdit className="edit-icon" />
               </button>
             </div>
           )}
@@ -188,7 +190,7 @@ const EditUserForm = () => {
             </button>
             <button
               type="button"
-              className="btn btn-orange"
+              className="btn btn-red"
               onClick={() => setEditMode(false)}
             >
               Cancel

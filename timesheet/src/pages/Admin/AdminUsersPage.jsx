@@ -42,7 +42,7 @@ const UsersPage = () => {
           Add User
         </button>
       </div>
-      <table>
+      <table className="user-table">
         <thead>
           <tr>
             <th>Employee Code</th>

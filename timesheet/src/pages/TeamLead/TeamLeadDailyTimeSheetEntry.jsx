@@ -81,8 +81,8 @@ const TeamLeadDailyTimeSheetEntry = () => {
       </table>
       <div className="button-container">
         {/* <button onClick={() => navigate(-1)} className="cancel-button1">Back</button> */}
-        <button className="save-button2">Save</button>
-        <button className="submit-button2">Submit</button>
+        <button className="btn-save">Save</button>
+        <button className="btn-cancel">Submit</button>
       </div>
     </div>
   );

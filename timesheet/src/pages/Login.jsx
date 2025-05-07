@@ -28,14 +28,14 @@ const Login = () => {
       <div className="login-box">
         <div className="logo-section">
           <div className="logo-container">
-            <img src="src\assets\Logo.svg" alt="Arris Logo" className="logo-c" />
+            <img src="src/assets/Arris logo.jpg" alt="Arris Logo" className="logo-c" />
           </div>
         </div>
 
         <div className="login-form-section">
           <h2>Login</h2>
           <form onSubmit={handleLogin}>
-            <label>email</label>
+            <label>Email</label>
             <input
               type="email"
               value={email}
@@ -43,20 +43,20 @@ const Login = () => {
               required
             />
 
-            <label>password</label>
+            <label>Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+             <button type="button" className="btn-forgot">
+                Forgot Password
+              </button>
 
             <div className="button-group">
-              <button type="submit" className="btn btn-green">
+              <button type="submit" className="btn-login">
                 Sign in
-              </button>
-              <button type="button" className="btn btn-red">
-                Forgot Password
               </button>
             </div>
           </form>
