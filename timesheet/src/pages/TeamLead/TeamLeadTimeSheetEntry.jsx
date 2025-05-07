@@ -29,7 +29,7 @@ const TeamLeadTimeSheetEntry = () => {
   const fetchBiometricData = async () => {
     try {
       const response = await fetch(
-        `${config.apiBaseURL}/biometric-data/by_employee/${user.employee_id}/`
+        `${config.apiBaseURL}/biometric-data/by_employee/${user.employee_id}/?month=${month}&year=${year}`
       );
       const data = await response.json();
       setBiometricData(data);
@@ -138,8 +138,17 @@ const TeamLeadTimeSheetEntry = () => {
                   {/**  Show work_duration from biometric data */}
                   {(() => {
                       const dateStr = `${entry.year}-${String(entry.month).padStart(2, "0")}-${String(entry.day).padStart(2, "0")}`;
-                      const dayBio = biometricData.find((b) => b.date === dateStr);
-                      return dayBio ? dayBio.work_duration : "";
+                      const dayRecords = biometricData.filter((b) => b.date === dateStr);
+
+                      let latestRecord = null;
+
+                      dayRecords.forEach((record) => {
+                          if (!latestRecord || new Date(record.modified_on) > new Date(latestRecord.modified_on)) {
+                              latestRecord = record;
+                          }
+                      });
+
+                      return latestRecord ? latestRecord.total_duration : "";
                   })()}
                 </div>
                 

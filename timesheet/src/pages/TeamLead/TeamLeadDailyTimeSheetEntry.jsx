@@ -1,30 +1,188 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import config from "../../config";
+import { useAuth } from "../../AuthContext";
 
 const TeamLeadDailyTimeSheetEntry = () => {
-  const { date } = useParams(); // Format: YYYY-MM-DD
+  const { date} = useParams(); // Format: YYYY-MM-DD
   const navigate = useNavigate();
+  const{ user } = useAuth();
+  const employee_id = user.employee_id;
+  
+  // console.log(employee_id)
 
-  const [rows, setRows] = useState([{ project: "", task: "", hours: "" }]);
+  const [rows, setRows] = useState([{ project: "", building: "", task: "", hours: "" ,start_time:"", end_time:""}]);
+  const [attendanceDetails, setAttendanceDetails] = useState({
+    in_time: "--:--",
+    out_time: "--:--",
+    total_duration: "0.00"
+  });
 
+  // 🔎 Fetch biometric-daily-task data
+  useEffect(() => {
+    const fetchBiometricTaskData = async () => {
+      try {
+        const response = await fetch(
+          `${config.apiBaseURL}/biometric-daily-task/${employee_id}/?today=${date}`
+        );
+        const data = await response.json();
+        console.log("Biometric task data:", data);
+
+        if (data && data.length > 0) {
+          // Step 1: Pick the latest modified_on record
+          let latestRecord = data[0];
+          data.forEach(record => {
+            if (new Date(record.modified_on) > new Date(latestRecord.modified_on)) {
+              latestRecord = record;
+            }
+          });
+
+          // Step 2: Set In-time, Out-time, Total Hours
+          setAttendanceDetails({
+            in_time: latestRecord.in_time || "--:--",
+            out_time: latestRecord.out_time || "--:--",
+            total_duration: latestRecord.total_duration || "0.00"
+          });
+
+          // Step 3: Build Timesheet Rows
+          let timesheetRows = [];
+          if (latestRecord.timesheets && latestRecord.timesheets.length > 0) {
+            latestRecord.timesheets.forEach(ts => {
+              const project =
+                ts.task_assign?.building_assign?.project_assign?.project?.project_title || "";
+              const building =
+                ts.task_assign?.building_assign?.building?.building_name || "";
+              const task = ts.task_assign?.task?.task_title || "";
+              const hours = parseFloat(ts.task_hours || "0");
+
+              timesheetRows.push({
+                project,
+                building,
+                task,
+                hours: hours.toString(),
+                start_time: ts.start_time || "",
+                end_time: ts.end_time || ""
+              });
+            });
+          } else {
+            timesheetRows = [{ project: "", building: "", task: "", hours: "" ,start_time:"", end_time:"" }];
+          }
+
+          setRows(timesheetRows);
+
+        } else {
+          console.warn("No biometric data found for this date.");
+          setRows([{ project: "", building: "", task: "", hours: ""  ,start_time:"", end_time:""}]);
+          setAttendanceDetails({
+            in_time: "--:--",
+            out_time: "--:--",
+            total_duration: "0.00"
+          });
+        }
+
+      } catch (error) {
+        console.error("Failed to fetch biometric task data:", error);
+        setRows([{ project: "", building: "", task: "", hours: "" ,start_time:"", end_time:"" }]);
+        setAttendanceDetails({
+          in_time: "--:--",
+          out_time: "--:--",
+          total_duration: "0.00"
+        });
+      }
+    };
+
+    fetchBiometricTaskData();
+  }, [employee_id, date]);
+
+  // Row change handler
   const handleRowChange = (index, field, value) => {
     const updatedRows = [...rows];
     updatedRows[index][field] = value;
+
+    const start = updatedRows[index].start_time;
+    const end = updatedRows[index].end_time;
+
+    if (start && end) {
+      const parseTime = (timeStr) => {
+        const parts = timeStr.split(":").map(Number);
+        return {
+          hours: parts[0] || 0,
+          minutes: parts[1] || 0,
+          seconds: parts[2] || 0,
+        };
+      };
+
+      const startTime = parseTime(start);
+      const endTime = parseTime(end);
+
+      const startSeconds =
+        startTime.hours * 3600 + startTime.minutes * 60 + startTime.seconds;
+      const endSeconds =
+        endTime.hours * 3600 + endTime.minutes * 60 + endTime.seconds;
+
+      let diffSeconds = endSeconds - startSeconds;
+
+      if (diffSeconds < 0) {
+        diffSeconds += 24 * 3600;
+      }
+
+      const diffHours = diffSeconds / 3600;
+      updatedRows[index].hours = diffHours.toFixed(2);
+    }
+
     setRows(updatedRows);
   };
 
+
+
   const handleAddRow = () => {
-    setRows([...rows, { project: "", task: "", hours: "" }]);
+    setRows([...rows, { project: "", building: "", task: "", hours: "" ,start_time:"", end_time:"" }]);
   };
+
+  const handleSubmit = async () => {
+    try {
+      // Prepare the payload according to backend field names
+      const timesheet_entries = rows.map(row => ({
+        employee: employee_id,  // field name should be "employee"
+        date: date,
+        project: row.project,
+        building: row.building,
+        task: row.task,
+        task_hours: parseFloat(row.hours || 0),
+        start_time: row.start_time,
+        end_time: row.end_time
+      }));
+  
+      const response = await fetch("http://127.0.0.1:8000/timesheet/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(timesheet_entries)   // send the list directly, not wrapped in employee_id/date
+      });
+  
+      if (response.ok) {
+        alert("Timesheet submitted successfully!");
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to submit:", errorData);
+        alert("Failed to submit timesheet. See console for details.");
+      }
+    } catch (error) {
+      console.error("Error submitting timesheet:", error);
+      alert("An error occurred while submitting the timesheet.");
+    }
+  };
+
 
   return (
     <div className="daily-timesheet-container">
       <h3>Daily Timesheet</h3>
       <div className="timesheet-info">
         <p>Date: {date}</p>
-        <p>Intime: 9:00am</p>
-        <p>Outtime: 10:00pm</p>
-        <p>Total logged hours: 12</p>
+        <p>Intime: {attendanceDetails.in_time}</p>
+        <p>Outtime: {attendanceDetails.out_time}</p>
+        <p>Total logged hours: {attendanceDetails.total_duration}</p>
       </div>
 
       {/* Timesheet Entry Table */}
@@ -34,6 +192,8 @@ const TeamLeadDailyTimeSheetEntry = () => {
             <th>Project name</th>
             <th>Buildings</th>
             <th>Tasks</th>
+            <th>Start Time</th>
+            <th>End Time</th>
             <th>Hours</th>
           </tr>
         </thead>
@@ -50,18 +210,16 @@ const TeamLeadDailyTimeSheetEntry = () => {
                   }
                 />
               </td>
-
               <td>
                 <input
                   type="text"
                   placeholder="Enter building"
-                  // value={row.building}
+                  value={row.building}
                   onChange={(e) =>
                     handleRowChange(index, "building", e.target.value)
                   }
                 />
               </td>
-
               <td>
                 <input
                   type="text"
@@ -72,6 +230,24 @@ const TeamLeadDailyTimeSheetEntry = () => {
                   }
                 />
               </td>
+              <td>  <input
+                  type="text"
+                  placeholder="Start Time"
+                  value={row.start_time}
+                  onChange={(e) =>
+                    handleRowChange(index, "start_time", e.target.value)
+                  }
+                /> </td>
+              <td> 
+              <input
+                  type="text"
+                  placeholder="End Time"
+                  value={row.end_time}
+                  onChange={(e) =>
+                    handleRowChange(index, "end_time", e.target.value)
+                  }
+                /> 
+                </td>
               <td>
                 <input
                   type="number"
@@ -85,23 +261,25 @@ const TeamLeadDailyTimeSheetEntry = () => {
             </tr>
           ))}
         </tbody>
-        <div
-          style={{ fontSize: "24px", cursor: "pointer", marginTop: "10px" }}
-          onClick={handleAddRow}
-        >
-          +
-        </div>
       </table>
+
+      <div
+        style={{ fontSize: "24px", cursor: "pointer", marginTop: "10px" }}
+        onClick={handleAddRow}
+      >
+        +
+      </div>
+
       <div className="button-container">
-        {/* <button onClick={() => navigate(-1)} className="cancel-button1">Back</button> */}
-        <button className="save-button2">Save</button>
-        <button className="submit-button2">Submit</button>
+        <button className="save-button2" onClick={handleSubmit}>Save</button>
+        <button className="submit-button2"  onClick={handleSubmit}>Submit</button>
       </div>
     </div>
   );
 };
 
 export default TeamLeadDailyTimeSheetEntry;
+
 
 
 // import React, { useState, useEffect } from "react";

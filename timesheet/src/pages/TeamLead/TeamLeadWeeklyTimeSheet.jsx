@@ -22,8 +22,8 @@ const TeamLeadWeeklyTimeSheetEntry = () => {
       <h3>Weekly Timesheet</h3>
       <div className="timesheet-info">
         <p>Date: {date}</p>
-        <p>Intime: 9:00am</p>
-        <p>Outtime: 10:00pm</p>
+        {/* <p>Intime: 9:00am</p>
+        <p>Outtime: 10:00pm</p> */}
         <p>Total logged hours: 12</p>
       </div>
 
