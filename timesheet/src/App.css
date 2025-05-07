@@ -707,6 +707,14 @@ table {
   border-radius: 10px;
 }
 
+.no-data-text {
+  position: relative;
+  bottom: 17px;
+  left:5px; /* adjust value as needed */
+  font-size: 14px;
+}
+
+
 table th,
 table td {
   padding: 12px;
@@ -2629,8 +2637,8 @@ button.delete-building:hover {
   min-height: 70px;
   border-radius: 8px;
   background-color: #f0f0f0;
-  padding: 0px;
-  
+  padding: 0px; 
+  position: relative;
 }
 
 .popup {
@@ -2741,6 +2749,7 @@ h4 {
   background: #e0e0e0;
   padding: 5px 10px;
   margin: 5px;
+  margin-bottom: 15%;
   border-radius: 8px;
 }
 
@@ -2892,21 +2901,57 @@ h4 {
   margin-bottom: 60px;
 }
 
+.project-form-group .area-row {
+  position: relative; /* anchor for absolute button */
+  padding-bottom: 32px; /* make space so tags don’t overlap with the + button */
+  min-height: 40px; /* optional: consistent height */
+}
+
+.area-row .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
 .area-row .plus-button {
-  width: 24px; /* Set fixed width */
-  height: 24px; /* Set fixed height */
-  font-size: 14px; /* Smaller font for the "+" */
-  padding: 0; /* Remove default padding */
+  position: absolute;
+  bottom: 8px;  /* slight space from the bottom */
+  left: 8px;    /* slight space from the left */
+  width: 24px;
+  height: 24px;
+  font-size: 16px;
+  padding: 0;
   color: black;
   border: none;
-  border-radius: 50%; /* Better for circular buttons */
+  border-radius: 50%;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  margin-left: 1%;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+}
+
+
+
+/* .area-row .plus-button {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+  padding: 0;
+  color: black;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: white;
-}
+} */
+
 
 .area-row .plus-button.no-data {
   margin-bottom: 30px;
