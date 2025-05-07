@@ -111,7 +111,7 @@ const EditUserForm = () => {
 
       <form className="add-user-form" onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Employee ID</label>
+          <label>Employee Code</label>
           <div className="uneditable">
             {employeeID.employee_code} - {employeeID.employee_name}
           </div>
@@ -139,7 +139,7 @@ const EditUserForm = () => {
 
         <div className="form-group">
           <label>Email</label>
-          {editMode ? (
+          {/* {editMode ? (
             <input
               className="input"
               type="email"
@@ -147,9 +147,9 @@ const EditUserForm = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-          ) : (
-            <div className="uneditable">{email}</div>
-          )}
+          ) : ( */}
+          <div className="uneditable">{email}</div>
+          {/* )} */}
         </div>
 
         <div className="form-group" style={{ position: "relative" }}>

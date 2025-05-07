@@ -284,7 +284,7 @@ const App = () => {
                   element={<TeamLeadTimeSheetEntry />}
                 />
                 <Route
-                  path="time-sheet-entry/createdaily"
+                  path="time-sheet-entry/createdaily/:date"
                   element={<TeamLeadDailyTimeSheetEntry />}
                 />
                 <Route

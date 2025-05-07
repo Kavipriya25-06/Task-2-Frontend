@@ -49,19 +49,36 @@ const TeamLeadAttendance = () => {
   const { startDate, endDate, weekDays } = getWeekDates(currentWeek);
 
   // Fetch Attendance Data for the week
-  const fetchAttendanceData = async () => {
-    try {
-      const response = await fetch(
-        `${config.apiBaseURL}/weekly-attendance/${user.employee_id}/?today=${weekDays[0].mapdate}`
-      );
-      const data = await response.json();
-      console.log("Attendance data", data);
-      setAttendanceData(data);
-      calculateTotalHours(data);
-    } catch (err) {
-      console.error("Unable to fetch attendance data", err);
-    }
-  };
+ const fetchAttendanceData = async () => {
+  try {
+    const response = await fetch(
+      `${config.apiBaseURL}/weekly-attendance/${user.employee_id}/?today=${weekDays[0].mapdate}`
+    );
+    const data = await response.json();
+    console.log("Raw attendance data:", data);
+
+    // Step 1: Group by employee + date and pick latest
+    const latestRecords = {};
+
+    data.forEach((record) => {
+      const key = `${record.employee}_${record.date}`;
+      // If no entry yet OR this record has newer modified_on, replace it
+      if (!latestRecords[key] || new Date(record.modified_on) > new Date(latestRecords[key].modified_on)) {
+        latestRecords[key] = record;
+      }
+    });
+
+    // Step 2: Convert back to array
+    const filteredData = Object.values(latestRecords);
+    console.log("Filtered latest attendance data:", filteredData);
+
+    setAttendanceData(filteredData);
+    calculateTotalHours(filteredData);
+  } catch (err) {
+    console.error("Unable to fetch attendance data", err);
+  }
+};
+
 
   const fetchEmployee = async () => {
     try {
@@ -80,12 +97,13 @@ const TeamLeadAttendance = () => {
   const calculateTotalHours = (data) => {
     let hours = {};
     data.forEach((attendance) => {
-      const totalDuration = parseFloat(attendance.work_duration);
+      const totalDuration = parseFloat(attendance.total_duration || "0");   // use total_duration
       hours[attendance.employee] =
         (hours[attendance.employee] || 0) + totalDuration;
     });
     setTotalHours(hours);
   };
+  
 
   // Navigate to previous or next week
   const handleWeekChange = (direction) => {

@@ -17,75 +17,96 @@ const TeamLeadApprovalScreen = () => {
   rejected: false
 });
 
+useEffect(() => {
+  const fetchBiometricTaskData = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/biometric-daily-task/${employee_id}/?today=${date}`
+      );
+      const data = await response.json();
+      console.log("Biometric task data:", data);
 
-  useEffect(() => {
-    const fetchTimesheetData = async () => {
-      try {
-        const response = await fetch(`${config.apiBaseURL}/timesheet-employee-daily/${employee_id}/?today=${date}`);
-        const data = await response.json();
+      if (data && data.length > 0) {
+        // Step 1: Find latest biometric record for the day
+        let latestRecord = data[0];
+        data.forEach(record => {
+          if (new Date(record.modified_on) > new Date(latestRecord.modified_on)) {
+            latestRecord = record;
+          }
+        });
 
-        // Filter records matching employee_id and date
-        // const records = data.filter(
-        //   (entry) => entry.employee === employee_id && entry.date === date
-        // );
-        const records = data
+        // Step 2: Set attendance details from the latest record
+        setAttendanceDetails({
+          in_time: latestRecord.in_time || "--:--",
+          out_time: latestRecord.out_time || "--:--",
+          total_duration: latestRecord.total_duration || "0.00"
+        });
 
-        if (records.length > 0) {
-          // Extract start_time, end_time, total_duration
-          // For total_duration, we'll sum up task_hours
-          let totalHours = 0;
-          let inTime = records[0].start_time || "--:--";
-          let outTime = records[0].end_time || "--:--";
-
-
-          setStatus({
-            approved: records[0].approved,
-            rejected: records[0].rejected
-          });
-
-
-          const timesheetRows = records.map((entry) => {
+        // Step 3: Prepare rows from timesheets
+        let timesheetRows = [];
+        if (latestRecord.timesheets && latestRecord.timesheets.length > 0) {
+          latestRecord.timesheets.forEach(entry => {
             const project =
-              entry.task_assign?.building_assign?.project_assign?.project
-                ?.project_title || "";
+              entry.task_assign?.building_assign?.project_assign?.project?.project_title || "";
 
             const task =
               entry.task_assign?.task?.task_title || "";
 
             const hours = parseFloat(entry.task_hours || "0");
-            totalHours += hours;
 
-            return {
-              timesheet_id:entry.timesheet_id,
+            timesheetRows.push({
+              timesheet_id: entry.timesheet_id,
               project,
               task,
               hours: hours.toString()
-            };
+            });
           });
 
-          setAttendanceDetails({
-            in_time: inTime,
-            out_time: outTime,
-            total_duration: totalHours.toFixed(2)
+          // If at least one timesheet, set status from the first one
+          setStatus({
+            approved: latestRecord.timesheets[0].approved,
+            rejected: latestRecord.timesheets[0].rejected
           });
-
-          setRows(timesheetRows);
         } else {
-          // No records → reset
-          setAttendanceDetails({
-            in_time: "--:--",
-            out_time: "--:--",
-            total_duration: "0.00"
+          // No timesheets found
+          timesheetRows = [{ project: "", task: "", hours: "" }];
+          setStatus({
+            approved: false,
+            rejected: false
           });
-          setRows([{ project: "", task: "", hours: "" }]);
         }
-      } catch (err) {
-        console.error("Error fetching timesheet data", err);
-        setRows([{ project: "", task: "", hours: "" }]);
-      }
-    };
 
-    fetchTimesheetData();
+        setRows(timesheetRows);
+
+      } else {
+        // No data found
+        setAttendanceDetails({
+          in_time: "--:--",
+          out_time: "--:--",
+          total_duration: "0.00"
+        });
+        setRows([{ project: "", task: "", hours: "" }]);
+        setStatus({
+          approved: false,
+          rejected: false
+        });
+      }
+    } catch (err) {
+      console.error("Error fetching biometric task data", err);
+      setAttendanceDetails({
+        in_time: "--:--",
+        out_time: "--:--",
+        total_duration: "0.00"
+      });
+      setRows([{ project: "", task: "", hours: "" }]);
+      setStatus({
+        approved: false,
+        rejected: false
+      });
+    }
+  };
+
+  fetchBiometricTaskData();
 }, [employee_id, date]);
 
   const handleRowChange = (index, field, value) => {
@@ -161,7 +182,7 @@ const TeamLeadApprovalScreen = () => {
 
   return (
     <div className="daily-timesheet-container">
-      <h3>Daily Timesheet Entry</h3>
+      {/* <h3>Daily Timesheet Entry</h3> */}
       <div className="timesheet-info">
         <p><strong>Employee ID:</strong> {employee_id}</p>
         <p><strong>Date:</strong> {date}</p>
@@ -182,40 +203,15 @@ const TeamLeadApprovalScreen = () => {
           {rows.map((row, index) => (
             <tr key={index}>
               <td>{row.project}
-                {/* <input
-                  type="text"
-                  placeholder="Enter project"
-                  value={row.project}
-                  // onChange={(e) => handleRowChange(index, "project", e.target.value)}
-                /> */}
               </td>
               <td> {row.task}
-                {/* <input
-                  // type="text"
-                  placeholder="Enter task"
-                  value={row.task}
-                  // onChange={(e) => handleRowChange(index, "task", e.target.value)}
-                /> */}
               </td>
               <td>{row.hours}
-                {/* <input
-                  type="number"
-                  placeholder="Hours"
-                  value={row.hours}
-                  // onChange={(e) => handleRowChange(index, "hours", e.target.value)}
-                /> */}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-
-      {/* <div
-        style={{ fontSize: "24px", cursor: "pointer", marginTop: "10px" }}
-        onClick={handleAddRow}
-      >
-        +
-      </div> */}
 
     <div className="button-container">
         {status.approved ? (  //  CHANGE: conditionally render approved button
