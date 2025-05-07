@@ -5,87 +5,107 @@ import config from "../../config";
 import { useNavigate } from "react-router-dom";
 
 const TeamLeadProjectCreate = () => {
-  const [projectData, setProjectData] = useState({
+  const [teamleadManager, setTeamleadManager] = useState([]);
+  const [selectedTeamleadManager, setSelectedTeamleadManager] = useState([]);
+  const [buildings, setBuildings] = useState([]);
+  const [areas, setAreas] = useState([]);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
     project_title: "",
     project_type: "",
     start_date: "",
     estimated_hours: "",
+    project_description: "",
     project_code: "",
+    subdivision: "",
     discipline_code: "",
     discipline: "",
     area_of_work: [],
-    subdivision: "",
-    project_description: "",
-    project_roles: [],
   });
-
-  const [buildings, setBuildings] = useState([{ name: "", hours: "" }]);
-  const [areaInput, setAreaInput] = useState("");
-  const [employees, setEmployees] = useState([]);
-  const [teamleadManager, setTeamleadManager] = useState([]);
-  const [roleDropdown, setRoleDropdown] = useState("Team Lead");
+  const [showBuildingPopup, setShowBuildingPopup] = useState(false);
+  const [showAreaPopup, setShowAreaPopup] = useState(false);
+  const [selectedBuildings, setSelectedBuildings] = useState([]);
+  const [selectedAreas, setSelectedAreas] = useState([]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProjectData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    console.log("Form data", formData);
   };
 
-  const handleBuildingChange = (index, field, value) => {
-    const newBuildings = [...buildings];
-    newBuildings[index][field] = value;
-    setBuildings(newBuildings);
+  const handleCancel = () => {
+    navigate("/teamlead/detail/projects/");
   };
 
-  const addBuilding = () => {
-    setBuildings([...buildings, { name: "", hours: "" }]);
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("Form data", formData);
+    console.log("Area of work data", selectedAreas);
+    console.log("buildings data", selectedBuildings);
+    console.log("teamleads data", selectedTeamleadManager);
 
-  const removeBuilding = (index) => {
-    setBuildings(buildings.filter((_, i) => i !== index));
-  };
+    if (
+      Object.values(formData).every(
+        (value) => value === "" || value.length === 0
+      )
+    ) {
+      alert("Empty form");
+      return;
+    }
 
-  const addAreaOfWork = () => {
-    if (areaInput && !projectData.area_of_work.includes(areaInput)) {
-      setProjectData((prev) => ({
-        ...prev,
-        area_of_work: [...prev.area_of_work, areaInput],
-      }));
-      setAreaInput("");
+    const payload = {
+      project: {
+        ...formData,
+        area_of_work: formData.area_of_work,
+        created_by: user.employee_id,
+      },
+      assign: {
+        employee: selectedTeamleadManager,
+        status: "pending",
+      },
+      buildings: selectedBuildings.map((b) => ({
+        building_id: b.building_id,
+        building_hours: b.hours,
+        status: "pending",
+      })),
+    };
+    console.log("Final payload to send:", payload);
+
+    try {
+      const response = await fetch(`${config.apiBaseURL}/projects/create/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert("All steps completed!");
+        navigate("/teamlead/detail/projects/");
+      } else {
+        alert("Error: " + data.error);
+      }
+    } catch (err) {
+      console.error("Request error:", err);
     }
   };
 
-  const removeArea = (area) => {
-    setProjectData((prev) => ({
-      ...prev,
-      area_of_work: prev.area_of_work.filter((a) => a !== area),
-    }));
-  };
-
-  const toggleRole = (name) => {
-    setProjectData((prev) => {
-      const exists = prev.project_roles.includes(name);
-      return {
-        ...prev,
-        project_roles: exists
-          ? prev.project_roles.filter((r) => r !== name)
-          : [...prev.project_roles, name],
-      };
-    });
-  };
-
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   const payload = {
-  //     ...projectData,
-  //     buildings,
-  //   };
-  //   console.log("Submitting project:", payload);
-  //   // send to backend via fetch/axios here
-  // };
-
   useEffect(() => {
     fetchTeamleadManager();
+    fetchAreas();
+    fetchBuilding();
   }, []);
+
+  const fetchAreas = async () => {
+    try {
+      const res = await fetch(`${config.apiBaseURL}/area-of-work/`);
+      const data = await res.json();
+      setAreas(data);
+    } catch (error) {
+      console.error("Error fetching Area of work:", error);
+    }
+  };
 
   const fetchTeamleadManager = async () => {
     try {
@@ -100,39 +120,14 @@ const TeamLeadProjectCreate = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const payload = {
-      project_title,
-      project_type,
-      start_date,
-      estimated_hours,
-      project_description,
-      area_of_work: selectedAreas.join(", "), // Convert tags to string
-      project_code,
-      subdivision,
-      discipline_code,
-      discipline,
-      status: true,
-    };
-
+  const fetchBuilding = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/projects/create/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json();
-      if (res.ok) {
-        alert("Project created successfully!");
-      } else {
-        console.error(data);
-        alert("Failed to create project.");
-      }
+      const response = await fetch(`${config.apiBaseURL}/buildings/`);
+      const data = await response.json();
+      setBuildings(data);
+      console.log("Buildings", data);
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error fetching Buildings:", error);
     }
   };
 
@@ -144,10 +139,18 @@ const TeamLeadProjectCreate = () => {
           <div className="left-form">
             <div className="left-form-first">
               <div className="project-form-group">
+                <label>Project Code</label>
+                <input
+                  name="project_code"
+                  value={formData.project_code}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="project-form-group">
                 <label>Project Title</label>
                 <input
                   name="project_title"
-                  value={projectData.project_title}
+                  value={formData.project_title}
                   onChange={handleChange}
                 />
               </div>
@@ -155,87 +158,100 @@ const TeamLeadProjectCreate = () => {
                 <label>Project Type</label>
                 <input
                   name="project_type"
-                  value={projectData.project_type}
+                  value={formData.project_type}
                   onChange={handleChange}
                 />
               </div>
 
               <div className="project-form-group">
-                <label>Project Code</label>
-                <input
-                  name="project_code"
-                  value={projectData.project_code}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="project-form-group">
                 <label>Discipline Code</label>
                 <input
                   name="discipline_code"
-                  value={projectData.discipline_code}
+                  value={formData.discipline_code}
                   onChange={handleChange}
                 />
               </div>
             </div>
             <div className="left-form-second">
-              <div className="building-group">
+              <div className="project-form-group">
                 <label>Building(s)</label>
-                {buildings.map((b, idx) => (
-                  <div className="building-row" key={idx}>
-                    {/* <input
-                      placeholder="Building Name"
-                      value={b.name}
-                      onChange={(e) =>
-                        handleBuildingChange(idx, "name", e.target.value)
-                      }
-                    /> */}
-                    {/* <input
-                      placeholder="Hours"
-                      value={b.hours}
-                      onChange={(e) =>
-                        handleBuildingChange(idx, "hours", e.target.value)
-                      }
-                    /> */}
-                    {/* <button type="button" onClick={() => removeBuilding(idx)}>
-                      Delete
-                    </button> */}
-                    <button type="button" onClick={addBuilding}>
-                      +
-                    </button>
-                  </div>
-                ))}
+
+                <div className="building-row">
+                  {selectedBuildings.map((b, i) => (
+                    <div key={i} className="building-tile">
+                      <div className="building-tile-small">
+                        {b.building_title}
+                      </div>
+                      <div className="building-tile-small">{b.hours} hrs</div>
+                      <button
+                        className="tag-button"
+                        type="button"
+                        onClick={() =>
+                          setSelectedBuildings((prev) =>
+                            prev.filter(
+                              (item) => item.building_id !== b.building_id
+                            )
+                          )
+                        }
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setShowBuildingPopup(true)}
+                  >
+                    +
+                  </button>
+                </div>
               </div>
 
-              <div className="area-group">
+              <div className="project-form-group">
                 <label>Area of Work</label>
-                {/* <input
-                  value={areaInput}
-                  onChange={(e) => setAreaInput(e.target.value)}
-                  onKeyDown={(e) =>
-                    e.key === "Enter" && (e.preventDefault(), addAreaOfWork())
-                  }
-                /> */}
                 <div className="area-row">
-                  {/* <div className="tags">
-                    {projectData.area_of_work.map((area) => (
-                      <span className="tag" key={area}>
-                        {area}{" "}
-                        <button onClick={() => removeArea(area)}>x</button>
-                      </span>
-                    ))}
-                  </div> */}
+                  <div className="tags">
+                    {areas
+                      .filter((a) =>
+                        formData.area_of_work.includes(a.area_name)
+                      )
+                      .map((a) => (
+                        <div>
+                          <span className="tag" key={a.area_name}>
+                            {a.name}
+                          </span>
+                          <button
+                            className="tag-button"
+                            type="button"
+                            onClick={() =>
+                              setFormData((prev) => ({
+                                ...prev,
+                                area_of_work: prev.area_of_work.filter(
+                                  (area) => area !== a.area_name
+                                ),
+                              }))
+                            }
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                  </div>
+
+                  <button type="button" onClick={() => setShowAreaPopup(true)}>
+                    +
+                  </button>
                 </div>
               </div>
 
-              <div className="subdivision-group">
+              <div className="project-form-group">
                 <label>Sub Division</label>
-                <div className="subdivision-row">
-                  {/* <input
-                    name="subdivision"
-                    value={projectData.subdivision}
-                    onChange={handleChange}
-                  /> */}
-                </div>
+
+                <input
+                  name="subdivision"
+                  value={formData.subdivision}
+                  onChange={handleChange}
+                />
               </div>
             </div>
           </div>
@@ -246,7 +262,7 @@ const TeamLeadProjectCreate = () => {
                 <input
                   type="date"
                   name="start_date"
-                  value={projectData.start_date}
+                  value={formData.start_date}
                   onChange={handleChange}
                 />
               </div>
@@ -254,7 +270,7 @@ const TeamLeadProjectCreate = () => {
                 <label>Estd. Hours</label>
                 <input
                   name="estimated_hours"
-                  value={projectData.estimated_hours}
+                  value={formData.estimated_hours}
                   onChange={handleChange}
                 />
               </div>
@@ -272,43 +288,30 @@ const TeamLeadProjectCreate = () => {
                       <input
                         type="checkbox"
                         value={employee.employee_id}
-                        // checked={selectedEmployees.includes(
-                        //   employee.employee_id
-                        // )}
-                        // onChange={() =>
-                        //   handleCheckboxChange(employee.employee_id)
-                        // }
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          if (checked) {
+                            setSelectedTeamleadManager((prev) => [
+                              ...prev,
+                              employee.employee_id,
+                            ]);
+                          } else {
+                            setSelectedTeamleadManager((prev) =>
+                              prev.filter((id) => id !== employee.employee_id)
+                            );
+                          }
+                        }}
                       />
                     </div>
                   ))}
                 </div>
-                {/* <select
-                  value={roleDropdown}
-                  onChange={(e) => setRoleDropdown(e.target.value)}
-                >
-                  <option>Team Lead</option>
-                  <option>Manager</option>
-                  </select>
-
-                <div className="role-checks">
-                  {["Yash", "Aarav", "Kriti", "Sana"].map((name) => (
-                    <label key={name}>
-                      <input
-                        type="checkbox"
-                        checked={projectData.project_roles.includes(name)}
-                        onChange={() => toggleRole(name)}
-                      />
-                      {name} <i>{roleDropdown}</i>
-                    </label>
-                  ))}
-                </div> */}
               </div>
 
               <div className="form-group-full-width">
                 <label>Project Description</label>
                 <textarea
                   name="project_description"
-                  value={projectData.project_description}
+                  value={formData.project_description}
                   onChange={handleChange}
                 />
               </div>
@@ -320,13 +323,119 @@ const TeamLeadProjectCreate = () => {
           <button type="submit" className="btn-green">
             Create
           </button>
-          <button type="reset" className="btn-red">
-            Delete
+          <button onClick={() => handleCancel()} className="btn-red">
+            Cancel
           </button>
         </div>
       </form>
+      {showBuildingPopup && (
+        <div className="popup">
+          <h4>Select Buildings</h4>
+          {buildings.map((b) => (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "8px",
+              }}
+              key={b.building_id}
+              // style={{ marginBottom: "8px" }}
+            >
+              <input
+                type="checkbox"
+                value={b.building_id}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  const existing = selectedBuildings.find(
+                    (item) => item.building_id === b.building_id
+                  );
+
+                  if (checked && !existing) {
+                    setSelectedBuildings((prev) => [
+                      ...prev,
+                      { ...b, hours: 0 },
+                    ]);
+                  } else {
+                    setSelectedBuildings((prev) =>
+                      prev.filter((item) => item.building_id !== b.building_id)
+                    );
+                  }
+                }}
+              />
+              {b.building_title}
+              {selectedBuildings.some(
+                (s) => s.building_id === b.building_id
+              ) && (
+                <input
+                  type="number"
+                  placeholder="Hours"
+                  style={{ marginLeft: "10px" }}
+                  onChange={(e) => {
+                    setSelectedBuildings((prev) =>
+                      prev.map((item) =>
+                        item.building_id === b.building_id
+                          ? { ...item, hours: e.target.value }
+                          : item
+                      )
+                    );
+                  }}
+                />
+              )}
+            </div>
+          ))}
+          <button onClick={() => setShowBuildingPopup(false)}>Done</button>
+          <button
+            onClick={() => {
+              setShowBuildingPopup(false);
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+      )}
+      {showAreaPopup && (
+        <div className="popup">
+          <h4>Select Area of Work</h4>
+          {areas.map((a) => (
+            <div key={a.area_name}>
+              <input
+                type="checkbox"
+                value={a.area_name}
+                checked={selectedAreas.includes(a.area_name)}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  if (checked) {
+                    setSelectedAreas((prev) => [...prev, a.area_name]);
+                  } else {
+                    setSelectedAreas((prev) =>
+                      prev.filter((area_name) => area_name !== a.area_name)
+                    );
+                  }
+                }}
+              />
+              {a.name}
+            </div>
+          ))}
+          <button
+            onClick={() => {
+              setFormData((prev) => ({ ...prev, area_of_work: selectedAreas }));
+              setShowAreaPopup(false);
+            }}
+          >
+            Done
+          </button>
+          <button
+            onClick={() => {
+              setShowAreaPopup(false);
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+      )}
     </div>
   );
 };
+
 
 export default TeamLeadProjectCreate;

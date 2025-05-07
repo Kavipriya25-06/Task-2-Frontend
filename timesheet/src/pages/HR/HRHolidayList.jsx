@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import config from "../../config";
 import Modal from "react-modal";
 
+
 const HolidayList = () => {
+
+// const HRHolidayList = () => {
   const [calendarData, setCalendarData] = useState([]);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [showPopup, setShowPopup] = useState(false);
@@ -77,10 +80,10 @@ const HolidayList = () => {
         }}
       >
         <h2 className="holiday-table-title">Holidays - {selectedYear}</h2>
-        <div>
-          <button onClick={() => setSelectedYear((y) => y - 1)}>&lt;</button>
-          <span style={{ margin: "0 10px" }}>{selectedYear}</span>
-          <button onClick={() => setSelectedYear((y) => y + 1)}>&gt;</button>
+        <div className="year-selector">
+          <button className="lefts" onClick={() => setSelectedYear((y) => y - 1)}>&lt;</button>
+          <span className="year-text">{selectedYear}</span>
+          <button className="rights" onClick={() => setSelectedYear((y) => y + 1)}>&gt;</button>
         </div>
       </div>
       <table className="holiday-table">
@@ -121,7 +124,7 @@ const HolidayList = () => {
                 }}
               >
                 +
-              </button>
+      </button>
       {/* {showPopup && (
         <div className="popup-overlay">
           <div className="popup-box">
@@ -158,6 +161,7 @@ const HolidayList = () => {
         </div>
       )} */}
 
+
 {showPopup && (
       <div className="custom-modal-overlay">
         <div className="custom-modal">
@@ -192,9 +196,62 @@ const HolidayList = () => {
         </div>
       </div>
     )}
+      {/* <Modal
+  isOpen={showPopup}
+  onRequestClose={() => setShowPopup(false)}
+  contentLabel="Add Holiday"
+  ariaHideApp={false}
+  style={{
+    content: {
+      top: "20%",
+      left: "50%",
+      right: "auto",
+      bottom: "auto",
+      transform: "translateX(-50%)",
+      width: "420px",
+      padding: "30px",
+      borderRadius: "12px",
+      position: "absolute",
+    },
+  }}
+>
+  <button className="close-btn" onClick={() => setShowPopup(false)}>
+    &times;
+  </button>
+
+  <h3>Add Holiday</h3>
+
+  <label>
+    Date:
+    <input
+      type="date"
+      value={formData.date}
+      onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+    />
+  </label>
+
+  <label>
+    Holidays:
+    <input
+      type="text"
+      value={formData.notes}
+      onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+    />
+  </label>
+
+  <div className="modal-buttons">
+    <button className="btn-save" onClick={handlePatchHoliday} style={{ marginRight: "8px" }}>
+      Submit
+    </button>
+    <button className="btn-cancel" onClick={() => setShowPopup(false)}>Cancel</button>
+  </div>
+</Modal> */}
 
     </div>
   );
 };
 
+
 export default HolidayList;
+
+// export default HRHolidayList;

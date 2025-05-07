@@ -12,6 +12,7 @@ const ManagerLeaveRequests = () => {
   const [filteredLeaveRequests, setFilteredLeaveRequests] = useState([]);
   const tabLabels = ["Pending", "Approved", "Rejected"];
   const [activeTab, setActiveTab] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchLeaveRequests();
@@ -97,6 +98,18 @@ const ManagerLeaveRequests = () => {
 
   return (
     <div className="leaves-container">
+
+      {/* Leave Application Button - Top Right */}
+      <div className="leave-application-topbar">
+        <button
+          onClick={() => navigate("Leaveapplication")}
+          className="leave-application-button"
+        >
+          Leave Application
+        </button>
+      </div>
+
+
       <div className="leaves-tab">
         {tabLabels.map((label, index) => (
           <button

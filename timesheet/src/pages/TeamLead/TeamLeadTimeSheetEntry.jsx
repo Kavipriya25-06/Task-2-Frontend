@@ -6,7 +6,9 @@ import TeamLeadDailyTimeSheetEntry from "./TeamLeadDailyTimeSheetEntry";
 import TeamLeadWeeklyTimeSheetEntry from "./TeamLeadWeeklyTimeSheet";
 
 const TeamLeadTimeSheetEntry = () => {
+  const { user } = useAuth();
   const [calendarData, setCalendarData] = useState([]);
+  const [biometricData,setBiometricData] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
@@ -24,8 +26,21 @@ const TeamLeadTimeSheetEntry = () => {
     }
   };
 
+  const fetchBiometricData = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/biometric-data/by_employee/${user.employee_id}/`
+      );
+      const data = await response.json();
+      setBiometricData(data);
+    } catch (error) {
+      console.error("Error fetching biometric data:", error);
+    }
+  };
+
   useEffect(() => {
     fetchCalendarData(selectedYear);
+    fetchBiometricData();
     const updated = new Date(currentDate);
     updated.setFullYear(selectedYear);
     setCurrentDate(updated);
@@ -115,9 +130,20 @@ const TeamLeadTimeSheetEntry = () => {
                 <div className="day-number">{entry.day}</div>
                 <div
                   className="day-circle"
-                  onClick={() => navigate(`createdaily`)}
+                  onClick={() => {
+                    const clickedDate = `${entry.year}-${String(entry.month).padStart(2, "0")}-${String(entry.day).padStart(2, "0")}`;
+                    navigate(`createdaily/${clickedDate}`);
+                  }}
                   style={{ cursor: "pointer" }}
-                ></div>
+                >
+                  {/**  Show work_duration from biometric data */}
+                  {(() => {
+                      const dateStr = `${entry.year}-${String(entry.month).padStart(2, "0")}-${String(entry.day).padStart(2, "0")}`;
+                      const dayBio = biometricData.find((b) => b.date === dateStr);
+                      return dayBio ? dayBio.work_duration : "";
+                  })()}
+                </div>
+                
                 {entry.notes && (
                   <div className="holiday-note1">{entry.notes}</div>
                 )}

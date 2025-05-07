@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import config from "../../config";
 import roleOptions from "../../constants/roleOptions";
+
 import { FaEdit } from "react-icons/fa";
+import Breadcrumbs from "../../components/Breadcrumbs";
 
 
 const EditUserForm = () => {
@@ -81,6 +83,14 @@ const EditUserForm = () => {
 
   return (
     <div className="add-user-container">
+      <Breadcrumbs
+        crumbs={[
+          { label: "Admin", link: "/admin" },
+          { label: "Users", link: "/admin/detail/users" },
+          { label: "View User" }, // or "Edit User"
+        ]}
+        showBack={true}
+      />
       <div className="table-top-bar">
         <div>
           {editMode ? (
@@ -93,7 +103,7 @@ const EditUserForm = () => {
               <button
                 type="edit"
                 onClick={() => setEditMode(true)}
-                className="btn-orange"
+                className="edit-btn"
               >
               <FaEdit className="edit-icon" />
               </button>
@@ -104,7 +114,7 @@ const EditUserForm = () => {
 
       <form className="add-user-form" onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Employee ID</label>
+          <label>Employee Code</label>
           <div className="uneditable">
             {employeeID.employee_code} - {employeeID.employee_name}
           </div>
@@ -132,7 +142,7 @@ const EditUserForm = () => {
 
         <div className="form-group">
           <label>Email</label>
-          {editMode ? (
+          {/* {editMode ? (
             <input
               className="input"
               type="email"
@@ -140,9 +150,9 @@ const EditUserForm = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-          ) : (
-            <div className="uneditable">{email}</div>
-          )}
+          ) : ( */}
+          <div className="uneditable">{email}</div>
+          {/* )} */}
         </div>
 
         <div className="form-group" style={{ position: "relative" }}>

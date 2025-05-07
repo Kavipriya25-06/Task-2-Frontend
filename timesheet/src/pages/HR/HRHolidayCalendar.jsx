@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import config from "../../config";
 import { useNavigate } from "react-router-dom";
 
-const HolidayCalendar = () => {
+const HRHolidayCalendar = () => {
   const [calendarData, setCalendarData] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -162,7 +162,7 @@ const HolidayCalendar = () => {
         </select>
         <button
           className="calendar-title-btn"
-          onClick={() => navigate("/hr/detail/holidays/holiday-list")}
+          onClick={() => navigate("holiday-list")}
         >
           Holiday list {year}
         </button>
@@ -179,13 +179,9 @@ const HolidayCalendar = () => {
       <div className="calendar-grid">
         <div className="calendar-day-label">Week</div>
         {daysInWeek.map((day) => (
-          <div
-            className={`calendar-day-label ${day === 'Sun' ? 'sunday' : ''}`}
-            key={day}
-          >
+          <div className="calendar-day-label" key={day}>
             {day}
           </div>
-        
         ))}
         {renderCalendar()}
       </div>
@@ -193,4 +189,4 @@ const HolidayCalendar = () => {
   );
 };
 
-export default HolidayCalendar;
+export default HRHolidayCalendar;

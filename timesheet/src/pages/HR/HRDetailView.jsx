@@ -7,10 +7,14 @@ const HRDetailView = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const currentTab = location.pathname.split("/").slice(1)[2];
+  // const tabs = [
+  //   { label: "Employees Details", path: "employee-details" },
+  //   { label: "Holidays", path: "holidays" },
+  // ];
 
   const tabs = [
     { label: "Employee Details", path: "employee-details" },
-    { label: "Holiday", path: "holidays" },
+    { label: "Holidays", path: "holidays" },
 
   ];
 
@@ -18,7 +22,9 @@ const HRDetailView = () => {
     <div className="admin-page">
       <div className="main-content">
         <nav className="sidebar">
-        {tabs.map((tab, idx) => (
+
+        {/* {tabs.map((tab, idx) => ( */}
+          {tabs.map((tab, idx) => (
             <button
               key={idx}
               onClick={() => navigate(tab.path)}

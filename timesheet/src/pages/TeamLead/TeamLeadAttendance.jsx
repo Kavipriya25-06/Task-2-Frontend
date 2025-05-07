@@ -49,19 +49,36 @@ const TeamLeadAttendance = () => {
   const { startDate, endDate, weekDays } = getWeekDates(currentWeek);
 
   // Fetch Attendance Data for the week
-  const fetchAttendanceData = async () => {
-    try {
-      const response = await fetch(
-        `${config.apiBaseURL}/weekly-attendance/${user.employee_id}/?today=${weekDays[0].mapdate}`
-      );
-      const data = await response.json();
-      console.log("Attendance data", data);
-      setAttendanceData(data);
-      calculateTotalHours(data);
-    } catch (err) {
-      console.error("Unable to fetch attendance data", err);
-    }
-  };
+ const fetchAttendanceData = async () => {
+  try {
+    const response = await fetch(
+      `${config.apiBaseURL}/weekly-attendance/${user.employee_id}/?today=${weekDays[0].mapdate}`
+    );
+    const data = await response.json();
+    console.log("Raw attendance data:", data);
+
+    // Step 1: Group by employee + date and pick latest
+    const latestRecords = {};
+
+    data.forEach((record) => {
+      const key = `${record.employee}_${record.date}`;
+      // If no entry yet OR this record has newer modified_on, replace it
+      if (!latestRecords[key] || new Date(record.modified_on) > new Date(latestRecords[key].modified_on)) {
+        latestRecords[key] = record;
+      }
+    });
+
+    // Step 2: Convert back to array
+    const filteredData = Object.values(latestRecords);
+    console.log("Filtered latest attendance data:", filteredData);
+
+    setAttendanceData(filteredData);
+    calculateTotalHours(filteredData);
+  } catch (err) {
+    console.error("Unable to fetch attendance data", err);
+  }
+};
+
 
   const fetchEmployee = async () => {
     try {
@@ -80,18 +97,23 @@ const TeamLeadAttendance = () => {
   const calculateTotalHours = (data) => {
     let hours = {};
     data.forEach((attendance) => {
-      const totalDuration = parseFloat(attendance.work_duration);
+      const totalDuration = parseFloat(attendance.total_duration || "0");   // use total_duration
       hours[attendance.employee] =
         (hours[attendance.employee] || 0) + totalDuration;
     });
     setTotalHours(hours);
   };
+  
 
   // Navigate to previous or next week
   const handleWeekChange = (direction) => {
     const newDate = new Date(currentWeek);
     newDate.setDate(currentWeek.getDate() + direction * 7); // Move by 7 days
     setCurrentWeek(newDate);
+  };
+
+  const handleAttendanceClick = () => {
+    navigate(`attendance-admin/`);
   };
 
   useEffect(() => {
@@ -116,6 +138,9 @@ const TeamLeadAttendance = () => {
         {/* <div>
           <button className="add-user-btn" >Attendance Admin</button>
         </div> */}
+        <div>
+          <button onClick={() => handleAttendanceClick()}>Attendance Admin</button>
+        </div>
       </div>
 
       <div>
@@ -153,23 +178,49 @@ const TeamLeadAttendance = () => {
                     // <td key={day.key}>
                     //   {attendance ? `${attendance.work_duration} hrs` : "-"}
                     // </td>
-                    <td key={day.key} onClick={() => navigate("/teamlead/detail/time-sheet-entry/approvalscreen")} style={{ cursor: "pointer" }}>
-                        {attendance ? (
-                          <div className="attendance-tile">
-                            <div>
-                              {attendance.in_time.slice(0, 5)} - {attendance.out_time.slice(0, 5)}
-                            </div>
-                            <div>
-                              <strong>Total:</strong> {attendance.total_duration} hrs
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="attendance-tile no-data">-</div>
-                        )}
-                      </td>
+                    // <td key={day.key} onClick={() => navigate("/teamlead/detail/time-sheet-entry/approvalscreen")} style={{ cursor: "pointer" }}>
+                    //     {attendance ? (
+                    //       <div className="attendance-tile">
+                    //         <div>
+                    //           {attendance.in_time.slice(0, 5)} - {attendance.out_time.slice(0, 5)}
+                    //         </div>
+                    //         <div>
+                    //           <strong>Total:</strong> {attendance.total_duration} hrs
+                    //         </div>
+                    //       </div>
+                    //     ) : (
+                    //       <div className="attendance-tile no-data">-</div>
+                    //     )}
+                    //   </td>
 
-                                        );
-                                      })}
+                    <td
+                    key={day.key}
+                    onClick={() => {
+                      if (attendance) {
+                        navigate(`/teamlead/detail/attendance/timesheetapproval/${emp.employee_id}/${day.mapdate}`);
+                      }
+                    }}
+                    style={{ cursor: attendance ? "pointer" : "default" }}
+                  >
+                    {attendance ? (
+                      <div className="attendance-tile">
+                        <div>
+                          {attendance.in_time.slice(0, 5)} - {attendance.out_time.slice(0, 5)}
+                        </div>
+                        <div>
+                          <strong>Total:</strong> {attendance.total_duration} hrs
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="attendance-tile no-data">-</div>
+                    )}
+                  </td>
+
+                  );
+                })}
+
+                                        {/* );
+                                      })} */}
 
                                       {/* Total Hours for that employee (from calculated object) */}
                                       <td>

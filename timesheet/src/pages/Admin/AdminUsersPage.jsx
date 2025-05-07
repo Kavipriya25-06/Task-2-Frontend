@@ -5,11 +5,14 @@ import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate } from "react-router-dom";
+import Breadcrumbs from "../../components/Breadcrumbs";
 // import editIcon from "src/assets/edit.png";
 
 const UsersPage = () => {
   const { user } = useAuth();
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [searchText, setSearchText] = useState("");
   const navigate = useNavigate();
 
   const fetchUser = async () => {
@@ -17,6 +20,7 @@ const UsersPage = () => {
       const response = await fetch(`${config.apiBaseURL}/user-details/`);
       const data = await response.json();
       setUsers(data);
+      setFilteredUsers(data);
     } catch (error) {
       console.log("Unable to fetch users", error);
     }
@@ -34,14 +38,44 @@ const UsersPage = () => {
     fetchUser();
   }, []);
 
+  // Search filter logic
+  useEffect(() => {
+    const lowerSearch = searchText.toLowerCase();
+    const filtered = users.filter((u) => {
+      const code = u.employee_id?.employee_code?.toLowerCase() || "";
+      const name = u.employee_id?.employee_name?.toLowerCase() || "";
+      const email = u.email?.toLowerCase() || "";
+      return (
+        code.includes(lowerSearch) ||
+        name.includes(lowerSearch) ||
+        email.includes(lowerSearch)
+      );
+    });
+    setFilteredUsers(filtered);
+  }, [searchText, users]);
+
   return (
     <div>
+      <Breadcrumbs
+        crumbs={[{ label: "Admin", link: "/admin" }, { label: "Users" }]}
+        showBack={false}
+      />
       <div className="user-header">
         <h2 className="employee-title">User credentials</h2>
+        <div className="search-bar-container">
+          <input
+            type="text"
+            placeholder="Search by code, name, or email"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            className="search-bar"
+          />
+        </div>
         <button onClick={handleAddClick} className="add-user-btn">
           Add User
         </button>
       </div>
+
       <table className="user-table">
         <thead>
           <tr>
@@ -52,7 +86,7 @@ const UsersPage = () => {
           </tr>
         </thead>
         <tbody>
-          {users.map((u) => (
+          {filteredUsers.map((u) => (
             <tr key={u.user_id}>
               <td
                 onClick={() => handleEditClick(u.user_id)}
@@ -61,9 +95,9 @@ const UsersPage = () => {
                   textDecoration: "underline",
                 }}
               >
-                {u.employee_id.employee_code}
+                {u.employee_id?.employee_code}
               </td>
-              <td>{u.employee_id.employee_name}</td>
+              <td>{u.employee_id?.employee_name}</td>
               <td>{u.role}</td>
               <td>{u.email}</td>
             </tr>
