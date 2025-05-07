@@ -242,8 +242,8 @@ input {
   flex-direction: column;
   /* overflow-y: auto */
   /* overflow: hidden; */
-  overflow-y: scroll;
-  overflow-x: scroll;
+  overflow-y: auto;
+  overflow-x: auto;
 }
 
 /* common Layout */
@@ -845,6 +845,68 @@ main {
   /* content: "Sick Leave"; */
   font-size: 12px;
   color: red;
+}
+
+.comp-off-button {
+  padding: 10px 20px;
+  border: 2px solid #ffbf00;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.comp-off-button.assigned {
+  background-color: #ffbf00;
+  color: black;
+}
+
+.comp-off-button.not-assigned {
+  background-color: #f0f0f0;
+  color: black;
+}
+
+.settings-container {
+  padding: 20px;
+}
+
+.tab-container {
+  margin-bottom: 20px;
+}
+
+.active-tab {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+}
+
+.comp-off-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.comp-off-table th,
+.comp-off-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+.comp-off-table input {
+  width: 80px;
+}
+
+.submit-button2 {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .attendance-table td span.leave-label {
