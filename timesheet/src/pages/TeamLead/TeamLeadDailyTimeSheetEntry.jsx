@@ -98,41 +98,43 @@ const TeamLeadDailyTimeSheetEntry = () => {
   const handleRowChange = (index, field, value) => {
     const updatedRows = [...rows];
     updatedRows[index][field] = value;
-
+  
     const start = updatedRows[index].start_time;
     const end = updatedRows[index].end_time;
-
+  
+    // ✅ Only auto-calculate hours if start and end are both selected
     if (start && end) {
+  
       const parseTime = (timeStr) => {
         const parts = timeStr.split(":").map(Number);
         return {
           hours: parts[0] || 0,
           minutes: parts[1] || 0,
-          seconds: parts[2] || 0,
         };
       };
-
+  
       const startTime = parseTime(start);
       const endTime = parseTime(end);
-
+  
       const startSeconds =
-        startTime.hours * 3600 + startTime.minutes * 60 + startTime.seconds;
+        startTime.hours * 3600 + startTime.minutes * 60;
       const endSeconds =
-        endTime.hours * 3600 + endTime.minutes * 60 + endTime.seconds;
-
+        endTime.hours * 3600 + endTime.minutes * 60;
+  
       let diffSeconds = endSeconds - startSeconds;
-
+  
       if (diffSeconds < 0) {
-        diffSeconds += 24 * 3600;
+        // User might cross midnight — optional: handle this or set 0
+        diffSeconds = 0;
       }
-
+  
       const diffHours = diffSeconds / 3600;
       updatedRows[index].hours = diffHours.toFixed(2);
     }
-
+  
     setRows(updatedRows);
   };
-
+  
 
 
   const handleAddRow = () => {
@@ -141,38 +143,105 @@ const TeamLeadDailyTimeSheetEntry = () => {
 
   const handleSubmit = async () => {
     try {
-      // Prepare the payload according to backend field names
-      const timesheet_entries = rows.map(row => ({
-        employee: employee_id,  // field name should be "employee"
-        date: date,
-        project: row.project,
-        building: row.building,
-        task: row.task,
-        task_hours: parseFloat(row.hours || 0),
-        start_time: row.start_time,
-        end_time: row.end_time
-      }));
+      for (let row of rows) {
   
-      const response = await fetch("http://127.0.0.1:8000/timesheet/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(timesheet_entries)   // send the list directly, not wrapped in employee_id/date
-      });
+        const start = row.start_time;
+        const end = row.end_time;
   
-      if (response.ok) {
-        alert("Timesheet submitted successfully!");
-      } else {
-        const errorData = await response.json();
-        console.error("Failed to submit:", errorData);
-        alert("Failed to submit timesheet. See console for details.");
+        if (!start || !end) {
+          alert(`Please enter both start and end time for all tasks.`);
+          return;
+        }
+  
+        const parseTime = (timeStr) => {
+          const parts = timeStr.split(":").map(Number);
+          return {
+            hours: parts[0] || 0,
+            minutes: parts[1] || 0,
+          };
+        };
+  
+        const startTime = parseTime(start);
+        const endTime = parseTime(end);
+  
+        const startSeconds =
+          startTime.hours * 3600 + startTime.minutes * 60;
+        const endSeconds =
+          endTime.hours * 3600 + endTime.minutes * 60;
+  
+        const intimeParts = attendanceDetails.in_time.split(":").map(Number);
+        const intimeSeconds =
+          (intimeParts[0] || 0) * 3600 + (intimeParts[1] || 0) * 60;
+  
+        // ✅ Validate start_time >= intime
+        if (startSeconds < intimeSeconds) {
+          alert(
+            `Task "${row.task}" Start Time (${start}) cannot be before Intime (${attendanceDetails.in_time}).`
+          );
+          return;
+        }
+  
+        // ✅ Validate end_time > start_time
+        if (endSeconds <= startSeconds) {
+          alert(`Task "${row.task}" End Time must be after Start Time.`);
+          return;
+        }
+  
+        // ✅ Validate total assigned hours
+        if (parseFloat(totalAssignedHours) > maxAllowedHours) {
+          alert(
+            `Total assigned hours exceed available logged hours (${maxAllowedHours}).`
+          );
+          return;
+        }
+  
+        // ✅ Prepare times for API (add :00 if needed)
+        const start_time = start.includes(":00") ? start : start + ":00";
+        const end_time = end.includes(":00") ? end : end + ":00";
+  
+        const payload = {
+          employee: employee_id,
+          date: date,
+          project: row.project,
+          building: row.building,
+          task: row.task,
+          task_hours: parseFloat(row.hours || 0),
+          start_time: start_time,
+          end_time: end_time
+        };
+  
+        const response = await fetch(`${config.apiBaseURL}/timesheet/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+  
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error("Failed to submit row:", errorData);
+          alert(`Failed to submit row for task ${row.task}. See console.`);
+          return; // stop submitting further
+        }
       }
+  
+      alert("All timesheet rows submitted successfully!");
+  
     } catch (error) {
       console.error("Error submitting timesheet:", error);
       alert("An error occurred while submitting the timesheet.");
     }
   };
+
+  
+  // Calculate total assigned hours
+const totalAssignedHours = rows.reduce(
+  (sum, row) => sum + parseFloat(row.hours || 0),
+  0
+);
+
+const maxAllowedHours = parseFloat(attendanceDetails.total_duration || 0);
 
 
   return (
@@ -230,24 +299,26 @@ const TeamLeadDailyTimeSheetEntry = () => {
                   }
                 />
               </td>
-              <td>  <input
-                  type="text"
-                  placeholder="Start Time"
-                  value={row.start_time}
+              <td>  
+                <input
+                  type="time"
+                  value={row.start_time ? row.start_time.slice(0, 5) : ""}
                   onChange={(e) =>
                     handleRowChange(index, "start_time", e.target.value)
                   }
-                /> </td>
+                /> 
+              </td>
               <td> 
-              <input
-                  type="text"
-                  placeholder="End Time"
-                  value={row.end_time}
+                <input
+                  type="time"
+                  value={row.end_time ? row.end_time.slice(0, 5) : ""}
                   onChange={(e) =>
                     handleRowChange(index, "end_time", e.target.value)
                   }
                 /> 
-                </td>
+              </td>
+
+
               <td>
                 <input
                   type="number"
@@ -271,7 +342,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
       </div>
 
       <div className="button-container">
-        <button className="save-button2" onClick={handleSubmit}>Save</button>
+        <button className="save-button2" onClick={handleSubmit} disabled={totalAssignedHours > maxAllowedHours}>Save</button>
         <button className="submit-button2"  onClick={handleSubmit}>Submit</button>
       </div>
     </div>
