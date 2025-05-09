@@ -36,8 +36,10 @@ const EmployeeTasks = () => {
     navigate(`/employee/detail/tasks/${task_assign_id}`);
   };
 
-  if (loading) return <p>Loading tasks...</p>;
-  if (error) return <p>Error loading tasks: {error}</p>;
+  
+
+  if (loading) return <p className="loading">Loading tasks...</p>;
+  if (error) return <p className="error">Error loading tasks: {error}</p>;
 
   return (
     <div className="employee-tasks-wrapper">

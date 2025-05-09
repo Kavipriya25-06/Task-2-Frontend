@@ -95,7 +95,7 @@ const EmployeeTimeSheetEntry = () => {
     const filledData = new Array(offset).fill(null).concat(monthData);
 
     const rows = [];
-    const status = "pending"; 
+    const status = "save"; 
     for (let i = 0; i < filledData.length; i += 7) {
       const week = filledData.slice(i, i + 7);
       const weekNumber = week.find((day) => day)?.week_of_year || "-";
@@ -136,7 +136,7 @@ const EmployeeTimeSheetEntry = () => {
 
   return (
     <div className="holiday-calendar">
-      <div className="calendar-header">
+      <div className="calendar-headers">
         <button className="left" onClick={handlePrevMonth}>&lt;</button>
         <h3>
           {monthName} {selectedYear}
@@ -191,7 +191,10 @@ const EmployeeTimeSheetEntry = () => {
       <div className="calendar-grid">
         <div className="calendar-day-label">Week</div>
         {daysInWeek.map((day) => (
-          <div className="calendar-day-label" key={day}>
+          <div
+          className={`calendar-day-label ${day === 'Sun' ? 'sunday' : ''}`}
+          key={day}
+        >
             {day}
           </div>
         ))}

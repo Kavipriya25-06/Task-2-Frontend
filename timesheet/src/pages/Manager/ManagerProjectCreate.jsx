@@ -172,7 +172,39 @@ const ManagerProjectCreate = () => {
                 />
               </div>
             </div>
+            
             <div className="left-form-second">
+            <div className="roles-box">
+                <label>Project Roles</label>
+                <div className="select-container">
+                  {teamleadManager.map((employee) => (
+                    <div
+                      key={employee.employee_id}
+                      className="employee-checkbox"
+                    >
+                      {employee.employee_name} - {employee.designation}
+                      <input
+                        type="checkbox"
+                        className="create-checkbox"
+                        value={employee.employee_id}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          if (checked) {
+                            setSelectedTeamleadManager((prev) => [
+                              ...prev,
+                              employee.employee_id,
+                            ]);
+                          } else {
+                            setSelectedTeamleadManager((prev) =>
+                              prev.filter((id) => id !== employee.employee_id)
+                            );
+                          }
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
               <div className="project-form-group">
                 <label>Building(s)</label>
 
@@ -184,8 +216,8 @@ const ManagerProjectCreate = () => {
                       </div>
                       <div className="building-tile-small">{b.hours} hrs</div>
                       <button
-                        className="tag-button"
                         type="button"
+                        className="tag-button"
                         onClick={() =>
                           setSelectedBuildings((prev) =>
                             prev.filter(
@@ -219,9 +251,8 @@ const ManagerProjectCreate = () => {
                         <div>
                           <span className="tag" key={a.area_name}>
                             {a.name}
-                          </span>
-                          <button
-                            className="tag-button"
+                            <button
+                            className="tags-button"
                             type="button"
                             onClick={() =>
                               setFormData((prev) => ({
@@ -234,11 +265,12 @@ const ManagerProjectCreate = () => {
                           >
                             ×
                           </button>
+                          </span>
                         </div>
                       ))}
                   </div>
 
-                  <button type="button" onClick={() => setShowAreaPopup(true)}>
+                  <button className="plus-button" type="button" onClick={() => setShowAreaPopup(true)}>
                     +
                   </button>
                 </div>
@@ -276,37 +308,6 @@ const ManagerProjectCreate = () => {
               </div>
             </div>
             <div className="right-form-second">
-              <div className="roles-box">
-                <label>Project Roles</label>
-                <div className="select-container">
-                  {teamleadManager.map((employee) => (
-                    <div
-                      key={employee.employee_id}
-                      className="employee-checkbox"
-                    >
-                      {employee.employee_name} - {employee.designation}
-                      <input
-                        type="checkbox"
-                        value={employee.employee_id}
-                        onChange={(e) => {
-                          const checked = e.target.checked;
-                          if (checked) {
-                            setSelectedTeamleadManager((prev) => [
-                              ...prev,
-                              employee.employee_id,
-                            ]);
-                          } else {
-                            setSelectedTeamleadManager((prev) =>
-                              prev.filter((id) => id !== employee.employee_id)
-                            );
-                          }
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-
               <div className="form-group-full-width">
                 <label>Project Description</label>
                 <textarea
@@ -334,9 +335,7 @@ const ManagerProjectCreate = () => {
           {buildings.map((b) => (
             <div
               style={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "8px",
+                marginBottom: "3px",
               }}
               key={b.building_id}
               // style={{ marginBottom: "8px" }}
@@ -383,11 +382,12 @@ const ManagerProjectCreate = () => {
               )}
             </div>
           ))}
-          <button onClick={() => setShowBuildingPopup(false)}>Done</button>
+          <button className="btn-save" onClick={() => setShowBuildingPopup(false)}>Done</button>
           <button
             onClick={() => {
               setShowBuildingPopup(false);
             }}
+            className="btn-cancel"
           >
             Cancel
           </button>
@@ -421,13 +421,15 @@ const ManagerProjectCreate = () => {
               setFormData((prev) => ({ ...prev, area_of_work: selectedAreas }));
               setShowAreaPopup(false);
             }}
+            className="btn-save"
           >
-            Done
+            Create
           </button>
           <button
             onClick={() => {
               setShowAreaPopup(false);
             }}
+            className="btn-cancel"
           >
             Cancel
           </button>

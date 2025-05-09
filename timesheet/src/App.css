@@ -1,7 +1,7 @@
 /* timesheet\src\App.css */
 
 * {
-  font-family: "", sans-serif;
+  font-family: "Archivo", sans-serif;
 }
 
 .container {
@@ -9,8 +9,8 @@
   justify-content: center;
   align-items: center;
   height: 578.4px;
-  background-color: #cccccc;
-  border-radius: 1%;
+  background-color: #ebe9e9;
+  border-radius: 10px;
   /* Full viewport width */
 }
 
@@ -90,12 +90,22 @@
 }
 
 .form-container{
-  background-color: #d8d6d5;
+  background-color: #efefef;
   padding: 20px;
   margin: 20px;
   border-radius: 15px;
 }
 
+.form-containers{
+  margin: 20px;
+}
+
+.form-container1{
+  background-color: #f6f6f6;
+  padding: 20px;
+  margin: 20px;
+  border-radius: 15px;
+}
 .form-section {
   flex: 1;
   padding: 40px;
@@ -122,30 +132,47 @@ input {
 }
 
 .button-container .submit-button2{
-  background-color: rgb(79, 196, 79);
-  color: white;
+  background-color: rgb(222, 222, 222);
+  color: black;
   font-weight: 500;
 }
 
 .button-container .submit-button2:hover{
-  background-color: rgb(130, 214, 130);
+  background-color: rgb(147, 148, 147);
   font-weight: 500;
   
 }
 
 .button-container .save-button2{
-  background-color:  #f00202;
+  background-color:  rgb(222, 222, 222);
   font-weight: 500;
-  color: white;
+  color: black;
 }
 
 .button-container .save-button2:hover{
-  background-color: rgb(214, 94, 94);
+  background-color: rgb(147, 148, 147);
   font-weight: 500;
 }
 
+.leave-requests-table {
+  border-radius: 10px;
+  overflow: hidden; 
+  border: 2px solid rgb(80, 78, 78);
+}
 
+.leave-requests-table th, .leave-requests-table td{
+  border: 2px solid gray !important;
+}
 
+.leave-application-topbar .leave-application-button{
+  background-color: #f1890d;
+  color: black;
+}
+
+.leave-application-topbar .leave-application-button:hover{
+  background-color: #ff9312;
+  color: black;
+}
 .btn {
   flex: 1;
   padding: 10px;
@@ -194,7 +221,7 @@ input {
 }
 
 .top-bar {
-  background: #ffbf00;
+  background: #f1890d;
   padding: 5px 0px;
   display: flex;
   justify-content: space-between;
@@ -262,7 +289,7 @@ input {
 }
 
 .bottom-right-circle.save {
-  background-color: rgb(6, 139, 222);
+  background-color: #878787;
 }
 
 .main-content {
@@ -284,6 +311,7 @@ input {
   gap: 10px;
   overflow: hidden;
   border-radius: 10px;
+  font-family: "Archivo", sans-serif;
   /* height: 100vh; */
   /* position: fixed; */
 
@@ -300,7 +328,7 @@ input {
 
 .sidebar .active {
   background: #fdfdba;
-  background-color: #ffbf00;
+  background-color: #f1890d;
   color: black;
   font-weight: bold;
   overflow: hidden;
@@ -312,10 +340,10 @@ input {
 
 }
 
-.employee-table th, .employee-table td {
+/* .employee-table th, .employee-table td {
   padding: 10px;
   border: 2px solid rgb(210, 208, 208);
-}
+} */
 
 .user-table{
   border-radius: 10px;
@@ -333,10 +361,10 @@ input {
   border: 2px solid gray;
 }
 
-.holiday-table th, .user-table td {
+/* .holiday-table th, .user-table td {
   padding: 10px;
   border: 2px solid rgb(210, 208, 208);
-}
+} */
 /* Overlay for background dimming */
 .custom-modal-overlay {
   position: fixed;
@@ -428,7 +456,7 @@ input {
 
 /* Submit */
 .modal-buttons button:first-child {
-  background-color: #ffbf00;
+  background-color: #f1890d;
   color: black;
 }
 
@@ -491,9 +519,36 @@ input {
   margin-top: 3%;
 }
 
-.attend-table th, .user-table td {
+.table-attend{
+  border-radius: 10px;
+  overflow: hidden; 
+  border: 2px solid gray;
+  margin-top: 3%;
+}
+
+.timesheet-table{
+  border-radius: 10px;
+  overflow: hidden; 
+  border: 2px solid gray;
+  margin-top: 3%;
+}
+
+.attend-table th {
   padding: 10px;
   border: 2px solid rgb(210, 208, 208);
+  font-size: 17px;
+}
+
+.user-table td {
+  padding: 10px;
+  border: 2px solid rgb(210, 208, 208);
+  font-size: 15px;
+}
+
+.table-attend th{
+  padding: 10px;
+  border: 2px solid rgb(210, 208, 208);
+  font-size: 17px;
 }
 
 .employee-table-wrapper {
@@ -545,27 +600,84 @@ input {
   font-weight: 600;
 }
 
-.form-group1 .select1{
-  padding: 6px;
-  border-radius: 5px;
-  width: 47%;
+.table-bottom-elements .priorities{
+  margin-left: 200% !important;
+}
 
+.form-group1 .select1{
+  padding: 8px;
+  border-radius: 5px;
+  width: 39%;
+  background-color: #f1f0f0;
+  border: 1px solid #a9a9a9;
+}
+
+.form-group1 .custom-file-container {
+  position: relative;
+  width: 90%;
+}
+
+.real-file-input {
+  opacity: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.custom-file-label {
+  display: flex;
+  z-index: 1;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px;
+  border: 1.5px solid #ccc;
+  background-color: #f1f0f0;
+  border-radius: 5px;
+  font-size: 14px;
+  color: #555;
+  /* cursor: pointer; */
+}
+
+.custom-file-label .choose-btn {
+  font-weight: 500;
+  background-color: #dedede;
+  border-radius: 5px;
+  padding: 5px;
+  border: 1.5px solid rgb(179, 177, 177);
+  cursor: pointer !important;
+}
+
+/* .file-info {
+  color: #888;
+} */
+
+
+.form-group-half1 input{
+  width: 76%;
+  background-color: #f1f0f0;
+  padding: 8px;
+}
+
+.form-group1 textarea{
+  width: 87.3%;
+  background-color: #f1f0f0;
 }
 
 .form-group1 .file-input1{
   padding: 10px;
 }
 
-.button-group1 .submit-button1{
-  color: #4b4b4b;
-  padding: 10px 20px;
-  background: #ffbf00; /* Added border color */
-  border: none;
-  border-radius: 8px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+.button-groups {
+  display: flex;
+  justify-content: flex-end; /* Aligns buttons to the right */
+  gap: 10px;                 /* Adds spacing between buttons */
+  margin-top: 20px;
 }
+
 
 .submit-button1:hover{
   background-color: #d1ac3d;
@@ -709,24 +821,34 @@ table {
 
 .no-data-text {
   position: relative;
-  bottom: 17px;
+  bottom: 5px;
   left:5px; /* adjust value as needed */
   font-size: 14px;
 }
 
 
-table th,
+table th {
+  padding: 12px;
+  border: 2px solid #ccc;
+  text-align: left;
+  background: #f3f3f3;
+  font-size: 17px;
+  font-family:"Archivo", sans-serif;
+}
+
 table td {
   padding: 12px;
   border: 2px solid #ccc;
   text-align: left;
   background: #f3f3f3;
+  font-size: 15px;
+  font-family:"Archivo",sans-serif;
 }
 
 .add-user-btn {
   align-self: flex-end;
   padding: 10px 20px;
-  background: #ffbf00;
+  background: #f1890d;
   border: none;
   cursor: pointer;
   border-radius: 8px;
@@ -970,19 +1092,24 @@ main {
 
 .calendar-headers .calendar-nav-dropdown{
   border-radius: 5px;
-  font-size: 20px;
+  font-size: 19px;
   margin-left: 50px;
+  background-color: rgb(235, 234, 234);
+  border: 2px solid rgb(196, 195, 195);
+
 }
 
 .calendar-nav-dropdown{
   border-radius: 5px;
-  font-size: 20px;
+  font-size: 19px;
+  background-color: rgb(235, 234, 234);
+  border: 2px solid rgb(196, 195, 195);
 }
 
 .calendar-header {
   display: flex;
   justify-content: space-between;
-  width: 80%;
+  width: 90%;
   font-size: 22px;
   font-weight: 600;
   margin-bottom: 16px;
@@ -997,6 +1124,17 @@ main {
   margin-bottom: 16px;
   color: #333;
 
+}
+
+.calendar-cell1.weekend{
+  border-radius: 10px;
+  border: 2px solid #f1890d !important;
+
+}
+
+.calendar-cell1{
+  border-radius: 10px;
+  /* border: 1px solid #1b1b1b !important; */
 }
 
 .year-selector {
@@ -1051,7 +1189,7 @@ input[type="text"] {
 
 
 /* Styling for the left and right buttons */
-.left, .right {
+.left {
   width: 30px;         /* Set width for square shape */
   height: 30px;        /* Set height equal to width */
   background-color: #dcdbdb;
@@ -1064,9 +1202,26 @@ input[type="text"] {
   align-items: center;
   justify-content: center;
   transition: background-color 0.3s ease;
+  margin-right: -4%;
 }
 
-.lefts, .rights {
+.right {
+  width: 30px;         /* Set width for square shape */
+  height: 30px;        /* Set height equal to width */
+  background-color: #dcdbdb;
+  border: none;
+  font-size: 24px;     /* Make the < and > bigger */
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 6px;  /* Slightly rounded corners */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+  margin-left: -4%;
+}
+
+.lefts {
   width: 20px;         /* Set width for square shape */
   height: 20px;        /* Set height equal to width */
   background-color: #dcdbdb;
@@ -1080,6 +1235,25 @@ input[type="text"] {
   justify-content: center;
   transition: background-color 0.3s ease;
   padding: 13px;
+  /* margin-left: 10%; */
+  margin-top: 0.2%;
+}
+
+.rights {
+  width: 20px;         /* Set width for square shape */
+  height: 20px;        /* Set height equal to width */
+  background-color: #dcdbdb;
+  border: none;
+  font-size: 24px;     /* Make the < and > bigger */
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 6px;  /* Slightly rounded corners */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+  padding: 13px;
+  /* margin-right: 15%; */
 }
 
 .left:hover, .right:hover {
@@ -1096,7 +1270,7 @@ input[type="text"] {
   margin-top: 0.3%; /* Remove margin */
   width: 190px;
   align-items: center;
-  text-align: center;
+  text-align: center;;
 }
 
 .calendar-headers h3{
@@ -1140,7 +1314,7 @@ h3 {
 }
 
 .calendar-title-btn {
-  background-color: #ffbf00;
+  background-color: #f1890d;
   color: black;
   padding: 10px 22px;
   font-weight: 300;
@@ -1210,7 +1384,7 @@ h3 {
 }
 
 .calendar-cell.holiday {
-  background-color: #fff8e1;
+  /* background-color: #fff8e1; */
   border: 2px solid #ffd54f;
   color: #ff6f00;
   font-weight: bold;
@@ -1221,17 +1395,70 @@ h3 {
   background-color: #e3f2fd;
 }
 
+
 .calendar-cell.weekend {
-  background-color: #fff8e1;
+  /* background-color: #fff8e1; */
   border: 2px solid #ffd54f;
   color: #ff6f00;
   font-weight: bold;
 }
 
+.react-datepicker__day--today {
+  /* background-color: #4d9aed !important; Blue background */
+  /* color: rgb(41, 39, 39) !important;              White text */
+  border-radius: 50% !important;
+  border: 1px solid black !important;
+}
+
+.react-datepicker__day--selected{
+  color: rgb(41, 39, 39) !important;              /* White text */
+  border-radius: 50% !important;
+  border: 2px solid black !important;
+  background-color: white !important;
+}
+
+.date-input-container {
+  position: relative;
+  display: inline-block;
+}
+
+.date-input-container .input1{
+  width: 161%;
+  padding: 10px;
+}
+
+
+.calendar-icon {
+  position: absolute;
+  right: -68%; /* Position icon to the right */
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;  /* Icon size */
+  color: #3d3d3d; /* Icon color */
+  cursor: pointer; /* Make icon clickable */
+  pointer-events: none; /* Allow click on the input, not the icon */
+}
+
+.input1:focus + .calendar-icon {
+  color: #333;  /* Change icon color when input is focused */
+}
+
+
 .holiday-note {
   font-size: 12px;
-  color: #ff6f00;
+  color: rgb(93, 93, 93);
   margin: 10px;
+  /* margin-top: 4%; */
+  font-family: "Archivo", sans-serif;
+}
+
+.calendar-cell .day-number {
+  position: absolute;
+  top: 38px;
+  right: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #333;
 }
 
 .holiday-icon {
@@ -1255,14 +1482,14 @@ h3 {
   text-align: center;
   font-weight: 600;
   color: #939191;
-  padding-top: 12px;
+  padding-top: 20px;
   border-radius: 12px;
-  background-color: #f0f4ff;
+  background-color: #f1f1f1;
 }
 
 .attendance-container {
   padding: 20px;
-  font-family: "Arial", sans-serif;
+  font-family: "Archivo", sans-serif;
 }
 
 .attendance-header {
@@ -1305,15 +1532,27 @@ h3 {
   font-weight: bold;
 }
 
-.att-popup input,
-.att-popup select,
-.att-popup textarea {
+.att-popup select{
+  margin-top: 5px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width:95%;
+}
+.att-popup input {
   margin-top: 5px;
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
 
+.att-popup textarea{
+  margin-top: 5px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width:90%;
+}
 .att-popup button {
   padding: 10px;
   border: none;
@@ -1384,7 +1623,7 @@ h3 {
 }
 
 .attendance-admin button{
-  background-color: #ffbf00;
+  background-color: #f1890d;
 }
 .attendance-admin button:hover{
   background-color: #d1ac3d;
@@ -1397,7 +1636,7 @@ h3 {
 }
 
 .attendance-tile {
-  background-color: #f2f7ff;
+  background-color: #e5e5e6;
   border: 1px solid #d0dce8;
   border-radius: 8px;
   padding: 6px 8px;
@@ -1409,32 +1648,36 @@ h3 {
 }
 
 .attendance-tile strong {
-  color: #2a5d9f;
+  color: black;
 }
 
 .attendance-tile.no-data {
-  background-color: #f2f7ff;
-  color: #e9afaf;
-  border: 1.5px solid #dc1e1e;
+  background-color: #f3f3f3;
+  color: black;
+  border: 1.5px solid #303030;
   text-align: center;
   font-style: italic;
 }
 
 
-.attendance-table table {
+/* .attendance-table .table-attend {
   width: 100%;
   border-collapse: collapse;
-  border-radius: 10px;
-
 }
 
-.attendance-table th,
+.attendance-table th {
+  padding: 10px;
+  text-align: center;
+  border: 2px solid #8d8d8d;
+  font-size: 18px;
+}
+
+
 .attendance-table td {
   padding: 10px;
   text-align: center;
-  border: 1px solid #8d8d8d;
-
-}
+  border: 2px solid #8d8d8d;
+} */
 
 /* .attendance-table th {
   background-color: #f4f4f4;
@@ -1460,7 +1703,7 @@ h3 {
   color: red;
 }
 
-.attendance-table td span.leave-label {
+/* .attendance-table td span.leave-label {
   color: red;
 }
 
@@ -1474,13 +1717,12 @@ h3 {
 
 .attendance-table td:last-child {
   font-weight: bold;
-  color: #4caf50;
-}
+} */
 
 /* Container and Layout */
 .add-employee-wrapper {
   padding: 24px;
-  background-color: #f6f6f6;
+  /* background-color: #f6f6f6; */
   border-radius: 12px;
 }
 
@@ -1526,6 +1768,7 @@ h3 {
   font-weight: 500;
   margin-bottom: 6px;
   color: #333;
+  font-family: "Archivo", sans-serif;
 }
 
 .form-group input,
@@ -1539,10 +1782,11 @@ h3 {
 
 .form-group .uneditable{
   padding: 10.5px;
-  border: 1px solid #ccc;
+  /* border: 1px solid #ccc; */
   border-radius: 6px;
-  background-color: #f6f6f6;
+  /* background-color: #f6f6f6; */
   margin-top: 1px;
+  margin-left: -5%;
 }
 
 /* .uneditable {
@@ -1631,7 +1875,7 @@ h3 {
 .form-buttons .btn-green {
   color: black;
   padding: 10px 20px;
-  background: #ffbf00; /* Added border color */
+  background: #f1890d; /* Added border color */
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
@@ -1657,7 +1901,7 @@ h3 {
 .form-buttons .btn-save {
   color: black;
   padding: 10px 20px;
-  background: #ffbf00; /* Added border color */
+  background: #f1890d; /* Added border color */
   border: none;
   border-radius: 8px;
   font-weight: 500;
@@ -1668,7 +1912,7 @@ h3 {
 .btn-save{
   color: black;
   padding: 10px 20px;
-  background: #ffbf00; /* Added border color */
+  background: #f1890d; /* Added border color */
   border: none;
   border-radius: 8px;
   font-weight: 500;
@@ -1721,7 +1965,7 @@ h3 {
 .btn-login {
   color: #4b4b4b;
   padding: 10px 20px;
-  background-color: #ffbf00; /* Added border color */
+  background-color: #f1890d; /* Added border color */
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
@@ -1733,7 +1977,7 @@ h3 {
 }
 
 .btn-login:hover {
-  border: 1px solid #ffbf00;
+  border: 1px solid #f1890d;
   background-color: #f4f2f2;
   color: #575656;
   font-weight: 500;
@@ -1775,12 +2019,10 @@ h3 {
   }
 }
 
-.add-employee-wrapper {
-  /* padding: 20px; */
+/* .add-employee-wrapper {
   background-color: #f6f6f6;
   border-radius: 16px;
-  /* margin: 20px; */
-}
+} */
 
 .camera-icon {
   width: 20px;
@@ -1885,7 +2127,7 @@ h3 {
 }
 
 .tab-btn.active {
-  background-color: #ffbf00;
+  background-color: #f1890d;
   /* font-weight: bold; */
 }
 
@@ -2004,7 +2246,7 @@ h3 {
   border-radius: 12px;
   padding: 30px 40px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
-  font-family: "Segoe UI", sans-serif;
+  font-family: "Archivo", sans-serif;
 }
 
 .project-container h2 {
@@ -2021,7 +2263,7 @@ h3 {
 }
 
 .project-header .btn-orange {
-  background-color: #b8b8b8;
+  background-color: #cecdcd;
   color: #000;
   padding: 6px;
   border: none;
@@ -2051,8 +2293,13 @@ h3 {
   right: 95px;
 }
 
+.edit-toggle-btn:hover{
+  background-color: #959393;
+
+}
+
 .edit-btn{
-  background-color: #9a9999;
+  background-color: #afaeae;
   color: #000;
   padding: 6px;
   border: none;
@@ -2063,6 +2310,10 @@ h3 {
   gap: 6px;
   cursor: pointer;
   transition: background-color 0.2s ease;
+}
+
+.edit-btn:hover{
+  background-color: #959393;
 }
 /* 
 .table-top-bar-header .btn-orange{
@@ -2080,7 +2331,7 @@ h3 {
 } */
 
 .btn-orange:hover {
-  background-color: #e0dfdf;
+  background-color: #959393;
 }
 
 .project-header .edit-btn svg {
@@ -2217,9 +2468,9 @@ button.delete-building:hover {
 
 .create-project-container {
   padding: 25px;
-  background-color: #f6f6f6;
+  /* background-color: #f6f6f6; */
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); */
   height: auto;
   overflow: hidden;
 }
@@ -2333,13 +2584,13 @@ button.delete-building:hover {
 
 .create-building-container {
   padding: 10px;
-  background-color: #f7f9fc;
+  /* background-color: #f7f9fc; */
   width: 90%;
   /* max-width: 1200px; */
   /* min-width: 1100px; */ /* Come back here Suriya to check */
   margin: 0 auto;
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); */
 }
 
 .create-building-container textarea {
@@ -2354,37 +2605,52 @@ button.delete-building:hover {
   font-size: 24px;
   font-weight: bold;
   text-align: left;
+  font-family:"Archivo", sans-serif;
 }
 
 .building-elements {
   padding: 10px;
   display: grid;
   gap: 30px;
-  grid-template-rows: 1fr 2fr;
+  /* grid-template-rows: 1fr 2fr; */
 }
 
 
 .top-elements {
   padding: 0px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  /* grid-template: 1fr 1fr; */
   gap: 180px;
   width: 100%;
+  font-family: "Archivo", sans-serif;
+}
+
+.top-element {
+  padding: 0px;
+  display: flex;
+  /* grid-template: 1fr 1fr; */
+  gap: 130px;
+  width: 85%;
+}
+.top-element input{
+  margin-top:5px;
+  width: 113%;
 }
 
 .top-elements input{
   margin-top:5px;
+  width: 140%;
 }
 
 .bottom-elements{
   padding-top: 2px;
 }
 .bottom-elements textarea {
-  width: 50%;
+  width: 35%;
   padding: 10px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  font-family: inherit;
+  font-family:"Archivo", sans-serif;
   resize: vertical; /* allows vertical resizing only */
   background-color: #f0eeee;
   margin-top: 5px;
@@ -2415,19 +2681,19 @@ button.delete-building:hover {
   padding: 8px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  font-family: inherit;
+  font-family: "Archivo", sans-serif;
   resize: vertical;
   background-color: #f0eeee;
 }
 
 .table-bottom-elements select {
-  width: 58%;
+  width: 83%;
   padding: 10px;
   font-size: 15px;
   border: 1px solid #ccc;
   border-radius: 5px;
   box-sizing: border-box;
-  background-color: #e9e8e8;
+  background-color: #efefef;
 }
 
 /* These above are the styles you add for create buildings */
@@ -2562,6 +2828,7 @@ button.delete-building:hover {
   font-weight: 600;
   margin-bottom: 0.4rem;
   color: #333;
+  font-family: "Archivo", sans-serif;
 }
 
 .project-form-group input {
@@ -2591,11 +2858,17 @@ button.delete-building:hover {
   background-color: white;
   color: black;
   border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
+  padding: 6px 6px;
+  border-radius: 50%;
   cursor: pointer;
   margin-left: 1%;
-  margin-top: -2%;
+  width: 24px; /* Set fixed width */
+  height: 24px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1%;
+  margin-top: 1%;
 }
 
 .building-row .tag-buttons{
@@ -2639,6 +2912,7 @@ button.delete-building:hover {
   background-color: #f0f0f0;
   padding: 0px; 
   position: relative;
+  
 }
 
 .popup {
@@ -2702,7 +2976,7 @@ h4 {
 .popup .btn-save {
   color: #4b4b4b;
   padding: 5px 10px;
-  border: 1px solid #ffbf00; /* Added border color */
+  border: 1px solid #f1890d; /* Added border color */
   border-radius: 8px;
   font-weight: 500;
   font-size: 80%;
@@ -2743,6 +3017,132 @@ h4 {
   background: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
   z-index: 999; /* Below the popup */
 }
+
+
+/*Login Pop-up */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* DARK SHADOW */
+  display: flex;
+  justify-content: flex-end; /* move popup to right */
+  align-items: flex-start; /* move popup to top */
+  padding: 10px;
+  z-index: 10000;
+}
+
+.popup-container {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  margin-top: 10px;
+  margin-right: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  animation: popupAnimation 0.3s ease-in-out;
+  position: relative; /* Important */
+}
+
+@keyframes popupAnimation {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Form and buttons */
+.forms input {
+  width: 95%;
+  padding: 10px;
+  margin: 10px 0;
+  border: none;
+  font-size: 16px;
+  outline: none; /* Remove focus outline */
+  transition: border-color 0.3s ease;
+  font-family: "Archivo", sans-serif;
+  font-weight: bolder;
+  background:none;
+  border-bottom: 1px solid #282727;
+  border-radius: 0%;
+}
+
+
+.forms input::placeholder {
+  color: #f1890d; /* Orange placeholder text */
+  font-family: 'Archivo', sans-serif;
+}
+
+
+/* Logout */
+.logout-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: auto;
+}
+
+.logout-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f1890d;
+  padding: 7px;
+  border-radius: 0.375rem;
+  border: 1px solid #ddd;
+  box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Archivo', sans-serif;
+}
+
+.logout{
+  font-size: 1.1rem;
+  font-weight: bolder;
+}
+
+.logout-button:hover {
+  background-color: #ff9312;
+}
+
+.logout-button span img {
+  margin-right: 10px;
+}
+
+.selectrole {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Reduced from 20px to 6px */
+  font-weight: bold;
+  font-size: 16px;
+  color: black;
+  text-transform: capitalize;
+  margin-right: 40px;
+  cursor: pointer;
+}
+
+.selectrole img{
+  width: 25px;
+  height: 25px;
+}
+
+.selectrole img,
+.selectrole span {
+  margin: 0;
+  padding: 0;
+}
+
+
+
+
 
 .tag {
   display: inline-block;
@@ -2825,7 +3225,7 @@ h4 {
 
 .building-tile .tag-button {
   position: absolute;
-  top: 12px;
+  top: 7px;
   right: -20px;
   width: 20px;
   height: 20px;
@@ -2842,6 +3242,17 @@ h4 {
 
 
 .tag .tags-button{
+  width: 20px;
+  height: 20px;
+  background: rgb(121, 121, 121);  
+  border-radius: 10px;
+  border: none;
+  margin: 5%;
+  color: white;
+  cursor: pointer;
+}
+
+.tags .tags-button{
   width: 20px;
   height: 20px;
   background: rgb(121, 121, 121);  
@@ -2880,25 +3291,16 @@ h4 {
 }
 
 
-.building-row .plus-button {
-  width: 24px; /* Set fixed width */
-  height: 24px; /* Set fixed height */
-  font-size: 14px; /* Smaller font for the "+" */
-  padding: 0; /* Remove default padding */
-  color: black;
-  border: none;
-  border-radius: 50%; /* Better for circular buttons */
-  cursor: pointer;
-  margin-left: 1%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 1%;
-  margin-bottom: 1%;
-}
+
 
 .building-row .plus-button.no-data {
   margin-bottom: 60px;
+}
+
+.employee-checkbox .create-checkbox {
+  width: 12px;
+  height: 12px;
+  cursor: pointer;
 }
 
 .project-form-group .area-row {
@@ -2910,13 +3312,30 @@ h4 {
 .area-row .tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 3px;
+  margin-bottom: -18px;
 }
+
+.area-row button{
+  background-color: white;
+  color: black;
+  border: none;
+  padding: 6px 6px;
+  border-radius: 50%;
+  cursor: pointer;
+  width: 24px; /* Set fixed width */
+  height: 24px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
 
 .area-row .plus-button {
   position: absolute;
   bottom: 8px;  /* slight space from the bottom */
-  left: 8px;    /* slight space from the left */
+  left: 6px;    /* slight space from the left */
   width: 24px;
   height: 24px;
   font-size: 16px;
@@ -3024,8 +3443,8 @@ h4 {
   border: 1px solid #ccc;
   font-size: 14px;
   background-color: #fff;
-  width: 5%;
-  height: 60%;
+  width: 15%;
+  height: 80%;
 }
 
 .employee-checkbox {
@@ -3070,13 +3489,13 @@ h4 {
 .form-group-full-width {
   /* display: grid; */
   padding: 0px;
-  margin-top: 5%;
+  margin-top: -2%;
   /* grid-column: span 2; */
 }
 
 .form-group-full-width p{
   font-size: 14px;
-  margin-top: 1%;
+  margin-top: 2%;
 }
 /* 
 .form-group-full-width label {
@@ -3092,7 +3511,7 @@ h4 {
   font-size: 14px;
   background-color: #f1f0f0;
   width: 90%;
-  height: 60%;
+  height: 100%;
   margin-top: 5px;
 }
 
@@ -3106,7 +3525,7 @@ h4 {
 /* Manager Team leads CSS files below*/
 .manager-team-leads {
   padding: 20px;
-  font-family: Arial, sans-serif;
+  font-family: "Archivo", sans-serif;
 }
 
 .manager-team-leads h2 {
@@ -3151,13 +3570,12 @@ h4 {
   color: #000000;
 }
 
-.projects-container {
+.projects-container .projects {
   padding: 10px;
   border: 2px seashell;
-  background-color: #ffbf00;
-  border-radius: 10px;
+  background-color: #f1890d;
+  border-radius: 5px;
   cursor: pointer;
-  margin-top: 5%;
 }
 
 .projects-container:hover{
@@ -3190,13 +3608,12 @@ h4 {
   color: #000000;
 }
 
-.employees-container {
+.employees-container .employees {
   padding: 10px;
   border: 2px seashell;
   background-color: #d4d3d3;
-  border-radius: 10px;
+  border-radius: 5px;
   cursor: pointer;
-  margin-top: 5%;
 }
 
 .employees-container:hover{
@@ -3204,7 +3621,7 @@ h4 {
 }
 
 .leave-summary-container .leave-summary-box{
-  background-color: #ffbf00;
+  background-color: #f1890d;
 }
 
 .leaves-tab {
@@ -3235,8 +3652,29 @@ h4 {
 .leaves-tab button.active {
   padding: 10px;
   border-radius: 10px;
-  color: white;
+  color: black;
   border: none;
-  background-color: #ffbf00;
+  background-color: #f1890d;
 }
 /* Manager Team leads CSS files below*/
+
+
+.error {
+  background-color: #f8d7da;
+  color: rgb(255, 25, 25);
+  padding: 10px;
+  border: 1px solid #f5c6cb;
+  border-radius: 5px;
+  margin: 10px 0;
+  font-weight: bold;
+  text-align: center;
+  font-size: 16px;
+}
+
+.loading{
+  font-size: 16px;
+  color: #f1890d;
+  font-weight: 600;
+}
+
+

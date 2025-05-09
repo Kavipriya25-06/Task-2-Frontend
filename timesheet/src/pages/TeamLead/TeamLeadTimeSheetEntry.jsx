@@ -109,7 +109,7 @@ const TeamLeadTimeSheetEntry = () => {
     const filledData = new Array(offset).fill(null).concat(monthData);
 
     const rows = [];
-    const status = "pending"; // e.g., "Pending"
+    const status = "save"; // e.g., "Pending"
     for (let i = 0; i < filledData.length; i += 7) {
       const week = filledData.slice(i, i + 7);
       const weekNumber = week.find((day) => day)?.week_of_year || "-";
@@ -162,11 +162,11 @@ const TeamLeadTimeSheetEntry = () => {
   return (
     <div className="holiday-calendar">
       <div className="calendar-headers">
-        <button  className="left" onClick={handlePrevMonth}>&lt;</button>
+        <button  className="lefts" onClick={handlePrevMonth}>&lt;</button>
         <h3>
           {monthName} {selectedYear}
         </h3>
-        <button  className="right" onClick={handleNextMonth}>&gt;</button>
+        <button  className="rights" onClick={handleNextMonth}>&gt;</button>
         {/* Let this be here for now */}
         {/* <button onClick={handlePrevYear} className="calendar-nav-btn">
           ◀ Year

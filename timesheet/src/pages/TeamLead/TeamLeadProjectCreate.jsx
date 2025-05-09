@@ -173,6 +173,36 @@ const TeamLeadProjectCreate = () => {
               </div>
             </div>
             <div className="left-form-second">
+            <div className="roles-box">
+                <label>Project Roles</label>
+                <div className="select-container">
+                  {teamleadManager.map((employee) => (
+                    <div
+                      key={employee.employee_id}
+                      className="employee-checkbox"
+                    >
+                      {employee.employee_name} - {employee.designation}
+                      <input
+                        type="checkbox"
+                        value={employee.employee_id}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          if (checked) {
+                            setSelectedTeamleadManager((prev) => [
+                              ...prev,
+                              employee.employee_id,
+                            ]);
+                          } else {
+                            setSelectedTeamleadManager((prev) =>
+                              prev.filter((id) => id !== employee.employee_id)
+                            );
+                          }
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
               <div className="project-form-group">
                 <label>Building(s)</label>
 
@@ -276,37 +306,6 @@ const TeamLeadProjectCreate = () => {
               </div>
             </div>
             <div className="right-form-second">
-              <div className="roles-box">
-                <label>Project Roles</label>
-                <div className="select-container">
-                  {teamleadManager.map((employee) => (
-                    <div
-                      key={employee.employee_id}
-                      className="employee-checkbox"
-                    >
-                      {employee.employee_name} - {employee.designation}
-                      <input
-                        type="checkbox"
-                        value={employee.employee_id}
-                        onChange={(e) => {
-                          const checked = e.target.checked;
-                          if (checked) {
-                            setSelectedTeamleadManager((prev) => [
-                              ...prev,
-                              employee.employee_id,
-                            ]);
-                          } else {
-                            setSelectedTeamleadManager((prev) =>
-                              prev.filter((id) => id !== employee.employee_id)
-                            );
-                          }
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-
               <div className="form-group-full-width">
                 <label>Project Description</label>
                 <textarea

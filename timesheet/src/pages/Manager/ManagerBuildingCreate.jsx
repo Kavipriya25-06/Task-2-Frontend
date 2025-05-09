@@ -87,7 +87,7 @@ const ManagerBuildingCreate = () => {
             className="btn-red"
             onClick={() => handleCancel()}
           >
-            Delete
+            Cancel
           </button>
         </div>
       </form>

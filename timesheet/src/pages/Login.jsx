@@ -56,7 +56,7 @@ const Login = () => {
 
             <div className="button-group">
               <button type="submit" className="btn-login">
-                Sign in
+                Log in
               </button>
             </div>
           </form>

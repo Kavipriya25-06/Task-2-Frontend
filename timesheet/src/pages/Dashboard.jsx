@@ -12,7 +12,7 @@ const Dashboard = () => {
 
   const handleLogout = () => {
     logout();
-    navigate("/"); // Redirect to login page
+    navigate("/login"); // Redirect to login page
   };
 
   return (

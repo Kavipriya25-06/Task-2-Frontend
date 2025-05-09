@@ -47,7 +47,7 @@ const ManagerTaskCreate = () => {
       <h2>Create Task</h2>
       <form onSubmit={handleSubmit}>
         <div className="building-elements">
-          <div className="top-elements">
+          <div className="top-element">
             <div>
               <label>Task code</label>
               <input
@@ -102,7 +102,7 @@ const ManagerTaskCreate = () => {
             className="btn-red"
             onClick={() => handleCancel()}
           >
-            Delete
+            Cancel
           </button>
         </div>
       </form>

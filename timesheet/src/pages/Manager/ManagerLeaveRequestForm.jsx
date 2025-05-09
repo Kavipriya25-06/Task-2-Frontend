@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
   const { user } = useAuth();
@@ -74,7 +76,7 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
   };
 
   return (
-    <div className="form-container1">
+    <div className="form-containers">
       <p className="form-subtitle1">
         Fill the required fields below to apply for annual leave.
       </p>
@@ -99,23 +101,29 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
         <div className="row1">
           <div className="form-group-half1">
             <label className="label1">Start Date</label>
-            <input
-              type="date"
-              name="startDate"
-              value={formData.startDate}
-              onChange={handleChange}
-              className="input1"
-            />
+              <div className="date-input-container">
+                <DatePicker
+                  selected={formData.startDate}
+                  onChange={(date) => handleChange({ target: { name: "startDate", value: date } })}
+                  dateFormat="dd-MMM-yyyy"
+                  placeholderText="dd-mm-yyyy"
+                  className="input1"
+                />
+                <i className="fas fa-calendar-alt calendar-icon"></i> {/* Font Awesome Calendar Icon */}
+              </div>
           </div>
           <div className="form-group-half1">
             <label className="label1">End Date</label>
-            <input
-              type="date"
-              name="endDate"
-              value={formData.endDate}
-              onChange={handleChange}
-              className="input1"
-            />
+              <div className="date-input-container">
+              <DatePicker
+                selected={formData.endDate}
+                onChange={(date) => handleChange({ target: { name: "endDate", value: date } })}
+                dateFormat="dd-MMM-yyyy"
+                placeholderText="dd-mm-yyyy"
+                className="input1"
+              />
+              <i className="fas fa-calendar-alt calendar-icon"></i> {/* Font Awesome Calendar Icon */}
+            </div>
           </div>
         </div>
 
@@ -132,13 +140,16 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
           </div>
           <div className="form-group-half1">
             <label className="label1">Resumption Date</label>
-            <input
-              type="date"
-              name="resumptionDate"
-              value={formData.resumptionDate}
-              onChange={handleChange}
-              className="input1"
-            />
+            <div className="date-input-container">
+              <DatePicker
+                selected={formData.resumptionDate}
+                onChange={(date) => handleChange({ target: { name: "resumptionDate", value: date } })}
+                dateFormat="dd-MMM-yyyy"
+                placeholderText="dd-mm-yyyy"
+                className="input1"
+              />
+              <i className="fas fa-calendar-alt calendar-icon"></i> {/* Font Awesome Calendar Icon */}
+            </div>
           </div>
         </div>
 
@@ -156,20 +167,27 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
           <label className="label1">
             Attach handover document (pdf, jpg format)
           </label>
-          <input
-            type="file"
-            name="attachment"
-            accept=".pdf,.jpg,.jpeg,.png"
-            onChange={handleChange}
-            className="file-input1"
-          />
+          <div className="custom-file-container">
+            <label htmlFor="fileUpload" className="custom-file-label">
+              <button className="choose-btn">Choose File</button>
+              <span className="file-info">Max size 2MB</span>
+            </label>
+            <input
+              type="file"
+              id="fileUpload"
+              name="attachment"
+              accept=".pdf,.jpg,.jpeg,.png"
+              onChange={handleChange}
+              className="real-file-input"
+            />
+          </div>
         </div>
 
-        <div className="button-group1">
-          <button type="submit" className="submit-button1">
+        <div className="btn-container">
+          <button type="submit" className="btn-save">
             Submit
           </button>
-          <button type="button" onClick={onClose} className="cancel-button1">
+          <button type="button" onClick={onClose} className="btn-cancel">
             Cancel
           </button>
         </div>

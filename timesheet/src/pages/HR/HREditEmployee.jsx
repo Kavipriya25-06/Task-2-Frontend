@@ -10,12 +10,9 @@ import plusIcon from "../../assets/plus.png";
 
 import { FaEdit } from "react-icons/fa";
 
-
-
 import { useAttachmentManager } from "../../constants/useAttachmentManager";
 import { useEmployeeFormHandler } from "../../constants/useEmployeeFormHandler";
 import { defaultEmployeeFormData } from "../../constants/defaultEmployeeFormData";
-
 
 const tabLabels = [
   "Employee details",
@@ -232,7 +229,7 @@ const EditEmployee = () => {
         return (
           <div className="tab-content">
             <div className="profile-picture-wrapper">
-            <h4>Profile Photo: </h4>
+              <h4>Profile Photo: </h4>
               <img
                 src={
                   profilePicture
@@ -258,7 +255,7 @@ const EditEmployee = () => {
                   <label
                     htmlFor="profile-picture-input"
                     className="camera-icon-label"
-                  > 
+                  >
                     <img
                       src={cameraIcon}
                       alt="Edit"
@@ -318,8 +315,7 @@ const EditEmployee = () => {
                 })}
               </ul>
 
-
-            {/* <div className="individual-tabs">
+              {/* <div className="individual-tabs">
               <label>Employee Code</label>
               {isEditMode ? (
               <input
@@ -335,7 +331,7 @@ const EditEmployee = () => {
               <p className="data">{formData.employee_code}</p>
             )}
             </div> */}
-            {/* <div className="individual-tabs">
+              {/* <div className="individual-tabs">
               <label>Employee Name</label> */}
               {/* {isEditMode ? (
               {newAttachments.length > 0 && (
@@ -443,7 +439,6 @@ const EditEmployee = () => {
                 />
               ) : (
                 <div className="uneditable">{formData.fathers_name || "-"}</div>
-
               )}
             </div>
             <div className="individual-tabs">
@@ -473,7 +468,6 @@ const EditEmployee = () => {
                 </select>
               ) : (
                 <div className="uneditable">{formData.gender || "-"}</div>
-
               )}
             </div>
             <div className="individual-tabs">
@@ -526,7 +520,6 @@ const EditEmployee = () => {
                 />
               ) : (
                 <div className="uneditable">{formData.doj || "-"}</div>
-
               )}
             </div>
             <div className="individual-tabs">
@@ -591,12 +584,11 @@ const EditEmployee = () => {
               )}
               {errors.contact_number && (
                 <span className="error-message">{errors.contact_number}</span>
-
               )}
             </div>
             <div className="individual-tabs">
               <label>Aadhaar</label>
-{/* 
+              {/* 
               {isEditMode ? (
               <input
                 name="aadhaar_number"
@@ -654,7 +646,6 @@ const EditEmployee = () => {
               )}
               {errors.PAN && (
                 <span className="error-message">{errors.PAN}</span>
-
               )}
             </div>
             <div className="individual-tabs">
@@ -901,9 +892,7 @@ const EditEmployee = () => {
                   placeholder="Remarks"
                 />
               ) : (
-                <div className="uneditable">
-                  {formData.remarks || "-"}
-                </div>
+                <div className="uneditable">{formData.remarks || "-"}</div>
               )}
             </div>
           </div>
@@ -1107,8 +1096,8 @@ const EditEmployee = () => {
                 </div>
               ) : (
                 <div className="uneditable">
-                  {experienceUI.previous_years} Years, {experienceUI.previous_months}{" "}
-                  Months
+                  {experienceUI.previous_years} Years,{" "}
+                  {experienceUI.previous_months} Months
                 </div>
               )}
             </div>
@@ -1506,11 +1495,11 @@ const EditEmployee = () => {
       default:
         return null;
     }
-  }
+  };
 
   return (
     <div className="add-employee-wrapper">
-        {/* <h2 className="employee-title">
+      {/* <h2 className="employee-title">
           {isEditMode ? "Edit Employee" : "Employee"}
         </h2>
         {!isEditMode && (
@@ -1522,9 +1511,9 @@ const EditEmployee = () => {
         {editMode ? "Edit Employee" : "View Employee"}
       </h2>
       {!editMode && (
-          <button onClick={() => setEditMode(true)} className="edit-toggle-btn">
-            <FaEdit className="edit-icon" />
-          </button>
+        <button onClick={() => setEditMode(true)} className="edit-toggle-btn" title="Edit">
+          <FaEdit className="edit-icon" />
+        </button>
       )}
       <div className="tab-header">
         {tabLabels.map((label, index) => (
@@ -1584,6 +1573,5 @@ const EditEmployee = () => {
     </div>
   );
 };
-
 
 export default EditEmployee;

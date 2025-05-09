@@ -139,7 +139,7 @@ const TeamLeadAttendance = () => {
           <button className="add-user-btn" >Attendance Admin</button>
         </div> */}
         <div>
-          <button onClick={() => handleAttendanceClick()}>Attendance Admin</button>
+          <button className="btn-save" onClick={() => handleAttendanceClick()}>Attendance Admin</button>
         </div>
       </div>
 

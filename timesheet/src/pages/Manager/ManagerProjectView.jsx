@@ -186,6 +186,7 @@ const ManagerProjectView = () => {
               type="edit"
               onClick={() => setEditMode(true)}
               className="btn-orange"
+              title="Edit"
             >
              <FaEdit className="edit-icon" />
             </button>
@@ -248,19 +249,54 @@ const ManagerProjectView = () => {
                 )}
               </div>
             </div>
-            <div className="form-group-full-width">
-                <label>Project Description</label>
+            <div className="left-form-second">
+            <div className="roles-box">
+                <label>Project Roles</label>
                 {editMode ? (
-                  <textarea
-                    name="project_description"
-                    value={formData.project_description}
-                    onChange={handleChange}
-                  />
+                  <div className="select-container">
+                    {teamleadManager.map((employee) => (
+                      <div
+                        key={employee.employee_id}
+                        className="employee-checkbox"
+                      >
+                        {employee.employee_name} - {employee.designation}
+                        <input
+                          type="checkbox"
+                          className="larger-checkbox"
+                          value={employee.employee_id}
+                          checked={availableTeamleadManager.some(
+                            (e) => e.employee_id === employee.employee_id
+                          )}
+                          onChange={(e) => {
+                            const checked = e.target.checked;
+                            if (checked) {
+                              setAvailableTeamleadManager((prev) => [
+                                ...prev,
+                                employee,
+                              ]);
+                            } else {
+                              setAvailableTeamleadManager((prev) =>
+                                prev.filter(
+                                  (emp) =>
+                                    emp.employee_id !== employee.employee_id
+                                )
+                              );
+                            }
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
                 ) : (
-                  <p>{projectData.project_description}</p>
+                  <div className="select-container">
+                    {availableTeamleadManager.map((emp) => (
+                      <p key={emp.employee_id}>
+                        {emp.employee_name} - {emp.designation}
+                      </p>
+                    ))}
+                  </div>
                 )}
               </div>
-            <div className="left-form-second">
             <div className="project-form-group">
                 <label>Building(s)</label>
                 {editMode ? (
@@ -293,7 +329,6 @@ const ManagerProjectView = () => {
                           </div>
                         ))}
                         <button
-                          className="plus-button"
                           type="button"
                           onClick={() => setShowBuildingPopup(true)}
                         >
@@ -398,53 +433,18 @@ const ManagerProjectView = () => {
               </div>
             </div>
             <div className="right-form-second">
-              <div className="roles-box">
-                <label>Project Roles</label>
-                {editMode ? (
-                  <div className="select-container">
-                    {teamleadManager.map((employee) => (
-                      <div
-                        key={employee.employee_id}
-                        className="employee-checkbox"
-                      >
-                        {employee.employee_name} - {employee.designation}
-                        <input
-                          type="checkbox"
-                          className="larger-checkbox"
-                          value={employee.employee_id}
-                          checked={availableTeamleadManager.some(
-                            (e) => e.employee_id === employee.employee_id
-                          )}
-                          onChange={(e) => {
-                            const checked = e.target.checked;
-                            if (checked) {
-                              setAvailableTeamleadManager((prev) => [
-                                ...prev,
-                                employee,
-                              ]);
-                            } else {
-                              setAvailableTeamleadManager((prev) =>
-                                prev.filter(
-                                  (emp) =>
-                                    emp.employee_id !== employee.employee_id
-                                )
-                              );
-                            }
-                          }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="select-container">
-                    {availableTeamleadManager.map((emp) => (
-                      <p key={emp.employee_id}>
-                        {emp.employee_name} - {emp.designation}
-                      </p>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <div className="form-group-full-width">
+                  <label>Project Description</label>
+                  {editMode ? (
+                    <textarea
+                      name="project_description"
+                      value={formData.project_description}
+                      onChange={handleChange}
+                    />
+                  ) : (
+                    <p>{projectData.project_description}</p>
+                  )}
+                </div>
             </div>
           </div>
         </div>

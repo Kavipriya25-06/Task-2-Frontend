@@ -17,6 +17,8 @@ import {
   useNavigate,
 } from "react-router-dom";
 
+import LogoutPopup from "./pages/Logout_popup.jsx"; // adjust the import path as needed
+
 import Login from "./pages/Login.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import HomeRedirect from "./pages/HomeRedirect.jsx";
@@ -64,9 +66,7 @@ import ManagerProjectCreate from "./pages/Manager/ManagerProjectCreate.jsx";
 import ManagerBuildingCreate from "./pages/Manager/ManagerBuildingCreate.jsx";
 import ManagerTaskCreate from "./pages/Manager/ManagerTaskCreate.jsx";
 
-import ManagerLeadApprovalScreen from "./pages/Manager/ManagerLeadApprovalScreen.jsx";
-
-import ManagerApprovalScreen from "./pages/Manager/ManagerLeadApprovalScreen.jsx";
+import ManagerApprovalScreen from "./pages/Manager/ManagerApprovalScreen.jsx";
 import ManagerLeaveApplication from "./pages/Manager/ManagerLeaveApplication.jsx";
 import ManagerLeaveRequestForm from "./pages/Manager/ManagerLeaveRequestForm.jsx";
 
@@ -105,14 +105,31 @@ const App = () => {
   const [selectedRole, setSelectedRole] = useState(() => {
     return localStorage.getItem("selectedRole") || "admin";
   });
+  //const navigate = useNavigate();
+
+  const [showLogoutPopup, setShowLogoutPopup] = useState(false);
 
   const { user } = useAuth();
+  console.log(user);
+
+  const handleLogoutClick = (e) => {
+    e.preventDefault();
+    if (!showLogoutPopup) {
+      setShowLogoutPopup(true);
+    }
+  };
+
+  const closePopup = () => {
+    setShowLogoutPopup(false);
+  };
 
   const { logout } = useAuth();
+
   const handleLogout = () => {
     logout();
-    // navigate("/"); // Redirect to login page
+    navigate("/"); // Redirect to login page
   };
+
   const renderDashboard = () => {
     switch (selectedRole) {
       case "admin":
@@ -142,17 +159,27 @@ const App = () => {
           <img src="\src\assets\Logo.svg" alt="Arris Logo" className="logo" />
 
           <div style={{ alignItems: "center", display: "flex" }}>
-            <NavLink
+            {/* <NavLink
               to="/"
               style={{ textDecoration: "none", color: "inherit" }}
-            >
-              <img
-                src="\src\assets\logout.png"
-                alt="Logout button"
-                className="logoutbutton"
-                onClick={handleLogout}
-              />
-            </NavLink>
+            > */}
+            <div className="selectrole" onClick={handleLogoutClick}>
+              {!showLogoutPopup &&
+                user && (
+                  <>
+                    <img
+                      src="/src/assets/user icon.svg"
+                      alt="User icon"
+                      className="logoutbutton"
+                    />
+                    <span>{selectedRole}</span>
+                  </>
+                )}
+            </div>
+
+            {/* Popup */}
+            {showLogoutPopup && <LogoutPopup onClose={closePopup} />}
+            {/* </NavLink> */}
             {user && (
               <RoleSwitcher
                 selectedRole={selectedRole}
@@ -202,7 +229,10 @@ const App = () => {
               <Route path="detail" element={<HRDetailView />}>
                 <Route path="employee-details" element={<EmployeeList />} />
                 <Route path="holidays" element={<HRHolidayCalendar />} />
-                <Route path="holidays/holiday-list" element={<HRHolidayList/>} />
+                <Route
+                  path="holidays/holiday-list"
+                  element={<HRHolidayList />}
+                />
                 <Route
                   path="employee-details/add-employee"
                   element={<AddEmployee />}
@@ -267,11 +297,6 @@ const App = () => {
                 <Route
                   path="team-leaders/tl"
                   element={<ManagerTeamLeadersView />}
-                />
-
-                <Route
-                  path="team-leaders/approvalscreen"
-                  element={<ManagerLeadApprovalScreen />}
                 />
                 <Route
                   path="leave-requests/Leaveapplication"
@@ -383,7 +408,7 @@ const App = () => {
 
         {/* Bottom Bar */}
         <footer className="bottom-bar">
-          <div>Contact us: info@arrisltd.com | (+91) 044-4798-1534</div>
+          <div>Your Partner in Engineering Excellence.</div>
         </footer>
       </div>
     </Router>
