@@ -111,10 +111,12 @@ const TeamLeadTimeSheetEntry = () => {
     const rows = [];
     for (let i = 0; i < filledData.length; i += 7) {
       const week = filledData.slice(i, i + 7);
+      const firstValidDay = week.find((day) => day && day.date);
+      const monday = firstValidDay?.date || "";
       const weekNumber = week.find((day) => day)?.week_of_year || "-";
       rows.push(
         <React.Fragment key={`week-${weekNumber}-${i}`}>
-          <div className="week-number" onClick={() => navigate(`createweekly`)}>
+          <div className="week-number" onClick={() => navigate(`createweekly/${monday}`)}>
             W-{weekNumber}
           </div>
           {week.map((entry, idx) =>
