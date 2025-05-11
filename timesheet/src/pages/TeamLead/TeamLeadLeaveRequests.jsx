@@ -33,7 +33,7 @@ const TeamLeadLeaveRequests = () => {
         setLeaveSummary({
           sick: employeeSummary.sick_leave,
           casual: employeeSummary.casual_leave,
-          compoff: employeeSummary.comp_off,
+          compOff: employeeSummary.comp_off,
           earned: employeeSummary.earned_leave,
         });
       }
