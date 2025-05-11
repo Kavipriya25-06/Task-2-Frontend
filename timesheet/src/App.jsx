@@ -75,6 +75,8 @@ import TeamLeadEmployees from "./pages/TeamLead/TeamLeadEmployees.jsx";
 import TeamLeadLeaveRequests from "./pages/TeamLead/TeamLeadLeaveRequests.jsx";
 import TeamLeadProjects from "./pages/TeamLead/TeamLeadProjects.jsx";
 import TeamLeadProjectView from "./pages/TeamLead/TeamLeadProjectView.jsx";
+import TeamLeadTaskView from "./pages/TeamLead/TeamLeadTaskView.jsx";
+import TeamLeadBuildingView from "./pages/TeamLead/TeamLeadBuildingView.jsx";
 import TeamLeadTimeSheetEntry from "./pages/TeamLead/TeamLeadTimeSheetEntry.jsx";
 import TeamLeadProjectCreate from "./pages/TeamLead/TeamLeadProjectCreate.jsx";
 import TeamLeadBuildingCreate from "./pages/TeamLead/TeamLeadBuildingCreate.jsx";
@@ -282,7 +284,15 @@ const App = () => {
                   path="buildings/create"
                   element={<TeamLeadBuildingCreate />}
                 />
+                <Route
+                  path="buildings/:building_assign_id"
+                  element={<TeamLeadBuildingView />}
+                />
                 <Route path="tasks/create" element={<TeamLeadTaskCreate />} />
+                <Route
+                  path="tasks/:task_assign_id"
+                  element={<TeamLeadTaskView />}
+                />
                 <Route
                   path="time-sheet-entry"
                   element={<TeamLeadTimeSheetEntry />}
