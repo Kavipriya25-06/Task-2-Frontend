@@ -7,7 +7,9 @@ import config from "../../config";
 import { useNavigate } from "react-router-dom";
 
 const EmployeeTimeSheetEntry = () => {
+  const { user } = useAuth();
   const [calendarData, setCalendarData] = useState([]);
+  const [biometricData, setBiometricData] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
@@ -25,8 +27,21 @@ const EmployeeTimeSheetEntry = () => {
     }
   };
 
+  const fetchBiometricData = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/biometric-data/by_employee/${user.employee_id}/?month=${month}&year=${year}`
+      );
+      const data = await response.json();
+      setBiometricData(data);
+    } catch (error) {
+      console.error("Error fetching biometric data:", error);
+    }
+  };
+
   useEffect(() => {
     fetchCalendarData(selectedYear);
+    fetchBiometricData();
     const updated = new Date(currentDate);
     updated.setFullYear(selectedYear);
     setCurrentDate(updated);
@@ -97,10 +112,15 @@ const EmployeeTimeSheetEntry = () => {
     const rows = [];
     for (let i = 0; i < filledData.length; i += 7) {
       const week = filledData.slice(i, i + 7);
+      const firstValidDay = week.find((day) => day && day.date);
+      const monday = firstValidDay?.date || "";
       const weekNumber = week.find((day) => day)?.week_of_year || "-";
       rows.push(
         <React.Fragment key={`week-${weekNumber}-${i}`}>
-          <div className="week-number" onClick={() => navigate(`createweekly`)}>
+          <div
+            className="week-number"
+            onClick={() => navigate(`createweekly/${monday}`)}
+          >
             W-{weekNumber}
           </div>
           {week.map((entry, idx) =>
@@ -115,13 +135,70 @@ const EmployeeTimeSheetEntry = () => {
                 <div className="day-number">{entry.day}</div>
                 <div
                   className="day-circle"
-                  onClick={() => navigate(`createdaily`)}
+                  onClick={() => {
+                    const clickedDate = `${entry.year}-${String(
+                      entry.month
+                    ).padStart(2, "0")}-${String(entry.day).padStart(2, "0")}`;
+                    navigate(`createdaily/${clickedDate}`);
+                  }}
                   style={{ cursor: "pointer" }}
-                ></div>
+                >
+                  {/**  Show work_duration from biometric data */}
+                  {(() => {
+                    const dateStr = `${entry.year}-${String(
+                      entry.month
+                    ).padStart(2, "0")}-${String(entry.day).padStart(2, "0")}`;
+                    const dayRecords = biometricData.filter(
+                      (b) => b.date === dateStr
+                    );
+
+                    let latestRecord = null;
+
+                    dayRecords.forEach((record) => {
+                      if (
+                        !latestRecord ||
+                        new Date(record.modified_on) >
+                          new Date(latestRecord.modified_on)
+                      ) {
+                        latestRecord = record;
+                      }
+                    });
+
+                    let circleClass = "circle-gray";
+
+                    if (latestRecord?.timesheets?.length > 0) {
+                      const ts = latestRecord.timesheets;
+                      const hasApproved = ts.some((t) => t.approved);
+                      const hasRejected = ts.some((t) => t.rejected);
+                      const hasSubmitted = ts.some((t) => t.submitted);
+
+                      if (hasApproved) circleClass = "circle-green";
+                      else if (hasRejected) circleClass = "circle-red";
+                      else if (hasSubmitted) circleClass = "circle-yellow";
+                      else circleClass = "circle-blue";
+                    }
+
+                    return (
+                      <>
+                        <div
+                          className="day-circle"
+                          onClick={() => navigate(`createdaily/${dateStr}`)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          {latestRecord?.total_duration || ""}
+                        </div>
+                        <div
+                          className={`bottom-right-circle ${circleClass}`}
+                        ></div>
+                      </>
+                    );
+                  })()}
+                </div>
+
                 {entry.notes && (
                   <div className="holiday-note1">{entry.notes}</div>
                 )}
-                <div className="bottom-right-circle"></div>
+                {/* <div className="bottom-right-circle"></div> */}
               </div>
             ) : (
               <div key={`empty-${i + idx}`} className="calendar-cell empty" />

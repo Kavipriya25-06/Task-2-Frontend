@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate } from "react-router-dom";
-import TeamLeadDailyTimeSheetEntry from "./TeamLeadDailyTimeSheetEntry";
-import TeamLeadWeeklyTimeSheetEntry from "./TeamLeadWeeklyTimeSheet";
 
 const TeamLeadTimeSheetEntry = () => {
   const { user } = useAuth();
@@ -163,14 +161,41 @@ const TeamLeadTimeSheetEntry = () => {
                       }
                     });
 
-                    return latestRecord ? latestRecord.total_duration : "";
+                    let circleClass = "circle-gray";
+
+                    if (latestRecord?.timesheets?.length > 0) {
+                      const ts = latestRecord.timesheets;
+                      const hasApproved = ts.some((t) => t.approved);
+                      const hasRejected = ts.some((t) => t.rejected);
+                      const hasSubmitted = ts.some((t) => t.submitted);
+
+                      if (hasApproved) circleClass = "circle-green";
+                      else if (hasRejected) circleClass = "circle-red";
+                      else if (hasSubmitted) circleClass = "circle-yellow";
+                      else circleClass = "circle-blue";
+                    }
+
+                    return (
+                      <>
+                        <div
+                          className="day-circle"
+                          onClick={() => navigate(`createdaily/${dateStr}`)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          {latestRecord?.total_duration || ""}
+                        </div>
+                        <div
+                          className={`bottom-right-circle ${circleClass}`}
+                        ></div>
+                      </>
+                    );
                   })()}
                 </div>
 
                 {entry.notes && (
                   <div className="holiday-note1">{entry.notes}</div>
                 )}
-                <div className="bottom-right-circle"></div>
+                {/* <div className={`bottom-right-circle ${circleClass}`}></div> */}
               </div>
             ) : (
               <div key={`empty-${i + idx}`} className="calendar-cell empty" />

@@ -114,10 +114,6 @@ const TeamLeadAttendance = () => {
     setCurrentWeek(newDate);
   };
 
-  const handleAttendanceClick = () => {
-    navigate(`attendance-admin/`);
-  };
-
   useEffect(() => {
     fetchAttendanceData();
   }, [currentWeek]);
@@ -136,11 +132,6 @@ const TeamLeadAttendance = () => {
             {endDate.toLocaleDateString("en-GB")}
           </h3>
           <button onClick={() => handleWeekChange(1)}> &gt;</button>
-        </div>
-        <div>
-          <button onClick={() => handleAttendanceClick()}>
-            Attendance Admin
-          </button>
         </div>
       </div>
 
@@ -173,13 +164,12 @@ const TeamLeadAttendance = () => {
                     // <td key={day.key}>
                     //   {attendance ? `${attendance.work_duration} hrs` : "-"}
                     // </td>
-
                     <td
                       key={day.key}
                       onClick={() => {
                         if (attendance) {
                           navigate(
-                            `/teamlead/detail/attendance/timesheetapproval/${emp.employee_id}/${day.mapdate}`
+                            `timesheetapproval/${emp.employee_id}/${day.mapdate}`
                           );
                         }
                       }}
