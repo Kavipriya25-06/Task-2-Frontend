@@ -46,8 +46,6 @@ const ManagerTeamLeadersView = () => {
     }
   };
 
-  
-
   const fetchTLProjects = async (teamleadId) => {
     try {
       const response = await fetch(
@@ -61,7 +59,6 @@ const ManagerTeamLeadersView = () => {
   };
 
   const handleProjectClick = (teamleadId, ProjectId) => {
-
     fetchProjects(ProjectId);
     const selected = teamLeads.find((tl) => tl.teamlead_id === teamleadId);
     setSelectedProject(selected); // Set selected project data
@@ -92,7 +89,9 @@ const ManagerTeamLeadersView = () => {
           <h4>Projects</h4>
           {tlProjects.map((project) => (
             <div className="project-card" key={project.project_assign_id}>
-              <div className="project-title">{project.project.project_title}</div>
+              <div className="project-title">
+                {project.project.project_title}
+              </div>
               <div className="project-stats">
                 <span>{project.status} Tasks</span>
                 <span>{project.project_hours} hours</span>

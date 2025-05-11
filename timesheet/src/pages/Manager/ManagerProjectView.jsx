@@ -42,60 +42,142 @@ const ManagerProjectView = () => {
   };
   console.log("Project ID from URL:", project_id);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const payload = {
-      ...formData,
-      area_of_work: formData.area_of_work.map(Number),
-      created_by: user.employee_id,
-    };
-
-    try {
-      const response = await fetch(`${config.apiBaseURL}/projects/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        alert("Project created successfully!");
-        setFormData({ ...formData, project_title: "", project_code: "" });
-      } else {
-        console.error(data);
-        alert(" Failed to create project");
-      }
-    } catch (err) {
-      console.error("Request error:", err);
-    }
-  };
-
   const buildingClick = (building_assign_id) => {
     navigate(`/manager/detail/buildings/${building_assign_id}`);
   };
 
+  const handleRemoveBuilding = async (building) => {
+    // If the building has an assign ID, it exists in DB, so delete.
+    if (building.building_assign_id) {
+      const confirmDelete = window.confirm(
+        `Are you sure you want to remove building "${building.building.building_title}"?`
+      );
+      if (!confirmDelete) return;
+
+      try {
+        const res = await fetch(
+          `${config.apiBaseURL}/buildings-assigned/${building.building_assign_id}/`,
+          { method: "DELETE" }
+        );
+
+        if (res.ok) {
+          setAvailableBuildings((prev) =>
+            prev.filter(
+              (b) => b.building_assign_id !== building.building_assign_id
+            )
+          );
+          alert("Building removed!");
+        } else {
+          alert("Failed to delete building.");
+        }
+      } catch (err) {
+        console.error("Error deleting building:", err);
+      }
+    } else {
+      // It's a new building not yet saved → just remove from state
+      setAvailableBuildings((prev) =>
+        prev.filter((b) => b.building_id !== building.building_id)
+      );
+    }
+  };
+
   const handleUpdate = async () => {
+    // 1️ Update Project
+    const payload = {
+      ...formData,
+      area_of_work: formData.area_of_work,
+      created_by: user.employee_id,
+    };
+
     try {
       const response = await fetch(
         `${config.apiBaseURL}/projects/${project_id}/`,
         {
-          method: "PUT", // or PATCH
+          method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(payload),
         }
       );
 
-      if (response.ok) {
-        alert("Project updated!");
-        setEditMode(false);
-        fetchProjectData(); // refresh
-      } else {
+      if (!response.ok) {
         alert("Failed to update project");
+        return;
       }
     } catch (err) {
-      console.error("Update error:", err);
+      console.error("Project update error:", err);
+      return;
     }
+
+    // 2️ Update Project Assign (employees + hours)
+    const assignId = projectData.assigns[0].project_assign_id;
+
+    const assignPayload = {
+      employee: availableTeamleadManager.map((e) => e.employee_id),
+      project_hours: formData.estimated_hours,
+      status: "pending",
+    };
+
+    try {
+      const teamRes = await fetch(
+        `${config.apiBaseURL}/projects-assign-update/${assignId}/`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(assignPayload),
+        }
+      );
+
+      if (!teamRes.ok) {
+        alert("Failed to update project assign");
+        return;
+      }
+    } catch (err) {
+      console.error("Project assign update error:", err);
+      return;
+    }
+
+    // const buildingUpdates = availableBuildings.map((b) => ({
+    //   building_assign_id: b.building_assign_id || null,
+    //   building_id: b.building?.building_id || b.building_id,
+    //   building_hours: b.building_hours || 0,
+    //   status: "pending",
+    // }));
+
+    const buildingUpdates = availableBuildings.map((b) => {
+      const update = {
+        building_id: b.building?.building_id || b.building_id,
+        building_hours: b.building_hours || 0,
+        status: "pending",
+      };
+      if (b.building_assign_id) {
+        update.building_assign_id = b.building_assign_id;
+      }
+      return update;
+    });
+
+    try {
+      const buildingRes = await fetch(
+        `${config.apiBaseURL}/buildings-assign-update/?project_assign_id=${assignId}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(buildingUpdates),
+        }
+      );
+
+      if (!buildingRes.ok) {
+        alert("Failed to update building assignments");
+        return;
+      }
+    } catch (err) {
+      console.error("Building assign update error:", err);
+      return;
+    }
+
+    // If all succeeded
+    alert("Project updated successfully!");
+    setEditMode(false);
+    fetchProjectData(); // refresh UI
   };
 
   useEffect(() => {
@@ -242,12 +324,17 @@ const ManagerProjectView = () => {
                       <div key={i} className="building-tile">
                         <div className="building-tile-small">
                           {console.log("building individual", b)}
-                          {b.building.building_title}
+                          {b.building?.building_title || b.building_title}
                         </div>
                         <div className="building-tile-small">
                           {b.building_hours} hrs
                         </div>
-                        <button className="tag-button">×</button>
+                        <button
+                          className="tag-button"
+                          onClick={() => handleRemoveBuilding(b)}
+                        >
+                          ×
+                        </button>
                       </div>
                     ))}
                     <button
@@ -289,7 +376,7 @@ const ManagerProjectView = () => {
                         .map((a) => (
                           <span className="tag" key={a.area_name}>
                             {a.name}
-                            <button className="tag-button">×</button>
+                            {/* <button className="tag-button">×</button> */}
                           </span>
                         ))}
                     </div>
@@ -310,7 +397,6 @@ const ManagerProjectView = () => {
                       .map((a) => (
                         <span className="tag" key={a.area_name}>
                           {a.name}
-                          <button className="tag-button">×</button>
                         </span>
                       ))}
                   </div>
@@ -442,13 +528,6 @@ const ManagerProjectView = () => {
               </button>
             </>
           ) : (
-            // <button
-            //   type="edit"
-            //   onClick={() => setEditMode(true)}
-            //   className="btn-orange"
-            // >
-            //   Edit
-            // </button>
             <div></div>
           )}
         </div>
@@ -461,6 +540,14 @@ const ManagerProjectView = () => {
               <input
                 type="checkbox"
                 value={b.building_id}
+                checked={
+                  selectedBuildings.some(
+                    (item) => item.building_id === b.building_id
+                  ) ||
+                  availableBuildings.some(
+                    (ab) => ab.building_id === b.building_id
+                  )
+                }
                 onChange={(e) => {
                   const checked = e.target.checked;
                   const existing = selectedBuildings.find(
@@ -468,11 +555,17 @@ const ManagerProjectView = () => {
                   );
 
                   if (checked && !existing) {
+                    const assigned = availableBuildings.find(
+                      (ab) => ab.building_id === b.building_id
+                    );
                     setSelectedBuildings((prev) => [
                       ...prev,
-                      { ...b, hours: "" },
+                      {
+                        ...b,
+                        building_hours: assigned ? assigned.building_hours : "",
+                      },
                     ]);
-                  } else {
+                  } else if (!checked) {
                     setSelectedBuildings((prev) =>
                       prev.filter((item) => item.building_id !== b.building_id)
                     );
@@ -491,7 +584,7 @@ const ManagerProjectView = () => {
                     setSelectedBuildings((prev) =>
                       prev.map((item) =>
                         item.building_id === b.building_id
-                          ? { ...item, hours: e.target.value }
+                          ? { ...item, building_hours: e.target.value }
                           : item
                       )
                     );
@@ -500,9 +593,34 @@ const ManagerProjectView = () => {
               )}
             </div>
           ))}
-          <button onClick={() => setShowBuildingPopup(false)}>Done</button>
           <button
             onClick={() => {
+              const invalid = selectedBuildings.find(
+                (b) => !b.building_hours || parseFloat(b.building_hours) <= 0
+              );
+
+              if (invalid) {
+                alert(
+                  `Please enter valid hours for building "${invalid.building_title}".`
+                );
+                return;
+              }
+              setAvailableBuildings((prev) => [
+                ...prev,
+                ...selectedBuildings.filter(
+                  (b) => !prev.some((ab) => ab.building_id === b.building_id)
+                ),
+              ]);
+              setSelectedBuildings([]);
+              setShowBuildingPopup(false);
+            }}
+          >
+            Done
+          </button>
+
+          <button
+            onClick={() => {
+              setSelectedBuildings([]);
               setShowBuildingPopup(false);
             }}
           >
@@ -517,16 +635,22 @@ const ManagerProjectView = () => {
             <div key={a.id}>
               <input
                 type="checkbox"
-                value={a.id}
-                checked={selectedAreas.includes(a.id)}
+                value={a.area_name}
+                checked={formData.area_of_work.includes(a.area_name)}
                 onChange={(e) => {
                   const checked = e.target.checked;
                   if (checked) {
-                    setSelectedAreas((prev) => [...prev, a.id]);
+                    setFormData((prev) => ({
+                      ...prev,
+                      area_of_work: [...prev.area_of_work, a.area_name],
+                    }));
                   } else {
-                    setSelectedAreas((prev) =>
-                      prev.filter((id) => id !== a.id)
-                    );
+                    setFormData((prev) => ({
+                      ...prev,
+                      area_of_work: prev.area_of_work.filter(
+                        (area) => area !== a.area_name
+                      ),
+                    }));
                   }
                 }}
               />
@@ -535,7 +659,6 @@ const ManagerProjectView = () => {
           ))}
           <button
             onClick={() => {
-              setFormData((prev) => ({ ...prev, area_of_work: selectedAreas }));
               setShowAreaPopup(false);
             }}
           >

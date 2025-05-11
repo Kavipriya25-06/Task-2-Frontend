@@ -24,6 +24,7 @@ const EditEmployee = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(0);
   const [managers, setManagers] = useState([]);
+  const [hierarchy, setHierarchy] = useState({});
 
   const [editMode, setEditMode] = useState(false); //  Add this at the top
   const {
@@ -56,6 +57,7 @@ const EditEmployee = () => {
   useEffect(() => {
     fetchEmployee();
     fetchManagers();
+    fetchHierarchy();
   }, [employee_id]);
 
   const fetchEmployee = async () => {
@@ -107,6 +109,18 @@ const EditEmployee = () => {
     }
   };
 
+  const fetchHierarchy = async () => {
+    try {
+      const res = await fetch(
+        `${config.apiBaseURL}/hierarchy/by_employee/${employee_id}/`
+      );
+      const data = await res.json();
+      setHierarchy(data);
+    } catch (error) {
+      console.error("Error fetching hierarchy:", error);
+    }
+  };
+
   const handleExperienceChange = (e) => {
     const { name, value } = e.target;
     const updated = { ...experienceUI, [name]: value };
@@ -125,6 +139,7 @@ const EditEmployee = () => {
       ...prev,
       arris_experience: arrisMonths,
       total_experience: totalMonths,
+      previous_experience: previousMonths,
     }));
   };
 
@@ -163,6 +178,30 @@ const EditEmployee = () => {
           body: JSON.stringify(cleanedData),
         }
       );
+
+      // Step 2: PATCH hierarchy
+      const hierarchyPayload = {
+        designation: hierarchy.designation || null,
+        department: hierarchy.department || null,
+        reporting_to: hierarchy.reporting_to || null,
+      };
+
+      const resHier = await fetch(
+        `${config.apiBaseURL}/hierarchy/${hierarchy.hierarchy_id}/`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(hierarchyPayload),
+        }
+      );
+
+      if (resHier.ok) {
+        console.log("Employee and hierarchy updated successfully!");
+
+        fetchHierarchy();
+      } else {
+        console.log("Failed to update. Please check inputs.");
+      }
 
       if (profilePicture) {
         const picturePayload = new FormData();
@@ -354,20 +393,7 @@ const EditEmployee = () => {
 
             <div className="individual-tabs">
               <label>Employee Code</label>
-              {editMode ? (
-                <input
-                  // style={{ marginTop: "10px" }}
-                  name="employee_code"
-                  value={formData.employee_code}
-                  onChange={handleChange}
-                  placeholder="Employee Code"
-                  required
-                />
-              ) : (
-                <div className="uneditable">
-                  {formData.employee_code || "-"}
-                </div>
-              )}
+              <div className="uneditable">{formData.employee_code || "-"}</div>
             </div>
             <div className="individual-tabs">
               <label>Employee Name</label>
@@ -783,8 +809,8 @@ const EditEmployee = () => {
                 </div>
               ) : (
                 <div className="uneditable">
-                  {experienceUI.previous_years} Years, {experienceUI.previous_months}{" "}
-                  Months
+                  {experienceUI.previous_years} Years,{" "}
+                  {experienceUI.previous_months} Months
                 </div>
               )}
             </div>
@@ -879,19 +905,7 @@ const EditEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>Official Email</label>
-              {editMode ? (
-                <input
-                  name="employee_email"
-                  value={formData.employee_email}
-                  onChange={handleChange}
-                  placeholder="Official Email"
-                  className={errors.employee_email ? "input-error" : ""}
-                />
-              ) : (
-                <div className="uneditable">
-                  {formData.employee_email || "-"}
-                </div>
-              )}
+              <div className="uneditable">{formData.employee_email || "-"}</div>
               {errors.employee_email && (
                 <span className="error-message">{errors.employee_email}</span>
               )}

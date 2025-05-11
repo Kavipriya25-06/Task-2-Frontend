@@ -4,7 +4,7 @@ import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate, useParams } from "react-router-dom";
 
-const ManagerTaskView = () => {
+const TeamLeadTaskView = () => {
   const { user } = useAuth();
   const { task_assign_id } = useParams(); // from URL
   const [editMode, setEditMode] = useState(false); //  Add this at the top
@@ -368,4 +368,4 @@ const ManagerTaskView = () => {
   );
 };
 
-export default ManagerTaskView;
+export default TeamLeadTaskView;

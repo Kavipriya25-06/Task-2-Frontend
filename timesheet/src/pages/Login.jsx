@@ -28,7 +28,11 @@ const Login = () => {
       <div className="login-box">
         <div className="logo-section">
           <div className="logo-container">
-            <img src="src\assets\Logo.svg" alt="Arris Logo" className="logo-c" />
+            <img
+              src="src\assets\Logo.svg"
+              alt="Arris Logo"
+              className="logo-c"
+            />
           </div>
         </div>
 

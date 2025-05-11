@@ -8,11 +8,11 @@ import { useNavigate } from "react-router-dom";
 
 const ManagerAttendance = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [attendanceData, setAttendanceData] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
   const [currentWeek, setCurrentWeek] = useState(new Date()); // Start with current week
   const [totalHours, setTotalHours] = useState({});
+  const navigate = useNavigate();
 
   // Get the start and end date of the week
   const getWeekDates = (date) => {
@@ -55,9 +55,29 @@ const ManagerAttendance = () => {
         `${config.apiBaseURL}/weekly-attendance/${user.employee_id}/?today=${weekDays[0].mapdate}`
       );
       const data = await response.json();
-      console.log("Attendance data", data);
-      setAttendanceData(data);
-      calculateTotalHours(data);
+      console.log("Raw attendance data:", data);
+
+      // Step 1: Group by employee + date and pick latest
+      const latestRecords = {};
+
+      data.forEach((record) => {
+        const key = `${record.employee}_${record.date}`;
+        // If no entry yet OR this record has newer modified_on, replace it
+        if (
+          !latestRecords[key] ||
+          new Date(record.modified_on) >
+            new Date(latestRecords[key].modified_on)
+        ) {
+          latestRecords[key] = record;
+        }
+      });
+
+      // Step 2: Convert back to array
+      const filteredData = Object.values(latestRecords);
+      console.log("Filtered latest attendance data:", filteredData);
+
+      setAttendanceData(filteredData);
+      calculateTotalHours(filteredData);
     } catch (err) {
       console.error("Unable to fetch attendance data", err);
     }
@@ -80,7 +100,7 @@ const ManagerAttendance = () => {
   const calculateTotalHours = (data) => {
     let hours = {};
     data.forEach((attendance) => {
-      const totalDuration = parseFloat(attendance.work_duration);
+      const totalDuration = parseFloat(attendance.total_duration || "0"); // use total_duration
       hours[attendance.employee] =
         (hours[attendance.employee] || 0) + totalDuration;
     });
@@ -153,28 +173,33 @@ const ManagerAttendance = () => {
                     // <td key={day.key}>
                     //   {attendance ? `${attendance.work_duration} hrs` : "-"}
                     // </td>
+
                     <td
-  key={day.key}
-  onClick={() => {
-    if (attendance) {
-      navigate(`/manager/detail/attendance/timesheetapproval/${emp.employee_id}/${day.mapdate}`);
-    }
-  }}
-  style={{ cursor: attendance ? "pointer" : "default" }}
->
-  {attendance ? (
-    <div className="attendance-tile">
-      <div>
-        {attendance.in_time.slice(0, 5)} - {attendance.out_time.slice(0, 5)}
-      </div>
-      <div>
-        <strong>Total:</strong> {attendance.total_duration} hrs
-      </div>
-    </div>
-  ) : (
-    <div className="attendance-tile no-data">-</div>
-  )}
-</td>
+                      key={day.key}
+                      onClick={() => {
+                        if (attendance) {
+                          navigate(
+                            `timesheetapproval/${emp.employee_id}/${day.mapdate}`
+                          );
+                        }
+                      }}
+                      style={{ cursor: attendance ? "pointer" : "default" }}
+                    >
+                      {attendance ? (
+                        <div className="attendance-tile">
+                          <div>
+                            {attendance.in_time.slice(0, 5)} -{" "}
+                            {attendance.out_time.slice(0, 5)}
+                          </div>
+                          <div>
+                            <strong>Total:</strong> {attendance.total_duration}{" "}
+                            hrs
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="attendance-tile no-data">-</div>
+                      )}
+                    </td>
                   );
                 })}
 

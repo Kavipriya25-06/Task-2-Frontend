@@ -73,11 +73,13 @@ const TeamLeadProjects = () => {
       case 0:
         return (
           <div>
-           <div className="user-header">
-            <h2 className="employee-title">Projects</h2>
-            <div>
-              <button className="add-user-btn" onClick={handleAddClick}>Create Project</button>
-            </div>
+            <div className="user-header">
+              <h2 className="employee-title">Projects</h2>
+              <div>
+                <button className="add-user-btn" onClick={handleAddClick}>
+                  Create Project
+                </button>
+              </div>
             </div>
             <table>
               <thead>
@@ -85,7 +87,7 @@ const TeamLeadProjects = () => {
                   <th>Project code</th>
                   <th>Project name</th>
                   {/* <th>Building</th> */}
-                  
+
                   <th>Estimated hours</th>
                   <th>Total hours</th>
                   <th>Discipline</th>
@@ -120,10 +122,15 @@ const TeamLeadProjects = () => {
         return (
           <div>
             <div className="user-header">
-            <h2 className="employee-title">Buildings</h2>
-            <div>
-              <button className="add-user-btn" onClick={handleAddBuildingClick}>Create Building</button>
-            </div>
+              <h2 className="employee-title">Buildings</h2>
+              <div>
+                <button
+                  className="add-user-btn"
+                  onClick={handleAddBuildingClick}
+                >
+                  Create Building
+                </button>
+              </div>
             </div>
             <table>
               <thead>
@@ -141,11 +148,11 @@ const TeamLeadProjects = () => {
                 {buildings.map((building) => (
                   <tr key={building.building_id}>
                     <td
-                      // onClick={() => handleProjectClick(building.building_id)}
-                      // style={{
-                      //   cursor: "pointer",
-                      //   textDecoration: "underline",
-                      // }}
+                    // onClick={() => handleProjectClick(building.building_id)}
+                    // style={{
+                    //   cursor: "pointer",
+                    //   textDecoration: "underline",
+                    // }}
                     >
                       {building.building_code}
                     </td>
@@ -165,10 +172,12 @@ const TeamLeadProjects = () => {
         return (
           <div>
             <div className="user-header">
-            <h2 className="employee-title">Tasks</h2>
-            <div>
-              <button className="add-user-btn" onClick={handleAddTaskClick}>Create Task</button>
-            </div>
+              <h2 className="employee-title">Tasks</h2>
+              <div>
+                <button className="add-user-btn" onClick={handleAddTaskClick}>
+                  Create Task
+                </button>
+              </div>
             </div>
             <table>
               <thead>
@@ -186,11 +195,11 @@ const TeamLeadProjects = () => {
                 {tasks.map((task) => (
                   <tr key={task.task_id}>
                     <td
-                      // onClick={() => handleProjectClick(task.task_id)}
-                      // style={{
-                      //   cursor: "pointer",
-                      //   textDecoration: "underline",
-                      // }}
+                    // onClick={() => handleProjectClick(task.task_id)}
+                    // style={{
+                    //   cursor: "pointer",
+                    //   textDecoration: "underline",
+                    // }}
                     >
                       {task.task_code}
                     </td>

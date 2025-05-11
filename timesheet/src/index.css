@@ -74,7 +74,7 @@
   padding: 12px;
 }
 
-.bottom-right-circle {
+/* .bottom-right-circle {
   position: absolute;
   bottom: 4px;
   right: 6px;
@@ -82,7 +82,7 @@
   height: 15px;
   border-radius: 50%;
   background: #579f6a; /* You can change color dynamically if needed */
-}
+/*} */
 
 /* TemaLeadLeaveRequest */
 
@@ -453,7 +453,6 @@
   min-height: 10px;
   color: #333;
 }
-
 
 .profile-picture-wrapper {
   position: relative;

@@ -14,18 +14,20 @@ const ManagerAttendanceAdmin = () => {
   const [currentWeek, setCurrentWeek] = useState(new Date()); // Start with current week
   const [totalHours, setTotalHours] = useState({});
   const [showAddPopup, setShowAddPopup] = useState(false);
-  const [newAttendance, setNewAttendance] = useState({
+  const initialAttendanceState = {
     employee: "",
     shift: "",
     date: "",
     in_time: "",
     out_time: "",
     work_duration: "",
-    ot: "",
+    ot: "0",
     total_duration: "",
     status: "Present",
     remarks: "",
-  });
+  };
+
+  const [newAttendance, setNewAttendance] = useState(initialAttendanceState);
 
   // Get the start and end date of the week
   const getWeekDates = (date) => {
@@ -108,6 +110,7 @@ const ManagerAttendanceAdmin = () => {
       if (response.ok) {
         alert("Attendance added!");
         setShowAddPopup(false);
+        setNewAttendance(initialAttendanceState); // Reset form
         fetchAttendanceAdmin(); // Refresh the list
       } else {
         const data = await response.json();
@@ -289,13 +292,16 @@ const ManagerAttendanceAdmin = () => {
               </select>
 
               <label>Shift</label>
-              <input
-                type="text"
+              <select
                 value={newAttendance.shift}
                 onChange={(e) =>
                   setNewAttendance({ ...newAttendance, shift: e.target.value })
                 }
-              />
+              >
+                <option value="">Select Shift</option>
+                <option value="Morning">Morning</option>
+                <option value="Night">Night</option>
+              </select>
 
               <label>Date</label>
               <input

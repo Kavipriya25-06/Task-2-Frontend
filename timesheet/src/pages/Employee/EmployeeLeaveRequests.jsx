@@ -25,13 +25,13 @@ const EmployeeLeaveRequests = () => {
 
   const fetchLeaveSummary = async () => {
     try {
-      const response = await fetch(`${config.apiBaseURL}/leaves-available/`);
+      const response = await fetch(
+        `${config.apiBaseURL}/leaves-available/by_employee/${user.employee_id}/`
+      );
       const data = await response.json();
 
       // Find summary for the logged-in employee
-      const employeeSummary = data.find(
-        (item) => item.employee === user.employee_id
-      );
+      const employeeSummary = data;
       // console.log("employee leave", employeeSummary);
       if (employeeSummary) {
         setLeaveSummary({
@@ -49,13 +49,21 @@ const EmployeeLeaveRequests = () => {
   const fetchLeaveRequests = async () => {
     try {
       const response = await fetch(
-        `${config.apiBaseURL}/leave/requests?user=${user.id}`
+        `${config.apiBaseURL}/leaves-taken/by_employee/${user.employee_id}/`
       );
       const data = await response.json();
       setLeaveRequests(data);
+      console.log("Leave requests", data);
     } catch (err) {
       console.error("Error fetching leave requests", err);
     }
+  };
+
+  const keyMap = {
+    Sick: "sick",
+    Casual: "casual",
+    "Comp off": "compOff",
+    Earned: "earned",
   };
 
   return (
@@ -68,7 +76,7 @@ const EmployeeLeaveRequests = () => {
           {/* Leave Summary Boxes */}
           <div className="leave-summary-container">
             {["Sick", "Casual", "Comp off", "Earned"].map((type, idx) => {
-              const key = type.toLowerCase().replace(" ", "");
+              const key = keyMap[type];
               return (
                 <div
                   key={idx}
@@ -85,14 +93,6 @@ const EmployeeLeaveRequests = () => {
             })}
           </div>
 
-          {/* Conditionally Render Form */}
-          {/* {selectedLeaveType && (
-        <TeamLeadLeaveRequestForm
-          leaveType={selectedLeaveType}
-          onClose={() => setSelectedLeaveType(null)}
-        />
-      )} */}
-
           {/* Leave Requests Table */}
           <table className="leave-requests-table">
             <thead>
@@ -102,16 +102,18 @@ const EmployeeLeaveRequests = () => {
                 <th>Start Date</th>
                 <th>End Date</th>
                 <th>Reason(s)</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
               {leaveRequests.map((request, idx) => (
                 <tr key={idx}>
-                  <td>{request.type}</td>
+                  <td>{request.leave_type}</td>
                   <td>{request.duration}</td>
                   <td>{request.start_date}</td>
                   <td>{request.end_date}</td>
                   <td>{request.reason}</td>
+                  <td>{request.status}</td>
                 </tr>
               ))}
             </tbody>

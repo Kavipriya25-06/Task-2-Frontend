@@ -98,7 +98,6 @@ const ManagerLeaveRequests = () => {
 
   return (
     <div className="leaves-container">
-
       {/* Leave Application Button - Top Right */}
       <div className="leave-application-topbar">
         <button
@@ -108,7 +107,6 @@ const ManagerLeaveRequests = () => {
           Leave Application
         </button>
       </div>
-
 
       <div className="leaves-tab">
         {tabLabels.map((label, index) => (

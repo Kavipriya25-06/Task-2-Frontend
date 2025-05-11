@@ -42,6 +42,7 @@ import EditEmployee from "./pages/HR/HREditEmployee.jsx";
 import EmployeeList from "./pages/HR/HREmployeeList.jsx";
 import HRHolidayCalendar from "./pages/HR/HRHolidayCalendar.jsx";
 import HRHolidayList from "./pages/HR/HRHolidayList.jsx";
+import HRSettings from "./pages/HR/HRSettings.jsx";
 
 // Manager pages
 import ManagerDashboard from "./pages/Manager/ManagerDashboard.jsx";
@@ -74,6 +75,8 @@ import TeamLeadEmployees from "./pages/TeamLead/TeamLeadEmployees.jsx";
 import TeamLeadLeaveRequests from "./pages/TeamLead/TeamLeadLeaveRequests.jsx";
 import TeamLeadProjects from "./pages/TeamLead/TeamLeadProjects.jsx";
 import TeamLeadProjectView from "./pages/TeamLead/TeamLeadProjectView.jsx";
+import TeamLeadTaskView from "./pages/TeamLead/TeamLeadTaskView.jsx";
+import TeamLeadBuildingView from "./pages/TeamLead/TeamLeadBuildingView.jsx";
 import TeamLeadTimeSheetEntry from "./pages/TeamLead/TeamLeadTimeSheetEntry.jsx";
 import TeamLeadProjectCreate from "./pages/TeamLead/TeamLeadProjectCreate.jsx";
 import TeamLeadBuildingCreate from "./pages/TeamLead/TeamLeadBuildingCreate.jsx";
@@ -204,6 +207,7 @@ const App = () => {
                   path="holidays/holiday-list"
                   element={<HRHolidayList />}
                 />
+                <Route path="settings" element={<HRSettings />} />
               </Route>
             </Route>
 
@@ -239,7 +243,7 @@ const App = () => {
                   path="leave-requests"
                   element={<ManagerLeaveRequests />}
                 />
-                 <Route
+                <Route
                   path="leave-requests/create"
                   element={<ManagerLeaveRequestForm />}
                 />
@@ -256,8 +260,10 @@ const App = () => {
                   path="team-leaders/tl"
                   element={<ManagerTeamLeadersView />}
                 />
-                <Route path ="leave-requests/Leaveapplication" element ={<ManagerLeaveApplication/>} />
-
+                <Route
+                  path="leave-requests/Leaveapplication"
+                  element={<ManagerLeaveApplication />}
+                />
               </Route>
             </Route>
 
@@ -278,7 +284,15 @@ const App = () => {
                   path="buildings/create"
                   element={<TeamLeadBuildingCreate />}
                 />
+                <Route
+                  path="buildings/:building_assign_id"
+                  element={<TeamLeadBuildingView />}
+                />
                 <Route path="tasks/create" element={<TeamLeadTaskCreate />} />
+                <Route
+                  path="tasks/:task_assign_id"
+                  element={<TeamLeadTaskView />}
+                />
                 <Route
                   path="time-sheet-entry"
                   element={<TeamLeadTimeSheetEntry />}
@@ -288,7 +302,7 @@ const App = () => {
                   element={<TeamLeadDailyTimeSheetEntry />}
                 />
                 <Route
-                  path="time-sheet-entry/createweekly"
+                  path="time-sheet-entry/createweekly/:date"
                   element={<TeamLeadWeeklyTimeSheetEntry />}
                 />
                 <Route path="employees" element={<TeamLeadEmployees />} />

@@ -10,6 +10,7 @@ const HRDetailView = () => {
   const tabs = [
     { label: "Employees Details", path: "employee-details" },
     { label: "Holidays", path: "holidays" },
+    { label: "Settings", path: "settings" },
   ];
 
   return (
