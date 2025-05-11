@@ -21,13 +21,13 @@ const TeamLeadLeaveRequests = () => {
 
   const fetchLeaveSummary = async () => {
     try {
-      const response = await fetch(`${config.apiBaseURL}/leaves-available/`);
+      const response = await fetch(
+        `${config.apiBaseURL}/leaves-available/by_employee/${user.employee_id}/`
+      );
       const data = await response.json();
 
       // Find summary for the logged-in employee
-      const employeeSummary = data.find(
-        (item) => item.employee === user.employee_id
-      );
+      const employeeSummary = data;
       // console.log("employee leave", employeeSummary);
       if (employeeSummary) {
         setLeaveSummary({
@@ -55,6 +55,13 @@ const TeamLeadLeaveRequests = () => {
     }
   };
 
+  const keyMap = {
+    Sick: "sick",
+    Casual: "casual",
+    "Comp off": "compOff",
+    Earned: "earned",
+  };
+
   return (
     <div className="team-lead-container">
       <h2 className="team-lead-title">Leave Application</h2>
@@ -65,7 +72,7 @@ const TeamLeadLeaveRequests = () => {
           {/* Leave Summary Boxes */}
           <div className="leave-summary-container">
             {["Sick", "Casual", "Comp off", "Earned"].map((type, idx) => {
-              const key = type.toLowerCase().replace(" ", "");
+              const key = keyMap[type];
               return (
                 <div
                   key={idx}
@@ -82,14 +89,6 @@ const TeamLeadLeaveRequests = () => {
             })}
           </div>
 
-          {/* Conditionally Render Form */}
-          {/* {selectedLeaveType && (
-        <TeamLeadLeaveRequestForm
-          leaveType={selectedLeaveType}
-          onClose={() => setSelectedLeaveType(null)}
-        />
-      )} */}
-
           {/* Leave Requests Table */}
           <table className="leave-requests-table">
             <thead>
@@ -99,6 +98,7 @@ const TeamLeadLeaveRequests = () => {
                 <th>Start Date</th>
                 <th>End Date</th>
                 <th>Reason(s)</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
@@ -109,6 +109,7 @@ const TeamLeadLeaveRequests = () => {
                   <td>{request.start_date}</td>
                   <td>{request.end_date}</td>
                   <td>{request.reason}</td>
+                  <td>{request.status}</td>
                 </tr>
               ))}
             </tbody>

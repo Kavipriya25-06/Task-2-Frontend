@@ -61,6 +61,7 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
         const result = await response.json();
         console.log("Leave submitted successfully:", result);
         alert("Leave Request Submitted Successfully!");
+        await patchLeaveAvailability(mappedLeaveType, formData.duration);
         onClose(); // Close form after successful submission
       } else {
         const errorData = await response.json();
@@ -70,6 +71,29 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
     } catch (error) {
       console.error("Error submitting leave request:", error);
       alert("An error occurred while submitting.");
+    }
+  };
+
+  const patchLeaveAvailability = async (leaveTypeKey, duration) => {
+    const patchURL = `${config.apiBaseURL}/leaves-available/by_employee/${user.employee_id}/`;
+
+    const payload = {
+      [leaveTypeKey]: -parseFloat(duration), // Deduct the requested duration
+    };
+
+    try {
+      const res = await fetch(patchURL, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        console.error("Leave availability update failed:", err);
+      }
+    } catch (err) {
+      console.error("Error patching leave availability:", err);
     }
   };
 
