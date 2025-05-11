@@ -1,4 +1,3 @@
-
 // src\pages\Manager\ManagerDashboard.jsx
 
 import { useState, useEffect } from "react";

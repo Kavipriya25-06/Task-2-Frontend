@@ -45,10 +45,11 @@ const TeamLeadLeaveRequests = () => {
   const fetchLeaveRequests = async () => {
     try {
       const response = await fetch(
-        `${config.apiBaseURL}/leave/requests?user=${user.id}`
+        `${config.apiBaseURL}/leaves-taken/by_employee/${user.employee_id}/`
       );
       const data = await response.json();
       setLeaveRequests(data);
+      console.log("Leave requests", data);
     } catch (err) {
       console.error("Error fetching leave requests", err);
     }
@@ -103,7 +104,7 @@ const TeamLeadLeaveRequests = () => {
             <tbody>
               {leaveRequests.map((request, idx) => (
                 <tr key={idx}>
-                  <td>{request.type}</td>
+                  <td>{request.leave_type}</td>
                   <td>{request.duration}</td>
                   <td>{request.start_date}</td>
                   <td>{request.end_date}</td>

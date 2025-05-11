@@ -323,8 +323,8 @@ const ManagerProjectView = () => {
                     {availableBuildings.map((b, i) => (
                       <div key={i} className="building-tile">
                         <div className="building-tile-small">
-                          {/* {console.log("building individual", b)} */}
-                          {b.building.building_title}
+                          {console.log("building individual", b)}
+                          {b.building?.building_title || b.building_title}
                         </div>
                         <div className="building-tile-small">
                           {b.building_hours} hrs

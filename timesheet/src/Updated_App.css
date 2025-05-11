@@ -1,7 +1,7 @@
 /* timesheet\src\App.css */
 
 * {
-  font-family: '', sans-serif;
+  font-family: "", sans-serif;
 }
 
 .container {
@@ -40,7 +40,6 @@
   background: #ff890a;
   width: 300px;
   height: 130px;
-  
 }
 
 .logo {
@@ -136,8 +135,8 @@ input {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-    /* flex-direction: row; */
-    /* or column, depending on layout */
+  /* flex-direction: row; */
+  /* or column, depending on layout */
   /* height: 578.4px; */
   /* height: 100vh; */
   height: 100%;
@@ -145,7 +144,6 @@ input {
 }
 
 .admin-page {
- 
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -173,7 +171,6 @@ input {
   display: flex;
 }
 
-
 .main-content {
   display: flex;
   flex: 1;
@@ -193,7 +190,7 @@ input {
   overflow: hidden;
   height: 100vh;
   /* position: fixed; */
-  
+
   /* height: 536px; */ /* Check here later Suriya, for screen height */
 }
 
@@ -225,8 +222,6 @@ input {
   /* overflow: hidden; */
   overflow-y: scroll;
   overflow-x: scroll;
-  
-  
 }
 
 .table-section2 {
@@ -242,7 +237,6 @@ input {
 }
 
 .form-group {
-  
   padding: 20px;
   width: 200px;
 }
@@ -355,7 +349,6 @@ table td {
   background: #a5e5a5;
 }
 
-
 html,
 body {
   height: 100%;
@@ -374,13 +367,11 @@ main {
   flex-direction: column;
   padding: 20px;
   overflow: hidden;
-  
+
   /* optional padding */
 }
 
-
 .bottom-bar {
-  
   height: 40px;
   background-color: #f5f5f5;
   display: flex;
@@ -395,7 +386,6 @@ main {
   flex-shrink: 0;
   font-size: 14px;
 }
-
 
 /* Dashboard tile container */
 .dashboard-tile-container {
@@ -417,7 +407,7 @@ main {
   height: 50px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
   padding: 30px;
-  text-align:center;
+  text-align: center;
   vertical-align: middle;
   font-weight: bold;
   cursor: pointer;
@@ -430,7 +420,6 @@ main {
   transform: translateY(-3px);
   background-color: #fdfdba;
 }
-
 
 /* HolidayCalendar.css */
 .calendar-wrapper {
@@ -585,7 +574,7 @@ main {
   font-weight: 600;
   border: none;
   border-radius: 12px;
- 
+
   cursor: pointer;
 }
 
@@ -606,8 +595,6 @@ main {
   border-radius: 12px;
   background-color: #f0f4ff;
 }
-
-
 
 /* Container and Layout */
 /* .add-employee-wrapper {
@@ -847,8 +834,6 @@ main {
   }
 }
 
-
-
 .tab-header {
   display: flex;
   gap: 10px;
@@ -903,8 +888,6 @@ main {
 .tab-content input[type="date"] {
   padding: 8px;
 }
-
-
 
 .individual-tabs {
   display: flex;
@@ -974,8 +957,6 @@ main {
   }
 }
 
-
-
 /* Project forms CSS */
 
 .project-container {
@@ -985,7 +966,7 @@ main {
   border-radius: 12px;
   padding: 30px 40px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
-  font-family: 'Segoe UI', sans-serif;
+  font-family: "Segoe UI", sans-serif;
 }
 
 .project-container h2 {
@@ -1126,7 +1107,6 @@ button.delete-building:hover {
   }
 }
 
-
 /* CreateProject.css */
 
 .create-project-container {
@@ -1253,14 +1233,6 @@ button.delete-building:hover {
   cursor: pointer;
   font-weight: bold;
 }
-
-
-
-
-
-
-
-
 
 /* === Project Form 4-Column Layout === */
 .project-form-container {

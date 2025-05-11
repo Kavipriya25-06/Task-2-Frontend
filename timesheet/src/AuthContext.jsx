@@ -29,7 +29,7 @@ const AuthProvider = ({ children }) => {
     return storedUser ? JSON.parse(storedUser) : null;
   }); // Stores user info (email and role)
 
-  const INACTIVITY_TIMEOUT = 1000 * 60 * 1000; // 1000 minutes
+  const INACTIVITY_TIMEOUT = 2 * 60 * 60 * 1000; // From right to left, 1000 milliseconds, 60 seconds, 60 minutes, 2 hours
   const inactivityTimer = useRef(null); // Store inactivity timer reference
 
   // Login function

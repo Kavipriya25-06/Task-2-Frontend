@@ -116,7 +116,7 @@ const ManagerLeaveApplication = () => {
       ) : (
         <ManagerLeaveRequestForm
           leaveType={selectedLeaveType}
-          onClose={() => setSelectedLeaveType(null)} 
+          onClose={() => setSelectedLeaveType(null)}
         />
       )}
     </div>

@@ -9,37 +9,18 @@ const ManagerTaskView = () => {
   const { task_assign_id } = useParams(); // from URL
   const [editMode, setEditMode] = useState(false); //  Add this at the top
   const [teamleadManager, setTeamleadManager] = useState([]);
-  const [buildingsAssign, setBuildingsAssign] = useState([]);
-  const [employees, setEmployees] = useState([]);
-  const [tasks, setTasks] = useState([]);
-  const [taskData, setTaskData] = useState([]);
+  const [taskData, setTaskData] = useState({});
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [availableEmployees, setAvailableEmployees] = useState([]);
-  const [selectedTasks, setSelectedTasks] = useState([]);
-  const [areas, setAreas] = useState([]);
   const [formData, setFormData] = useState({
-    project_title: "",
-    project_type: "",
+    employee: [],
+    attachments: [],
+    task_hours: "",
+    status: "",
+    priority: null,
+    comments: "",
     start_date: "",
-    estimated_hours: "",
-    project_description: "",
-    project_code: "",
-    subdivision: "",
-    discipline_code: "",
-    discipline: "",
-    area_of_work: [],
-  });
-  const [projectData, setProjectData] = useState({
-    project_title: "",
-    project_type: "",
-    start_date: "",
-    estimated_hours: "",
-    project_description: "",
-    project_code: "",
-    subdivision: "",
-    discipline_code: "",
-    discipline: "",
-    area_of_work: [],
+    end_date: "",
   });
 
   const handleChange = (e) => {
@@ -48,33 +29,28 @@ const ManagerTaskView = () => {
     console.log("Form data", formData);
   };
 
-  const handleAreaChange = (e) => {
-    const selected = Array.from(e.target.selectedOptions).map(
-      (opt) => opt.value
-    );
-    setFormData((prev) => ({ ...prev, area_of_work: selected }));
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const payload = {
       ...formData,
-      area_of_work: formData.area_of_work.map(Number),
-      created_by: user.employee_id,
+      employee: formData.employee,
+      status: "inprogress",
     };
 
     try {
-      const response = await fetch(`${config.apiBaseURL}/projects/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `${config.apiBaseURL}/tasks-assigned/${task_assign_id}/`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
 
       const data = await response.json();
       if (response.ok) {
         alert("Project created successfully!");
-        setFormData({ ...formData, project_title: "", project_code: "" });
       } else {
         console.error(data);
         alert(" Failed to create project");
@@ -82,45 +58,50 @@ const ManagerTaskView = () => {
     } catch (err) {
       console.error("Request error:", err);
     }
+    if (formData.attachments.length > 0) {
+      await uploadAttachments();
+    }
+    setEditMode(false);
+    fetchTaskAssignment(); // Re-fetch to reset form
   };
 
   useEffect(() => {
     fetchTeamleadManager();
-    fetchAreas();
-    fetchTasks();
     fetchTaskAssignment();
   }, []);
 
-  const fetchAreas = async () => {
-    try {
-      const res = await fetch(`${config.apiBaseURL}/area-of-work/`);
-      const data = await res.json();
-      setAreas(data);
-    } catch (error) {
-      console.error("Error fetching Area of work:", error);
+  const uploadAttachments = async () => {
+    for (let file of formData.attachments) {
+      const form = new FormData();
+      form.append("file", file);
+      form.append("task_assign", task_assign_id); // attach to correct task
+
+      try {
+        const res = await fetch(`${config.apiBaseURL}/attachments/`, {
+          method: "POST",
+          body: form,
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          console.error("Upload failed:", err);
+        }
+      } catch (err) {
+        console.error("Attachment upload error:", err);
+      }
     }
   };
 
   const fetchTeamleadManager = async () => {
     try {
       const response = await fetch(
-        `${config.apiBaseURL}/teamlead-and-managers/`
+        `${config.apiBaseURL}/emp-details/${user.employee_id}/`
       );
       const data = await response.json();
       setTeamleadManager(data);
       console.log("Team leads and managers", data);
     } catch (error) {
       console.error("Error fetching employee data:", error);
-    }
-  };
-
-  const fetchTasks = async () => {
-    try {
-      const res = await fetch(`${config.apiBaseURL}/tasks/`);
-      const data = await res.json();
-      setTasks(data);
-    } catch (err) {
-      console.error("Error fetching tasks:", err);
     }
   };
 
@@ -132,6 +113,17 @@ const ManagerTaskView = () => {
       const data = await response.json();
       setTaskData(data);
       setAvailableEmployees(data.employee);
+
+      setFormData({
+        employee: data.employee?.map((emp) => emp.employee_id) || [],
+        attachments: data.attachments,
+        task_hours: data.task_hours || "",
+        status: data.status || "",
+        priority: data.priority || "",
+        comments: data.comments || "",
+        start_date: data.start_date || "",
+        end_date: data.end_date || "",
+      });
       console.log("Task Assignment:", data);
     } catch (error) {
       console.error("Error fetching task assignment:", error);
@@ -146,17 +138,15 @@ const ManagerTaskView = () => {
     return <p>Loading...</p>;
   }
 
-  const project = taskData.building_assign.project_assign.project;
-  const building = taskData.building_assign.building;
+  const project = taskData.building_assign?.project_assign?.project;
+  const building = taskData.building_assign?.building;
   const task = taskData.task;
 
   return (
     <div className="create-project-container">
       <div className="project-header">
         <h2>Task details </h2>
-        {editMode ? (
-          <div></div>
-        ) : (
+        {!editMode && (
           <button
             type="edit"
             onClick={() => setEditMode(true)}
@@ -209,17 +199,22 @@ const ManagerTaskView = () => {
                         <input
                           type="checkbox"
                           value={emp.employee_id}
+                          checked={formData.employee.includes(emp.employee_id)}
                           onChange={(e) => {
                             const checked = e.target.checked;
+                            const empId = emp.employee_id;
                             if (checked) {
-                              setSelectedEmployees((prev) => [
+                              setFormData((prev) => ({
                                 ...prev,
-                                emp.employee_id,
-                              ]);
+                                employee: [...prev.employee, empId],
+                              }));
                             } else {
-                              setSelectedEmployees((prev) =>
-                                prev.filter((id) => id !== emp.employee_id)
-                              );
+                              setFormData((prev) => ({
+                                ...prev,
+                                employee: prev.employee.filter(
+                                  (id) => id !== empId
+                                ),
+                              }));
                             }
                           }}
                         />
@@ -239,6 +234,18 @@ const ManagerTaskView = () => {
               </div>
               <div className="project-form-group">
                 <label>Attachments</label>
+                {editMode && (
+                  <input
+                    type="file"
+                    multiple
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        attachments: Array.from(e.target.files),
+                      }))
+                    }
+                  />
+                )}
                 {task?.attachments ? (
                   <a
                     href={task.attachments}
@@ -257,11 +264,29 @@ const ManagerTaskView = () => {
             <div className="right-form-building-first">
               <div className="project-form-group-small">
                 <label>Start Date</label>
-                <p>{taskData?.start_date || ""}</p>
+                {editMode ? (
+                  <input
+                    type="date"
+                    name="start_date"
+                    value={formData.start_date}
+                    onChange={handleChange}
+                  />
+                ) : (
+                  <p>{taskData?.start_date || ""}</p>
+                )}
               </div>
               <div className="project-form-group-small">
                 <label>End Date</label>
-                <p>{taskData?.end_date || ""}</p>
+                {editMode ? (
+                  <input
+                    type="date"
+                    name="end_date"
+                    value={formData.end_date}
+                    onChange={handleChange}
+                  />
+                ) : (
+                  <p>{taskData?.end_date || ""}</p>
+                )}
               </div>
               <div className="project-form-group-small">
                 <label>Project Hours</label>
@@ -284,21 +309,59 @@ const ManagerTaskView = () => {
                 )}
               </div>
             </div>
-            <div className="right-form-second"></div>
+            <div className="right-form-second">
+              <div className="project-form-group">
+                <label>Priority</label>
+                {editMode ? (
+                  <select
+                    name="priority"
+                    value={formData.priority}
+                    onChange={handleChange}
+                  >
+                    <option value="">-- Select Priority --</option>
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                    <option value="Critical">Critical</option>
+                  </select>
+                ) : (
+                  <p>{taskData?.priority || ""}</p>
+                )}
+              </div>
+              <div className="project-form-group">
+                <label>Comments</label>
+                {editMode ? (
+                  <textarea
+                    name="comments"
+                    value={formData.comments}
+                    onChange={handleChange}
+                    rows={4}
+                    placeholder="Enter comments"
+                  />
+                ) : (
+                  <p>{taskData?.comments || ""}</p>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
-        {editMode ? (
+        {editMode && (
           <div className="form-buttons">
             <button type="submit" className="btn-green">
               Save
             </button>
-            <button type="reset" className="btn-red">
+            <button
+              type="button"
+              onClick={() => {
+                setEditMode(false);
+                fetchTaskAssignment(); // Re-fetch to reset form
+              }}
+              className="btn-red"
+            >
               Cancel
             </button>
           </div>
-        ) : (
-          <div></div>
         )}
       </form>
     </div>

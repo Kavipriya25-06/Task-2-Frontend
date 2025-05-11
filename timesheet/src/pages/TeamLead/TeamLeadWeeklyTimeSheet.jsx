@@ -9,59 +9,60 @@ const TeamLeadWeeklyTimeSheetEntry = () => {
   const { user } = useAuth();
   const employee_id = user.employee_id;
 
-  console.log("The employee id is",{employee_id});
-  console.log("the date is ",date)
-  
+  console.log("The employee id is", { employee_id });
+  console.log("the date is ", date);
 
-  const [rows, setRows] = useState([{ project: "", building: "", task: "", hours: "" }]);
+  const [rows, setRows] = useState([
+    { project: "", building: "", task: "", hours: "" },
+  ]);
   const [totalLoggedHours, setTotalLoggedHours] = useState(0);
 
   const getWeekRange = (inputDateStr) => {
     const inputDate = new Date(inputDateStr);
     const day = inputDate.getDay();
     const diffToMonday = day === 0 ? -6 : 1 - day;
-  
+
     const monday = new Date(inputDate);
     monday.setDate(inputDate.getDate() + diffToMonday);
-  
+
     const sunday = new Date(monday);
     sunday.setDate(monday.getDate() + 6);
-  
+
     const toISO = (d) => d.toISOString().slice(0, 10);
     return {
       startOfWeek: toISO(monday),
       endOfWeek: toISO(sunday),
     };
   };
-  
+
   const { startOfWeek, endOfWeek } = getWeekRange(date);
 
   //  Fetch total logged hours from biometric-weekly-task API
   useEffect(() => {
     if (!employee_id || !date) return;
-  
+
     const fetchWeeklyBiometricData = async () => {
       try {
         const response = await fetch(
           `${config.apiBaseURL}/biometric-weekly-task/${employee_id}/?today=${date}`
         );
         const data = await response.json();
-  
+
         console.log("Weekly biometric data:", data);
-  
+
         if (!Array.isArray(data) || data.length === 0) {
           console.warn("No biometric records found.");
           setTotalLoggedHours(0);
           return;
         }
-  
+
         //  Step 1: Group by date and get latest modified_on per date
         const latestPerDateMap = {};
-  
+
         data.forEach((record) => {
           const dateKey = record.date;
           const existing = latestPerDateMap[dateKey];
-  
+
           if (
             !existing ||
             new Date(record.modified_on) > new Date(existing.modified_on)
@@ -69,14 +70,14 @@ const TeamLeadWeeklyTimeSheetEntry = () => {
             latestPerDateMap[dateKey] = record;
           }
         });
-  
+
         //  Step 2: Sum only latest records per date
         let totalHours = 0;
         Object.values(latestPerDateMap).forEach((record) => {
           const duration = parseFloat(record.total_duration || "0");
           totalHours += isNaN(duration) ? 0 : duration;
         });
-  
+
         console.log("Calculated total logged hours:", totalHours);
         setTotalLoggedHours(totalHours);
       } catch (error) {
@@ -84,7 +85,7 @@ const TeamLeadWeeklyTimeSheetEntry = () => {
         setTotalLoggedHours(0);
       }
     };
-  
+
     fetchWeeklyBiometricData();
   }, [employee_id, date]);
 
@@ -179,4 +180,3 @@ const TeamLeadWeeklyTimeSheetEntry = () => {
 };
 
 export default TeamLeadWeeklyTimeSheetEntry;
-

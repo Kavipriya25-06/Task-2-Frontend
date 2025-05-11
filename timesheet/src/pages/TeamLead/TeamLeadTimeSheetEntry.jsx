@@ -8,7 +8,7 @@ import TeamLeadWeeklyTimeSheetEntry from "./TeamLeadWeeklyTimeSheet";
 const TeamLeadTimeSheetEntry = () => {
   const { user } = useAuth();
   const [calendarData, setCalendarData] = useState([]);
-  const [biometricData,setBiometricData] = useState([]);
+  const [biometricData, setBiometricData] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
@@ -116,7 +116,10 @@ const TeamLeadTimeSheetEntry = () => {
       const weekNumber = week.find((day) => day)?.week_of_year || "-";
       rows.push(
         <React.Fragment key={`week-${weekNumber}-${i}`}>
-          <div className="week-number" onClick={() => navigate(`createweekly/${monday}`)}>
+          <div
+            className="week-number"
+            onClick={() => navigate(`createweekly/${monday}`)}
+          >
             W-{weekNumber}
           </div>
           {week.map((entry, idx) =>
@@ -132,28 +135,38 @@ const TeamLeadTimeSheetEntry = () => {
                 <div
                   className="day-circle"
                   onClick={() => {
-                    const clickedDate = `${entry.year}-${String(entry.month).padStart(2, "0")}-${String(entry.day).padStart(2, "0")}`;
+                    const clickedDate = `${entry.year}-${String(
+                      entry.month
+                    ).padStart(2, "0")}-${String(entry.day).padStart(2, "0")}`;
                     navigate(`createdaily/${clickedDate}`);
                   }}
                   style={{ cursor: "pointer" }}
                 >
                   {/**  Show work_duration from biometric data */}
                   {(() => {
-                      const dateStr = `${entry.year}-${String(entry.month).padStart(2, "0")}-${String(entry.day).padStart(2, "0")}`;
-                      const dayRecords = biometricData.filter((b) => b.date === dateStr);
+                    const dateStr = `${entry.year}-${String(
+                      entry.month
+                    ).padStart(2, "0")}-${String(entry.day).padStart(2, "0")}`;
+                    const dayRecords = biometricData.filter(
+                      (b) => b.date === dateStr
+                    );
 
-                      let latestRecord = null;
+                    let latestRecord = null;
 
-                      dayRecords.forEach((record) => {
-                          if (!latestRecord || new Date(record.modified_on) > new Date(latestRecord.modified_on)) {
-                              latestRecord = record;
-                          }
-                      });
+                    dayRecords.forEach((record) => {
+                      if (
+                        !latestRecord ||
+                        new Date(record.modified_on) >
+                          new Date(latestRecord.modified_on)
+                      ) {
+                        latestRecord = record;
+                      }
+                    });
 
-                      return latestRecord ? latestRecord.total_duration : "";
+                    return latestRecord ? latestRecord.total_duration : "";
                   })()}
                 </div>
-                
+
                 {entry.notes && (
                   <div className="holiday-note1">{entry.notes}</div>
                 )}

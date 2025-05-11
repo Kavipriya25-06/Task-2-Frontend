@@ -12,34 +12,11 @@ const ManagerBuildingView = () => {
   const [teamleadManager, setTeamleadManager] = useState([]);
   const [availableTeamleadManager, setAvailableTeamleadManager] = useState([]);
   const [buildingsAssign, setBuildingsAssign] = useState([]);
-  const [employees, setEmployees] = useState([]);
   const [tasks, setTasks] = useState([]);
-  const [selectedEmployees, setSelectedEmployees] = useState([]);
-  const [selectedTasks, setSelectedTasks] = useState([]);
-  const [areas, setAreas] = useState([]);
+  const [taskSelections, setTaskSelections] = useState([]);
+  const [taskPopupVisible, setTaskPopupVisible] = useState(false);
   const [formData, setFormData] = useState({
-    project_title: "",
-    project_type: "",
-    start_date: "",
-    estimated_hours: "",
-    project_description: "",
-    project_code: "",
-    subdivision: "",
-    discipline_code: "",
-    discipline: "",
-    area_of_work: [],
-  });
-  const [projectData, setProjectData] = useState({
-    project_title: "",
-    project_type: "",
-    start_date: "",
-    estimated_hours: "",
-    project_description: "",
-    project_code: "",
-    subdivision: "",
-    discipline_code: "",
-    discipline: "",
-    area_of_work: [],
+    building_hours: "",
   });
 
   const handleChange = (e) => {
@@ -48,86 +25,79 @@ const ManagerBuildingView = () => {
     console.log("Form data", formData);
   };
 
-  const handleAreaChange = (e) => {
-    const selected = Array.from(e.target.selectedOptions).map(
-      (opt) => opt.value
-    );
-    setFormData((prev) => ({ ...prev, area_of_work: selected }));
-  };
+  const handleUpdate = async () => {
+    const buildingAssignPayload = {
+      building_hours: formData.building_hours,
+      employee: availableTeamleadManager.map((e) => e.employee_id),
+      status: "inprogress",
+    };
 
-  const handleUpdate = async (building_assign_id) => {
     try {
       const response = await fetch(
-        `${config.apiBaseURL}/null/${building_assign_id}/`,
+        `${config.apiBaseURL}/buildings-assigned/${building_assign_id}/`,
         {
-          method: "PUT", // or PATCH
+          method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(buildingAssignPayload),
         }
       );
 
       if (response.ok) {
-        alert("Project updated!");
-        setEditMode(false);
-        // fetchProjectData(); // refresh
+        console.log("Building updated!");
       } else {
         alert("Failed to update project");
       }
     } catch (err) {
       console.error("Update error:", err);
     }
-  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    for (let task of taskSelections) {
+      const taskPayload = {
+        task: task.task_id,
+        building_assign: building_assign_id,
+        task_hours: task.task_hours || "0", // default or collect via UI
+        status: "inprogress",
+        comments: "",
+        start_date: task.start_date || null,
+        end_date: task.end_date || null,
+        employee: task.employee || [],
+      };
 
-    const payload = {
-      ...formData,
-      area_of_work: formData.area_of_work.map(Number),
-      created_by: user.employee_id,
-    };
+      const method = task.task_assign_id ? "PATCH" : "POST";
+      const url = task.task_assign_id
+        ? `${config.apiBaseURL}/tasks-assigned/${task.task_assign_id}/`
+        : `${config.apiBaseURL}/tasks-assigned/`;
 
-    try {
-      const response = await fetch(`${config.apiBaseURL}/projects/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        alert("Project created successfully!");
-        setFormData({ ...formData, project_title: "", project_code: "" });
-      } else {
-        console.error(data);
-        alert(" Failed to create project");
+      try {
+        const response = await fetch(url, {
+          method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(taskPayload),
+        });
+        if (response.ok) {
+          console.log("Building updated!");
+          setEditMode(false);
+          // fetchProjectData(); // refresh
+        } else {
+          alert("Failed to update project");
+        }
+      } catch (err) {
+        console.error("Update error:", err);
       }
-    } catch (err) {
-      console.error("Request error:", err);
     }
+    fetchBuildingsAssign(); // refresh state
   };
 
   useEffect(() => {
     fetchTeamleadManager();
-    fetchAreas();
     fetchTasks();
     fetchBuildingsAssign();
   }, []);
 
-  const fetchAreas = async () => {
-    try {
-      const res = await fetch(`${config.apiBaseURL}/area-of-work/`);
-      const data = await res.json();
-      setAreas(data);
-    } catch (error) {
-      console.error("Error fetching Area of work:", error);
-    }
-  };
-
   const fetchTeamleadManager = async () => {
     try {
       const response = await fetch(
-        `${config.apiBaseURL}/teamlead-and-managers/`
+        `${config.apiBaseURL}/emp-details/${user.employee_id}/`
       );
       const data = await response.json();
       setTeamleadManager(data);
@@ -144,7 +114,22 @@ const ManagerBuildingView = () => {
       );
       const data = await response.json();
       setBuildingsAssign(data);
+      setFormData({ building_hours: data.building_hours || "" });
       setAvailableTeamleadManager(data.employee);
+
+      // Merge existing tasks into selection state
+      const mappedExistingTasks = data.tasks.map((t) => ({
+        task_assign_id: t.task_assign_id,
+        task_id: t.task.task_id,
+        task_title: t.task.task_title,
+        task_hours: t.task_hours,
+        start_date: t.start_date,
+        end_date: t.end_date,
+        employee: t.employee,
+        isNew: false, // mark as pre-existing
+      }));
+      setTaskSelections(mappedExistingTasks);
+
       console.log("Buildings", data);
       console.log("Projects", data.project_assign);
     } catch (error) {
@@ -162,6 +147,60 @@ const ManagerBuildingView = () => {
     }
   };
 
+  const handleTaskToggle = (task) => {
+    const already = taskSelections.find((t) => t.task_id === task.task_id);
+    if (already) {
+      setTaskSelections((prev) =>
+        prev.filter((t) => t.task_id !== task.task_id)
+      );
+    } else {
+      setTaskSelections((prev) => [
+        ...prev,
+        {
+          task_id: task.task_id,
+          task_title: task.task_title,
+          task_hours: "",
+          isNew: true,
+          start_date: null,
+          end_date: null,
+        },
+      ]);
+    }
+  };
+
+  const updateTaskHours = (task_id, hours) => {
+    setTaskSelections((prev) =>
+      prev.map((t) => (t.task_id === task_id ? { ...t, task_hours: hours } : t))
+    );
+  };
+
+  const updateTaskDates = (task_id, field, value) => {
+    setTaskSelections((prev) =>
+      prev.map((t) => (t.task_id === task_id ? { ...t, [field]: value } : t))
+    );
+  };
+
+  const saveTaskPopup = () => {
+    const invalid = taskSelections.find(
+      (t) => !t.task_hours || parseFloat(t.task_hours) <= 0
+    );
+    if (invalid) {
+      alert(`Please enter valid hours for task "${invalid.task_title}".`);
+      return;
+    }
+
+    // Avoid duplication
+    const uniqueTasks = taskSelections.reduce((acc, curr) => {
+      if (!acc.find((t) => t.task_id === curr.task_id)) {
+        acc.push(curr);
+      }
+      return acc;
+    }, []);
+
+    setTaskSelections(uniqueTasks);
+    setTaskPopupVisible(false);
+  };
+
   if (!buildingsAssign || !buildingsAssign.project_assign) {
     return <p>Loading...</p>;
   }
@@ -175,9 +214,7 @@ const ManagerBuildingView = () => {
     <div className="create-project-container">
       <div className="project-header">
         <h2>Building {buildingsAssign.building?.building_title}</h2>
-        {editMode ? (
-          <div></div>
-        ) : (
+        {!editMode && (
           <button
             type="edit"
             onClick={() => setEditMode(true)}
@@ -217,28 +254,26 @@ const ManagerBuildingView = () => {
                 <label>Assign Task</label>
                 {editMode ? (
                   <div className="select-container">
-                    {tasks.map((task) => (
-                      <div key={task.task_id}>
-                        <input
-                          type="checkbox"
-                          value={task.task_id}
-                          onChange={(e) => {
-                            const checked = e.target.checked;
-                            if (checked) {
-                              setSelectedTasks((prev) => [
-                                ...prev,
-                                task.task_id,
-                              ]);
-                            } else {
-                              setSelectedTasks((prev) =>
-                                prev.filter((id) => id !== task.task_id)
-                              );
-                            }
-                          }}
-                        />
-                        {task.task_title}
+                    {taskSelections?.map((t) => (
+                      <div key={t.task_id} className="task-tile">
+                        <div
+                          onClick={() => taskClick(t.task_id)}
+                          className="building-tile-small"
+                        >
+                          {t.task_title}
+                        </div>
+                        <div className="building-tile-small">
+                          {t.task_hours} hours
+                        </div>
                       </div>
                     ))}
+                    <button
+                      type="button"
+                      onClick={() => setTaskPopupVisible(true)}
+                      className="btn-green"
+                    >
+                      +
+                    </button>
                   </div>
                 ) : (
                   <div className="select-container">
@@ -248,7 +283,7 @@ const ManagerBuildingView = () => {
                           onClick={() => taskClick(t.task_assign_id)}
                           className="building-tile-small"
                         >
-                          {t.task.task_code}
+                          {t.task.task_title}
                         </div>
                         <div className="building-tile-small">
                           {t.task_hours} hours
@@ -335,27 +370,81 @@ const ManagerBuildingView = () => {
         </div>
 
         <div className="form-buttons">
-          {editMode ? (
+          {editMode && (
             <>
-              <button
-                type="submit"
-                onClick={handleUpdate}
-                className="btn-green"
-              >
+              <button onClick={handleUpdate} className="btn-green">
                 Save
               </button>
-              <button
-                type="reset"
-                onClick={() => setEditMode(false)}
-                className="btn-red"
-              >
+              <button onClick={() => setEditMode(false)} className="btn-red">
                 Cancel
               </button>
             </>
-          ) : (
-            <div></div>
           )}
         </div>
+        {editMode && taskPopupVisible && (
+          <div className="popup">
+            <h4>Select Tasks & Enter Hours</h4>
+            {tasks.map((task) => {
+              const selected = taskSelections.find(
+                (t) => t.task_id === task.task_id
+              );
+              return (
+                <div key={task.task_id} style={{ marginBottom: "10px" }}>
+                  <input
+                    type="checkbox"
+                    checked={!!selected}
+                    onChange={() => handleTaskToggle(task)}
+                  />
+                  {task.task_title}
+                  {selected && (
+                    <>
+                      <input
+                        type="number"
+                        value={selected.task_hours}
+                        placeholder="Hours"
+                        style={{ marginLeft: "10px" }}
+                        onChange={(e) =>
+                          updateTaskHours(task.task_id, e.target.value)
+                        }
+                      />
+                      <input
+                        type="date"
+                        value={selected.start_date || ""}
+                        onChange={(e) =>
+                          updateTaskDates(
+                            task.task_id,
+                            "start_date",
+                            e.target.value
+                          )
+                        }
+                      />
+                      <input
+                        type="date"
+                        value={selected.end_date || ""}
+                        onChange={(e) =>
+                          updateTaskDates(
+                            task.task_id,
+                            "end_date",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </>
+                  )}
+                </div>
+              );
+            })}
+            <button onClick={saveTaskPopup} className="btn-green">
+              Done
+            </button>
+            <button
+              onClick={() => setTaskPopupVisible(false)}
+              className="btn-red"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
