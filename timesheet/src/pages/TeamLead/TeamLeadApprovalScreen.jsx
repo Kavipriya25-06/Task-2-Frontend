@@ -216,15 +216,20 @@ useEffect(() => {
       {/* <h3>Daily Timesheet Entry</h3> */}
       <div className="timesheet-info">
         <p>
-          <strong>Employee ID:</strong> {employee_id}
+          <strong>Employee ID:</strong><br/>
+           {employee_id}
         </p>
         <p>
-          <strong>Date:</strong> {date}
+          <strong>Date:</strong><br/>
+           {date}
         </p>
-        <p>Intime: {attendanceDetails.in_time || "--:--"}</p>
-        <p>Outtime: {attendanceDetails.out_time || "--:--"}</p>
+        <p> <strong>Intime:</strong><br/>
+         {attendanceDetails.in_time || "--:--"}</p>
+        <p><strong>Outtime:</strong><br/>
+         {attendanceDetails.out_time || "--:--"}</p>
         <p>
-          Total logged hours: {attendanceDetails.total_duration || "0.00"} hrs
+          <strong>Total logged hours: </strong><br/>
+          {attendanceDetails.total_duration || "0.00"} hrs
         </p>
       </div>
 

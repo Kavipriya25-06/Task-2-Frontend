@@ -107,7 +107,7 @@ const TeamLeadTimeSheetEntry = () => {
     const filledData = new Array(offset).fill(null).concat(monthData);
 
     const rows = [];
-    const status = "save"; // e.g., "Pending"
+    // const status = "save"; // e.g., "Pending"
     for (let i = 0; i < filledData.length; i += 7) {
       const week = filledData.slice(i, i + 7);
       const firstValidDay = week.find((day) => day && day.date);
