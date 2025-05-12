@@ -220,14 +220,14 @@ const ManagerBuildingView = () => {
             onClick={() => setEditMode(true)}
             className="btn-orange"
           >
-            Edit
+            <FaEdit className="edit-icon" />
           </button>
         )}
       </div>
       <div>
         <div className="input-elements">
           <div className="left-form">
-            <div className="left-form-first">
+            <div className="left-form-firsts">
               <div className="project-form-group">
                 <label>Project Code</label>
                 <p>{project?.project_code || ""}</p>
@@ -245,9 +245,9 @@ const ManagerBuildingView = () => {
                 <p>{buildingsAssign.building?.building_title}</p>
               </div>
             </div>
-            <div className="left-form-second">
+            <div className="left-form-seconds">
               <div className="project-form-group">
-                <label>Building Desciption</label>
+                <label className="description">Building Description</label>
                 <p>{buildingsAssign.building?.building_description}</p>
               </div>
               <div className="project-form-group">
@@ -285,7 +285,7 @@ const ManagerBuildingView = () => {
                         >
                           {t.task.task_title}
                         </div>
-                        <div className="building-tile-small">
+                        <div className="building-tile-smalll">
                           {t.task_hours} hours
                         </div>
                       </div>
@@ -296,7 +296,7 @@ const ManagerBuildingView = () => {
             </div>
           </div>
           <div className="right-form">
-            <div className="right-form-building-first">
+            <div className="right-form-building-firsts">
               <div className="project-form-group-small">
                 <label>Start Date</label>
                 <p>{project?.start_date || ""}</p>
@@ -331,6 +331,7 @@ const ManagerBuildingView = () => {
                         {employee.employee_name} - {employee.designation}
                         <input
                           type="checkbox"
+                           className="larger-checkbox"
                           value={employee.employee_id}
                           checked={availableTeamleadManager.some(
                             (e) => e.employee_id === employee.employee_id
@@ -372,10 +373,14 @@ const ManagerBuildingView = () => {
         <div className="form-buttons">
           {editMode && (
             <>
-              <button onClick={handleUpdate} className="btn-green">
+              <button
+                type="submit"
+                onClick={handleUpdate}
+                className="btn-save"
+              >
                 Save
               </button>
-              <button onClick={() => setEditMode(false)} className="btn-red">
+              <button onClick={() => setEditMode(false)} className="btn-cancel">
                 Cancel
               </button>
             </>

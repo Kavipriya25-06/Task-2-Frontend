@@ -125,11 +125,11 @@ const HRHolidayCalendar = () => {
   return (
     <div className="holiday-calendar">
       <div className="calendar-header">
-        <button onClick={handlePrevMonth}>&lt;</button>
+        <button className="left" onClick={handlePrevMonth}>&lt;</button>
         <h3>
           {monthName} {selectedYear}
         </h3>
-        <button onClick={handleNextMonth}>&gt;</button>
+        <button className="right" onClick={handleNextMonth}>&gt;</button>
         {/* Let this be here for now */}
         {/* <button onClick={handlePrevYear} className="calendar-nav-btn">
           ◀ Year

@@ -17,7 +17,39 @@ const TeamLeadApprovalScreen = () => {
     rejected: false,
   });
 
-  useEffect(() => {
+  
+  // useEffect(() => {
+  //   const fetchTimesheetData = async () => {
+  //     try {
+  //       const response = await fetch(`${config.apiBaseURL}/timesheet-employee-daily/${employee_id}/?today=${date}`);
+  //       const data = await response.json();
+
+  //       // Filter records matching employee_id and date
+  //       // const records = data.filter(
+  //       //   (entry) => entry.employee === employee_id && entry.date === date
+  //       // );
+  //       const records = data
+
+  //       if (records.length > 0) {
+  //         // Extract start_time, end_time, total_duration
+  //         // For total_duration, we'll sum up task_hours
+  //         let totalHours = 0;
+  //         let inTime = records[0].start_time || "--:--";
+  //         let outTime = records[0].end_time || "--:--";
+
+
+  //         setStatus({
+  //           approved: records[0].approved,
+  //           rejected: records[0].rejected
+  //         });
+
+
+  //         const timesheetRows = records.map((entry) => {
+  //           const project =
+  //             entry.task_assign?.building_assign?.project_assign?.project
+  //               ?.project_title || "";
+
+useEffect(() => {
     const fetchBiometricTaskData = async () => {
       try {
         const response = await fetch(
@@ -51,7 +83,6 @@ const TeamLeadApprovalScreen = () => {
               const project =
                 entry.task_assign?.building_assign?.project_assign?.project
                   ?.project_title || "";
-
               const task = entry.task_assign?.task?.task_title || "";
 
               const hours = parseFloat(entry.task_hours || "0");
@@ -215,6 +246,13 @@ const TeamLeadApprovalScreen = () => {
           ))}
         </tbody>
       </table>
+      {/* <div
+        style={{ fontSize: "24px", cursor: "pointer", marginTop: "10px" }}
+        onClick={handleAddRow}
+      >
+        +
+      </div> */}
+
 
       <div className="button-container">
         {status.approved ? ( //  CHANGE: conditionally render approved button
@@ -227,12 +265,8 @@ const TeamLeadApprovalScreen = () => {
           </button>
         ) : (
           <>
-            <button className="save-button2" onClick={handleReject}>
-              Reject
-            </button>
-            <button className="submit-button2" onClick={handleApprove}>
-              Approve
-            </button>
+            <button className="submit-button2" onClick={handleApprove}>Approve</button>
+            <button className="save-button2" onClick={handleReject}>Reject</button>
           </>
         )}
       </div>

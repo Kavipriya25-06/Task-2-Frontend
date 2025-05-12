@@ -83,7 +83,7 @@ const ManagerProjects = () => {
                 </button>
               </div>
             </div>
-            <table>
+            <table className="holiday-table">
               <thead>
                 <tr>
                   <th>Project code</th>
@@ -131,7 +131,7 @@ const ManagerProjects = () => {
                 </button>
               </div>
             </div>
-            <table>
+            <table className="holiday-table">
               <thead>
                 <tr>
                   <th>Building code</th>
@@ -178,7 +178,7 @@ const ManagerProjects = () => {
                 </button>
               </div>
             </div>
-            <table>
+            <table className="holiday-table">
               <thead>
                 <tr>
                   <th>Task code</th>

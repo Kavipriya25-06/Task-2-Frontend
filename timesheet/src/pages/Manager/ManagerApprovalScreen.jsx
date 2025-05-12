@@ -289,12 +289,8 @@ const ManagerApprovalScreen = () => {
           </button>
         ) : (
           <>
-            <button className="save-button2" onClick={handleReject}>
-              Reject
-            </button>
-            <button className="submit-button2" onClick={handleApprove}>
-              Approve
-            </button>
+            <button className="submit-button2" onClick={handleApprove}>Approve</button>
+            <button className="save-button2" onClick={handleReject}>Reject</button>
           </>
         )}
       </div>

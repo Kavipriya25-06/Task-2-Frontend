@@ -7,6 +7,9 @@ import { cleanFormData } from "../../utils/cleanFormData";
 import cameraIcon from "../../assets/camera.png";
 import userPlaceholder from "../../assets/user.png";
 import plusIcon from "../../assets/plus.png";
+
+import { FaEdit } from "react-icons/fa";
+
 import { useAttachmentManager } from "../../constants/useAttachmentManager";
 import { useEmployeeFormHandler } from "../../constants/useEmployeeFormHandler";
 import { defaultEmployeeFormData } from "../../constants/defaultEmployeeFormData";
@@ -23,6 +26,8 @@ const EditEmployee = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(0);
+
+  const [isEditMode, setIsEditMode] = useState(false);
   const [managers, setManagers] = useState([]);
   const [hierarchy, setHierarchy] = useState({});
 
@@ -145,6 +150,10 @@ const EditEmployee = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isEditMode) return;
+
+    const updatedEmployee = { ...formData };
+    console.log(updatedEmployee);
 
     const fieldsToNullify = [
       "dob",
@@ -259,6 +268,7 @@ const EditEmployee = () => {
         return (
           <div className="tab-content">
             <div className="profile-picture-wrapper">
+              <h4>Profile Photo: </h4>
               <img
                 src={
                   profilePicture
@@ -344,6 +354,25 @@ const EditEmployee = () => {
                 })}
               </ul>
 
+              {/* <div className="individual-tabs">
+              <label>Employee Code</label>
+              {isEditMode ? (
+              <input
+                // style={{ marginTop: "10px" }}
+                name="employee_code"
+                value={formData.employee_code}
+                onChange={handleChange}
+                placeholder="Employee Code"
+                disabled={!isEditMode}
+                required
+              />
+            ) : (
+              <p className="data">{formData.employee_code}</p>
+            )}
+            </div> */}
+              {/* <div className="individual-tabs">
+              <label>Employee Name</label> */}
+              {/* {isEditMode ? (
               {newAttachments.length > 0 && (
                 <>
                   <h5>New Attachments (to be uploaded):</h5>
@@ -364,7 +393,7 @@ const EditEmployee = () => {
                     ))}
                   </ul>
                 </>
-              )}
+              )} */}
 
               {/* Hidden file input for new attachments */}
               <input
@@ -393,7 +422,25 @@ const EditEmployee = () => {
 
             <div className="individual-tabs">
               <label>Employee Code</label>
+<<<<<<< HEAD
               <div className="uneditable">{formData.employee_code || "-"}</div>
+=======
+              {editMode ? (
+                <input
+                  // style={{ marginTop: "10px" }}
+                  name="employee_code"
+                  value={formData.employee_code}
+                  onChange={handleChange}
+                  placeholder="Employee Code"
+                  disabled={!editMode}
+                  required
+                />
+              ) : (
+                <div className="uneditable">
+                  {formData.employee_code || "-"}
+                </div>
+              )}
+>>>>>>> origin/dev
             </div>
             <div className="individual-tabs">
               <label>Employee Name</label>
@@ -411,8 +458,21 @@ const EditEmployee = () => {
                 </div>
               )}
             </div>
+
             <div className="individual-tabs">
               <label>Father's Name</label>
+
+              {/* {isEditMode ? (
+              <input
+                name="fathers_name"
+                value={formData.fathers_name}
+                onChange={handleChange}
+                placeholder="Father's Name"
+                disabled={!isEditMode}
+              />
+              ) : (
+                <p className="data">{formData.fathers_name}</p> */}
+
               {editMode ? (
                 <input
                   name="fathers_name"
@@ -426,6 +486,18 @@ const EditEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>Gender</label>
+
+              {/* {isEditMode ? (
+              <input
+                name="gender"
+                value={formData.gender}
+                onChange={handleChange}
+                placeholder="Gender"
+                disabled={!isEditMode}
+              />
+              ) : (
+                <p className="data">{formData.gender}</p> */}
+
               {editMode ? (
                 <select
                   name="gender"
@@ -443,6 +515,32 @@ const EditEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>Date of Birth</label>
+
+              {/* {isEditMode ? (
+              <input
+                type="date"
+                name="dob"
+                value={formData.dob}
+                onChange={handleChange}
+                disabled={!isEditMode}
+              />
+            ) : (
+              <p className="data">{formData.dob}</p>
+            )}
+            </div>
+            <div className="individual-tabs">
+              <label>Date of joining</label>
+              {isEditMode ? (
+              <input
+                type="date"
+                name="doj"
+                value={formData.doj}
+                onChange={handleChange}
+                disabled={!isEditMode}
+              />
+              ) : (
+                <p className="data">{formData.doj}</p> */}
+
               {editMode ? (
                 <input
                   type="date"
@@ -469,6 +567,32 @@ const EditEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>Personal Email</label>
+
+              {/* {isEditMode ? (
+              <input
+                name="personal_email"
+                value={formData.personal_email}
+                onChange={handleChange}
+                placeholder="Personal Email"
+                disabled={!isEditMode}
+              />
+            ) : (
+              <p className="data">{formData.personal_email}</p>
+            )}
+            </div>
+            <div className="individual-tabs">
+              <label>Phone Number</label>
+              {isEditMode ? (
+              <input
+                name="contact_number"
+                value={formData.contact_number}
+                onChange={handleChange}
+                placeholder="Phone Number"
+                disabled={!isEditMode}
+              />
+              ) : (
+                <p className="data">{formData.contact_number}</p> */}
+
               {editMode ? (
                 <input
                   name="personal_email"
@@ -507,6 +631,32 @@ const EditEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>Aadhaar</label>
+              {/* 
+              {isEditMode ? (
+              <input
+                name="aadhaar_number"
+                value={formData.aadhaar_number}
+                onChange={handleChange}
+                placeholder="Aadhaar"
+                disabled={!isEditMode}
+              />
+            ) : (
+              <p className="data">{formData.aadhaar_number}</p>
+            )}
+            </div>
+            <div className="individual-tabs">
+              <label>PAN Number</label>
+              {isEditMode ? (
+              <input
+                name="PAN"
+                value={formData.PAN}
+                onChange={handleChange}
+                placeholder="PAN Number"
+                disabled={!isEditMode}
+              />
+              ) : (
+                <p className="data">{formData.PAN}</p> */}
+
               {editMode ? (
                 <input
                   name="aadhaar_number"
@@ -543,6 +693,30 @@ const EditEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>UAN</label>
+              {/* {isEditMode ? (
+              <input
+                name="UAN"
+                value={formData.UAN}
+                onChange={handleChange}
+                placeholder="UAN"
+                disabled={!isEditMode}
+              />
+            ) : (
+              <p className="data">{formData.UAN}</p>
+            )}
+            </div>
+            <div className="individual-tabs">
+              <label>PF Number</label>
+              {isEditMode ? (
+              <input
+                name="pf_number"
+                value={formData.pf_number}
+                onChange={handleChange}
+                placeholder="PF Number"
+                disabled={!isEditMode}
+              />
+              ) : (
+                <p className="data">{formData.pf_number}</p> */}
               {editMode ? (
                 <input
                   name="UAN"
@@ -577,6 +751,30 @@ const EditEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>ESI Number</label>
+              {/* {isEditMode ? (
+              <input
+                name="esi_number"
+                value={formData.esi_number}
+                onChange={handleChange}
+                placeholder="ESI Number"
+                disabled={!isEditMode}
+              />
+            ) : (
+              <p className="data">{formData.esi_number}</p>
+            )}
+            </div>
+            <div className="individual-tabs">
+              <label>Passport Number</label>
+              {isEditMode ? (
+              <input
+                name="passport_number"
+                value={formData.passport_number}
+                onChange={handleChange}
+                placeholder="Passport Number"
+                disabled={!isEditMode}
+              />
+              ) : (
+                <p className="data">{formData.passport_number}</p> */}
               {editMode ? (
                 <input
                   name="esi_number"
@@ -613,6 +811,16 @@ const EditEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>Passport validity</label>
+              {/* {isEditMode ? (
+              <input
+                type="date"
+                name="passport_validity"
+                value={formData.passport_validity}
+                onChange={handleChange}
+                disabled={!isEditMode}
+              />
+              ) : (
+                <p className="data">{formData.passport_validity}</p> */}
               {editMode ? (
                 <input
                   type="date"
@@ -628,6 +836,30 @@ const EditEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>Status</label>
+              {/* {isEditMode ? (
+              <input
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                placeholder="Status"
+                disabled={!isEditMode}
+              />
+            ) : (
+              <p className="data">{formData.status}</p>
+            )}
+            </div>
+            <div className="individual-tabs">
+              <label>Permanent Address</label>
+              {isEditMode ? (
+              <textarea
+                name="permanent_address"
+                value={formData.permanent_address}
+                onChange={handleChange}
+                placeholder="Permanent Address"
+                disabled={!isEditMode}
+              />
+              ) : (
+                <p className="data">{formData.permanent_address}</p> */}
               {editMode ? (
                 <input
                   name="status"
@@ -649,13 +881,37 @@ const EditEmployee = () => {
                   placeholder="Permanent Address"
                 />
               ) : (
-                <div className="uneditable-textarea">
+                <div className="uneditable">
                   {formData.permanent_address || "-"}
                 </div>
               )}
             </div>
             <div className="individual-tabs">
               <label>Local Address</label>
+              {/* {isEditMode ? (
+              <textarea
+                name="local_address"
+                value={formData.local_address}
+                onChange={handleChange}
+                placeholder="Current Address"
+                disabled={!isEditMode}
+              />
+            ) : (
+              <p className="data">{formData.local_address}</p>
+            )}
+            </div>
+            <div className="individual-tabs">
+              <label>Remarks</label>
+              {isEditMode ? (
+              <textarea
+                name="remarks"
+                value={formData.remarks}
+                onChange={handleChange}
+                placeholder="Remarks"
+                disabled={!isEditMode}
+              />
+              ) : (
+                <p className="data">{formData.remarks}</p> */}
               {editMode ? (
                 <textarea
                   name="local_address"
@@ -664,7 +920,7 @@ const EditEmployee = () => {
                   placeholder="Current Address"
                 />
               ) : (
-                <div className="uneditable-textarea">
+                <div className="uneditable">
                   {formData.local_address || "-"}
                 </div>
               )}
@@ -679,9 +935,7 @@ const EditEmployee = () => {
                   placeholder="Remarks"
                 />
               ) : (
-                <div className="uneditable-textarea">
-                  {formData.remarks || "-"}
-                </div>
+                <div className="uneditable">{formData.remarks || "-"}</div>
               )}
             </div>
           </div>
@@ -691,6 +945,31 @@ const EditEmployee = () => {
           <div className="tab-content">
             <div className="individual-tabs">
               <label>Employment Type</label>
+              {/* {isEditMode ? (
+              <input
+                name="employment_type"
+                value={formData.employment_type}
+                onChange={handleChange}
+                placeholder="Employment Type"
+                disabled={!isEditMode}
+              />
+            ) : (
+              <p className="data">{formData.employment_type}</p>
+            )}
+            </div>
+            <div className="individual-tabs">
+              <label>Designation</label>
+              {isEditMode ? (
+              <input
+                name="designation"
+                value={formData.designation}
+                onChange={handleChange}
+                placeholder="Designation"
+                disabled={!isEditMode}
+              />
+              ) : (
+                <p className="data">{formData.designation}</p> */}
+
               {editMode ? (
                 <input
                   name="employment_type"
@@ -719,6 +998,31 @@ const EditEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>Department</label>
+              {/* {isEditMode ? (
+              <input
+                name="department"
+                value={formData.department}
+                onChange={handleChange}
+                placeholder="Department"
+                disabled={!isEditMode}
+              />
+            ) : (
+              <p className="data">{formData.department}</p>
+            )}
+            </div>
+            <div className="individual-tabs">
+              <label>Qualification</label>
+              {isEditMode ? (
+              <input
+                name="qualification"
+                value={formData.qualification}
+                onChange={handleChange}
+                placeholder="Qualification"
+                disabled={!isEditMode}
+              />
+              ) : (
+                <p className="data">{formData.qualification}</p> */}
+
               {editMode ? (
                 <input
                   name="department"
@@ -747,6 +1051,32 @@ const EditEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>Year of Passing</label>
+              {/* {isEditMode ? (
+              <input
+                type="number"
+                name="year_of_passing"
+                value={formData.year_of_passing}
+                onChange={handleChange}
+                placeholder="Year of Passing"
+                disabled={!isEditMode}
+              />
+            ) : (
+              <p className="data">{formData.year_of_passing}</p>
+            )}
+            </div>
+            <div className="individual-tabs">
+              <label>Previous Company Name</label>
+              {isEditMode ? (
+              <input
+                name="previous_company_name"
+                value={formData.previous_company_name}
+                onChange={handleChange}
+                placeholder="Previous Company Name"
+                disabled={!isEditMode}
+              />
+              ) : (
+                <p className="data">{formData.previous_company_name}</p> */}
+
               {editMode ? (
                 <input
                   type="number"
@@ -816,6 +1146,32 @@ const EditEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>Arris Experience</label>
+              {/* {isEditMode ? (
+              <input
+                type="number"
+                name="arris_experience"
+                value={formData.arris_experience}
+                onChange={handleChange}
+                placeholder="Arris Experience"
+                disabled={!isEditMode}
+              />
+            ) : (
+              <p className="data">{formData.arris_experience}</p>
+            )}
+            </div>
+            <div className="individual-tabs">
+              <label>Total Experience</label>
+              {isEditMode ? (
+              <input
+                name="total_experience"
+                value={formData.total_experience}
+                onChange={handleChange}
+                placeholder="Total Experience"
+                disabled={!isEditMode}
+              />
+              ) : (
+                <p className="data">{formData.total_experience}</p> */}
+
               {editMode ? (
                 <div style={{ display: "flex", gap: "10px" }}>
                   <select
@@ -890,6 +1246,31 @@ const EditEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>Probation confirmation date</label>
+              {/* {isEditMode ? (
+              <input
+                type="date"
+                name="probation_confirmation_date"
+                value={formData.probation_confirmation_date}
+                onChange={handleChange}
+                disabled={!isEditMode}
+              />
+            ) : (
+              <p className="data">{formData.probation_confirmation_date}</p>
+            )}
+            </div>
+            <div className="individual-tabs">
+              <label>Official Email</label>
+              {isEditMode ? (
+              <input
+                name="employee_email"
+                value={formData.employee_email}
+                onChange={handleChange}
+                placeholder="Official Email"
+                disabled={!isEditMode}
+              />
+              ) : (
+                <p className="data">{formData.employee_email}</p> */}
+
               {editMode ? (
                 <input
                   type="date"
@@ -912,6 +1293,18 @@ const EditEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>Reporting Manager</label>
+              {/* {isEditMode ? (
+              <input
+                name="reporting_manager"
+                value={formData.reporting_manager}
+                onChange={handleChange}
+                placeholder="Reporting Manager"
+                disabled={!isEditMode}
+              />
+            ) : (
+              <p className="data">{formData.reporting_manager}</p>
+            )} */}
+
               {editMode ? (
                 <select
                   name="reporting_manager"
@@ -953,6 +1346,46 @@ const EditEmployee = () => {
           <div className="tab-content">
             <div className="individual-tabs">
               <label>Account Number</label>
+              {/* {isEditMode ? (
+              <input
+                name="account_number"
+                value={formData.account_number}
+                onChange={handleChange}
+                placeholder="Account Number"
+                disabled={!isEditMode}
+              />
+            ) : (
+              <p className="data">{formData.account_number}</p>
+            )}
+            </div>
+            <div className="individual-tabs">
+              <label>IFSC Code</label>
+              {isEditMode ? (
+              <input
+                name="ifsc_code"
+                value={formData.ifsc_code}
+                onChange={handleChange}
+                placeholder="IFSC Code"
+                disabled={!isEditMode}
+              />
+              ) : (
+              <p className="data">{formData.ifsc_code}</p>
+            )}
+            </div>
+            <div className="individual-tabs">
+              <label>Bank Name</label>
+              {isEditMode ? (
+              <input
+                name="bank_name"
+                value={formData.bank_name}
+                onChange={handleChange}
+                placeholder="Bank Name"
+                disabled={!isEditMode}
+              />
+            ) : (
+              <p className="data">{formData.bank_name}</p>
+            )} */}
+
               {editMode ? (
                 <input
                   name="account_number"
@@ -999,6 +1432,46 @@ const EditEmployee = () => {
           <div className="tab-content">
             <div className="individual-tabs">
               <label>Emergency Contact Name</label>
+              {/* {isEditMode ? (
+              <input
+                name="emergency_contact_name"
+                value={formData.emergency_contact_name}
+                onChange={handleChange}
+                placeholder="Emergency Contact Name"
+                disabled={!isEditMode}
+              />
+              ) : (
+              <p className="data">{formData.emergency_contact_name}</p>
+            )}
+            </div>
+            <div className="individual-tabs">
+              <label>Emergency Contact Number</label>
+              {isEditMode ? (
+              <input
+                name="emergency_contact_number"
+                value={formData.emergency_contact_number}
+                onChange={handleChange}
+                placeholder="Emergency Contact Number"
+                disabled={!isEditMode}
+              />
+              ) : (
+              <p className="data">{formData.emergency_contact_number}</p>
+            )}
+            </div>
+            <div className="individual-tabs">
+              <label>Blood Group</label>
+              {isEditMode ? (
+              <input
+                name="blood_group"
+                value={formData.blood_group}
+                onChange={handleChange}
+                placeholder="Blood Group"
+                disabled={!isEditMode}
+              />
+            ) : (
+              <p className="data">{formData.blood_group}</p>
+            )} */}
+
               {editMode ? (
                 <input
                   name="emergency_contact_name"
@@ -1057,9 +1530,22 @@ const EditEmployee = () => {
 
   return (
     <div className="add-employee-wrapper">
+      {/* <h2 className="employee-title">
+          {isEditMode ? "Edit Employee" : "Employee"}
+        </h2>
+        {!isEditMode && (
+          <button onClick={() => setIsEditMode(true)} className="edit-toggle-btn">
+            <FaEdit />
+          </button>
+        )} */}
       <h2 className="employee-title">
         {editMode ? "Edit Employee" : "View Employee"}
       </h2>
+      {!editMode && (
+        <button onClick={() => setEditMode(true)} className="edit-toggle-btn" title="Edit">
+          <FaEdit className="edit-icon" />
+        </button>
+      )}
       <div className="tab-header">
         {tabLabels.map((label, index) => (
           <button
@@ -1070,7 +1556,7 @@ const EditEmployee = () => {
             {label}
           </button>
         ))}
-        {!editMode && (
+        {/* {!editMode && (
           <button
             type="button"
             onClick={() => setEditMode(true)}
@@ -1078,20 +1564,33 @@ const EditEmployee = () => {
           >
             Edit
           </button>
-        )}
+        )} */}
       </div>
 
       <form className="add-employee-form" onSubmit={handleSubmit}>
         {renderTabContent()}
+        {/* {isEditMode && (
+        <div className="form-buttons">
+          <button type="submit" className="btn-save">
+            Save
+          </button>
+          <button
+            type="button"
+            className="btn-cancel"
+            onClick={() => navigate("/hr/detail/employee-details")}
+          >
+            Cancel
+          </button>
+        </div> */}
 
         {editMode && (
           <div className="form-buttons">
-            <button type="submit" className="btn btn-green">
+            <button type="submit" className="btn-save">
               Save
             </button>
             <button
               type="button"
-              className="btn btn-orange"
+              className="btn-cancel"
               onClick={() => {
                 setEditMode(false);
                 fetchEmployee(); // Reset form to saved state if Cancel

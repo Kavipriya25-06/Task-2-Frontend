@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import config from "../../config";
 import roleOptions from "../../constants/roleOptions";
+
+
+import { FaEdit } from "react-icons/fa";
 import Breadcrumbs from "../../components/Breadcrumbs";
 
 const EditUserForm = () => {
@@ -15,6 +18,8 @@ const EditUserForm = () => {
   const [employeeOptions, setEmployeeOptions] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
   const [editMode, setEditMode] = useState(false); //  Add this at the top
+  const [inputValue, setInputValue] = useState("");
+
 
   const fetchUser = async () => {
     try {
@@ -96,13 +101,14 @@ const EditUserForm = () => {
             </div>
           ) : (
             <div className="table-top-bar-header">
-              <div style={{ paddingRight: "250px" }}>View user</div>
+              <div className="view-label">View user</div>
               <button
                 type="edit"
                 onClick={() => setEditMode(true)}
-                className="btn-orange"
+                className="edit-btn"
+                title="Edit"
               >
-                Edit
+                <FaEdit className="edit-icon" />
               </button>
             </div>
           )}
@@ -113,7 +119,7 @@ const EditUserForm = () => {
         <div className="form-group">
           <label>Employee Code</label>
           <div className="uneditable">
-            {employeeID.employee_code} - {employeeID.employee_name}
+            {employeeID?.employee_code} - {employeeID?.employee_name}
           </div>
         </div>
 
@@ -197,7 +203,7 @@ const EditUserForm = () => {
             </button>
             <button
               type="button"
-              className="btn btn-orange"
+              className="btn btn-red"
               onClick={() => setEditMode(false)}
             >
               Cancel

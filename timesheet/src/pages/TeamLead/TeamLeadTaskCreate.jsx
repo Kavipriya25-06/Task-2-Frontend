@@ -13,6 +13,10 @@ const TeamLeadTaskCreate = () => {
     setTaskData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleCancel = () => {
+    navigate("/teamlead/detail/projects/");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -43,7 +47,7 @@ const TeamLeadTaskCreate = () => {
       <h2>Create Task</h2>
       <form onSubmit={handleSubmit}>
         <div className="building-elements">
-          <div className="top-elements">
+          <div className="top-element">
             <div>
               <label>Task code</label>
               <input
@@ -63,15 +67,17 @@ const TeamLeadTaskCreate = () => {
           </div>
           <div className="table-bottom-elements">
             <div>
-              <label>Task Description</label>
-              <input
+              <label>Task Description</label><br />
+              <textarea
                 name="task_description"
                 value={taskData.task_description || ""}
                 onChange={handleChange}
+                rows={4}
+                className="textarea"
               />
             </div>
-            <div>
-              <label>Priority</label>
+            <div className="priorities">
+              <label>Priority</label><br />
               <select
                 name="priority"
                 value={taskData.priority || ""}
@@ -85,6 +91,7 @@ const TeamLeadTaskCreate = () => {
               </select>
             </div>
           </div>
+
         </div>
         <div className="form-buttons">
           <button type="submit" className="btn-green">
@@ -93,9 +100,9 @@ const TeamLeadTaskCreate = () => {
           <button
             type="reset"
             className="btn-red"
-            onClick={() => setTaskData({})}
+            onClick={() => handleCancel()}
           >
-            Delete
+            Cancel
           </button>
         </div>
       </form>

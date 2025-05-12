@@ -241,20 +241,36 @@ const ManagerProjectView = () => {
     }
   };
 
+  const handleRemoveBuilding = (indexToRemove) => {
+    setAvailableBuildings((prev) =>
+      prev.filter((_, index) => index !== indexToRemove)
+    );
+  };
+
+  const handleRemoveBuildings = (areaName) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      area_of_work: prevData.area_of_work.filter((name) => name !== areaName),
+    }));
+  };
+  
+  
+
   if (!projectData) return <p>Loading...</p>;
 
   return (
     <div className="create-project-container">
       <div className="project-header">
-        <h2>Project: {projectData.project_title}</h2>
+        <h2>{editMode ? "Edit Project" : "View Project"}</h2>
         <div>
           {!editMode ? (
             <button
               type="edit"
               onClick={() => setEditMode(true)}
               className="btn-orange"
+              title="Edit"
             >
-              Edit
+             <FaEdit className="edit-icon" />
             </button>
           ) : (
             <div></div>
@@ -316,7 +332,54 @@ const ManagerProjectView = () => {
               </div>
             </div>
             <div className="left-form-second">
-              <div className="project-form-group">
+            <div className="roles-box">
+                <label>Project Roles</label>
+                {editMode ? (
+                  <div className="select-container">
+                    {teamleadManager.map((employee) => (
+                      <div
+                        key={employee.employee_id}
+                        className="employee-checkbox"
+                      >
+                        {employee.employee_name} - {employee.designation}
+                        <input
+                          type="checkbox"
+                          className="larger-checkbox"
+                          value={employee.employee_id}
+                          checked={availableTeamleadManager.some(
+                            (e) => e.employee_id === employee.employee_id
+                          )}
+                          onChange={(e) => {
+                            const checked = e.target.checked;
+                            if (checked) {
+                              setAvailableTeamleadManager((prev) => [
+                                ...prev,
+                                employee,
+                              ]);
+                            } else {
+                              setAvailableTeamleadManager((prev) =>
+                                prev.filter(
+                                  (emp) =>
+                                    emp.employee_id !== employee.employee_id
+                                )
+                              );
+                            }
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="select-container">
+                    {availableTeamleadManager.map((emp) => (
+                      <p key={emp.employee_id}>
+                        {emp.employee_name} - {emp.designation}
+                      </p>
+                    ))}
+                  </div>
+                )}
+              </div>
+            <div className="project-form-group">
                 <label>Building(s)</label>
                 {editMode ? (
                   <div className="building-row">
@@ -352,38 +415,37 @@ const ManagerProjectView = () => {
                           onClick={() => buildingClick(b.building_assign_id)}
                           className="building-tile-small"
                         >
-                          {console.log("building individual", b)}
                           {b.building?.building_title}
                         </div>
-                        <div className="building-tile-small">
-                          {b.building_hours} hrs
-                        </div>
+                        <div className="building-tile-smalls">{b.building_hours} hrs</div>
                       </div>
                     ))}
                   </div>
                 )}
               </div>
-
               <div className="project-form-group">
-                <label>Area of Work</label>
-                {editMode ? (
-                  <div className="area-row">
-                    <div className="tags">
-                      {areas
-                        .filter((a) =>
-                          formData.area_of_work.includes(a.area_name)
-                        )
+                <label className="area">Area of Work</label>
+                <div className="area-row">
+                  <div className="tags">
+                    {formData.area_of_work.length === 0 ? (
+                      <span className="no-data-text">No Area of Work</span>
+                    ) : (
+                      areas
+                        .filter((a) => formData.area_of_work.includes(a.area_name))
                         .map((a) => (
                           <span className="tag" key={a.area_name}>
                             {a.name}
                             {/* <button className="tag-button">×</button> */}
                           </span>
-                        ))}
-                    </div>
+                        ))
+                    )}
+                  </div>
 
+                  {editMode && (
                     <button
-                      type="button"
+                      className="plus-button"
                       onClick={() => setShowAreaPopup(true)}
+                      type="button"
                     >
                       +
                     </button>
@@ -402,12 +464,11 @@ const ManagerProjectView = () => {
                   </div>
                 )}
               </div>
-
               <div className="project-form-group">
                 <label>Sub Division</label>
                 {editMode ? (
                   <input
-                    name="subdivision"
+                    className="subdivision"
                     value={formData.subdivision}
                     onChange={handleChange}
                   />
@@ -446,65 +507,18 @@ const ManagerProjectView = () => {
               </div>
             </div>
             <div className="right-form-second">
-              <div className="roles-box">
-                <label>Project Roles</label>
-                {editMode ? (
-                  <div className="select-container">
-                    {teamleadManager.map((employee) => (
-                      <div
-                        key={employee.employee_id}
-                        className="employee-checkbox"
-                      >
-                        {employee.employee_name} - {employee.designation}
-                        <input
-                          type="checkbox"
-                          value={employee.employee_id}
-                          checked={availableTeamleadManager.some(
-                            (e) => e.employee_id === employee.employee_id
-                          )}
-                          onChange={(e) => {
-                            const checked = e.target.checked;
-                            if (checked) {
-                              setAvailableTeamleadManager((prev) => [
-                                ...prev,
-                                employee,
-                              ]);
-                            } else {
-                              setAvailableTeamleadManager((prev) =>
-                                prev.filter(
-                                  (emp) =>
-                                    emp.employee_id !== employee.employee_id
-                                )
-                              );
-                            }
-                          }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="select-container">
-                    {availableTeamleadManager.map((emp) => (
-                      <p key={emp.employee_id}>
-                        {emp.employee_name} - {emp.designation}
-                      </p>
-                    ))}
-                  </div>
-                )}
-              </div>
-
               <div className="form-group-full-width">
-                <label>Project Description</label>
-                {editMode ? (
-                  <textarea
-                    name="project_description"
-                    value={formData.project_description}
-                    onChange={handleChange}
-                  />
-                ) : (
-                  <p>{projectData.project_description}</p>
-                )}
-              </div>
+                  <label>Project Description</label>
+                  {editMode ? (
+                    <textarea
+                      name="project_description"
+                      value={formData.project_description}
+                      onChange={handleChange}
+                    />
+                  ) : (
+                    <p>{projectData.project_description}</p>
+                  )}
+                </div>
             </div>
           </div>
         </div>
@@ -515,14 +529,14 @@ const ManagerProjectView = () => {
               <button
                 type="submit"
                 onClick={handleUpdate}
-                className="btn-green"
+                className="btn-save"
               >
                 Save
               </button>
               <button
                 type="reset"
                 onClick={() => setEditMode(false)}
-                className="btn-red"
+                className="btn-cancel"
               >
                 Cancel
               </button>
@@ -594,6 +608,7 @@ const ManagerProjectView = () => {
             </div>
           ))}
           <button
+            className="btn-save"
             onClick={() => {
               const invalid = selectedBuildings.find(
                 (b) => !b.building_hours || parseFloat(b.building_hours) <= 0
@@ -623,6 +638,7 @@ const ManagerProjectView = () => {
               setSelectedBuildings([]);
               setShowBuildingPopup(false);
             }}
+            className="btn-cancel"
           >
             Cancel
           </button>
@@ -661,6 +677,7 @@ const ManagerProjectView = () => {
             onClick={() => {
               setShowAreaPopup(false);
             }}
+            className="btn-save"
           >
             Done
           </button>
@@ -668,6 +685,7 @@ const ManagerProjectView = () => {
             onClick={() => {
               setShowAreaPopup(false);
             }}
+            className="btn-cancel"
           >
             Cancel
           </button>

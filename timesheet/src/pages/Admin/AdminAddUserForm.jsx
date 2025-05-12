@@ -159,7 +159,7 @@ const AddUserForm = ({ onCancel, onSave }) => {
         <div className="form-buttons">
           <button
             type="submit"
-            className="btn btn-green"
+            className="btn-green"
             disabled={!employeeID || !role || !email || !password}
           >
             Save
@@ -167,7 +167,7 @@ const AddUserForm = ({ onCancel, onSave }) => {
 
           <button
             type="button"
-            className="btn btn-orange"
+            className="btn-red"
             onClick={handleCancel}
           >
             Cancel

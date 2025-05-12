@@ -2,6 +2,8 @@
 
 import { useNavigate } from "react-router-dom";
 import "./Breadcrumbs.css";
+import { FaArrowLeft } from "react-icons/fa";
+
 
 const Breadcrumbs = ({ crumbs = [], showBack = false, backPath = null }) => {
   const navigate = useNavigate();
@@ -19,7 +21,7 @@ const Breadcrumbs = ({ crumbs = [], showBack = false, backPath = null }) => {
             }
           }}
         >
-          ← Back
+          <FaArrowLeft style={{ marginRight: "6px" }} /> Back
         </button>
       )}
       <div className="breadcrumbs">

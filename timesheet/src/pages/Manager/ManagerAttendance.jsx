@@ -138,21 +138,28 @@ const ManagerAttendance = () => {
           <button onClick={() => handleWeekChange(1)}> &gt;</button>
         </div>
         <div>
-          <button onClick={() => handleAttendanceClick()}>
+          <button className="btn-save" onClick={() => handleAttendanceClick()}>
             Attendance Admin
           </button>
+
         </div>
       </div>
 
-      <div className="attendance-table">
-        <table>
+      <div>
+        <table  className="attend-table">
           <thead>
             <tr>
               <th>Employee</th>
               {weekDays.map((day) => (
-                <th key={day.key}>
-                  {day.weekday} ({day.date})
-                </th>
+                <th
+                key={day.key}
+                style={{
+                  color: day.weekday === 'Sun' ? 'orange' : 'inherit'
+                }}
+              >
+                {day.weekday} ({day.date})
+              </th>
+              
               ))}
               <th>Total Hours</th>
             </tr>
@@ -173,6 +180,19 @@ const ManagerAttendance = () => {
                     // <td key={day.key}>
                     //   {attendance ? `${attendance.work_duration} hrs` : "-"}
                     // </td>
+
+                    // <td key={day.key} onClick={() => navigate("/manager/detail/team-leaders/approvalscreen")} style={{ cursor: "pointer" }}>
+                    //   {attendance ? (
+                    //     <div className="attendance-tile">
+                    //       <div>
+                    //         {attendance.in_time.slice(0, 5)} -{" "}
+                    //         {attendance.out_time.slice(0, 5)}
+                    //       </div>
+                    //       <div>
+                    //         <strong>Total:</strong> {attendance.total_duration}{" "}
+                    //         hrs
+                    //       </div>
+
 
                     <td
                       key={day.key}

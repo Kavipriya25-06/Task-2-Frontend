@@ -552,13 +552,13 @@ const TeamLeadDailyTimeSheetEntry = () => {
 
       <div className="button-container">
         <button
-          className="save-button2"
+          className="btn-save"
           onClick={handleSubmit}
           disabled={totalAssignedHours > maxAllowedHours}
         >
           Save
         </button>
-        <button className="submit-button2" onClick={handleSubmit}>
+        <button className="btn-cancel" onClick={handleSubmit}>
           Submit
         </button>
       </div>

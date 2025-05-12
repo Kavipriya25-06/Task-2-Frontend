@@ -549,16 +549,9 @@ const EmployeeDailyTimeSheetEntry = () => {
       </button>
 
       <div className="button-container">
-        <button
-          className="save-button2"
-          onClick={handleSubmit}
-          disabled={totalAssignedHours > maxAllowedHours}
-        >
-          Save
-        </button>
-        <button className="submit-button2" onClick={handleSubmit}>
-          Submit
-        </button>
+        {/* <button onClick={() => navigate(-1)} className="cancel-button1">Back</button> */}
+        <button className="btn-save">Save</button>
+        <button className="btn-cancel">Submit</button>
       </div>
     </div>
   );

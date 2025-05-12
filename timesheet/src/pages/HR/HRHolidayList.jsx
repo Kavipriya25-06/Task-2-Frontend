@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import config from "../../config";
 import Modal from "react-modal";
 
-const HRHolidayList = () => {
+
+const HolidayList = () => {
+
+// const HRHolidayList = () => {
   const [calendarData, setCalendarData] = useState([]);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [showPopup, setShowPopup] = useState(false);
@@ -19,6 +22,11 @@ const HRHolidayList = () => {
       console.error("Error fetching calendar data:", error);
     }
   };
+
+  const handleDelete = (id) => {
+    const updatedData = calendarData.filter(entry => entry.calendar_id !== id);
+    setCalendarData(updatedData);
+  }
 
   useEffect(() => {
     fetchCalendarData(selectedYear);
@@ -72,10 +80,10 @@ const HRHolidayList = () => {
         }}
       >
         <h2 className="holiday-table-title">Holidays - {selectedYear}</h2>
-        <div>
-          <button onClick={() => setSelectedYear((y) => y - 1)}>&lt;</button>
-          <span style={{ margin: "0 10px" }}>{selectedYear}</span>
-          <button onClick={() => setSelectedYear((y) => y + 1)}>&gt;</button>
+        <div className="year-selector">
+          <button className="lefts" onClick={() => setSelectedYear((y) => y - 1)}>&lt;</button>
+          <span className="year-text">{selectedYear}</span>
+          <button className="rights" onClick={() => setSelectedYear((y) => y + 1)}>&gt;</button>
         </div>
       </div>
       <table className="holiday-table">
@@ -85,6 +93,7 @@ const HRHolidayList = () => {
             <th>Month</th>
             <th>Day</th>
             <th>Type of Holiday</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -94,16 +103,19 @@ const HRHolidayList = () => {
               <td>{entry.month_name}</td>
               <td>{entry.day_name}</td>
               <td>{entry.notes || "Weekend"}</td>
+              <td>
+                <button
+                  className="delete-btn"
+                  onClick={() => handleDelete(entry.calendar_id)}
+                >
+                  Delete
+                </button>
+              </td>
             </tr>
           ))}
-          <tr>
-            <td
-              colSpan={4}
-              style={{
-                textAlign: "left",
-              }}
-            >
-              <button
+        </tbody>
+      </table>
+      <button
                 onClick={() => setShowPopup(true)}
                 style={{
                   textAlign: "left",
@@ -112,11 +124,7 @@ const HRHolidayList = () => {
                 }}
               >
                 +
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      </button>
       {/* {showPopup && (
         <div className="popup-overlay">
           <div className="popup-box">
@@ -152,49 +160,98 @@ const HRHolidayList = () => {
           </div>
         </div>
       )} */}
-      <Modal
-        isOpen={showPopup}
-        onRequestClose={() => setShowPopup(false)}
-        contentLabel="Add Holiday"
-        ariaHideApp={false}
-        style={{
-          content: {
-            width: "300px",
-            height: "300px",
-            margin: "auto",
-            padding: "20px",
-            borderRadius: "12px",
-          },
-        }}
-      >
-        <h3>Add Holiday</h3>
-        <label>
-          Date:
-          <input
-            type="date"
-            value={formData.date}
-            onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-          />
-        </label>
-        <label>
-          Holidays:
-          <input
-            type="text"
-            value={formData.notes}
-            onChange={(e) =>
-              setFormData({ ...formData, notes: e.target.value })
-            }
-          />
-        </label>
-        <div style={{ marginTop: "12px" }}>
-          <button onClick={handlePatchHoliday} style={{ marginRight: "8px" }}>
-            Submit
+
+
+{showPopup && (
+      <div className="custom-modal-overlay">
+        <div className="custom-modal">
+          <button className="close-btn" onClick={() => setShowPopup(false)}>
+            &times;
           </button>
-          <button onClick={() => setShowPopup(false)}>Cancel</button>
+          <h3>Add Holiday</h3>
+          <label>
+            Date:
+            <input
+              type="date"
+              value={formData.date}
+              onChange={(e) =>
+                setFormData({ ...formData, date: e.target.value })
+              }
+            />
+          </label>
+          <label>
+            Holidays:
+            <input
+              type="text"
+              value={formData.notes}
+              onChange={(e) =>
+                setFormData({ ...formData, notes: e.target.value })
+              }
+            />
+          </label>
+          <div className="modal-buttons">
+            <button onClick={handlePatchHoliday}>Submit</button>
+            <button onClick={() => setShowPopup(false)}>Cancel</button>
+          </div>
         </div>
-      </Modal>
+      </div>
+    )}
+      {/* <Modal
+  isOpen={showPopup}
+  onRequestClose={() => setShowPopup(false)}
+  contentLabel="Add Holiday"
+  ariaHideApp={false}
+  style={{
+    content: {
+      top: "20%",
+      left: "50%",
+      right: "auto",
+      bottom: "auto",
+      transform: "translateX(-50%)",
+      width: "420px",
+      padding: "30px",
+      borderRadius: "12px",
+      position: "absolute",
+    },
+  }}
+>
+  <button className="close-btn" onClick={() => setShowPopup(false)}>
+    &times;
+  </button>
+
+  <h3>Add Holiday</h3>
+
+  <label>
+    Date:
+    <input
+      type="date"
+      value={formData.date}
+      onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+    />
+  </label>
+
+  <label>
+    Holidays:
+    <input
+      type="text"
+      value={formData.notes}
+      onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+    />
+  </label>
+
+  <div className="modal-buttons">
+    <button className="btn-save" onClick={handlePatchHoliday} style={{ marginRight: "8px" }}>
+      Submit
+    </button>
+    <button className="btn-cancel" onClick={() => setShowPopup(false)}>Cancel</button>
+  </div>
+</Modal> */}
+
     </div>
   );
 };
 
-export default HRHolidayList;
+
+export default HolidayList;
+
+// export default HRHolidayList;

@@ -17,6 +17,8 @@ import {
   useNavigate,
 } from "react-router-dom";
 
+import LogoutPopup from "./pages/Logout_popup.jsx"; // adjust the import path as needed
+
 import Login from "./pages/Login.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import HomeRedirect from "./pages/HomeRedirect.jsx";
@@ -30,8 +32,8 @@ import AdminDetailView from "./pages/Admin/AdminDetailView.jsx";
 import AddUserForm from "./pages/Admin/AdminAddUserForm.jsx";
 import EditUserForm from "./pages/Admin/AdminEditUserForm.jsx";
 import Reports from "./pages/Admin/AdminReports.jsx";
-import HolidayCalendar from "./pages/Admin/AdminHolidayCalendar.jsx";
-import HolidayList from "./pages/Admin/AdminHolidayList.jsx";
+// import HolidayCalendar from "./pages/Admin/AdminHolidayCalendar.jsx";
+// import HolidayList from "./pages/Admin/AdminHolidayList.jsx";
 
 // HR pages
 import HRDashboard from "./pages/HR/HRDashboard.jsx";
@@ -40,6 +42,9 @@ import HRDetailView from "./pages/HR/HRDetailView.jsx";
 import AddEmployee from "./pages/HR/HRAddEmployee.jsx";
 import EditEmployee from "./pages/HR/HREditEmployee.jsx";
 import EmployeeList from "./pages/HR/HREmployeeList.jsx";
+// import HolidayCalendar from "./pages/HR/HRHolidayCalendar.jsx";
+// import HolidayList from "./pages/HR/HRHolidayList.jsx";
+
 import HRHolidayCalendar from "./pages/HR/HRHolidayCalendar.jsx";
 import HRHolidayList from "./pages/HR/HRHolidayList.jsx";
 import HRSettings from "./pages/HR/HRSettings.jsx";
@@ -61,6 +66,7 @@ import ManagerTeamLeadersView from "./pages/Manager/ManagerTeamLeadersView.jsx";
 import ManagerProjectCreate from "./pages/Manager/ManagerProjectCreate.jsx";
 import ManagerBuildingCreate from "./pages/Manager/ManagerBuildingCreate.jsx";
 import ManagerTaskCreate from "./pages/Manager/ManagerTaskCreate.jsx";
+
 import ManagerApprovalScreen from "./pages/Manager/ManagerApprovalScreen.jsx";
 import ManagerLeaveApplication from "./pages/Manager/ManagerLeaveApplication.jsx";
 import ManagerLeaveRequestForm from "./pages/Manager/ManagerLeaveRequestForm.jsx";
@@ -102,14 +108,31 @@ const App = () => {
   const [selectedRole, setSelectedRole] = useState(() => {
     return localStorage.getItem("selectedRole") || "admin";
   });
+  //const navigate = useNavigate();
+
+  const [showLogoutPopup, setShowLogoutPopup] = useState(false);
 
   const { user } = useAuth();
+  console.log(user);
+
+  const handleLogoutClick = (e) => {
+    e.preventDefault();
+    if (!showLogoutPopup) {
+      setShowLogoutPopup(true);
+    }
+  };
+
+  const closePopup = () => {
+    setShowLogoutPopup(false);
+  };
 
   const { logout } = useAuth();
+
   const handleLogout = () => {
     logout();
-    // navigate("/"); // Redirect to login page
+    navigate("/"); // Redirect to login page
   };
+
   const renderDashboard = () => {
     switch (selectedRole) {
       case "admin":
@@ -139,17 +162,27 @@ const App = () => {
           <img src="\src\assets\Logo.svg" alt="Arris Logo" className="logo" />
 
           <div style={{ alignItems: "center", display: "flex" }}>
-            <NavLink
+            {/* <NavLink
               to="/"
               style={{ textDecoration: "none", color: "inherit" }}
-            >
-              <img
-                src="\src\assets\logout.png"
-                alt="Logout button"
-                className="logoutbutton"
-                onClick={handleLogout}
-              />
-            </NavLink>
+            > */}
+            <div className="selectrole" onClick={handleLogoutClick}>
+              {!showLogoutPopup &&
+                user && (
+                  <>
+                    <img
+                      src="/src/assets/user icon.svg"
+                      alt="User icon"
+                      className="logoutbutton"
+                    />
+                    <span>{selectedRole}</span>
+                  </>
+                )}
+            </div>
+
+            {/* Popup */}
+            {showLogoutPopup && <LogoutPopup onClose={closePopup} />}
+            {/* </NavLink> */}
             {user && (
               <RoleSwitcher
                 selectedRole={selectedRole}
@@ -185,6 +218,10 @@ const App = () => {
                   path="users/edit-user/:user_id"
                   element={<EditUserForm />}
                 />
+
+                <Route path="reports" element={<Reports />} />
+                {/* <Route path="holidays" element={<HolidayCalendar />} />
+                <Route path="holidays/holiday-list" element={<HolidayList />} /> */}
                 {/* <Route path="reports" element={<Reports />} /> */}
               </Route>
             </Route>
@@ -194,6 +231,11 @@ const App = () => {
               <Route index element={<HRDashboard />} />
               <Route path="detail" element={<HRDetailView />}>
                 <Route path="employee-details" element={<EmployeeList />} />
+                <Route path="holidays" element={<HRHolidayCalendar />} />
+                <Route
+                  path="holidays/holiday-list"
+                  element={<HRHolidayList />}
+                />
                 <Route
                   path="employee-details/add-employee"
                   element={<AddEmployee />}
@@ -281,6 +323,10 @@ const App = () => {
                   element={<TeamLeadProjectCreate />}
                 />
                 <Route
+                  path="projects/:project_id"
+                  element={<TeamLeadProjectView />}
+                />
+                <Route
                   path="buildings/create"
                   element={<TeamLeadBuildingCreate />}
                 />
@@ -302,6 +348,14 @@ const App = () => {
                   element={<TeamLeadDailyTimeSheetEntry />}
                 />
                 <Route
+                  path="time-sheet-entry/approvalscreen"
+                  element={<TeamLeadApprovalScreen />}
+                />
+                <Route
+                  path="time-sheet-entry/approvalscreen"
+                  element={<TeamLeadApprovalScreen />}
+                />
+                <Route
                   path="time-sheet-entry/createweekly/:date"
                   element={<TeamLeadWeeklyTimeSheetEntry />}
                 />
@@ -316,6 +370,12 @@ const App = () => {
                 />
 
                 <Route path="attendance" element={<TeamLeadAttendance />} />
+
+                {/* <Route
+                  path="approvalscreen"
+                  element={<TeamLeadApprovalScreen />}
+                /> */}
+
                 <Route
                   path="attendance/attendance-admin"
                   element={<TeamLeadAttendanceAdmin />}
@@ -353,7 +413,10 @@ const App = () => {
                   path="leave-requests/create"
                   element={<EmployeeLeaveRequestForm />}
                 />
-                <Route path="tasks/detail" element={<EmployeeTaskDetail />} />
+                <Route
+                  path="tasks/:task_assign_id"
+                  element={<EmployeeTaskDetail />}
+                />
               </Route>
             </Route>
           </Routes>
@@ -361,7 +424,7 @@ const App = () => {
 
         {/* Bottom Bar */}
         <footer className="bottom-bar">
-          <div>Contact us: info@arrisltd.com | (+91) 044-4798-1534</div>
+          <div>Your Partner in Engineering Excellence.</div>
         </footer>
       </div>
     </Router>

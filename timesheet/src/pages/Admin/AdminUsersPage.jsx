@@ -76,7 +76,7 @@ const UsersPage = () => {
         </button>
       </div>
 
-      <table>
+      <table className="user-table">
         <thead>
           <tr>
             <th>Employee Code</th>
