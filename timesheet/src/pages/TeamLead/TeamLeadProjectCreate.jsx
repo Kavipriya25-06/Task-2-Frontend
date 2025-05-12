@@ -250,9 +250,8 @@ const TeamLeadProjectCreate = () => {
                         <div>
                           <span className="tag" key={a.area_name}>
                             {a.name}
-                          </span>
-                          <button
-                            className="tag-button"
+                              <button
+                            className="tags-button"
                             type="button"
                             onClick={() =>
                               setFormData((prev) => ({
@@ -265,11 +264,12 @@ const TeamLeadProjectCreate = () => {
                           >
                             ×
                           </button>
+                          </span>
                         </div>
                       ))}
                   </div>
 
-                  <button type="button" onClick={() => setShowAreaPopup(true)}>
+                  <button className="plus-button" type="button" onClick={() => setShowAreaPopup(true)}>
                     +
                   </button>
                 </div>
@@ -334,9 +334,7 @@ const TeamLeadProjectCreate = () => {
           {buildings.map((b) => (
             <div
               style={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "8px",
+                marginBottom: "3px",
               }}
               key={b.building_id}
               // style={{ marginBottom: "8px" }}
@@ -383,11 +381,12 @@ const TeamLeadProjectCreate = () => {
               )}
             </div>
           ))}
-          <button onClick={() => setShowBuildingPopup(false)}>Done</button>
+          <button className="btn-save" onClick={() => setShowBuildingPopup(false)}>Done</button>
           <button
             onClick={() => {
               setShowBuildingPopup(false);
             }}
+            className="btn-cancel"
           >
             Cancel
           </button>
@@ -421,6 +420,7 @@ const TeamLeadProjectCreate = () => {
               setFormData((prev) => ({ ...prev, area_of_work: selectedAreas }));
               setShowAreaPopup(false);
             }}
+            className="btn-save"
           >
             Done
           </button>
@@ -428,6 +428,7 @@ const TeamLeadProjectCreate = () => {
             onClick={() => {
               setShowAreaPopup(false);
             }}
+            className="btn-cancel"
           >
             Cancel
           </button>

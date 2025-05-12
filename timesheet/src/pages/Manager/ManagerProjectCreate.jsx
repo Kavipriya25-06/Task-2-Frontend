@@ -423,7 +423,7 @@ const ManagerProjectCreate = () => {
             }}
             className="btn-save"
           >
-            Create
+            Done
           </button>
           <button
             onClick={() => {
