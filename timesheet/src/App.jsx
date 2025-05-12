@@ -23,6 +23,8 @@ import Login from "./pages/Login.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import HomeRedirect from "./pages/HomeRedirect.jsx";
 import RoleSwitcher from "./pages/RoleSwitcher.jsx";
+import ProtectedRoute from "./ProtectedRoute.jsx";
+import { isDev } from "./constants/devmode.js";
 
 // Admin pages
 import AdminDashboard from "./pages/Admin/AdminDashboard.jsx";
@@ -105,14 +107,16 @@ import EmployeeWeeklyTimeSheetEntry from "./pages/Employee/EmployeeWeeklyTimeShe
 import EmployeeLeaveRequestForm from "./pages/Employee/EmployeeLeaveRequestForm.jsx";
 
 const App = () => {
+  const { user } = useAuth();
   const [selectedRole, setSelectedRole] = useState(() => {
-    return localStorage.getItem("selectedRole") || "admin";
+    const devRole = localStorage.getItem("selectedRole") || "admin";
+    return isDev ? devRole : user?.role || "employee";
   });
+
   //const navigate = useNavigate();
 
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
 
-  const { user } = useAuth();
   console.log(user);
 
   const handleLogoutClick = (e) => {
@@ -151,6 +155,12 @@ const App = () => {
   };
   console.log("Selected role", selectedRole);
 
+  useEffect(() => {
+    if (!isDev && user?.role) {
+      setSelectedRole(user.role);
+    }
+  }, [user]);
+
   return (
     <Router>
       <div className="app-layout">
@@ -182,7 +192,7 @@ const App = () => {
             {/* Popup */}
             {showLogoutPopup && <LogoutPopup onClose={closePopup} />}
             {/* </NavLink> */}
-            {user && (
+            {isDev && user && (
               <RoleSwitcher
                 selectedRole={selectedRole}
                 setSelectedRole={setSelectedRole}
@@ -199,16 +209,29 @@ const App = () => {
             <Route
               path="/home/*"
               element={
-                user ? (
+                <ProtectedRoute
+                  allowedRoles={[
+                    "admin",
+                    "hr",
+                    "manager",
+                    "teamlead",
+                    "employee",
+                  ]}
+                >
                   <HomeRedirect selectedRole={selectedRole} />
-                ) : (
-                  <div>Please login</div>
-                )
+                </ProtectedRoute>
               }
             />
 
             {/* Admin Layout with Dashboard and DetailView */}
-            <Route path="/admin/*" element={<AdminLayout />}>
+            <Route
+              path="/admin/*"
+              element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <AdminLayout />
+                </ProtectedRoute>
+              }
+            >
               <Route index element={<AdminDashboard />} />
               <Route path="detail" element={<AdminDetailView />}>
                 <Route path="users" element={<UsersPage />}></Route>
@@ -226,7 +249,14 @@ const App = () => {
             </Route>
 
             {/* HR Layout with Dashboard and DetailView */}
-            <Route path="/hr/*" element={<HRLayout />}>
+            <Route
+              path="/hr/*"
+              element={
+                <ProtectedRoute allowedRoles={["hr"]}>
+                  <HRLayout />
+                </ProtectedRoute>
+              }
+            >
               <Route index element={<HRDashboard />} />
               <Route path="detail" element={<HRDetailView />}>
                 <Route path="employee-details" element={<EmployeeList />} />
@@ -253,7 +283,14 @@ const App = () => {
             </Route>
 
             {/* Manager layout with Dashboard and DetailView*/}
-            <Route path="/manager/*" element={<ManagerLayout />}>
+            <Route
+              path="/manager/*"
+              element={
+                <ProtectedRoute allowedRoles={["manager"]}>
+                  <ManagerLayout />
+                </ProtectedRoute>
+              }
+            >
               <Route index element={<ManagerDashboard />} />
               <Route path="detail" element={<ManagerDetailView />}>
                 <Route path="projects" element={<ManagerProjects />} />
@@ -309,7 +346,14 @@ const App = () => {
             </Route>
 
             {/* Team leader layout with Dashboard and DetailView*/}
-            <Route path="/teamlead/*" element={<TeamLeadLayout />}>
+            <Route
+              path="/teamlead/*"
+              element={
+                <ProtectedRoute allowedRoles={["teamlead"]}>
+                  <TeamLeadLayout />
+                </ProtectedRoute>
+              }
+            >
               <Route index element={<TeamLeadDashboard />} />
               <Route path="detail" element={<TeamLeadDetailView />}>
                 <Route path="projects" element={<TeamLeadProjects />} />
@@ -387,7 +431,14 @@ const App = () => {
             </Route>
 
             {/* Employee layout with Dashboard and DetailView*/}
-            <Route path="/employee/*" element={<EmployeeLayout />}>
+            <Route
+              path="/employee/*"
+              element={
+                <ProtectedRoute allowedRoles={["employee"]}>
+                  <EmployeeLayout />
+                </ProtectedRoute>
+              }
+            >
               <Route index element={<EmployeeDashboard />} />
               <Route path="detail" element={<EmployeeDetailView />}>
                 <Route
