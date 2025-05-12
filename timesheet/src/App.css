@@ -566,12 +566,18 @@ input {
     width: 100%;
   padding: 10px 12px;
   background-color: #f3f3f3;
+  color: #808080;
   border-radius: 6px;
   font-size: 14px;
   font-family: 'Arial', sans-serif;
   transition: border-color 0.3s, box-shadow 0.3s;
   box-sizing: border-box;
   border: 1px solid rgb(192, 192, 192);
+}
+
+.task-select:focus {
+  outline: none;
+  color: #000;
 }
 
 
@@ -2891,6 +2897,36 @@ button.delete-building:hover {
   font-size: 14px;
   background-color: #f1f0f0;
   width: 90%;
+}
+
+.comp-off-button {
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #f1890d;  /* Default background */
+  color: white;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.comp-off-button.assigned {
+  background-color: #f7ab4f; /* Green color for assigned */
+  color: black;
+}
+
+.comp-off-button.not-assigned {
+  background-color: #f1890d; /* Red color for not assigned */
+  color: black;
+}
+
+.comp-off-button:hover {
+  transform: translateY(-3px); /* Button lift effect */
+}
+
+.comp-off-button:focus {
+  outline: none;
 }
 
 
