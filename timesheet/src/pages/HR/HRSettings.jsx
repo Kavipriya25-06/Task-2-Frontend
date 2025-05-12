@@ -101,7 +101,7 @@ const HRSettings = () => {
     <div className="settings-container">
       <h2>Settings</h2>
       <div className="tab-container">
-        <button className="active-tab">Set Comp Off Timings</button>
+        {/* <button className="active-tab">Set Comp Off Timings</button> */}
       </div>
 
       {loading ? (
@@ -162,7 +162,7 @@ const HRSettings = () => {
         </table>
       )}
 
-      <button className="submit-button2" onClick={handleSubmit}>
+      <button className="delete-btn" onClick={handleSubmit}>
         Save Timings
       </button>
     </div>

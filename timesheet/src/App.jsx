@@ -167,17 +167,16 @@ const App = () => {
               style={{ textDecoration: "none", color: "inherit" }}
             > */}
             <div className="selectrole" onClick={handleLogoutClick}>
-              {!showLogoutPopup &&
-                user && (
-                  <>
-                    <img
-                      src="/src/assets/user icon.svg"
-                      alt="User icon"
-                      className="logoutbutton"
-                    />
-                    <span>{selectedRole}</span>
-                  </>
-                )}
+              {!showLogoutPopup && user && (
+                <>
+                  <img
+                    src="/src/assets/user icon.svg"
+                    alt="User icon"
+                    className="logoutbutton"
+                  />
+                  <span>{selectedRole}</span>
+                </>
+              )}
             </div>
 
             {/* Popup */}
@@ -396,7 +395,7 @@ const App = () => {
                   element={<EmployeeTimeSheetEntry />}
                 />
                 <Route
-                  path="time-sheet-entry/createdaily"
+                  path="time-sheet-entry/createdaily/:date"
                   element={<EmployeeDailyTimeSheetEntry />}
                 />
                 <Route

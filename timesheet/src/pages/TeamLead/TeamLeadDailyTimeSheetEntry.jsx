@@ -17,7 +17,16 @@ const TeamLeadDailyTimeSheetEntry = () => {
 
   const [taskOptions, setTaskOptions] = useState([]);
 
-  // const [rows, setRows] = useState([{ project: "", building: "", task: "", hours: "" ,start_time:"", end_time:""}]);
+  const [rows, setRows] = useState([
+    {
+      project: "",
+      building: "",
+      task: "",
+      hours: "",
+      start_time: "",
+      end_time: "",
+    },
+  ]);
   const [attendanceDetails, setAttendanceDetails] = useState({
     in_time: "--:--",
     out_time: "--:--",

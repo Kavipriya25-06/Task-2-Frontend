@@ -1,5 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useAuth } from "../../AuthContext";
+import { FaEdit } from "react-icons/fa";
+import config from "../../config";
+import Breadcrumbs from "../../components/Breadcrumbs";
 
 const EmployeeDailyTimeSheetEntry = () => {
   const { date } = useParams(); // Format: YYYY-MM-DD
@@ -15,7 +19,16 @@ const EmployeeDailyTimeSheetEntry = () => {
 
   const [taskOptions, setTaskOptions] = useState([]);
 
-  // const [rows, setRows] = useState([{ project: "", building: "", task: "", hours: "" ,start_time:"", end_time:""}]);
+  const [rows, setRows] = useState([
+    {
+      project: "",
+      building: "",
+      task: "",
+      hours: "",
+      start_time: "",
+      end_time: "",
+    },
+  ]);
   const [attendanceDetails, setAttendanceDetails] = useState({
     in_time: "--:--",
     out_time: "--:--",

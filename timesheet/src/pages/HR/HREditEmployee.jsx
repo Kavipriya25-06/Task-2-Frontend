@@ -422,25 +422,8 @@ const EditEmployee = () => {
 
             <div className="individual-tabs">
               <label>Employee Code</label>
-<<<<<<< HEAD
+
               <div className="uneditable">{formData.employee_code || "-"}</div>
-=======
-              {editMode ? (
-                <input
-                  // style={{ marginTop: "10px" }}
-                  name="employee_code"
-                  value={formData.employee_code}
-                  onChange={handleChange}
-                  placeholder="Employee Code"
-                  disabled={!editMode}
-                  required
-                />
-              ) : (
-                <div className="uneditable">
-                  {formData.employee_code || "-"}
-                </div>
-              )}
->>>>>>> origin/dev
             </div>
             <div className="individual-tabs">
               <label>Employee Name</label>
@@ -1542,7 +1525,11 @@ const EditEmployee = () => {
         {editMode ? "Edit Employee" : "View Employee"}
       </h2>
       {!editMode && (
-        <button onClick={() => setEditMode(true)} className="edit-toggle-btn" title="Edit">
+        <button
+          onClick={() => setEditMode(true)}
+          className="edit-toggle-btn"
+          title="Edit"
+        >
           <FaEdit className="edit-icon" />
         </button>
       )}

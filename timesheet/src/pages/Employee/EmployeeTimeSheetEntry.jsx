@@ -214,11 +214,11 @@ const EmployeeTimeSheetEntry = () => {
   return (
     <div className="holiday-calendar">
       <div className="calendar-headers">
-        <button className="left" onClick={handlePrevMonth}>&lt;</button>
+        <button className="lefts" onClick={handlePrevMonth}>&lt;</button>
         <h3>
           {monthName} {selectedYear}
         </h3>
-        <button className="right" onClick={handleNextMonth}>&gt;</button>
+        <button className="rights" onClick={handleNextMonth}>&gt;</button>
         {/* Let this be here for now */}
         {/* <button onClick={handlePrevYear} className="calendar-nav-btn">
           ◀ Year

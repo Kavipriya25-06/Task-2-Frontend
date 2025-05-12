@@ -241,11 +241,11 @@ const ManagerProjectView = () => {
     }
   };
 
-  const handleRemoveBuilding = (indexToRemove) => {
-    setAvailableBuildings((prev) =>
-      prev.filter((_, index) => index !== indexToRemove)
-    );
-  };
+  // const handleRemoveBuilding = (indexToRemove) => {
+  //   setAvailableBuildings((prev) =>
+  //     prev.filter((_, index) => index !== indexToRemove)
+  //   );
+  // };
 
   const handleRemoveBuildings = (areaName) => {
     setFormData((prevData) => ({
@@ -253,8 +253,6 @@ const ManagerProjectView = () => {
       area_of_work: prevData.area_of_work.filter((name) => name !== areaName),
     }));
   };
-  
-  
 
   if (!projectData) return <p>Loading...</p>;
 
@@ -270,7 +268,7 @@ const ManagerProjectView = () => {
               className="btn-orange"
               title="Edit"
             >
-             <FaEdit className="edit-icon" />
+              <FaEdit className="edit-icon" />
             </button>
           ) : (
             <div></div>
@@ -332,7 +330,7 @@ const ManagerProjectView = () => {
               </div>
             </div>
             <div className="left-form-second">
-            <div className="roles-box">
+              <div className="roles-box">
                 <label>Project Roles</label>
                 {editMode ? (
                   <div className="select-container">
@@ -379,7 +377,7 @@ const ManagerProjectView = () => {
                   </div>
                 )}
               </div>
-            <div className="project-form-group">
+              <div className="project-form-group">
                 <label>Building(s)</label>
                 {editMode ? (
                   <div className="building-row">
@@ -417,7 +415,9 @@ const ManagerProjectView = () => {
                         >
                           {b.building?.building_title}
                         </div>
-                        <div className="building-tile-smalls">{b.building_hours} hrs</div>
+                        <div className="building-tile-smalls">
+                          {b.building_hours} hrs
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -431,7 +431,9 @@ const ManagerProjectView = () => {
                       <span className="no-data-text">No Area of Work</span>
                     ) : (
                       areas
-                        .filter((a) => formData.area_of_work.includes(a.area_name))
+                        .filter((a) =>
+                          formData.area_of_work.includes(a.area_name)
+                        )
                         .map((a) => (
                           <span className="tag" key={a.area_name}>
                             {a.name}
@@ -441,7 +443,7 @@ const ManagerProjectView = () => {
                     )}
                   </div>
 
-                  {editMode && (
+                  {editMode ? (
                     <button
                       className="plus-button"
                       onClick={() => setShowAreaPopup(true)}
@@ -449,65 +451,65 @@ const ManagerProjectView = () => {
                     >
                       +
                     </button>
-                  </div>
-                ) : (
-                  <div className="tags">
-                    {areas
-                      .filter((a) =>
-                        formData.area_of_work.includes(a.area_name)
-                      )
-                      .map((a) => (
-                        <span className="tag" key={a.area_name}>
-                          {a.name}
-                        </span>
-                      ))}
-                  </div>
-                )}
-              </div>
-              <div className="project-form-group">
-                <label>Sub Division</label>
-                {editMode ? (
-                  <input
-                    className="subdivision"
-                    value={formData.subdivision}
-                    onChange={handleChange}
-                  />
-                ) : (
-                  <p>{projectData.subdivision}</p>
-                )}
-              </div>
-            </div>
-          </div>
-          <div className="right-form">
-            <div className="right-form-first">
-              <div className="project-form-group-small">
-                <label>Start Date</label>
-                {editMode ? (
-                  <input
-                    type="date"
-                    name="start_date"
-                    value={formData.start_date}
-                    onChange={handleChange}
-                  />
-                ) : (
-                  <p>{projectData.start_date}</p>
-                )}
-              </div>
-              <div className="project-form-group-small">
-                <label>Estd. Hours</label>
-                {editMode ? (
-                  <input
-                    name="estimated_hours"
-                    value={formData.estimated_hours}
-                    onChange={handleChange}
-                  />
-                ) : (
-                  <p>{projectData.estimated_hours}</p>
-                )}
+                  ) : (
+                    // </div>
+                    <div className="tags">
+                      {areas
+                        .filter((a) =>
+                          formData.area_of_work.includes(a.area_name)
+                        )
+                        .map((a) => (
+                          <span className="tag" key={a.area_name}>
+                            {a.name}
+                          </span>
+                        ))}
+                    </div>
+                  )}
+                </div>
+                <div className="project-form-group">
+                  <label>Sub Division</label>
+                  {editMode ? (
+                    <input
+                      className="subdivision"
+                      value={formData.subdivision}
+                      onChange={handleChange}
+                    />
+                  ) : (
+                    <p>{projectData.subdivision}</p>
+                  )}
+                </div>
               </div>
             </div>
-            <div className="right-form-second">
-              <div className="form-group-full-width">
+            <div className="right-form">
+              <div className="right-form-first">
+                <div className="project-form-group-small">
+                  <label>Start Date</label>
+                  {editMode ? (
+                    <input
+                      type="date"
+                      name="start_date"
+                      value={formData.start_date}
+                      onChange={handleChange}
+                    />
+                  ) : (
+                    <p>{projectData.start_date}</p>
+                  )}
+                </div>
+                <div className="project-form-group-small">
+                  <label>Estd. Hours</label>
+                  {editMode ? (
+                    <input
+                      name="estimated_hours"
+                      value={formData.estimated_hours}
+                      onChange={handleChange}
+                    />
+                  ) : (
+                    <p>{projectData.estimated_hours}</p>
+                  )}
+                </div>
+              </div>
+              <div className="right-form-second">
+                <div className="form-group-full-width">
                   <label>Project Description</label>
                   {editMode ? (
                     <textarea
@@ -519,178 +521,183 @@ const ManagerProjectView = () => {
                     <p>{projectData.project_description}</p>
                   )}
                 </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="form-buttons">
-          {editMode ? (
-            <>
-              <button
-                type="submit"
-                onClick={handleUpdate}
-                className="btn-save"
-              >
-                Save
-              </button>
-              <button
-                type="reset"
-                onClick={() => setEditMode(false)}
-                className="btn-cancel"
-              >
-                Cancel
-              </button>
-            </>
-          ) : (
-            <div></div>
-          )}
+          <div className="form-buttons">
+            {editMode ? (
+              <>
+                <button
+                  type="submit"
+                  onClick={handleUpdate}
+                  className="btn-save"
+                >
+                  Save
+                </button>
+                <button
+                  type="reset"
+                  onClick={() => setEditMode(false)}
+                  className="btn-cancel"
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <div></div>
+            )}
+          </div>
         </div>
-      </div>
-      {showBuildingPopup && (
-        <div className="popup">
-          <h4>Select Buildings</h4>
-          {buildings.map((b) => (
-            <div key={b.building_id} style={{ marginBottom: "8px" }}>
-              <input
-                type="checkbox"
-                value={b.building_id}
-                checked={
-                  selectedBuildings.some(
-                    (item) => item.building_id === b.building_id
-                  ) ||
-                  availableBuildings.some(
-                    (ab) => ab.building_id === b.building_id
-                  )
-                }
-                onChange={(e) => {
-                  const checked = e.target.checked;
-                  const existing = selectedBuildings.find(
-                    (item) => item.building_id === b.building_id
-                  );
-
-                  if (checked && !existing) {
-                    const assigned = availableBuildings.find(
-                      (ab) => ab.building_id === b.building_id
-                    );
-                    setSelectedBuildings((prev) => [
-                      ...prev,
-                      {
-                        ...b,
-                        building_hours: assigned ? assigned.building_hours : "",
-                      },
-                    ]);
-                  } else if (!checked) {
-                    setSelectedBuildings((prev) =>
-                      prev.filter((item) => item.building_id !== b.building_id)
-                    );
-                  }
-                }}
-              />
-              {b.building_title}
-              {selectedBuildings.some(
-                (s) => s.building_id === b.building_id
-              ) && (
+        {showBuildingPopup && (
+          <div className="popup">
+            <h4>Select Buildings</h4>
+            {buildings.map((b) => (
+              <div key={b.building_id} style={{ marginBottom: "8px" }}>
                 <input
-                  type="number"
-                  placeholder="Hours"
-                  style={{ marginLeft: "10px" }}
+                  type="checkbox"
+                  value={b.building_id}
+                  checked={
+                    selectedBuildings.some(
+                      (item) => item.building_id === b.building_id
+                    ) ||
+                    availableBuildings.some(
+                      (ab) => ab.building_id === b.building_id
+                    )
+                  }
                   onChange={(e) => {
-                    setSelectedBuildings((prev) =>
-                      prev.map((item) =>
-                        item.building_id === b.building_id
-                          ? { ...item, building_hours: e.target.value }
-                          : item
-                      )
+                    const checked = e.target.checked;
+                    const existing = selectedBuildings.find(
+                      (item) => item.building_id === b.building_id
                     );
+
+                    if (checked && !existing) {
+                      const assigned = availableBuildings.find(
+                        (ab) => ab.building_id === b.building_id
+                      );
+                      setSelectedBuildings((prev) => [
+                        ...prev,
+                        {
+                          ...b,
+                          building_hours: assigned
+                            ? assigned.building_hours
+                            : "",
+                        },
+                      ]);
+                    } else if (!checked) {
+                      setSelectedBuildings((prev) =>
+                        prev.filter(
+                          (item) => item.building_id !== b.building_id
+                        )
+                      );
+                    }
                   }}
                 />
-              )}
-            </div>
-          ))}
-          <button
-            className="btn-save"
-            onClick={() => {
-              const invalid = selectedBuildings.find(
-                (b) => !b.building_hours || parseFloat(b.building_hours) <= 0
-              );
-
-              if (invalid) {
-                alert(
-                  `Please enter valid hours for building "${invalid.building_title}".`
+                {b.building_title}
+                {selectedBuildings.some(
+                  (s) => s.building_id === b.building_id
+                ) && (
+                  <input
+                    type="number"
+                    placeholder="Hours"
+                    style={{ marginLeft: "10px" }}
+                    onChange={(e) => {
+                      setSelectedBuildings((prev) =>
+                        prev.map((item) =>
+                          item.building_id === b.building_id
+                            ? { ...item, building_hours: e.target.value }
+                            : item
+                        )
+                      );
+                    }}
+                  />
+                )}
+              </div>
+            ))}
+            <button
+              className="btn-save"
+              onClick={() => {
+                const invalid = selectedBuildings.find(
+                  (b) => !b.building_hours || parseFloat(b.building_hours) <= 0
                 );
-                return;
-              }
-              setAvailableBuildings((prev) => [
-                ...prev,
-                ...selectedBuildings.filter(
-                  (b) => !prev.some((ab) => ab.building_id === b.building_id)
-                ),
-              ]);
-              setSelectedBuildings([]);
-              setShowBuildingPopup(false);
-            }}
-          >
-            Done
-          </button>
 
-          <button
-            onClick={() => {
-              setSelectedBuildings([]);
-              setShowBuildingPopup(false);
-            }}
-            className="btn-cancel"
-          >
-            Cancel
-          </button>
-        </div>
-      )}
-      {showAreaPopup && (
-        <div className="popup">
-          <h4>Select Area of Work</h4>
-          {areas.map((a) => (
-            <div key={a.id}>
-              <input
-                type="checkbox"
-                value={a.area_name}
-                checked={formData.area_of_work.includes(a.area_name)}
-                onChange={(e) => {
-                  const checked = e.target.checked;
-                  if (checked) {
-                    setFormData((prev) => ({
-                      ...prev,
-                      area_of_work: [...prev.area_of_work, a.area_name],
-                    }));
-                  } else {
-                    setFormData((prev) => ({
-                      ...prev,
-                      area_of_work: prev.area_of_work.filter(
-                        (area) => area !== a.area_name
-                      ),
-                    }));
-                  }
-                }}
-              />
-              {a.name}
-            </div>
-          ))}
-          <button
-            onClick={() => {
-              setShowAreaPopup(false);
-            }}
-            className="btn-save"
-          >
-            Done
-          </button>
-          <button
-            onClick={() => {
-              setShowAreaPopup(false);
-            }}
-            className="btn-cancel"
-          >
-            Cancel
-          </button>
-        </div>
-      )}
+                if (invalid) {
+                  alert(
+                    `Please enter valid hours for building "${invalid.building_title}".`
+                  );
+                  return;
+                }
+                setAvailableBuildings((prev) => [
+                  ...prev,
+                  ...selectedBuildings.filter(
+                    (b) => !prev.some((ab) => ab.building_id === b.building_id)
+                  ),
+                ]);
+                setSelectedBuildings([]);
+                setShowBuildingPopup(false);
+              }}
+            >
+              Done
+            </button>
+
+            <button
+              onClick={() => {
+                setSelectedBuildings([]);
+                setShowBuildingPopup(false);
+              }}
+              className="btn-cancel"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+        {showAreaPopup && (
+          <div className="popup">
+            <h4>Select Area of Work</h4>
+            {areas.map((a) => (
+              <div key={a.id}>
+                <input
+                  type="checkbox"
+                  value={a.area_name}
+                  checked={formData.area_of_work.includes(a.area_name)}
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    if (checked) {
+                      setFormData((prev) => ({
+                        ...prev,
+                        area_of_work: [...prev.area_of_work, a.area_name],
+                      }));
+                    } else {
+                      setFormData((prev) => ({
+                        ...prev,
+                        area_of_work: prev.area_of_work.filter(
+                          (area) => area !== a.area_name
+                        ),
+                      }));
+                    }
+                  }}
+                />
+                {a.name}
+              </div>
+            ))}
+            <button
+              onClick={() => {
+                setShowAreaPopup(false);
+              }}
+              className="btn-save"
+            >
+              Done
+            </button>
+            <button
+              onClick={() => {
+                setShowAreaPopup(false);
+              }}
+              className="btn-cancel"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

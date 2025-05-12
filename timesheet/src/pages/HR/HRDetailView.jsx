@@ -15,19 +15,14 @@ const HRDetailView = () => {
   const tabs = [
     { label: "Employee Details", path: "employee-details" },
     { label: "Holidays", path: "holidays" },
-<<<<<<< HEAD
     { label: "Settings", path: "settings" },
-=======
-
->>>>>>> origin/dev
   ];
 
   return (
     <div className="admin-page">
       <div className="main-content">
         <nav className="sidebar">
-
-        {/* {tabs.map((tab, idx) => ( */}
+          {/* {tabs.map((tab, idx) => ( */}
           {tabs.map((tab, idx) => (
             <button
               key={idx}
