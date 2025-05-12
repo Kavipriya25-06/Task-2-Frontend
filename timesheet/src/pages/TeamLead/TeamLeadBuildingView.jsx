@@ -311,7 +311,7 @@ const TeamLeadBuildingView = () => {
                 <label>Building Hours</label>
                 {editMode ? (
                   <input
-                    name="estimated_hours"
+                    name="building_hours"
                     value={formData.building_hours}
                     onChange={handleChange}
                   />

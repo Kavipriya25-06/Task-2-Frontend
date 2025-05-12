@@ -270,7 +270,7 @@ const ManagerBuildingView = () => {
                     <button
                       type="button"
                       onClick={() => setTaskPopupVisible(true)}
-                      className="btn-green"
+                      // className="btn-green"
                     >
                       +
                     </button>
@@ -309,7 +309,7 @@ const ManagerBuildingView = () => {
                 <label>Building Hours</label>
                 {editMode ? (
                   <input
-                    name="estimated_hours"
+                    name="building_hours"
                     value={formData.building_hours}
                     onChange={handleChange}
                   />
@@ -331,7 +331,7 @@ const ManagerBuildingView = () => {
                         {employee.employee_name} - {employee.designation}
                         <input
                           type="checkbox"
-                           className="larger-checkbox"
+                          className="larger-checkbox"
                           value={employee.employee_id}
                           checked={availableTeamleadManager.some(
                             (e) => e.employee_id === employee.employee_id
@@ -373,11 +373,7 @@ const ManagerBuildingView = () => {
         <div className="form-buttons">
           {editMode && (
             <>
-              <button
-                type="submit"
-                onClick={handleUpdate}
-                className="btn-save"
-              >
+              <button type="submit" onClick={handleUpdate} className="btn-save">
                 Save
               </button>
               <button onClick={() => setEditMode(false)} className="btn-cancel">
