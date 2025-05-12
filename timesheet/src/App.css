@@ -388,6 +388,7 @@ input {
   border: 2px solid gray;
 }
 
+
 /* .holiday-table th, .user-table td {
   padding: 10px;
   border: 2px solid rgb(210, 208, 208);
@@ -559,6 +560,20 @@ input {
   border: 2px solid gray;
   margin-top: 3%;
 }
+
+
+.timesheet-table .task-select {
+    width: 100%;
+  padding: 10px 12px;
+  background-color: #f3f3f3;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: 'Arial', sans-serif;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  box-sizing: border-box;
+  border: 1px solid rgb(192, 192, 192);
+}
+
 
 .attend-table th {
   padding: 10px;
@@ -2867,6 +2882,8 @@ button.delete-building:hover {
   font-family: "Archivo", sans-serif;
 }
 
+
+
 .project-form-group input {
   padding: 10px;
   border-radius: 6px;
@@ -3631,9 +3648,7 @@ h4 {
   cursor: pointer;
 }
 
-.employees-container:hover {
-  background-color: #b0b0af;
-}
+
 
 .leave-summary-container .leave-summary-box {
   background-color: #f1890d;

@@ -509,6 +509,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
                   onChange={(e) =>
                     handleNewRowChange(index, "task", e.target.value)
                   }
+                   className="task-select"
                 >
                   <option value="">Select task</option>
                   {taskOptions.map((task) => (
