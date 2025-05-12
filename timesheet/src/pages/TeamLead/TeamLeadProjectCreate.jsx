@@ -184,6 +184,7 @@ const TeamLeadProjectCreate = () => {
                       {employee.employee_name} - {employee.designation}
                       <input
                         type="checkbox"
+                        className="create-checkbox"
                         value={employee.employee_id}
                         onChange={(e) => {
                           const checked = e.target.checked;

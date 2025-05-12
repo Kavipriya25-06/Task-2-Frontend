@@ -2648,7 +2648,7 @@ button.delete-building:hover {
   padding-top: 2px;
 }
 .bottom-elements textarea {
-  width: 35%;
+  width: 37.5%;
   padding: 10px;
   border-radius: 6px;
   border: 1px solid #ccc;
@@ -2676,6 +2676,24 @@ button.delete-building:hover {
   display: inline-block;
 }
 
+.table-bottom-element {
+  display: flex;
+  gap: 20px; /* space between the two inputs */
+  margin-top: 16px;
+  flex-wrap: wrap; /* allows stacking on smaller screens */
+}
+
+.table-bottom-element > div {
+  flex: 1; /* equal width for both fields */
+  min-width: 200px;
+}
+
+.table-bottom-element label {
+  font-weight: 500;
+  margin-bottom: 6px;
+  display: inline-block;
+}
+
 .table-bottom-elements textarea {
   width: 80%;
   padding: 8px;
@@ -2686,7 +2704,27 @@ button.delete-building:hover {
   background-color: #f0eeee;
 }
 
+.table-bottom-element textarea{
+  width: 81.5%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-family: "Archivo", sans-serif;
+  resize: vertical;
+  background-color: #f0eeee;
+}
+
 .table-bottom-elements select {
+  width: 83%;
+  padding: 10px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  background-color: #efefef;
+}
+
+.table-bottom-element select {
   width: 83%;
   padding: 10px;
   font-size: 15px;
@@ -2835,7 +2873,7 @@ button.delete-building:hover {
   border: 1px solid #ccc;
   font-size: 14px;
   background-color: #f1f0f0;
-  /* width: 90%; */
+  width: 90%;
 }
 
 .project-form-group select,
@@ -2971,7 +3009,7 @@ h4 {
 }
 
 .popup .btn-save {
-  color: #4b4b4b;
+  color: black;
   padding: 5px 10px;
   border: 1px solid #f1890d; /* Added border color */
   border-radius: 8px;
@@ -2983,12 +3021,12 @@ h4 {
 
 .popup .btn-save:hover {
   background-color: #f4a13e;
-  color: #575656;
+  color: black;
   font-weight: 500;
 }
 
 .popup .btn-cancel {
-  color: #4b4b4b;
+  color: black;
   padding: 5px 10px;
   border-radius: 8px;
   font-weight: 500;
@@ -3000,7 +3038,7 @@ h4 {
 
 .popup .btn-cancel:hover {
   background-color: #afafaf;
-  color: #383838;
+  color: black;
   font-weight: 500;
 }
 
@@ -3404,7 +3442,7 @@ h4 {
 .select-container {
   /* display: flex; */
   /* flex-direction: column; */
-  width: 90%;
+  width: 100%;
   /* margin: 20px; */
   min-height: 100px;
   max-height: 150px; /* Limit the height */
@@ -3416,8 +3454,8 @@ h4 {
 }
 
 .select-container input {
-  padding: 10px;
-  margin-top: 2%;
+  padding: 8px;
+  margin-top: 1%;
   border-radius: 6px;
   border: 1px solid #ccc;
   font-size: 14px;
@@ -3432,7 +3470,7 @@ h4 {
   /* flex-direction: row; */
   display: grid; /* Aligns the checkbox and name side by side */
   /* vertical-align: middle; */
-  grid-template-columns: 3fr 1fr;
+  grid-template-columns: 1fr 1.5fr;
   font-size: smaller;
   align-items: center; /* Vertically aligns the checkbox with the name */
   margin-bottom: 5px;
@@ -3444,6 +3482,7 @@ h4 {
   width: 12px;
   height: 12px;
   cursor: pointer;
+  margin-top: -1px;
 }
 
 h3,

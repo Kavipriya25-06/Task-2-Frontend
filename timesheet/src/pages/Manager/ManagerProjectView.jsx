@@ -480,7 +480,8 @@ const ManagerProjectView = () => {
                 </div>
               </div>
             </div>
-            <div className="right-form">
+          </div>
+           <div className="right-form">
               <div className="right-form-first">
                 <div className="project-form-group-small">
                   <label>Start Date</label>
@@ -523,30 +524,35 @@ const ManagerProjectView = () => {
                 </div>
               </div>
             </div>
-          </div>
-
-          <div className="form-buttons">
-            {editMode ? (
-              <>
-                <button
-                  type="submit"
-                  onClick={handleUpdate}
-                  className="btn-save"
-                >
-                  Save
-                </button>
-                <button
-                  type="reset"
-                  onClick={() => setEditMode(false)}
-                  className="btn-cancel"
-                >
-                  Cancel
-                </button>
-              </>
-            ) : (
-              <div></div>
-            )}
-          </div>
+        </div>
+        <div className="form-buttons">
+          {editMode ? (
+            <>
+              <button
+                type="submit"
+                onClick={handleUpdate}
+                className="btn-save"
+              >
+                Save
+              </button>
+              <button
+                type="reset"
+                onClick={() => setEditMode(false)}
+                className="btn-cancel"
+              >
+                Cancel
+              </button>
+            </>
+          ) : (
+            // <button
+            //   type="edit"
+            //   onClick={() => setEditMode(true)}
+            //   className="btn-orange"
+            // >
+            //   Edit
+            // </button>
+            <div></div>
+          )}
         </div>
         {showBuildingPopup && (
           <div className="popup">
