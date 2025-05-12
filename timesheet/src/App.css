@@ -89,18 +89,18 @@
   font-size: 14px;
 }
 
-.form-container{
+.form-container {
   background-color: #efefef;
   padding: 20px;
   margin: 20px;
   border-radius: 15px;
 }
 
-.form-containers{
+.form-containers {
   margin: 20px;
 }
 
-.form-container1{
+.form-container1 {
   background-color: #f6f6f6;
   padding: 20px;
   margin: 20px;
@@ -131,45 +131,45 @@ input {
   gap: 10px;
 }
 
-.button-container .submit-button2{
+.button-container .submit-button2 {
   background-color: rgb(222, 222, 222);
   color: black;
   font-weight: 500;
 }
 
-.button-container .submit-button2:hover{
+.button-container .submit-button2:hover {
   background-color: rgb(147, 148, 147);
   font-weight: 500;
-  
 }
 
-.button-container .save-button2{
-  background-color:  rgb(222, 222, 222);
+.button-container .save-button2 {
+  background-color: rgb(222, 222, 222);
   font-weight: 500;
   color: black;
 }
 
-.button-container .save-button2:hover{
+.button-container .save-button2:hover {
   background-color: rgb(147, 148, 147);
   font-weight: 500;
 }
 
 .leave-requests-table {
   border-radius: 10px;
-  overflow: hidden; 
+  overflow: hidden;
   border: 2px solid rgb(80, 78, 78);
 }
 
-.leave-requests-table th, .leave-requests-table td{
-  border: 2px solid gray !important;
+.leave-requests-table th,
+.leave-requests-table td {
+  border: 2px solid #ccc !important;
 }
 
-.leave-application-topbar .leave-application-button{
+.leave-application-topbar .leave-application-button {
   background-color: #f1890d;
   color: black;
 }
 
-.leave-application-topbar .leave-application-button:hover{
+.leave-application-topbar .leave-application-button:hover {
   background-color: #ff9312;
   color: black;
 }
@@ -208,7 +208,6 @@ input {
   height: 100%;
   /* background-color: #f6faff; */
 }
-
 
 .bottom-right-circle {
   position: absolute;
@@ -264,8 +263,6 @@ input {
   z-index: 10;
   flex-shrink: 0;
 }
-
-
 
 .table-top-bar {
   padding: 10px 20px;
@@ -365,9 +362,8 @@ input {
 }
 .employee-table {
   border-radius: 10px;
-  overflow: hidden; 
+  overflow: hidden;
   border: 2px solid gray;
-
 }
 
 /* .employee-table th, .employee-table td {
@@ -375,19 +371,20 @@ input {
   border: 2px solid rgb(210, 208, 208);
 } */
 
-.user-table{
+.user-table {
   border-radius: 10px;
-  overflow: hidden; 
+  overflow: hidden;
   border: 4px solid gray;
 }
-.user-table th, .user-table td {
+.user-table th,
+.user-table td {
   padding: 10px;
   border: 2px solid rgb(210, 208, 208);
 }
 
-.holiday-table{
+.holiday-table {
   border-radius: 10px;
-  overflow: hidden; 
+  overflow: hidden;
   border: 2px solid gray;
 }
 
@@ -524,41 +521,41 @@ input {
   border-radius: 4px;
   cursor: pointer;
   font-weight: bold;
-
 }
 
 .delete-btn:hover {
   background-color: #979595;
 }
 
-.leaves-table{
+.leaves-table {
   border-radius: 10px;
-  overflow: hidden; 
+  overflow: hidden;
   border: 2px solid gray;
 }
 
-.leaves-table th, .user-table td {
+.leaves-table th,
+.user-table td {
   padding: 10px;
   border: 2px solid rgb(210, 208, 208);
 }
 
-.attend-table{
+.attend-table {
   border-radius: 10px;
-  overflow: hidden; 
+  overflow: hidden;
   border: 2px solid gray;
   margin-top: 3%;
 }
 
-.table-attend{
+.table-attend {
   border-radius: 10px;
-  overflow: hidden; 
+  overflow: hidden;
   border: 2px solid gray;
   margin-top: 3%;
 }
 
-.timesheet-table{
+.timesheet-table {
   border-radius: 10px;
-  overflow: hidden; 
+  overflow: hidden;
   border: 2px solid gray;
   margin-top: 3%;
 }
@@ -575,7 +572,7 @@ input {
   font-size: 15px;
 }
 
-.table-attend th{
+.table-attend th {
   padding: 10px;
   border: 2px solid rgb(210, 208, 208);
   font-size: 17px;
@@ -628,15 +625,15 @@ input {
   width: 200px;
 }
 
-.form-group1{
+.form-group1 {
   font-weight: 600;
 }
 
-.table-bottom-elements .priorities{
+.table-bottom-elements .priorities {
   margin-left: 200% !important;
 }
 
-.form-group1 .select1{
+.form-group1 .select1 {
   padding: 8px;
   border-radius: 5px;
   width: 39%;
@@ -687,36 +684,34 @@ input {
   color: #888;
 } */
 
-
-.form-group-half1 input{
+.form-group-half1 input {
   width: 76%;
   background-color: #f1f0f0;
   padding: 8px;
 }
 
-.form-group1 textarea{
+.form-group1 textarea {
   width: 87.3%;
   background-color: #f1f0f0;
 }
 
-.form-group1 .file-input1{
+.form-group1 .file-input1 {
   padding: 10px;
 }
 
 .button-groups {
   display: flex;
   justify-content: flex-end; /* Aligns buttons to the right */
-  gap: 10px;                 /* Adds spacing between buttons */
+  gap: 10px; /* Adds spacing between buttons */
   margin-top: 20px;
 }
 
-
-.submit-button1:hover{
+.submit-button1:hover {
   background-color: #d1ac3d;
   color: #575656;
 }
 
-.button-group1 .cancel-button1{
+.button-group1 .cancel-button1 {
   background-color: #bcbcbc; /* Red */
   color: #525050;
   padding: 10px 20px;
@@ -727,7 +722,7 @@ input {
   transition: background-color 0.2s ease;
 }
 
-.cancel-button1:hover{
+.cancel-button1:hover {
   background-color: #a8a8a8;
   color: #575656;
 }
@@ -854,10 +849,9 @@ table {
 .no-data-text {
   position: relative;
   bottom: 5px;
-  left:5px; /* adjust value as needed */
+  left: 5px; /* adjust value as needed */
   font-size: 14px;
 }
-
 
 table th {
   padding: 12px;
@@ -865,7 +859,7 @@ table th {
   text-align: left;
   background: #f3f3f3;
   font-size: 17px;
-  font-family:"Archivo", sans-serif;
+  font-family: "Archivo", sans-serif;
 }
 
 table td {
@@ -874,7 +868,7 @@ table td {
   text-align: left;
   background: #f3f3f3;
   font-size: 15px;
-  font-family:"Archivo",sans-serif;
+  font-family: "Archivo", sans-serif;
 }
 
 .add-user-btn {
@@ -946,14 +940,14 @@ body {
   cursor: pointer;
 }
 
-.breadcrumbs-container .back-button{
+.breadcrumbs-container .back-button {
   background-color: transparent;
-    border: none;
-    color: #0e1218;
-    font-weight: 600;
-    cursor: pointer;
-    margin-right: 12px;
-    font-size: 14px;
+  border: none;
+  color: #0e1218;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 12px;
+  font-size: 14px;
 }
 
 /* Project info section */
@@ -1018,7 +1012,7 @@ body {
   margin-top: 3%;
 }
 
-.task-table-wrapper p{
+.task-table-wrapper p {
   font-weight: 600;
 }
 
@@ -1030,7 +1024,6 @@ body {
   overflow: hidden; /* clip corners */
 }
 
-
 .table-header {
   text-align: left;
   padding-bottom: 10px;
@@ -1040,9 +1033,7 @@ body {
 .table-cell {
   padding: 10px 10px;
   border-bottom: 1px solid #eee;
-  
 }
-
 
 main {
   flex: 1;
@@ -1122,16 +1113,15 @@ main {
   align-items: center;
 }
 
-.calendar-headers .calendar-nav-dropdown{
+.calendar-headers .calendar-nav-dropdown {
   border-radius: 5px;
   font-size: 19px;
   margin-left: 50px;
   background-color: rgb(235, 234, 234);
   border: 2px solid rgb(196, 195, 195);
-
 }
 
-.calendar-nav-dropdown{
+.calendar-nav-dropdown {
   border-radius: 5px;
   font-size: 19px;
   background-color: rgb(235, 234, 234);
@@ -1155,16 +1145,14 @@ main {
   font-weight: 600;
   margin-bottom: 16px;
   color: #333;
-
 }
 
-.calendar-cell1.weekend{
+.calendar-cell1.weekend {
   border-radius: 10px;
   border: 2px solid #f1890d !important;
-
 }
 
-.calendar-cell1{
+.calendar-cell1 {
   border-radius: 10px;
   /* border: 1px solid #1b1b1b !important; */
 }
@@ -1175,7 +1163,6 @@ main {
   justify-content: center; /* Optional: centers the group in its container */
   gap: 15px;
   margin: 10px 0;
-
 }
 
 .year-text {
@@ -1215,21 +1202,18 @@ input[type="text"] {
   gap: 10px;
 } */
 
-
-
 /* Container for the buttons and the heading */
-
 
 /* Styling for the left and right buttons */
 .left {
-  width: 30px;         /* Set width for square shape */
-  height: 30px;        /* Set height equal to width */
+  width: 30px; /* Set width for square shape */
+  height: 30px; /* Set height equal to width */
   background-color: #dcdbdb;
   border: none;
-  font-size: 24px;     /* Make the < and > bigger */
+  font-size: 24px; /* Make the < and > bigger */
   font-weight: bold;
   cursor: pointer;
-  border-radius: 6px;  /* Slightly rounded corners */
+  border-radius: 6px; /* Slightly rounded corners */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1238,14 +1222,14 @@ input[type="text"] {
 }
 
 .right {
-  width: 30px;         /* Set width for square shape */
-  height: 30px;        /* Set height equal to width */
+  width: 30px; /* Set width for square shape */
+  height: 30px; /* Set height equal to width */
   background-color: #dcdbdb;
   border: none;
-  font-size: 24px;     /* Make the < and > bigger */
+  font-size: 24px; /* Make the < and > bigger */
   font-weight: bold;
   cursor: pointer;
-  border-radius: 6px;  /* Slightly rounded corners */
+  border-radius: 6px; /* Slightly rounded corners */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1254,14 +1238,14 @@ input[type="text"] {
 }
 
 .lefts {
-  width: 20px;         /* Set width for square shape */
-  height: 20px;        /* Set height equal to width */
+  width: 20px; /* Set width for square shape */
+  height: 20px; /* Set height equal to width */
   background-color: #dcdbdb;
   border: none;
-  font-size: 24px;     /* Make the < and > bigger */
+  font-size: 24px; /* Make the < and > bigger */
   font-weight: bold;
   cursor: pointer;
-  border-radius: 6px;  /* Slightly rounded corners */
+  border-radius: 6px; /* Slightly rounded corners */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1272,14 +1256,14 @@ input[type="text"] {
 }
 
 .rights {
-  width: 20px;         /* Set width for square shape */
-  height: 20px;        /* Set height equal to width */
+  width: 20px; /* Set width for square shape */
+  height: 20px; /* Set height equal to width */
   background-color: #dcdbdb;
   border: none;
-  font-size: 24px;     /* Make the < and > bigger */
+  font-size: 24px; /* Make the < and > bigger */
   font-weight: bold;
   cursor: pointer;
-  border-radius: 6px;  /* Slightly rounded corners */
+  border-radius: 6px; /* Slightly rounded corners */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1288,24 +1272,26 @@ input[type="text"] {
   /* margin-right: 15%; */
 }
 
-.left:hover, .right:hover {
+.left:hover,
+.right:hover {
   background-color: #c0bfbf; /* Darker shade on hover */
 }
 
-.lefts:hover, .rights:hover {
+.lefts:hover,
+.rights:hover {
   background-color: #c0bfbf; /* Darker shade on hover */
 }
 
-.calendar-header h3{
+.calendar-header h3 {
   font-size: 24px; /* Adjust font size */
   font-weight: bold; /* Make the text bold */
   margin-top: 0.3%; /* Remove margin */
   width: 190px;
   align-items: center;
-  text-align: center;;
+  text-align: center;
 }
 
-.calendar-headers h3{
+.calendar-headers h3 {
   font-size: 24px; /* Adjust font size */
   font-weight: bold; /* Make the text bold */
   margin-top: 0%; /* Remove margin */
@@ -1356,7 +1342,7 @@ h3 {
   font-size: 20px;
 }
 
-.calendar-title-btn:hover{
+.calendar-title-btn:hover {
   background-color: #f4a13e;
   color: black;
 }
@@ -1427,7 +1413,6 @@ h3 {
   background-color: #e3f2fd;
 }
 
-
 .calendar-cell.weekend {
   /* background-color: #fff8e1; */
   border: 2px solid #ffd54f;
@@ -1442,8 +1427,8 @@ h3 {
   border: 1px solid black !important;
 }
 
-.react-datepicker__day--selected{
-  color: rgb(41, 39, 39) !important;              /* White text */
+.react-datepicker__day--selected {
+  color: rgb(41, 39, 39) !important; /* White text */
   border-radius: 50% !important;
   border: 2px solid black !important;
   background-color: white !important;
@@ -1454,27 +1439,25 @@ h3 {
   display: inline-block;
 }
 
-.date-input-container .input1{
+.date-input-container .input1 {
   width: 161%;
   padding: 10px;
 }
-
 
 .calendar-icon {
   position: absolute;
   right: -68%; /* Position icon to the right */
   top: 50%;
   transform: translateY(-50%);
-  font-size: 18px;  /* Icon size */
+  font-size: 18px; /* Icon size */
   color: #3d3d3d; /* Icon color */
   cursor: pointer; /* Make icon clickable */
   pointer-events: none; /* Allow click on the input, not the icon */
 }
 
 .input1:focus + .calendar-icon {
-  color: #333;  /* Change icon color when input is focused */
+  color: #333; /* Change icon color when input is focused */
 }
-
 
 .holiday-note {
   font-size: 12px;
@@ -1498,8 +1481,6 @@ h3 {
   margin-top: 5px;
   display: block;
 }
-
-
 
 .calendar-row {
   display: grid;
@@ -1564,12 +1545,12 @@ h3 {
   font-weight: bold;
 }
 
-.att-popup select{
+.att-popup select {
   margin-top: 5px;
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  width:95%;
+  width: 95%;
 }
 .att-popup input {
   margin-top: 5px;
@@ -1578,19 +1559,18 @@ h3 {
   border-radius: 4px;
 }
 
-.att-popup textarea{
+.att-popup textarea {
   margin-top: 5px;
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  width:90%;
+  width: 90%;
 }
 .att-popup button {
   padding: 10px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  
 }
 
 .btn-container {
@@ -1599,7 +1579,6 @@ h3 {
   gap: 10px; /* Space between Submit and Cancel buttons */
   margin-top: 16px;
 }
-
 
 .att-popup button:hover {
   opacity: 0.9;
@@ -1631,14 +1610,14 @@ h3 {
 }
 
 .week-navigation button {
-  width: 30px;         /* Set width for square shape */
-  height: 30px;        /* Set height equal to width */
+  width: 30px; /* Set width for square shape */
+  height: 30px; /* Set height equal to width */
   background-color: #dbdbdb;
   border: none;
-  font-size: 24px;     /* Make the < and > bigger */
+  font-size: 24px; /* Make the < and > bigger */
   font-weight: bold;
   cursor: pointer;
-  border-radius: 6px;  /* Slightly rounded corners */
+  border-radius: 6px; /* Slightly rounded corners */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1650,14 +1629,14 @@ h3 {
   background-color: #c9c9c9;
 }
 
-.week-navigation h3{
+.week-navigation h3 {
   margin-top: 5%;
 }
 
-.attendance-admin button{
+.attendance-admin button {
   background-color: #f1890d;
 }
-.attendance-admin button:hover{
+.attendance-admin button:hover {
   background-color: #d1ac3d;
   color: #575656;
 }
@@ -1690,7 +1669,6 @@ h3 {
   text-align: center;
   font-style: italic;
 }
-
 
 /* .attendance-table .table-attend {
   width: 100%;
@@ -1812,7 +1790,7 @@ h3 {
   background-color: #f8f8f8;
 }
 
-.form-group .uneditable{
+.form-group .uneditable {
   padding: 10.5px;
   /* border: 1px solid #ccc; */
   border-radius: 6px;
@@ -1830,11 +1808,10 @@ h3 {
   font-size: 14px;
   overflow-x: auto;
   /* height: 38px; */
-  /* display: flex;
+/* display: flex;
   align-items: center;
-} */ */
-
-.uneditable-textarea {
+} */
+*/ .uneditable-textarea {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -1880,11 +1857,10 @@ h3 {
   border: none;
 }
 
-.profile-picture{
+.profile-picture {
   margin-top: 10%;
   margin-bottom: 0%;
 }
-
 
 /* Button Group */
 .form-buttons {
@@ -1894,12 +1870,12 @@ h3 {
   margin-top: 20px;
 }
 
-.breadcrumbs .breadcrumb-link{
+.breadcrumbs .breadcrumb-link {
   color: gray;
   text-decoration: none !important;
 }
 
-.breadcrumbs .breadcrumb-link:hover{
+.breadcrumbs .breadcrumb-link:hover {
   color: black;
   font-weight: 500;
 }
@@ -1941,7 +1917,7 @@ h3 {
   transition: background-color 0.2s ease;
 }
 
-.btn-save{
+.btn-save {
   color: black;
   padding: 10px 20px;
   background: #f1890d; /* Added border color */
@@ -1958,7 +1934,7 @@ h3 {
   font-weight: 500;
 }
 
-.btn-cancel{
+.btn-cancel {
   background-color: #d4d3d3; /* Red */
   color: black;
   padding: 10px 20px;
@@ -2210,7 +2186,7 @@ h3 {
   color: #333;
 }
 
-.profile-picture-wrapper .profile-picture-img{
+.profile-picture-wrapper .profile-picture-img {
   width: 90%;
   height: 90%;
 }
@@ -2225,9 +2201,7 @@ h3 {
   margin-top: -2%;
 }
 
-.add-user-form 
-
-.tab-label {
+.add-user-form .tab-label {
   padding-bottom: 20px;
   margin-bottom: 20px;
 }
@@ -2256,7 +2230,6 @@ h3 {
 /* .btn-green:hover {
   background-color: #a6e6a1;
 } */
-
 
 .btn-orange:hover {
   background-color: #f4bb95;
@@ -2308,7 +2281,7 @@ h3 {
   transition: background-color 0.2s ease;
 }
 
-.add-employee-wrapper .edit-toggle-btn{
+.add-employee-wrapper .edit-toggle-btn {
   background-color: #cecdcd;
   color: #000;
   padding: 6px;
@@ -2321,16 +2294,15 @@ h3 {
   cursor: pointer;
   transition: background-color 0.2s ease;
   position: absolute;
-  top:150px;
+  top: 150px;
   right: 95px;
 }
 
-.edit-toggle-btn:hover{
+.edit-toggle-btn:hover {
   background-color: #959393;
-
 }
 
-.edit-btn{
+.edit-btn {
   background-color: #afaeae;
   color: #000;
   padding: 6px;
@@ -2344,7 +2316,7 @@ h3 {
   transition: background-color 0.2s ease;
 }
 
-.edit-btn:hover{
+.edit-btn:hover {
   background-color: #959393;
 }
 /* 
@@ -2514,7 +2486,6 @@ button.delete-building:hover {
   text-align: left;
 }
 
-
 /* These below are the styles you add for create projects */
 
 .input-elements {
@@ -2637,7 +2608,7 @@ button.delete-building:hover {
   font-size: 24px;
   font-weight: bold;
   text-align: left;
-  font-family:"Archivo", sans-serif;
+  font-family: "Archivo", sans-serif;
 }
 
 .building-elements {
@@ -2646,7 +2617,6 @@ button.delete-building:hover {
   gap: 30px;
   /* grid-template-rows: 1fr 2fr; */
 }
-
 
 .top-elements {
   padding: 0px;
@@ -2664,17 +2634,17 @@ button.delete-building:hover {
   gap: 130px;
   width: 85%;
 }
-.top-element input{
-  margin-top:5px;
+.top-element input {
+  margin-top: 5px;
   width: 113%;
 }
 
-.top-elements input{
-  margin-top:5px;
+.top-elements input {
+  margin-top: 5px;
   width: 140%;
 }
 
-.bottom-elements{
+.bottom-elements {
   padding-top: 2px;
 }
 .bottom-elements textarea {
@@ -2682,13 +2652,11 @@ button.delete-building:hover {
   padding: 10px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  font-family:"Archivo", sans-serif;
+  font-family: "Archivo", sans-serif;
   resize: vertical; /* allows vertical resizing only */
   background-color: #f0eeee;
   margin-top: 5px;
 }
-
-
 
 .table-bottom-elements {
   display: flex;
@@ -2708,7 +2676,7 @@ button.delete-building:hover {
   display: inline-block;
 }
 
-.table-bottom-elements textarea{
+.table-bottom-elements textarea {
   width: 80%;
   padding: 8px;
   border-radius: 6px;
@@ -2755,26 +2723,24 @@ button.delete-building:hover {
   padding: 0;
 }
 
-
 .readonly-tags .tag {
   background-color: #f0f0f0;
   color: #555;
   cursor: default;
 }
 
-
-.tab-content .attachments-box{
+.tab-content .attachments-box {
   background-color: #f6f6f6;
   border: 1px solid #ccc;
 }
 
-.tab-content .attachments-box .add-attachment-button{
+.tab-content .attachments-box .add-attachment-button {
   background-color: #f6f6f6;
   padding: 0%;
   margin: 0%;
 }
 
-.add-attachment-button .add-attachment-icon{
+.add-attachment-button .add-attachment-icon {
   width: 20px;
   height: 20px;
 }
@@ -2802,7 +2768,7 @@ button.delete-building:hover {
 
 .project-form-group p {
   margin: 0%;
-  font-size:14px;
+  font-size: 14px;
   margin-left: 2px;
 }
 
@@ -2839,13 +2805,13 @@ button.delete-building:hover {
   width: 70%;
 }
 
-.project-form-group-small input{
+.project-form-group-small input {
   width: 80%;
   height: 25%;
   padding: 9px;
 }
 
-.left-form-second .roles-box{
+.left-form-second .roles-box {
   margin-top: 5%;
 }
 
@@ -2886,7 +2852,7 @@ button.delete-building:hover {
   flex: 1;
 }
 
-.building-row button{
+.building-row button {
   background-color: white;
   color: black;
   border: none;
@@ -2895,7 +2861,7 @@ button.delete-building:hover {
   cursor: pointer;
   margin-left: 1%;
   width: 24px; /* Set fixed width */
-  height: 24px; 
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2903,7 +2869,7 @@ button.delete-building:hover {
   margin-top: 1%;
 }
 
-.building-row .tag-buttons{
+.building-row .tag-buttons {
   background-color: rgb(121, 121, 121);
   color: white;
   cursor: pointer;
@@ -2942,9 +2908,8 @@ button.delete-building:hover {
   min-height: 70px;
   border-radius: 8px;
   background-color: #f0f0f0;
-  padding: 0px; 
+  padding: 0px;
   position: relative;
-  
 }
 
 .popup {
@@ -3050,7 +3015,6 @@ h4 {
   z-index: 999; /* Below the popup */
 }
 
-
 /*Login Pop-up */
 .popup-overlay {
   position: fixed;
@@ -3101,17 +3065,15 @@ h4 {
   transition: border-color 0.3s ease;
   font-family: "Archivo", sans-serif;
   font-weight: bolder;
-  background:none;
+  background: none;
   border-bottom: 1px solid #282727;
   border-radius: 0%;
 }
 
-
 .forms input::placeholder {
   color: #f1890d; /* Orange placeholder text */
-  font-family: 'Archivo', sans-serif;
+  font-family: "Archivo", sans-serif;
 }
-
 
 /* Logout */
 .logout-section {
@@ -3133,10 +3095,10 @@ h4 {
   box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: 'Archivo', sans-serif;
+  font-family: "Archivo", sans-serif;
 }
 
-.logout{
+.logout {
   font-size: 1.1rem;
   font-weight: bolder;
 }
@@ -3161,7 +3123,7 @@ h4 {
   cursor: pointer;
 }
 
-.selectrole img{
+.selectrole img {
   width: 25px;
   height: 25px;
 }
@@ -3171,10 +3133,6 @@ h4 {
   margin: 0;
   padding: 0;
 }
-
-
-
-
 
 .tag {
   display: inline-block;
@@ -3232,7 +3190,7 @@ h4 {
   background-color: #f0f0f0;
 }
 
-.select-container p{
+.select-container p {
   padding-left: 10px;
   font-size: 14px;
 }
@@ -3272,11 +3230,10 @@ h4 {
   text-align: center;
 }
 
-
-.tag .tags-button{
+.tag .tags-button {
   width: 20px;
   height: 20px;
-  background: rgb(121, 121, 121);  
+  background: rgb(121, 121, 121);
   border-radius: 10px;
   border: none;
   margin: 5%;
@@ -3284,10 +3241,10 @@ h4 {
   cursor: pointer;
 }
 
-.tags .tags-button{
+.tags .tags-button {
   width: 20px;
   height: 20px;
-  background: rgb(121, 121, 121);  
+  background: rgb(121, 121, 121);
   border-radius: 10px;
   border: none;
   margin: 5%;
@@ -3312,8 +3269,6 @@ h4 {
   margin-top: -4%;
 }
 
-
-
 .uneditable {
   padding: 0.5rem;
   margin-bottom: 0%;
@@ -3321,9 +3276,6 @@ h4 {
   color: rgb(138, 138, 138);
   margin-top: -2%;
 }
-
-
-
 
 .building-row .plus-button.no-data {
   margin-bottom: 60px;
@@ -3348,7 +3300,7 @@ h4 {
   margin-bottom: -18px;
 }
 
-.area-row button{
+.area-row button {
   background-color: white;
   color: black;
   border: none;
@@ -3356,18 +3308,16 @@ h4 {
   border-radius: 50%;
   cursor: pointer;
   width: 24px; /* Set fixed width */
-  height: 24px; 
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-
-
 .area-row .plus-button {
   position: absolute;
-  bottom: 8px;  /* slight space from the bottom */
-  left: 6px;    /* slight space from the left */
+  bottom: 8px; /* slight space from the bottom */
+  left: 6px; /* slight space from the left */
   width: 24px;
   height: 24px;
   font-size: 16px;
@@ -3382,8 +3332,6 @@ h4 {
   cursor: pointer;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
 }
-
-
 
 /* .area-row .plus-button {
   position: absolute;
@@ -3402,7 +3350,6 @@ h4 {
   justify-content: center;
   background-color: white;
 } */
-
 
 .area-row .plus-button.no-data {
   margin-bottom: 30px;
@@ -3493,13 +3440,11 @@ h4 {
   margin-left: 10px;
 }
 
-
 .employee-checkbox .larger-checkbox {
   width: 12px;
   height: 12px;
   cursor: pointer;
 }
-
 
 h3,
 h4 {
@@ -3525,7 +3470,7 @@ h4 {
   /* grid-column: span 2; */
 }
 
-.form-group-full-width p{
+.form-group-full-width p {
   font-size: 14px;
   margin-top: 2%;
 }
@@ -3595,7 +3540,6 @@ h4 {
 
 .teamlead-stats div {
   font-weight: bold;
-
 }
 
 .projects {
@@ -3610,7 +3554,7 @@ h4 {
   cursor: pointer;
 }
 
-.projects-container:hover{
+.projects-container:hover {
   background-color: #fee28b;
 }
 
@@ -3648,11 +3592,11 @@ h4 {
   cursor: pointer;
 }
 
-.employees-container:hover{
+.employees-container:hover {
   background-color: #b0b0af;
 }
 
-.leave-summary-container .leave-summary-box{
+.leave-summary-container .leave-summary-box {
   background-color: #f1890d;
 }
 
@@ -3690,7 +3634,6 @@ h4 {
 }
 /* Manager Team leads CSS files below*/
 
-
 .error {
   background-color: #f8d7da;
   color: rgb(255, 25, 25);
@@ -3703,10 +3646,8 @@ h4 {
   font-size: 16px;
 }
 
-.loading{
+.loading {
   font-size: 16px;
   color: #f1890d;
   font-weight: 600;
 }
-
-
