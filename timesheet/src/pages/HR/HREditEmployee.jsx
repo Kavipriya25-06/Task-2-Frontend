@@ -7,6 +7,9 @@ import { cleanFormData } from "../../utils/cleanFormData";
 import cameraIcon from "../../assets/camera.png";
 import userPlaceholder from "../../assets/user.png";
 import plusIcon from "../../assets/plus.png";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { parseISO, format } from "date-fns";
 
 import { FaEdit } from "react-icons/fa";
 
@@ -525,27 +528,49 @@ const EditEmployee = () => {
                 <p className="data">{formData.doj}</p> */}
 
               {editMode ? (
-                <input
-                  type="date"
-                  name="dob"
-                  value={formData.dob}
-                  onChange={handleChange}
-                />
+                <div className="date-input-container">
+                  <DatePicker
+                    selected={formData.dob ? parseISO(formData.dob) : null}
+                    onChange={(date) =>
+                      setFormData({
+                        ...formData,
+                        dob: format(date, "yyyy-MM-dd"), // Store in backend-friendly format
+                      })
+                    }
+                    dateFormat="dd-MM-yyyy"
+                    placeholderText="dd-mm-yyyy"
+                    className="input1"
+                  />
+                  <i className="fas fa-calendar-alt calendar-icon"></i> {/* Optional icon */}
+                </div>
               ) : (
-                <div className="uneditable">{formData.dob || "-"}</div>
+                <div className="uneditable">
+                  {formData.dob ? format(parseISO(formData.dob), "dd-MM-yyyy") : "-"}
+                </div>
               )}
             </div>
             <div className="individual-tabs">
-              <label>Date of joining</label>
+              <label>Date of Joining</label>
               {editMode ? (
-                <input
-                  type="date"
-                  name="doj"
-                  value={formData.doj}
-                  onChange={handleChange}
+                   <div className="date-input-container">
+                <DatePicker
+                  selected={formData.doj ? parseISO(formData.doj) : null}
+                  onChange={(date) =>
+                    setFormData({
+                      ...formData,
+                      doj: format(date, "yyyy-MM-dd"),
+                    })
+                  }
+                  dateFormat="dd-MM-yyyy"
+                  placeholderText="dd-mm-yyyy"
+                  className="input1"
                 />
+                <i className="fas fa-calendar-alt calendar-icon"></i>
+              </div>
               ) : (
-                <div className="uneditable">{formData.doj || "-"}</div>
+                <div className="uneditable">
+                  {formData.doj ? format(parseISO(formData.doj), "dd-MM-yyyy") : "-"}
+                </div>
               )}
             </div>
             <div className="individual-tabs">

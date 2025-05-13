@@ -239,43 +239,36 @@ const AddEmployee = () => {
               </div>
             </div>
 
-            <div className="attachments-wrapper">
+           <div className="attachments-wrapper">
               <label>Attachments</label>
               <div className="attachments-box">
-                {newAttachments.length > 0 && (
-                  <div className="attachments-list">
-                    {newAttachments.map((file, index) => (
-                      <div key={index} className="attachment-item">
-                        <span className="attachment-name">{file.name}</span>
-                        <button
-                          type="button"
-                          className="remove-attachment"
-                          onClick={() => removeNewAttachment(index)}
-                        >
-                          &times;
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                <input
-                  type="file"
-                  id="attachments-input"
-                  name="attachments"
-                  multiple
-                  style={{ display: "none" }}
-                  onChange={handleAttachmentChange}
-                />
-                <label
-                  htmlFor="attachments-input"
-                  className="add-attachment-button"
-                >
-                  +
-                </label>
+                <div className="add-btn-wrapper">
+                  <label htmlFor="attachments-input" className="add-attachment-button">+</label>
+                  <input
+                    type="file"
+                    id="attachments-input"
+                    name="attachments"
+                    multiple
+                    style={{ display: "none" }}
+                    onChange={handleAttachmentChange}
+                  />
+                </div>
+                <div className="attachments-list">
+                  {newAttachments.map((file, index) => (
+                    <div key={index} className="attachment-item">
+                      <span className="attachment-name">{file.name}</span>
+                      <button
+                        type="button"
+                        className="remove-attachment"
+                        onClick={() => removeNewAttachment(index)}
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-
             <div className="individual-tabs">
               <label>Employee Code</label>
               <input
@@ -306,7 +299,7 @@ const AddEmployee = () => {
                 placeholder="Father's Name"
               />
             </div>
-            <div className="individual-tab">
+            <div className="individual-tabs">
               <label>Gender</label>
               <select
                 name="gender"

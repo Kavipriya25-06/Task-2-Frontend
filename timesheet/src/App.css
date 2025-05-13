@@ -459,6 +459,7 @@ input {
   border: 1px solid #ccc;
   box-sizing: border-box;
   transition: border-color 0.2s;
+  background-color: rgb(231, 231, 231);
 }
 
 
@@ -1172,6 +1173,7 @@ main {
   font-size: 19px;
   background-color: rgb(235, 234, 234);
   border: 2px solid rgb(196, 195, 195);
+  padding: 10px;
 }
 
 .calendar-header {
@@ -1487,10 +1489,8 @@ h3 {
   display: inline-block;
 }
 
-
-
 .datepicker-wrapper{
-  width:auto;
+  width:auto;  
 }
 
 
@@ -1500,34 +1500,35 @@ h3 {
   font-size: 0.944rem
 }
 
-.custom-modal .input1 {
-  width: 187%;
-  padding: 10px;
-  background-color: #f1f1f1;
-}
 
-
-.individual-tabs .input1 {
+/* .individual-tabs .input1 {
   width: 193%;
   margin-top: -4%;
+} */
+
+.react-datepicker-wrapper{
+  width:100%;
 }
 
-.calendar-icon {
+.date-input-container{
+  width:100%
+}
+
+.row1 .calendar-icon {
   position: absolute;
-  right: -68%; /* Position icon to the right */
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 18px; /* Icon size */
+  top: 25%;
+  right: 23%;
+  font-size: 15px; /* Icon size */
   color: #3d3d3d; /* Icon color */
   cursor: pointer; /* Make icon clickable */
-  pointer-events: none; /* Allow click on the input, not the icon */
+  pointer-events: none;
 }
 
 
 .project-form-group-small .calendar-icon {
   position: absolute;
   top: 48%;
-  right: 5%;
+  right:  0.5%;
   font-size: 15px; /* Icon size */
   color: #3d3d3d; /* Icon color */
   cursor: pointer; /* Make icon clickable */
@@ -1545,11 +1546,9 @@ h3 {
 }
 
 
-
-
 .individual-tabs .calendar-icon {
   position: absolute;
-  top: 38%;
+  top: 8%;
   right: 8%;
   font-size: 15px; /* Icon size */
   color: #3d3d3d; /* Icon color */
@@ -1559,9 +1558,9 @@ h3 {
 
 .custom-modal .calendar-icon {
   position: absolute;
-  top: 35%;
-  right: -83%;
-  font-size: 15px; /* Icon size */
+  top: 19%;
+  right: 3%;
+  font-size: 17px; /* Icon size */
   color: #3d3d3d; /* Icon color */
   cursor: pointer; /* Make icon clickable */
   pointer-events: none; /* Allow click on the input, not the icon */
@@ -1975,6 +1974,8 @@ h3 {
   margin-bottom: 0%;
 }
 
+
+
 /* Button Group */
 .form-buttons {
   display: flex;
@@ -2268,14 +2269,35 @@ h3 {
 
 /* Input styling */
 .tab-content input,
-.tab-content textarea,
-.tab-content select {
+.tab-content textarea{
   padding: 10px 12px;
   border-radius: 8px;
   border: 1px solid #ccc;
   background-color: #fafafa;
   font-size: 14px;
 }
+
+
+.individual-tabs select {
+  width: 95%;
+  max-width: 590px;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f6f6f6;
+  font-size: 14px;
+  font-family: "Archivo", sans-serif;
+  box-sizing: border-box;
+  margin-top: -2%;
+  background-size: 16px;
+  cursor: pointer;
+  color: #6e6e6e;
+}
+
+.individual-tabs select:focus{
+  color: #000;
+}
+
 
 .tab-content textarea {
   resize: vertical;
@@ -2304,14 +2326,23 @@ h3 {
   height: 90%;
 }
 
-.individual-tabs input,
-.individual-tabs textarea,
-.individual-tabs select{
+.individual-tabs input{
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
   background-color: #f6f6f6;
   margin-top: -2%;
+}
+
+
+
+.individual-tabs textarea{
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f6f6f6;
+  margin-top: -2%;
+  width: 90%;
 }
 
 .individual-tab select {
@@ -2770,27 +2801,37 @@ button.delete-building:hover {
   padding-top: 2px;
 }
 .bottom-elements textarea {
-  width: 37.5%;
+  width: 40%; /* full width inside parent */
+  max-width: 325px; /* limits on large screens */
   padding: 10px;
   border-radius: 6px;
   border: 1px solid #ccc;
   font-family: "Archivo", sans-serif;
-  resize: vertical; /* allows vertical resizing only */
+  resize: vertical;
   background-color: #f0eeee;
   margin-top: 5px;
+  box-sizing: border-box;
 }
+
 
 .table-bottom-elements {
   display: flex;
-  gap: 20px; /* space between the two inputs */
+  flex-wrap: wrap;
+  gap: 15px;
   margin-top: 16px;
-  flex-wrap: wrap; /* allows stacking on smaller screens */
+  justify-content: flex-start; /* or space-between if needed */
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.table-bottom-elements > div {
-  flex: 1; /* equal width for both fields */
-  min-width: 200px;
+
+.table-bottom-elements > * {
+  flex: 1 1 300px;       /* Grow, shrink, base width */
+  min-width: 250px;      /* Prevent too small */
+  max-width: 410px;       /* Prevent overflow */
+  box-sizing: border-box;
 }
+
 
 .table-bottom-elements label {
   font-weight: 500;
@@ -2806,8 +2847,10 @@ button.delete-building:hover {
 }
 
 .table-bottom-element > div {
-  flex: 1; /* equal width for both fields */
-  min-width: 200px;
+  flex: 1 1 300px;       /* Grow, shrink, base width */
+  min-width: 250px;      /* Prevent too small */
+  max-width: 410px;       /* Prevent overflow */
+  box-sizing: border-box;
 }
 
 .table-bottom-element label {
@@ -2817,23 +2860,27 @@ button.delete-building:hover {
 }
 
 .table-bottom-elements textarea {
-  width: 80%;
+  width: 87%;              /* Full width of parent */
   padding: 8px;
   border-radius: 6px;
   border: 1px solid #ccc;
   font-family: "Archivo", sans-serif;
   resize: vertical;
   background-color: #f0eeee;
+  box-sizing: border-box;
 }
 
+
 .table-bottom-element textarea{
-  width: 81.5%;
+  width: 86%;              /* Full width of parent */
+  max-width: 530px !important;
   padding: 8px;
   border-radius: 6px;
   border: 1px solid #ccc;
   font-family: "Archivo", sans-serif;
   resize: vertical;
   background-color: #f0eeee;
+  box-sizing: border-box;
 }
 
 .table-bottom-elements select {
@@ -2902,17 +2949,25 @@ button.delete-building:hover {
 .tab-content .attachments-box {
   background-color: #f6f6f6;
   border: 1px solid #ccc;
+  width: 90%;
+  margin-top: 1.5%;
 }
 
 .tab-content .attachments-box .add-attachment-button {
-  background-color: #f6f6f6;
   padding: 0%;
   margin: 0%;
+  margin-top: -32%;
 }
 
-.add-attachment-button .add-attachment-icon {
-  width: 20px;
-  height: 20px;
+
+.add-btn-wrapper .add-attachment-button{
+  font-size: 35px;
+  background: none;
+}
+
+.add-attachment-icon {
+  width: 40px;
+  height: 40px;
 }
 
 .view-attachment-link {
@@ -2981,7 +3036,7 @@ button.delete-building:hover {
 }
 
 .project-form-group-small input {
-  width: 85%;
+  width: 95%;
   height: 25%;
   padding: 9px;
 }
