@@ -461,9 +461,11 @@ input {
   transition: border-color 0.2s;
 }
 
+
+
 .custom-modal input:focus {
   outline: none;
-  border-color: #007bff;
+  border-color: #b5b4b4;
 }
 
 /* Button group */
@@ -1483,9 +1485,29 @@ h3 {
   display: inline-block;
 }
 
-.date-input-container .input1 {
-  width: 161%;
+
+
+.datepicker-wrapper{
+  width:auto;
+}
+
+
+
+.project-form-group-small .react-datepicker__current-month {
+  margin-left: 37%;
+  font-size: 0.944rem
+}
+
+.custom-modal .input1 {
+  width: 187%;
   padding: 10px;
+  background-color: #f1f1f1;
+}
+
+
+.individual-tabs .input1 {
+  width: 193%;
+  margin-top: -4%;
 }
 
 .calendar-icon {
@@ -1498,6 +1520,51 @@ h3 {
   cursor: pointer; /* Make icon clickable */
   pointer-events: none; /* Allow click on the input, not the icon */
 }
+
+
+.project-form-group-small .calendar-icon {
+  position: absolute;
+  top: 48%;
+  right: 5%;
+  font-size: 15px; /* Icon size */
+  color: #3d3d3d; /* Icon color */
+  cursor: pointer; /* Make icon clickable */
+  pointer-events: none; /* Allow click on the input, not the icon */
+}
+
+.popup .calendar-icon {
+  position: absolute;
+  top: 48%;
+  right: 10%;
+  font-size: 15px; /* Icon size */
+  color: #3d3d3d; /* Icon color */
+  cursor: pointer; /* Make icon clickable */
+  pointer-events: none; /* Allow click on the input, not the icon */
+}
+
+
+
+
+.individual-tabs .calendar-icon {
+  position: absolute;
+  top: 38%;
+  right: 8%;
+  font-size: 15px; /* Icon size */
+  color: #3d3d3d; /* Icon color */
+  cursor: pointer; /* Make icon clickable */
+  pointer-events: none; /* Allow click on the input, not the icon */
+}
+
+.custom-modal .calendar-icon {
+  position: absolute;
+  top: 35%;
+  right: -83%;
+  font-size: 15px; /* Icon size */
+  color: #3d3d3d; /* Icon color */
+  cursor: pointer; /* Make icon clickable */
+  pointer-events: none; /* Allow click on the input, not the icon */
+}
+
 
 .input1:focus + .calendar-icon {
   color: #333; /* Change icon color when input is focused */
@@ -2237,12 +2304,21 @@ h3 {
 
 .individual-tabs input,
 .individual-tabs textarea,
-.individual-tabs select {
+.individual-tabs select{
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
   background-color: #f6f6f6;
   margin-top: -2%;
+}
+
+.individual-tab select {
+  width: 95%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f6f6f6;
+  margin-top: 1.5%;
 }
 
 .add-user-form .tab-label {
@@ -2556,7 +2632,7 @@ button.delete-building:hover {
 .left-form-firsts {
   padding: 0px;
   display: grid;
-  gap: 3px;
+  gap: 1px;
   grid-template-columns: 1fr 1fr;
 }
 .left-form-second {
@@ -2585,16 +2661,16 @@ button.delete-building:hover {
 .right-form-first {
   padding: 0px;
   display: grid;
-  gap: 10px;
+  gap: 20px;
   grid-template-columns: 1fr 1fr;
   margin-top: 5%;
 }
 .right-form-building-first {
   padding: 0px;
   display: grid;
-  gap: 30px;
+  gap: 25px;
   grid-template-columns: 1fr 1fr;
-  margin-top: 2%;
+  margin-top: 3%;
 }
 
 .right-form-building-firsts {
@@ -2609,7 +2685,7 @@ button.delete-building:hover {
   padding: 0px;
   display: grid;
   gap: 10%;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: 1fr 0.4fr;
   margin-top: 6%;
 
   /* grid-template-columns: 1fr 1fr; */
@@ -2884,6 +2960,11 @@ button.delete-building:hover {
   /* margin-bottom: 1rem;
   padding: 20px; */
 }
+
+.project-form-group-small .input1{
+  background-color: #f0f0f0;
+}
+
 .project-form-group-small p {
   margin: 0%;
   font-size: 14px;
@@ -2898,7 +2979,7 @@ button.delete-building:hover {
 }
 
 .project-form-group-small input {
-  width: 80%;
+  width: 85%;
   height: 25%;
   padding: 9px;
 }
@@ -2969,7 +3050,7 @@ button.delete-building:hover {
   border-radius: 6px;
   border: 1px solid #ccc;
   font-size: 14px;
-  background-color: #fff;
+  background-color: #f1f1f1;
   width: 100%;
 }
 
@@ -2978,6 +3059,23 @@ button.delete-building:hover {
 }
 
 .building-row button {
+  background-color: white;
+  color: black;
+  border: none;
+  padding: 6px 6px;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-left: 1%;
+  width: 24px; /* Set fixed width */
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1%;
+  margin-top: 1%;
+}
+
+.select-container button {
   background-color: white;
   color: black;
   border: none;

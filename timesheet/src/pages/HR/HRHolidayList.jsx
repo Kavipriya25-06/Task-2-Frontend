@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import config from "../../config";
 import Modal from "react-modal";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { format } from "date-fns";
 
 
 const HolidayList = () => {
-
-// const HRHolidayList = () => {
+  // const HRHolidayList = () => {
   const [calendarData, setCalendarData] = useState([]);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [showPopup, setShowPopup] = useState(false);
@@ -24,15 +26,18 @@ const HolidayList = () => {
   };
 
   const handleDelete = (id) => {
-    const updatedData = calendarData.filter(entry => entry.calendar_id !== id);
+    const updatedData = calendarData.filter(
+      (entry) => entry.calendar_id !== id
+    );
     setCalendarData(updatedData);
-  }
+  };
 
   useEffect(() => {
     fetchCalendarData(selectedYear);
   }, [selectedYear]);
 
   const holidayData = calendarData.filter((day) => day.is_holiday);
+  console.log("the matching date", formData.date);
 
   const handlePatchHoliday = async () => {
     try {
@@ -40,6 +45,8 @@ const HolidayList = () => {
         (day) => day.date === formData.date
       );
       if (!matchingDate) return alert("Date not found in calendar data");
+
+      console.log("the matching date", formData.date);
 
       const response = await fetch(
         `${config.apiBaseURL}/calendar/${matchingDate.calendar_id}/`,
@@ -81,9 +88,19 @@ const HolidayList = () => {
       >
         <h2 className="holiday-table-title">Holidays - {selectedYear}</h2>
         <div className="year-selector">
-          <button className="lefts" onClick={() => setSelectedYear((y) => y - 1)}>&lt;</button>
+          <button
+            className="lefts"
+            onClick={() => setSelectedYear((y) => y - 1)}
+          >
+            &lt;
+          </button>
           <span className="year-text">{selectedYear}</span>
-          <button className="rights" onClick={() => setSelectedYear((y) => y + 1)}>&gt;</button>
+          <button
+            className="rights"
+            onClick={() => setSelectedYear((y) => y + 1)}
+          >
+            &gt;
+          </button>
         </div>
       </div>
       <table className="holiday-table">
@@ -116,14 +133,14 @@ const HolidayList = () => {
         </tbody>
       </table>
       <button
-                onClick={() => setShowPopup(true)}
-                style={{
-                  textAlign: "left",
-                  fontSize: "20px",
-                  fontWeight: "bolder",
-                }}
-              >
-                +
+        onClick={() => setShowPopup(true)}
+        style={{
+          textAlign: "left",
+          fontSize: "20px",
+          fontWeight: "bolder",
+        }}
+      >
+        +
       </button>
       {/* {showPopup && (
         <div className="popup-overlay">
@@ -161,41 +178,56 @@ const HolidayList = () => {
         </div>
       )} */}
 
-
-{showPopup && (
-      <div className="custom-modal-overlay">
-        <div className="custom-modal">
-          <button className="close-btn" onClick={() => setShowPopup(false)}>
-            &times;
-          </button>
-          <h3>Add Holiday</h3>
-          <label>
-            Date:
-            <input
+      {showPopup && (
+        <div className="custom-modal-overlay">
+          <div className="custom-modal">
+            <button className="close-btn" onClick={() => setShowPopup(false)}>
+              &times;
+            </button>
+            <h3>Add Holiday</h3>
+            <label>
+              Date:
+              <br />
+                 <div className="date-input-container">
+                    <DatePicker
+                      selected={formData.date ? new Date(formData.date) : null}
+                      onChange={(date) =>
+                        setFormData({
+                          ...formData,
+                          date: date, // Keep as Date object
+                        })
+                      }
+                      dateFormat="dd-MM-yyyy"
+                      placeholderText="dd-mm-yyyy"
+                      className="input1" // Or any input styling class
+                    />
+                    <i className="fas fa-calendar-alt calendar-icon"></i> {/* Font Awesome Calendar Icon */}
+                  </div>
+              {/* <input
               type="date"
               value={formData.date}
               onChange={(e) =>
                 setFormData({ ...formData, date: e.target.value })
               }
-            />
-          </label>
-          <label>
-            Holidays:
-            <input
-              type="text"
-              value={formData.notes}
-              onChange={(e) =>
-                setFormData({ ...formData, notes: e.target.value })
-              }
-            />
-          </label>
-          <div className="modal-buttons">
-            <button onClick={handlePatchHoliday}>Submit</button>
-            <button onClick={() => setShowPopup(false)}>Cancel</button>
+            /> */}
+            </label>
+            <label>
+              Holidays:
+              <input
+                type="text"
+                value={formData.notes}
+                onChange={(e) =>
+                  setFormData({ ...formData, notes: e.target.value })
+                }
+              />
+            </label>
+            <div className="modal-buttons">
+              <button onClick={handlePatchHoliday}>Submit</button>
+              <button onClick={() => setShowPopup(false)}>Cancel</button>
+            </div>
           </div>
         </div>
-      </div>
-    )}
+      )}
       {/* <Modal
   isOpen={showPopup}
   onRequestClose={() => setShowPopup(false)}
@@ -246,11 +278,9 @@ const HolidayList = () => {
     <button className="btn-cancel" onClick={() => setShowPopup(false)}>Cancel</button>
   </div>
 </Modal> */}
-
     </div>
   );
 };
-
 
 export default HolidayList;
 

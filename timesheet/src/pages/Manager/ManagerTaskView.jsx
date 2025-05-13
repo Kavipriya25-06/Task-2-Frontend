@@ -4,6 +4,9 @@ import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate, useParams } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { format } from "date-fns";
 
 const ManagerTaskView = () => {
   const { user } = useAuth();
@@ -282,25 +285,43 @@ const ManagerTaskView = () => {
               <div className="project-form-group-small">
                 <label>Start Date</label>
                 {editMode ? (
-                  <input
-                    type="date"
-                    name="start_date"
-                    value={formData.start_date}
-                    onChange={handleChange}
-                  />
+                  <div className="date-input-container">
+                    <DatePicker
+                      selected={formData.start_date ? new Date(formData.start_date) : null}
+                      onChange={(date) =>
+                        handleChange({
+                          target: { name: "start_date", value: format(date, "yyyy-MM-dd") },
+                        })
+                      }
+                      dateFormat="dd-MMM-yyyy"
+                      placeholderText="dd-mm-yyyy"
+                      className="custom-datepicker"
+                    />
+                    <i className="fas fa-calendar-alt calendar-icon"></i>
+                  </div>
                 ) : (
                   <p>{taskData?.start_date || ""}</p>
                 )}
               </div>
+
               <div className="project-form-group-small">
                 <label>End Date</label>
                 {editMode ? (
-                  <input
-                    type="date"
-                    name="end_date"
-                    value={formData.end_date}
-                    onChange={handleChange}
-                  />
+                  <div className="date-input-container">
+                    <DatePicker
+                      selected={formData.end_date ? new Date(formData.end_date) : null}
+                      onChange={(date) =>
+                        handleChange({
+                          target: { name: "end_date", value: format(date, "yyyy-MM-dd") },
+                        })
+                      }
+                      dateFormat="dd-MMM-yyyy"
+                      placeholderText="dd-mm-yyyy"
+                      className="custom-datepicker"
+                      popperPlacement="bottom-start"
+                    />
+                    <i className="fas fa-calendar-alt calendar-icon"></i>
+                  </div>
                 ) : (
                   <p>{taskData?.end_date || ""}</p>
                 )}

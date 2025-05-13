@@ -10,6 +10,9 @@ import plusIcon from "../../assets/plus.png";
 import { useAttachmentManager } from "../../constants/useAttachmentManager";
 import { useEmployeeFormHandler } from "../../constants/useEmployeeFormHandler";
 import { defaultEmployeeFormData } from "../../constants/defaultEmployeeFormData";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { format } from "date-fns";
 
 const tabLabels = [
   "Employee details",
@@ -303,7 +306,7 @@ const AddEmployee = () => {
                 placeholder="Father's Name"
               />
             </div>
-            <div className="individual-tabs">
+            <div className="individual-tab">
               <label>Gender</label>
               <select
                 name="gender"
@@ -319,21 +322,41 @@ const AddEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>Date of Birth</label>
-              <input
-                type="date"
-                name="dob"
-                value={formData.dob}
-                onChange={handleChange}
-              />
+              <div className="date-input-container">
+                <DatePicker
+                  selected={formData.dob}
+                  onChange={(date) =>
+                    setFormData({
+                      ...formData,
+                      dob: format(date, "yyyy-MM-dd"),
+                    })
+                  }
+                  dateFormat="dd-MMM-yyyy"
+                  placeholderText="dd-mm-yyyy"
+                  className="input1"
+                />
+                <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+                {/* Font Awesome Calendar Icon */}
+              </div>
             </div>
             <div className="individual-tabs">
               <label>Date of joining</label>
-              <input
-                type="date"
-                name="doj"
-                value={formData.doj}
-                onChange={handleChange}
-              />
+              <div className="date-input-container">
+                <DatePicker
+                  selected={formData.doj}
+                  onChange={(date) =>
+                    setFormData({
+                      ...formData,
+                      doj: format(date, "yyyy-MM-dd"),
+                    })
+                  }
+                  dateFormat="dd-MMM-yyyy"
+                  placeholderText="dd-mm-yyyy"
+                  className="input1"
+                />
+                <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+                {/* Font Awesome Calendar Icon */}
+              </div>
             </div>
             <div className="individual-tabs">
               <label>Personal Email</label>
@@ -441,12 +464,22 @@ const AddEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>Passport validity</label>
-              <input
-                type="date"
-                name="passport_validity"
-                value={formData.passport_validity}
-                onChange={handleChange}
-              />
+              <div className="date-input-container">
+                <DatePicker
+                  selected={formData.passport_validity}
+                  onChange={(date) =>
+                    setFormData({
+                      ...formData,
+                      passport_validity: format(date, "yyyy-MM-dd"),
+                    })
+                  }
+                  dateFormat="dd-MMM-yyyy"
+                  placeholderText="dd-mm-yyyy"
+                  className="input1"
+                />
+                <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+                {/* Font Awesome Calendar Icon */}
+              </div>
             </div>
             <div className="individual-tabs">
               <label>Status</label>
@@ -650,12 +683,22 @@ const AddEmployee = () => {
 
             <div className="individual-tabs">
               <label>Probation confirmation date</label>
-              <input
-                type="date"
-                name="probation_confirmation_date"
-                value={formData.probation_confirmation_date}
-                onChange={handleChange}
-              />
+              <div className="date-input-container">
+                <DatePicker
+                  selected={formData.probation_confirmation_date}
+                  onChange={(date) =>
+                    setFormData({
+                      ...formData,
+                      probation_confirmation_date: format(date, "yyyy-MM-dd"),
+                    })
+                  }
+                  dateFormat="dd-MMM-yyyy"
+                  placeholderText="Select confirmation date"
+                  className="input1"
+                />
+                <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+                {/* Font Awesome Calendar Icon */}
+              </div>
             </div>
             <div className="individual-tabs">
               <label>Official Email</label>

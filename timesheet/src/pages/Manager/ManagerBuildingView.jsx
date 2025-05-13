@@ -3,6 +3,9 @@ import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate, useParams } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { format } from "date-fns";
 
 const ManagerBuildingView = () => {
   const { user } = useAuth();
@@ -227,7 +230,7 @@ const ManagerBuildingView = () => {
       <div>
         <div className="input-elements">
           <div className="left-form">
-            <div className="left-form-firsts">
+            <div className="left-form-first">
               <div className="project-form-group">
                 <label>Project Code</label>
                 <p>{project?.project_code || ""}</p>
@@ -245,7 +248,7 @@ const ManagerBuildingView = () => {
                 <p>{buildingsAssign.building?.building_title}</p>
               </div>
             </div>
-            <div className="left-form-seconds">
+            <div className="left-form-second">
               <div className="project-form-group">
                 <label className="description">Building Description</label>
                 <p>{buildingsAssign.building?.building_description}</p>
@@ -296,7 +299,7 @@ const ManagerBuildingView = () => {
             </div>
           </div>
           <div className="right-form">
-            <div className="right-form-building-firsts">
+            <div className="right-form-first">
               <div className="project-form-group-small">
                 <label>Start Date</label>
                 <p>{project?.start_date || ""}</p>
@@ -408,39 +411,43 @@ const ManagerBuildingView = () => {
                           updateTaskHours(task.task_id, e.target.value)
                         }
                       />
-                      <input
-                        type="date"
-                        value={selected.start_date || ""}
-                        onChange={(e) =>
-                          updateTaskDates(
-                            task.task_id,
-                            "start_date",
-                            e.target.value
-                          )
-                        }
-                      />
-                      <input
-                        type="date"
-                        value={selected.end_date || ""}
-                        onChange={(e) =>
-                          updateTaskDates(
-                            task.task_id,
-                            "end_date",
-                            e.target.value
-                          )
-                        }
-                      />
+                     <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+                       <div className="date-input-container">
+                           <DatePicker
+                              selected={selected.start_date ? new Date(selected.start_date) : null}
+                              onChange={(date) =>
+                                updateTaskDates(task.task_id, "start_date", format(date, "yyyy-MM-dd"))
+                              }
+                              dateFormat="dd-MMM-yyyy"
+                              placeholderText="dd-mm-yyyy"
+                              className="custom-datepicker"
+                            />
+                          <i className="fas fa-calendar-alt calendar-icon"></i> {/* Font Awesome Calendar Icon */}
+                        </div>
+                         <div className="date-input-container">
+                             <DatePicker
+                                selected={selected.end_date ? new Date(selected.end_date) : null}
+                                onChange={(date) =>
+                                  updateTaskDates(task.task_id, "end_date", format(date, "yyyy-MM-dd"))
+                                }
+                                dateFormat="dd-MMM-yyyy"
+                                placeholderText="dd-mm-yyyy"
+                                className="custom-datepicker"
+                              />
+                          <i className="fas fa-calendar-alt calendar-icon"></i> {/* Font Awesome Calendar Icon */}
+                        </div>
+                      </div>
                     </>
                   )}
                 </div>
               );
             })}
-            <button onClick={saveTaskPopup} className="btn-green">
+            <button onClick={saveTaskPopup} className="btn-save">
               Done
             </button>
             <button
               onClick={() => setTaskPopupVisible(false)}
-              className="btn-red"
+              className="btn-cancel"
             >
               Cancel
             </button>

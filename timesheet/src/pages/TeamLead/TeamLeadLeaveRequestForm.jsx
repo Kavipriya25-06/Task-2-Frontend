@@ -158,8 +158,8 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
               <DatePicker
                 selected={formData.startDate}
                 onChange={(date) => handleChange({ target: { name: "startDate", value: date } })}
-                dateFormat="YYYY-MM-dd"
-                placeholderText="YYYY-MM-DD"
+                dateFormat="dd-MMM-yyyy"
+                placeholderText="dd-mm-yyyy"
                 className="input1"
               />
               <i className="fas fa-calendar-alt calendar-icon"></i> {/* Font Awesome Calendar Icon */}
@@ -171,8 +171,8 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
               <DatePicker
                 selected={formData.endDate}
                 onChange={(date) => handleChange({ target: { name: "endDate", value: date } })}
-                dateFormat="YYYY-MM-dd"
-                placeholderText="YYYY-MM-DD"
+                dateFormat="dd-MMM-yyyy"
+                placeholderText="dd-mm-yyyy"
                 className="input1"
                 minDate={formData.startDate || null}
               />
@@ -198,8 +198,8 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
               <DatePicker
                 selected={formData.resumptionDate}
                 onChange={(date) => handleChange({ target: { name: "resumptionDate", value: date } })}
-                dateFormat="YYYY-MM-dd"
-                placeholderText="YYYY-MM-DD"
+                dateFormat="dd-MMM-yyyy"
+                placeholderText="dd-mm-yyyy "
                 className="input1"
                 minDate={formData.endDate ? new Date(formData.endDate.getTime() + 86400000) : null}
               />

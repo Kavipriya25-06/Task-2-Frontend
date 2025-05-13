@@ -3,6 +3,9 @@ import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { format } from "date-fns";
 
 const TeamLeadProjectCreate = () => {
   const [teamleadManager, setTeamleadManager] = useState([]);
@@ -173,7 +176,7 @@ const TeamLeadProjectCreate = () => {
               </div>
             </div>
             <div className="left-form-second">
-            <div className="roles-box">
+              <div className="roles-box">
                 <label>Project Roles</label>
                 <div className="select-container">
                   {teamleadManager.map((employee) => (
@@ -250,26 +253,30 @@ const TeamLeadProjectCreate = () => {
                         <div>
                           <span className="tag" key={a.area_name}>
                             {a.name}
-                              <button
-                            className="tags-button"
-                            type="button"
-                            onClick={() =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                area_of_work: prev.area_of_work.filter(
-                                  (area) => area !== a.area_name
-                                ),
-                              }))
-                            }
-                          >
-                            ×
-                          </button>
+                            <button
+                              className="tags-button"
+                              type="button"
+                              onClick={() =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  area_of_work: prev.area_of_work.filter(
+                                    (area) => area !== a.area_name
+                                  ),
+                                }))
+                              }
+                            >
+                              ×
+                            </button>
                           </span>
                         </div>
                       ))}
                   </div>
 
-                  <button className="plus-button" type="button" onClick={() => setShowAreaPopup(true)}>
+                  <button
+                    className="plus-button"
+                    type="button"
+                    onClick={() => setShowAreaPopup(true)}
+                  >
                     +
                   </button>
                 </div>
@@ -290,12 +297,21 @@ const TeamLeadProjectCreate = () => {
             <div className="right-form-first">
               <div className="project-form-group-small">
                 <label>Start Date</label>
-                <input
-                  type="date"
-                  name="start_date"
-                  value={formData.start_date}
-                  onChange={handleChange}
-                />
+                <div className="date-input-container">
+                  <DatePicker
+                    selected={formData.start_date}
+                    onChange={(date) =>
+                      setFormData({
+                        ...formData,
+                        start_date: format(date, "yyyy-MM-dd"),
+                      })
+                    }
+                    dateFormat="dd-MMM-yyyy"
+                    placeholderText="dd-mm-yyyy"
+                  />
+                  <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+                  {/* Font Awesome Calendar Icon */}
+                </div>
               </div>
               <div className="project-form-group-small">
                 <label>Estd. Hours</label>
@@ -381,7 +397,12 @@ const TeamLeadProjectCreate = () => {
               )}
             </div>
           ))}
-          <button className="btn-save" onClick={() => setShowBuildingPopup(false)}>Done</button>
+          <button
+            className="btn-save"
+            onClick={() => setShowBuildingPopup(false)}
+          >
+            Done
+          </button>
           <button
             onClick={() => {
               setShowBuildingPopup(false);
