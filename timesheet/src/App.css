@@ -2805,6 +2805,16 @@ button.delete-building:hover {
   padding: 0;
 }
 
+.project-form-group .select-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align children to the left */
+  justify-content: flex-start; /* Align to top */
+  gap: 0px; /* Controls spacing between tiles */
+  padding: 0;
+  background-color: #f0f0f0;
+}
+
 .readonly-tags .tag {
   background-color: #f0f0f0;
   color: #555;
@@ -3294,16 +3304,11 @@ h4 {
   position: relative;
 } */
 
-.select-container .task-tile {
-  display: flex;
-  /* grid-column: span 4; */
-  /* gap: 1rem; */
-  align-items: center;
-  border: 1px solid #ddd;
-  min-height: 100px;
-  border-radius: 8px;
+/* .select-container .task-tile {
+  position: relative;
+  margin-top: 0%;
   background-color: #f0f0f0;
-}
+} */
 
 .select-container p {
   padding-left: 10px;
@@ -3311,8 +3316,14 @@ h4 {
 }
 
 .task-tile .building-tile-small {
-  margin-bottom: 13%;
+ display: inline-block;
+  background: #e0e0e0;
+  padding: 5px 10px;
+  margin: 5px;
+  border-radius: 8px;
+  margin-bottom: 5%;
   font-size: 90%;
+  cursor: pointer;
 }
 .building-tile-smalll {
   display: inline-block;
@@ -3324,6 +3335,11 @@ h4 {
   font-size: 90%;
 }
 .building-tile {
+  position: relative;
+  margin-top: 0%;
+}
+
+.task-tile {
   position: relative;
   margin-top: 0%;
 }

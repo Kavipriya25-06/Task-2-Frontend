@@ -285,7 +285,7 @@ const ManagerBuildingView = () => {
                         >
                           {t.task.task_title}
                         </div>
-                        <div className="building-tile-smalll">
+                        <div className="building-tile-smalls">
                           {t.task_hours} hours
                         </div>
                       </div>

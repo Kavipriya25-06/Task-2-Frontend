@@ -1092,7 +1092,7 @@ const TeamLeadProjectView = () => {
                         .map((a) => (
                           <span className="tag" key={a.area_name}>
                             {a.name}
-                            {/* <button className="tag-button">×</button> */}
+                            <button className="tag-button">×</button>
                           </span>
                         ))}
                     </div>
