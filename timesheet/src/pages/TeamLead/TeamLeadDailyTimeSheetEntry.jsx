@@ -65,7 +65,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
           let timesheetRows = [];
           if (latestRecord.timesheets && latestRecord.timesheets.length > 0) {
             let fetchedRows = latestRecord.timesheets.map((ts) => ({
-              timesheet_id: ts.id, // VERY IMPORTANT: keep the ID for PATCHing
+              timesheet_id: ts.timesheet_id, // VERY IMPORTANT: keep the ID for PATCHing
               project:
                 ts.task_assign?.building_assign?.project_assign?.project
                   ?.project_title || "",
@@ -340,6 +340,76 @@ const TeamLeadDailyTimeSheetEntry = () => {
     }
   };
 
+  const handleSave = async () => {
+    try {
+      // ---------------- PATCH updated existing rows ----------------
+      for (let row of updatedRows) {
+        const { start_time, end_time } = validateTimes(row);
+        const payload = {
+          employee: employee_id,
+          date: date,
+          project: row.project,
+          building: row.building,
+          task_assign: row.task_assign_id,
+          task_hours: parseFloat(row.hours || 0),
+          start_time,
+          end_time,
+        };
+
+        const response = await fetch(
+          `${config.apiBaseURL}/timesheet/${row.timesheet_id}/`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error("Failed to PATCH row:", errorData);
+          alert(`Failed to update task "${row.task}".`);
+          return;
+        }
+      }
+
+      // ---------------- POST new rows ----------------
+      for (let row of newRows) {
+        const { start_time, end_time } = validateTimes(row);
+        const payload = {
+          employee: employee_id,
+          date: date,
+          project: row.project,
+          building: row.building,
+          task_assign: row.task_assign_id,
+          task_hours: parseFloat(row.hours || 0),
+          start_time,
+          end_time,
+          submitted: false,
+        };
+
+        const response = await fetch(`${config.apiBaseURL}/timesheet/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error("Failed to POST new row:", errorData);
+          alert(`Failed to submit new task "${row.task}".`);
+          return;
+        }
+      }
+
+      alert("All timesheet rows saved successfully!");
+      // Optionally refresh data here
+    } catch (error) {
+      console.error("Submission failed:", error);
+      alert(error);
+    }
+  };
+
   const validateTimes = (row) => {
     const start = row.start_time;
     const end = row.end_time;
@@ -563,7 +633,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
       <div className="button-container">
         <button
           className="btn-save"
-          onClick={handleSubmit}
+          onClick={handleSave}
           disabled={totalAssignedHours > maxAllowedHours}
         >
           Save

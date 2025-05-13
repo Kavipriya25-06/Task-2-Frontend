@@ -225,7 +225,6 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
           <div className="custom-file-container">
             <label htmlFor="fileUpload" className="custom-file-label">
               <span className="choose-btn">Choose File</span>
-              <span className="file-info">Max size 2MB</span>
             </label>
             <input
               type="file"
@@ -235,6 +234,13 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
               onChange={handleChange}
               className="real-file-input"
             />
+            {formData.attachment && (
+              <div className="file-info">
+                Selected File: <strong>{formData.attachment.name}</strong>
+              </div>
+            )}
+            <div className="file-info">Max size 2MB</div>
+
           </div>
         </div>
 

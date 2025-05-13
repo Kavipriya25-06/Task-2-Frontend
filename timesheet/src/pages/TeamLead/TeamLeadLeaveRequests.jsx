@@ -5,6 +5,8 @@ import TeamLeadLeaveRequestForm from "./TeamLeadLeaveRequestForm";
 
 const TeamLeadLeaveRequests = () => {
   const { user } = useAuth();
+  const [leaveAttachments, setLeaveAttachments] = useState({});
+
   const [leaveSummary, setLeaveSummary] = useState({
     sick: 0,
     casual: 0,
@@ -42,18 +44,39 @@ const TeamLeadLeaveRequests = () => {
     }
   };
 
-  const fetchLeaveRequests = async () => {
-    try {
-      const response = await fetch(
-        `${config.apiBaseURL}/leaves-taken/by_employee/${user.employee_id}/`
-      );
-      const data = await response.json();
-      setLeaveRequests(data);
-      console.log("Leave requests", data);
-    } catch (err) {
-      console.error("Error fetching leave requests", err);
-    }
-  };
+ const fetchLeaveRequests = async () => {
+  try {
+    const response = await fetch(
+      `${config.apiBaseURL}/leaves-taken/by_employee/${user.employee_id}/`
+    );
+    const data = await response.json();
+    setLeaveRequests(data);
+
+    // Fetch attachments per leave_taken_id
+    const attachmentsByLeave = {};
+
+    await Promise.all(
+      data.map(async (request) => {
+        const leaveId = request.leave_taken_id; // or request.id if backend returns "id"
+        if (leaveId) {
+          try {
+            const res = await fetch(`${config.apiBaseURL}/attachments/leavestaken/${leaveId}/`);
+            if (res.ok) {
+              const files = await res.json();
+              attachmentsByLeave[leaveId] = files;
+            }
+          } catch (err) {
+            console.error(`Failed to fetch attachment for ${leaveId}`, err);
+          }
+        }
+      })
+    );
+
+    setLeaveAttachments(attachmentsByLeave);
+  } catch (err) {
+    console.error("Error fetching leave requests", err);
+  }
+};
 
   const keyMap = {
     Sick: "sick",
@@ -99,6 +122,7 @@ const TeamLeadLeaveRequests = () => {
                 <th>End Date</th>
                 <th>Reason(s)</th>
                 <th>Status</th>
+                <th>Attachement</th>
               </tr>
             </thead>
             <tbody>
@@ -110,6 +134,23 @@ const TeamLeadLeaveRequests = () => {
                   <td>{request.end_date}</td>
                   <td>{request.reason}</td>
                   <td>{request.status}</td>
+                  <td>
+                    {leaveAttachments[request.leave_taken_id]?.length > 0 ? (
+                      leaveAttachments[request.leave_taken_id].map((fileObj, i) => (
+                        <a
+                          key={i}
+                          href={`${config.apiBaseURL}${fileObj.file}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ display: "block" }}
+                        >
+                          View
+                        </a>
+                      ))
+                    ) : (
+                      <span>No File</span>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
