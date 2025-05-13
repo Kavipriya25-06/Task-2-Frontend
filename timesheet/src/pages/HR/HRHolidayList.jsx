@@ -191,11 +191,12 @@ const HolidayList = () => {
                  <div className="date-input-container">
                     <DatePicker
                       selected={formData.date ? new Date(formData.date) : null}
-                      onChange={(date) =>
-                        setFormData({
-                          ...formData,
-                          date: date, // Keep as Date object
-                        })
+                      onChange={
+                        (date) =>
+                          setFormData({
+                            ...formData,
+                            date: format(date, "yyyy-MM-dd"),
+                          }) // ← just set the Date object directly
                       }
                       dateFormat="dd-MM-yyyy"
                       placeholderText="dd-mm-yyyy"

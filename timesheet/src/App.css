@@ -1473,6 +1473,8 @@ h3 {
   border: 1px solid black !important;
 }
 
+
+
 .react-datepicker__day--selected {
   color: rgb(41, 39, 39) !important; /* White text */
   border-radius: 50% !important;
