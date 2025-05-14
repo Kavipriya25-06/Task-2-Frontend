@@ -141,25 +141,23 @@ const ManagerAttendance = () => {
           <button className="btn-save" onClick={() => handleAttendanceClick()}>
             Attendance Admin
           </button>
-
         </div>
       </div>
 
       <div>
-        <table  className="attend-table">
+        <table className="attend-table">
           <thead>
             <tr>
               <th>Employee</th>
               {weekDays.map((day) => (
                 <th
-                key={day.key}
-                style={{
-                  color: day.weekday === 'Sun' ? 'orange' : 'inherit'
-                }}
-              >
-                {day.weekday} ({day.date})
-              </th>
-              
+                  key={day.key}
+                  style={{
+                    color: day.weekday === "Sun" ? "orange" : "inherit",
+                  }}
+                >
+                  {day.weekday} ({day.date})
+                </th>
               ))}
               <th>Total Hours</th>
             </tr>
@@ -192,7 +190,6 @@ const ManagerAttendance = () => {
                     //         <strong>Total:</strong> {attendance.total_duration}{" "}
                     //         hrs
                     //       </div>
-
 
                     <td
                       key={day.key}

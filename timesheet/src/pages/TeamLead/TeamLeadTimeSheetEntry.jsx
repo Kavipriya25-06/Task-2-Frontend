@@ -211,11 +211,15 @@ const TeamLeadTimeSheetEntry = () => {
   return (
     <div className="holiday-calendar">
       <div className="calendar-headers">
-        <button  className="lefts" onClick={handlePrevMonth}>&lt;</button>
+        <button className="lefts" onClick={handlePrevMonth}>
+          &lt;
+        </button>
         <h3>
           {monthName} {selectedYear}
         </h3>
-        <button  className="rights" onClick={handleNextMonth}>&gt;</button>
+        <button className="rights" onClick={handleNextMonth}>
+          &gt;
+        </button>
         {/* Let this be here for now */}
         {/* <button onClick={handlePrevYear} className="calendar-nav-btn">
           ◀ Year
@@ -265,12 +269,12 @@ const TeamLeadTimeSheetEntry = () => {
       <div className="calendar-grid">
         <div className="calendar-day-label">Week</div>
         {daysInWeek.map((day) => (
-           <div
-           className={`calendar-day-label ${day === 'Sun' ? 'sunday' : ''}`}
-           key={day}
-         >
-           {day}
-         </div>
+          <div
+            className={`calendar-day-label ${day === "Sun" ? "sunday" : ""}`}
+            key={day}
+          >
+            {day}
+          </div>
         ))}
         {renderCalendar()}
       </div>

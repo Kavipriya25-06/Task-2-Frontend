@@ -88,7 +88,6 @@ const ManagerTaskView = () => {
   const location = useLocation();
   const isManagerPage = location.pathname.startsWith("/manager");
 
-
   useEffect(() => {
     fetchTeamleadManager();
     fetchAreas();
@@ -239,12 +238,18 @@ const ManagerTaskView = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="view-attachment-link"
-                  ><img
-                    src="/src/assets/pin svg.svg" // replace this with your actual image path
-                    alt="Attachment"
-                    style={{ width: "16px", height: "16px", marginRight: "5px", verticalAlign: "middle" }}
-                  />
-                   View Attachment
+                  >
+                    <img
+                      src="/src/assets/pin svg.svg" // replace this with your actual image path
+                      alt="Attachment"
+                      style={{
+                        width: "16px",
+                        height: "16px",
+                        marginRight: "5px",
+                        verticalAlign: "middle",
+                      }}
+                    />
+                    View Attachment
                   </a>
                 ) : (
                   <p>No attachments</p>
@@ -291,7 +296,11 @@ const ManagerTaskView = () => {
             <button type="submit" className="btn-save">
               Save
             </button>
-            <button type="reset"  onClick={() => setEditMode(false)} className="btn-cancel">
+            <button
+              type="reset"
+              onClick={() => setEditMode(false)}
+              className="btn-cancel"
+            >
               Cancel
             </button>
           </div>

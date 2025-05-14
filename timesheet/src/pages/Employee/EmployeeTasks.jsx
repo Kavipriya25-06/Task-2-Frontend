@@ -36,8 +36,6 @@ const EmployeeTasks = () => {
     navigate(`/employee/detail/tasks/${task_assign_id}`);
   };
 
-  
-
   if (loading) return <p className="loading">Loading tasks...</p>;
   if (error) return <p className="error">Error loading tasks: {error}</p>;
 
@@ -58,13 +56,14 @@ const EmployeeTasks = () => {
           <tbody>
             {tasks.map((task, index) => (
               <tr key={task.task_id}>
-                
-                <td 
-                key={index} onClick={() => handleTaskClick(task.task_assign_id)}
-                style={{
-                  cursor: "pointer",
-                  textDecoration: "underline",
-                }}>
+                <td
+                  key={index}
+                  onClick={() => handleTaskClick(task.task_assign_id)}
+                  style={{
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                  }}
+                >
                   {task.task?.task_title || "N/A"}
                 </td>
                 <td>{task.task_hours || "N/A"}</td>

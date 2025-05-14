@@ -6,8 +6,8 @@ import config from "../config";
 export const useAttachmentManager = (initialAttachments = []) => {
   const [attachments, setAttachments] = useState(initialAttachments);
   const [newAttachments, setNewAttachments] = useState([]);
-  const [profilePicture, setProfilePicture] = useState(null); 
-  const[profilePictureUrl,setProfilePictureUrl] =useState(null);
+  const [profilePicture, setProfilePicture] = useState(null);
+  const [profilePictureUrl, setProfilePictureUrl] = useState(null);
 
   const handleAttachmentChange = (e) => {
     const files = Array.from(e.target.files);
@@ -46,6 +46,6 @@ export const useAttachmentManager = (initialAttachments = []) => {
     profilePicture,
     setProfilePicture,
     profilePictureUrl,
-    setProfilePictureUrl ,
+    setProfilePictureUrl,
   };
 };

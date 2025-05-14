@@ -308,85 +308,93 @@ const EditEmployee = () => {
               )}
             </div>
 
-
             <div className="attachments-wrapper">
               <label htmlFor="">Attachments</label>
               <div className="attachments-box">
-                  <div className="attachments-header">
-                    {editMode && (
-                      <>
-                        {/* Hidden input to trigger file selection */}
-                        <input
-                          type="file"
-                          multiple
-                          id="new-attachments-input"
-                          style={{ display: "none" }}
-                          onChange={handleAttachmentChange}
-                        />
-                        <label htmlFor="new-attachments-input" className="add-attachment-button">
-                          +
-                        </label>
-                      </>
-                    )}
-                  </div>
+                <div className="attachments-header">
+                  {editMode && (
+                    <>
+                      {/* Hidden input to trigger file selection */}
+                      <input
+                        type="file"
+                        multiple
+                        id="new-attachments-input"
+                        style={{ display: "none" }}
+                        onChange={handleAttachmentChange}
+                      />
+                      <label
+                        htmlFor="new-attachments-input"
+                        className="add-attachment-button"
+                      >
+                        +
+                      </label>
+                    </>
+                  )}
+                </div>
 
-                  <ul className="attachments-list">
-                    {/* Existing attachments */}
-                    {attachments.map((file) => {
-                      const filename = file.file
-                        .split("/")
-                        .pop()
-                        .split("_")
-                        .slice(1)
-                        .join("_");
-                      return (
-                        <li key={file.id} className="attachment-item">
-                          <a
-                            href={config.apiBaseURL + file.file}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {filename}
-                          </a>
-                          {editMode && (
-                            <button
-                              className="remove-attachment"
-                              onClick={async () => {
-                                try {
-                                  await fetch(`${config.apiBaseURL}/attachments/${file.id}/`, {
-                                    method: "DELETE",
-                                  });
-                                  setAttachments((prev) =>
-                                    prev.filter((att) => att.id !== file.id)
-                                  );
-                                } catch (error) {
-                                  console.error("Failed to delete attachment:", error);
-                                }
-                              }}
-                            >
-                              &times;
-                            </button>
-                          )}
-                        </li>
-                      );
-                    })}
-
-                    {/* New (not uploaded) attachments */}
-                    {newAttachments.map((file, index) => (
-                      <li key={`new-${index}`} className="attachment-item">
-                        {file.name}
+                <ul className="attachments-list">
+                  {/* Existing attachments */}
+                  {attachments.map((file) => {
+                    const filename = file.file
+                      .split("/")
+                      .pop()
+                      .split("_")
+                      .slice(1)
+                      .join("_");
+                    return (
+                      <li key={file.id} className="attachment-item">
+                        <a
+                          href={config.apiBaseURL + file.file}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {filename}
+                        </a>
                         {editMode && (
                           <button
-                            type="button"
                             className="remove-attachment"
-                            onClick={() => removeNewAttachment(index)}
+                            onClick={async () => {
+                              try {
+                                await fetch(
+                                  `${config.apiBaseURL}/attachments/${file.id}/`,
+                                  {
+                                    method: "DELETE",
+                                  }
+                                );
+                                setAttachments((prev) =>
+                                  prev.filter((att) => att.id !== file.id)
+                                );
+                              } catch (error) {
+                                console.error(
+                                  "Failed to delete attachment:",
+                                  error
+                                );
+                              }
+                            }}
                           >
                             &times;
                           </button>
                         )}
                       </li>
-                    ))}
-                  </ul>
+                    );
+                  })}
+
+                  {/* New (not uploaded) attachments */}
+                  {newAttachments.map((file, index) => (
+                    <li key={`new-${index}`} className="attachment-item">
+                      {file.name}
+                      {editMode && (
+                        <button
+                          type="button"
+                          className="remove-attachment"
+                          onClick={() => removeNewAttachment(index)}
+                        >
+                          &times;
+                        </button>
+                      )}
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
 
@@ -508,11 +516,14 @@ const EditEmployee = () => {
                     placeholderText="dd-mm-yyyy"
                     className="input1"
                   />
-                  <i className="fas fa-calendar-alt calendar-icon"></i> {/* Optional icon */}
+                  <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+                  {/* Optional icon */}
                 </div>
               ) : (
                 <div className="uneditable">
-                  {formData.dob ? format(parseISO(formData.dob), "dd-MM-yyyy") : "-"}
+                  {formData.dob
+                    ? format(parseISO(formData.dob), "dd-MM-yyyy")
+                    : "-"}
                 </div>
               )}
             </div>
@@ -520,23 +531,25 @@ const EditEmployee = () => {
               <label>Date of Joining</label>
               {editMode ? (
                 <div className="date-input-container">
-                <DatePicker
-                  selected={formData.doj ? parseISO(formData.doj) : null}
-                  onChange={(date) =>
-                    setFormData({
-                      ...formData,
-                      doj: format(date, "yyyy-MM-dd"),
-                    })
-                  }
-                  dateFormat="dd-MM-yyyy"
-                  placeholderText="dd-mm-yyyy"
-                  className="input1"
-                />
-                <i className="fas fa-calendar-alt calendar-icon"></i>
-              </div>
+                  <DatePicker
+                    selected={formData.doj ? parseISO(formData.doj) : null}
+                    onChange={(date) =>
+                      setFormData({
+                        ...formData,
+                        doj: format(date, "yyyy-MM-dd"),
+                      })
+                    }
+                    dateFormat="dd-MM-yyyy"
+                    placeholderText="dd-mm-yyyy"
+                    className="input1"
+                  />
+                  <i className="fas fa-calendar-alt calendar-icon"></i>
+                </div>
               ) : (
                 <div className="uneditable">
-                  {formData.doj ? format(parseISO(formData.doj), "dd-MM-yyyy") : "-"}
+                  {formData.doj
+                    ? format(parseISO(formData.doj), "dd-MM-yyyy")
+                    : "-"}
                 </div>
               )}
             </div>
@@ -785,23 +798,34 @@ const EditEmployee = () => {
               )}
             </div>
             <div className="individual-tabs">
-                  <label>Passport Validity</label>
-                  {editMode ? (
-                  <div className="date-input-container">
-                    <DatePicker
-                      selected={formData.passport_validity ? new Date(formData.passport_validity) : null}
-                      onChange={(date) => handleChange({ target: { name: "passport_validity", value: date.toISOString().split('T')[0] } })}
-                      dateFormat="dd-MMM-yyy"
-                      className="date-input"
-                    />
-                    <i className="fas fa-calendar-alt calendar-icon"></i>
-                  </div>
-                  ) : (
-                    <div className="uneditable">
-                      {formData.passport_validity || "-"}
-                    </div>
-                  )}
+              <label>Passport Validity</label>
+              {editMode ? (
+                <div className="date-input-container">
+                  <DatePicker
+                    selected={
+                      formData.passport_validity
+                        ? new Date(formData.passport_validity)
+                        : null
+                    }
+                    onChange={(date) =>
+                      handleChange({
+                        target: {
+                          name: "passport_validity",
+                          value: date.toISOString().split("T")[0],
+                        },
+                      })
+                    }
+                    dateFormat="dd-MMM-yyy"
+                    className="date-input"
+                  />
+                  <i className="fas fa-calendar-alt calendar-icon"></i>
                 </div>
+              ) : (
+                <div className="uneditable">
+                  {formData.passport_validity || "-"}
+                </div>
+              )}
+            </div>
             <div className="individual-tabs">
               <label>Status</label>
               {/* {isEditMode ? (

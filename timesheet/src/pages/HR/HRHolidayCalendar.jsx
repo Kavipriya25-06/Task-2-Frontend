@@ -164,7 +164,7 @@ const HRHolidayCalendar = () => {
             </option>
           ))}
         </select>
-         { console.log("Selected year.........",selectedYear)}
+        {console.log("Selected year.........", selectedYear)}
         <button
           className="calendar-title-btn"
           onClick={() => navigate(`holiday-list/${selectedYear}/`)}
@@ -172,7 +172,7 @@ const HRHolidayCalendar = () => {
           Holiday list {year}
         </button>
       </div>
-      {console.log("varudam........",selectedYear)}
+      {console.log("varudam........", selectedYear)}
 
       {/* <div className="calendar-grid">
         {daysInWeek.map((day) => (

@@ -239,11 +239,16 @@ const AddEmployee = () => {
               </div>
             </div>
 
-           <div className="attachments-wrapper">
+            <div className="attachments-wrapper">
               <label>Attachments</label>
               <div className="attachments-box">
                 <div className="add-btn-wrapper">
-                  <label htmlFor="attachments-input" className="add-attachment-button">+</label>
+                  <label
+                    htmlFor="attachments-input"
+                    className="add-attachment-button"
+                  >
+                    +
+                  </label>
                   <input
                     type="file"
                     id="attachments-input"

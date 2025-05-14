@@ -396,7 +396,7 @@ input {
 
 .table-wrapper {
   width: 100%;
-  overflow-x: auto;  /* Enables horizontal scroll on small screens */
+  overflow-x: auto; /* Enables horizontal scroll on small screens */
   margin: 0 auto;
 }
 

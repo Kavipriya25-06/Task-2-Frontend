@@ -287,10 +287,17 @@ const ManagerTaskView = () => {
                 {editMode ? (
                   <div className="date-input-container">
                     <DatePicker
-                      selected={formData.start_date ? new Date(formData.start_date) : null}
+                      selected={
+                        formData.start_date
+                          ? new Date(formData.start_date)
+                          : null
+                      }
                       onChange={(date) =>
                         handleChange({
-                          target: { name: "start_date", value: format(date, "yyyy-MM-dd") },
+                          target: {
+                            name: "start_date",
+                            value: format(date, "yyyy-MM-dd"),
+                          },
                         })
                       }
                       dateFormat="dd-MMM-yyyy"
@@ -309,10 +316,15 @@ const ManagerTaskView = () => {
                 {editMode ? (
                   <div className="date-input-container">
                     <DatePicker
-                      selected={formData.end_date ? new Date(formData.end_date) : null}
+                      selected={
+                        formData.end_date ? new Date(formData.end_date) : null
+                      }
                       onChange={(date) =>
                         handleChange({
-                          target: { name: "end_date", value: format(date, "yyyy-MM-dd") },
+                          target: {
+                            name: "end_date",
+                            value: format(date, "yyyy-MM-dd"),
+                          },
                         })
                       }
                       dateFormat="dd-MMM-yyyy"

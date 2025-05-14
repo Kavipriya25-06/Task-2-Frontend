@@ -110,7 +110,7 @@ const EmployeeTimeSheetEntry = () => {
     const filledData = new Array(offset).fill(null).concat(monthData);
 
     const rows = [];
-    const status = "save"; 
+    const status = "save";
     for (let i = 0; i < filledData.length; i += 7) {
       const week = filledData.slice(i, i + 7);
       const firstValidDay = week.find((day) => day && day.date);
@@ -214,11 +214,15 @@ const EmployeeTimeSheetEntry = () => {
   return (
     <div className="holiday-calendar">
       <div className="calendar-headers">
-        <button className="lefts" onClick={handlePrevMonth}>&lt;</button>
+        <button className="lefts" onClick={handlePrevMonth}>
+          &lt;
+        </button>
         <h3>
           {monthName} {selectedYear}
         </h3>
-        <button className="rights" onClick={handleNextMonth}>&gt;</button>
+        <button className="rights" onClick={handleNextMonth}>
+          &gt;
+        </button>
         {/* Let this be here for now */}
         {/* <button onClick={handlePrevYear} className="calendar-nav-btn">
           ◀ Year
@@ -269,9 +273,9 @@ const EmployeeTimeSheetEntry = () => {
         <div className="calendar-day-label">Week</div>
         {daysInWeek.map((day) => (
           <div
-          className={`calendar-day-label ${day === 'Sun' ? 'sunday' : ''}`}
-          key={day}
-        >
+            className={`calendar-day-label ${day === "Sun" ? "sunday" : ""}`}
+            key={day}
+          >
             {day}
           </div>
         ))}

@@ -20,8 +20,6 @@ const ManagerProjects = () => {
   const [searchBuild, setSearchBuild] = useState("");
   const [searchTask, setSearchTask] = useState("");
 
-  
-
   const tabLabels = ["Projects", "Buildings", "Tasks"];
 
   const fetchProjects = async () => {
@@ -80,50 +78,45 @@ const ManagerProjects = () => {
     fetchTasks();
   }, []);
 
-    useEffect(() => {
-      const lowerSearch = searchText.toLowerCase();
-      const filtered = projects.filter((u) => {
-        const code = u.project_code?.toLowerCase() || "";
-        const name = u.project_title?.toLowerCase() || "";
-        const discipline = u.discipline?.toLowerCase() || "";
-        return (
-          code.includes(lowerSearch) ||
-          name.includes(lowerSearch) ||
-          discipline.includes(lowerSearch)
-        );
-      });
-      setFilteredProjects(filtered);
-    }, [searchText, projects]);
+  useEffect(() => {
+    const lowerSearch = searchText.toLowerCase();
+    const filtered = projects.filter((u) => {
+      const code = u.project_code?.toLowerCase() || "";
+      const name = u.project_title?.toLowerCase() || "";
+      const discipline = u.discipline?.toLowerCase() || "";
+      return (
+        code.includes(lowerSearch) ||
+        name.includes(lowerSearch) ||
+        discipline.includes(lowerSearch)
+      );
+    });
+    setFilteredProjects(filtered);
+  }, [searchText, projects]);
 
+  useEffect(() => {
+    const lowerSearch = searchBuild.toLowerCase();
+    const filtered = buildings.filter((u) => {
+      const bcode = u.building_code?.toLowerCase() || "";
+      const bname = u.building_title?.toLowerCase() || "";
+      return bcode.includes(lowerSearch) || bname.includes(lowerSearch);
+    });
+    setFilteredBuildings(filtered);
+  }, [searchBuild, buildings]);
 
-      useEffect(() => {
-      const lowerSearch = searchBuild.toLowerCase();
-      const filtered = buildings.filter((u) => {
-        const bcode = u.building_code?.toLowerCase() || "";
-        const bname = u.building_title?.toLowerCase() || "";
-        return (
-          bcode.includes(lowerSearch) ||
-          bname.includes(lowerSearch)
-        );
-      });
-      setFilteredBuildings(filtered);
-    }, [searchBuild, buildings]);
-
-
-    useEffect(() => {
-      const lowerSearch = searchTask.toLowerCase();
-      const filtered = tasks.filter((u) => {
-        const tcode = u.task_code?.toLowerCase() || "";
-        const tname = u.task_title?.toLowerCase() || "";
-        const priority = u.priority?.toLowerCase() || "";
-        return (
-          tcode.includes(lowerSearch) ||
-          tname.includes(lowerSearch) ||
-          priority.includes(lowerSearch)
-        );
-      });
-      setFilteredTask(filtered);
-    }, [searchTask, tasks]);
+  useEffect(() => {
+    const lowerSearch = searchTask.toLowerCase();
+    const filtered = tasks.filter((u) => {
+      const tcode = u.task_code?.toLowerCase() || "";
+      const tname = u.task_title?.toLowerCase() || "";
+      const priority = u.priority?.toLowerCase() || "";
+      return (
+        tcode.includes(lowerSearch) ||
+        tname.includes(lowerSearch) ||
+        priority.includes(lowerSearch)
+      );
+    });
+    setFilteredTask(filtered);
+  }, [searchTask, tasks]);
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -148,44 +141,43 @@ const ManagerProjects = () => {
               </div>
             </div>
             <div className="table-wrapper">
-  <table className="holiday-table">
-    <thead>
-      <tr>
-        <th>Project code</th>
-        <th>Project name</th>
-        <th>Estd. hours</th>
-        <th>Total hours</th>
-        <th>Discipline</th>
-        <th>Status</th>
-        <th>Discipline</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      {filteredProjects.map((project) => (
-        <tr key={project.project_id}>
-          <td
-            onClick={() => handleProjectClick(project.project_id)}
-            style={{
-              cursor: "pointer",
-              textDecoration: "underline",
-            }}
-          >
-            {project.project_code}
-          </td>
-          <td>{project.project_title}</td>
-          <td>{project.estimated_hours}</td>
-          <td>-</td>
-          <td>{project.discipline}</td>
-          <td>{project.status ? "In progress" : "Completed"}</td>
-          <td>{project.discipline}</td>
-          <td>{project.status ? "In progress" : "Completed"}</td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
-
+              <table className="holiday-table">
+                <thead>
+                  <tr>
+                    <th>Project code</th>
+                    <th>Project name</th>
+                    <th>Estd. hours</th>
+                    <th>Total hours</th>
+                    <th>Discipline</th>
+                    <th>Status</th>
+                    <th>Discipline</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredProjects.map((project) => (
+                    <tr key={project.project_id}>
+                      <td
+                        onClick={() => handleProjectClick(project.project_id)}
+                        style={{
+                          cursor: "pointer",
+                          textDecoration: "underline",
+                        }}
+                      >
+                        {project.project_code}
+                      </td>
+                      <td>{project.project_title}</td>
+                      <td>{project.estimated_hours}</td>
+                      <td>-</td>
+                      <td>{project.discipline}</td>
+                      <td>{project.status ? "In progress" : "Completed"}</td>
+                      <td>{project.discipline}</td>
+                      <td>{project.status ? "In progress" : "Completed"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         );
       case 1:

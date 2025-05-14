@@ -20,7 +20,7 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
 
   const handleFileChange = (e) => {
-   const newFiles = Array.from(e.target.files);
+    const newFiles = Array.from(e.target.files);
 
     const nonDuplicateFiles = newFiles.filter(
       (newFile) =>
@@ -127,7 +127,6 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
     }
   };
 
-
   return (
     <div className="form-containers">
       <p className="form-subtitle1">
@@ -155,28 +154,34 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
           <div className="form-group-half1">
             <label className="label1">Start Date</label>
             <div className="date-input-container">
-                          <DatePicker
-                            selected={formData.startDate}
-                            onChange={(date) => handleChange({ target: { name: "startDate", value: date } })}
-                            dateFormat="dd-MMM-yyyy"
-                            placeholderText="dd-mm-yyyy"
-                            className="input1"
-                          />
-                          <i className="fas fa-calendar-alt calendar-icon"></i> {/* Font Awesome Calendar Icon */}
-                        </div>
+              <DatePicker
+                selected={formData.startDate}
+                onChange={(date) =>
+                  handleChange({ target: { name: "startDate", value: date } })
+                }
+                dateFormat="dd-MMM-yyyy"
+                placeholderText="dd-mm-yyyy"
+                className="input1"
+              />
+              <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+              {/* Font Awesome Calendar Icon */}
+            </div>
           </div>
           <div className="form-group-half1">
             <label className="label1">End Date</label>
             <div className="date-input-container">
-                          <DatePicker
-                            selected={formData.endDate}
-                            onChange={(date) => handleChange({ target: { name: "endDate", value: date } })}
-                            dateFormat="dd-MMM-yyyy"
-                            placeholderText="dd-mm-yyyy"
-                            className="input1"
-                          />
-                          <i className="fas fa-calendar-alt calendar-icon"></i> {/* Font Awesome Calendar Icon */}
-                        </div>
+              <DatePicker
+                selected={formData.endDate}
+                onChange={(date) =>
+                  handleChange({ target: { name: "endDate", value: date } })
+                }
+                dateFormat="dd-MMM-yyyy"
+                placeholderText="dd-mm-yyyy"
+                className="input1"
+              />
+              <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+              {/* Font Awesome Calendar Icon */}
+            </div>
           </div>
         </div>
 
@@ -196,12 +201,17 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
             <div className="date-input-container">
               <DatePicker
                 selected={formData.resumptionDate}
-                onChange={(date) => handleChange({ target: { name: "resumptionDate", value: date } })}
+                onChange={(date) =>
+                  handleChange({
+                    target: { name: "resumptionDate", value: date },
+                  })
+                }
                 dateFormat="dd-MMM-yyyy"
                 placeholderText="dd-mm-yyyy"
                 className="input1"
               />
-              <i className="fas fa-calendar-alt calendar-icon"></i> {/* Font Awesome Calendar Icon */}
+              <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+              {/* Font Awesome Calendar Icon */}
             </div>
           </div>
         </div>
@@ -217,23 +227,21 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
         </div>
 
         <div className="form-group1">
-          <label className="label1">
-            Attachments (Max size 2MB)
-          </label>
-            <div className="multi-file-upload">
-                  <label htmlFor="fileUpload" className="upload-label">
-                    {/* <span className="upload-btn">+</span> */}
-                  </label>
-                  <input
-                    type="file"
-                    id="fileUpload"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    multiple
-                    onChange={handleFileChange}
-                    className="file-input"
-                  />
+          <label className="label1">Attachments (Max size 2MB)</label>
+          <div className="multi-file-upload">
+            <label htmlFor="fileUpload" className="upload-label">
+              {/* <span className="upload-btn">+</span> */}
+            </label>
+            <input
+              type="file"
+              id="fileUpload"
+              accept=".pdf,.jpg,.jpeg,.png"
+              multiple
+              onChange={handleFileChange}
+              className="file-input"
+            />
 
-                <div className="uploaded-files-container">
+            <div className="uploaded-files-container">
               {selectedFiles.map((file, index) => (
                 <div key={index} className="file-chip">
                   <span>{file.name}</span>

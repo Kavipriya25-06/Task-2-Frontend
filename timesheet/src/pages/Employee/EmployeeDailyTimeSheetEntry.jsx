@@ -256,37 +256,36 @@ const EmployeeDailyTimeSheetEntry = () => {
     setRows(updatedRows);
   };
 
-const handleAddRow = () => {
-  if (newRows.length > 0) {
-    const lastRow = newRows[newRows.length - 1];
-    if (
-      !lastRow.project?.trim() ||
-      !lastRow.building?.trim() ||
-      !lastRow.task?.trim() ||
-      !lastRow.start_time?.trim() ||
-      !lastRow.end_time?.trim() ||
-      !lastRow.hours
-    ) {
-      alert("Please fill out all fields in the current row before adding a new one.");
-      return;
+  const handleAddRow = () => {
+    if (newRows.length > 0) {
+      const lastRow = newRows[newRows.length - 1];
+      if (
+        !lastRow.project?.trim() ||
+        !lastRow.building?.trim() ||
+        !lastRow.task?.trim() ||
+        !lastRow.start_time?.trim() ||
+        !lastRow.end_time?.trim() ||
+        !lastRow.hours
+      ) {
+        alert(
+          "Please fill out all fields in the current row before adding a new one."
+        );
+        return;
+      }
     }
-  }
 
-  setNewRows([
-    ...newRows,
-    {
-      project: "",
-      building: "",
-      task: "",
-      hours: "",
-      start_time: "",
-      end_time: "",
-    },
-  ]);
-};
-
-
-  
+    setNewRows([
+      ...newRows,
+      {
+        project: "",
+        building: "",
+        task: "",
+        hours: "",
+        start_time: "",
+        end_time: "",
+      },
+    ]);
+  };
 
   //  console.log("Task assign id",row.task_assign_id);
 

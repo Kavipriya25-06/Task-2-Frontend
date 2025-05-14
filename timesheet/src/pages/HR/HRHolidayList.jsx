@@ -6,15 +6,13 @@ import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 import { useParams } from "react-router-dom";
 
-
 const HolidayList = () => {
   // const HRHolidayList = () => {
-  const {year} = useParams();
+  const { year } = useParams();
   const [calendarData, setCalendarData] = useState([]);
   const [selectedYear, setSelectedYear] = useState(year);
   const [showPopup, setShowPopup] = useState(false);
   const [formData, setFormData] = useState({ date: "", notes: "" });
-  
 
   const fetchCalendarData = async (year) => {
     try {
@@ -27,29 +25,28 @@ const HolidayList = () => {
       console.error("Error fetching calendar data:", error);
     }
   };
-const handleDelete = async (id) => {
-  try {
-    const response = await fetch(`${config.apiBaseURL}/calendar/${id}/`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        is_holiday: false,
-        notes: "",
-      }),
-    });
+  const handleDelete = async (id) => {
+    try {
+      const response = await fetch(`${config.apiBaseURL}/calendar/${id}/`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          is_holiday: false,
+          notes: "",
+        }),
+      });
 
-    if (response.ok) {
-      fetchCalendarData(selectedYear); // Refresh from backend
-    } else {
-      console.error("Failed to update holiday");
+      if (response.ok) {
+        fetchCalendarData(selectedYear); // Refresh from backend
+      } else {
+        console.error("Failed to update holiday");
+      }
+    } catch (error) {
+      console.error("Error deleting holiday:", error);
     }
-  } catch (error) {
-    console.error("Error deleting holiday:", error);
-  }
-};
-
+  };
 
   useEffect(() => {
     fetchCalendarData(selectedYear);
@@ -207,22 +204,23 @@ const handleDelete = async (id) => {
             <label>
               Date:
               <br />
-                 <div className="date-input-container">
-                    <DatePicker
-                      selected={formData.date ? new Date(formData.date) : null}
-                      onChange={
-                        (date) =>
-                          setFormData({
-                            ...formData,
-                            date: format(date, "yyyy-MM-dd"),
-                          }) // ← just set the Date object directly
-                      }
-                      dateFormat="dd-MM-yyyy"
-                      placeholderText="dd-mm-yyyy"
-                      className="input1" // Or any input styling class
-                    />
-                    <i className="fas fa-calendar-alt calendar-icon"></i> {/* Font Awesome Calendar Icon */}
-                  </div>
+              <div className="date-input-container">
+                <DatePicker
+                  selected={formData.date ? new Date(formData.date) : null}
+                  onChange={
+                    (date) =>
+                      setFormData({
+                        ...formData,
+                        date: format(date, "yyyy-MM-dd"),
+                      }) // ← just set the Date object directly
+                  }
+                  dateFormat="dd-MM-yyyy"
+                  placeholderText="dd-mm-yyyy"
+                  className="input1" // Or any input styling class
+                />
+                <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+                {/* Font Awesome Calendar Icon */}
+              </div>
               {/* <input
               type="date"
               value={formData.date}

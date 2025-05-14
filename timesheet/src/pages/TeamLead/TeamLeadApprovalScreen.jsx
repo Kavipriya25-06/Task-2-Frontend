@@ -17,7 +17,6 @@ const TeamLeadApprovalScreen = () => {
     rejected: false,
   });
 
-  
   // useEffect(() => {
   //   const fetchTimesheetData = async () => {
   //     try {
@@ -37,19 +36,17 @@ const TeamLeadApprovalScreen = () => {
   //         let inTime = records[0].start_time || "--:--";
   //         let outTime = records[0].end_time || "--:--";
 
-
   //         setStatus({
   //           approved: records[0].approved,
   //           rejected: records[0].rejected
   //         });
-
 
   //         const timesheetRows = records.map((entry) => {
   //           const project =
   //             entry.task_assign?.building_assign?.project_assign?.project
   //               ?.project_title || "";
 
-useEffect(() => {
+  useEffect(() => {
     const fetchBiometricTaskData = async () => {
       try {
         const response = await fetch(
@@ -216,19 +213,29 @@ useEffect(() => {
       {/* <h3>Daily Timesheet Entry</h3> */}
       <div className="timesheet-info">
         <p>
-          <strong>Employee ID:</strong><br/>
-           {employee_id}
+          <strong>Employee ID:</strong>
+          <br />
+          {employee_id}
         </p>
         <p>
-          <strong>Date:</strong><br/>
-           {date}
+          <strong>Date:</strong>
+          <br />
+          {date}
         </p>
-        <p> <strong>Intime:</strong><br/>
-         {attendanceDetails.in_time || "--:--"}</p>
-        <p><strong>Outtime:</strong><br/>
-         {attendanceDetails.out_time || "--:--"}</p>
         <p>
-          <strong>Total logged hours: </strong><br/>
+          {" "}
+          <strong>Intime:</strong>
+          <br />
+          {attendanceDetails.in_time || "--:--"}
+        </p>
+        <p>
+          <strong>Outtime:</strong>
+          <br />
+          {attendanceDetails.out_time || "--:--"}
+        </p>
+        <p>
+          <strong>Total logged hours: </strong>
+          <br />
           {attendanceDetails.total_duration || "0.00"} hrs
         </p>
       </div>
@@ -258,7 +265,6 @@ useEffect(() => {
         +
       </div> */}
 
-
       <div className="button-container">
         {status.approved ? ( //  CHANGE: conditionally render approved button
           <button className="submit-button2" disabled>
@@ -270,8 +276,12 @@ useEffect(() => {
           </button>
         ) : (
           <>
-            <button className="submit-button2" onClick={handleApprove}>Approve</button>
-            <button className="save-button2" onClick={handleReject}>Reject</button>
+            <button className="submit-button2" onClick={handleApprove}>
+              Approve
+            </button>
+            <button className="save-button2" onClick={handleReject}>
+              Reject
+            </button>
           </>
         )}
       </div>

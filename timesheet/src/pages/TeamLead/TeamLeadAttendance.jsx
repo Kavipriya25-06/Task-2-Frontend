@@ -141,14 +141,14 @@ const TeamLeadAttendance = () => {
             <tr>
               <th>Employee</th>
               {weekDays.map((day) => (
-                 <th
-                 key={day.key}
-                 style={{
-                   color: day.weekday === 'Sun' ? '#ffbf00' : 'inherit'
-                 }}
-               >
-                 {day.weekday} ({day.date})
-               </th>
+                <th
+                  key={day.key}
+                  style={{
+                    color: day.weekday === "Sun" ? "#ffbf00" : "inherit",
+                  }}
+                >
+                  {day.weekday} ({day.date})
+                </th>
               ))}
               <th>Total Hours</th>
             </tr>
@@ -156,7 +156,7 @@ const TeamLeadAttendance = () => {
           <tbody>
             {employeeData.map((emp) => (
               <tr key={emp.employee_id}>
-                  <td>{emp.employee_name}</td>
+                <td>{emp.employee_name}</td>
 
                 {/* For each day of the week, check if attendance data exists */}
                 {weekDays.map((day) => {
@@ -199,22 +199,22 @@ const TeamLeadAttendance = () => {
                   );
                 })}
 
-                                        {/* );
+                {/* );
                                       })} */}
 
-                                      {/* Total Hours for that employee (from calculated object) */}
-                                      <td>
-                                        {totalHours[emp.employee_id]
-                                          ? `${totalHours[emp.employee_id].toFixed(2)} hrs`
-                                          : "-"}
-                                      </td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
-                            </div>
-                          </div>
-                        );
-                      };
+                {/* Total Hours for that employee (from calculated object) */}
+                <td>
+                  {totalHours[emp.employee_id]
+                    ? `${totalHours[emp.employee_id].toFixed(2)} hrs`
+                    : "-"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
 
 export default TeamLeadAttendance;
