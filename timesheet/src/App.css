@@ -159,6 +159,12 @@ input {
   border: 2px solid rgb(80, 78, 78);
 }
 
+.comp-off-table {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid rgb(80, 78, 78);
+}
+
 .leave-requests-table th,
 .leave-requests-table td {
   border: 2px solid #ccc !important;
@@ -388,6 +394,11 @@ input {
   border: 2px solid gray;
 }
 
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;  /* Enables horizontal scroll on small screens */
+  margin: 0 auto;
+}
 
 /* .holiday-table th, .user-table td {
   padding: 10px;
@@ -461,8 +472,6 @@ input {
   transition: border-color 0.2s;
   background-color: rgb(231, 231, 231);
 }
-
-
 
 .custom-modal input:focus {
   outline: none;
@@ -563,7 +572,6 @@ input {
   gap: 30px; /* Space between the items */
 }
 
-
 .timesheet-info p {
   margin: 0; /* Remove default margin */
   flex: auto;
@@ -575,10 +583,49 @@ input {
   margin-bottom: -5px;
 }
 
+table input[type="time"] {
+  width: 140px; /* Fixed width */
+  min-width: 140px;
+  max-width: 140px;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f1f1f1;
+  font-size: 14px;
+  font-family: "Archivo", sans-serif;
+  color: #333;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+table input[type="number"] {
+  width: 140px; /* Fixed width */
+  min-width: 140px;
+  max-width: 140px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f1f1f1;
+  font-size: 14px;
+  font-family: "Archivo", sans-serif;
+  color: #333;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+table input[type="time"]:focus {
+  border-color: #a2a5a7; /* Blue border on focus */
+}
+
+table input[type="number"]:focus {
+  border-color: #a2a5a7; /* Blue border on focus */
+}
+
 .timesheet-info p span {
   display: inline-block;
 }
-
 
 .timesheet-table {
   border-radius: 10px;
@@ -587,15 +634,14 @@ input {
   margin-top: 3%;
 }
 
-
 .timesheet-table .task-select {
-    width: 100%;
+  width: 100%;
   padding: 10px 12px;
   background-color: #f3f3f3;
   color: #808080;
   border-radius: 6px;
   font-size: 14px;
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
   transition: border-color 0.3s, box-shadow 0.3s;
   box-sizing: border-box;
   border: 1px solid rgb(192, 192, 192);
@@ -605,7 +651,6 @@ input {
   outline: none;
   color: #000;
 }
-
 
 .attend-table th {
   padding: 10px;
@@ -906,6 +951,9 @@ table th {
   text-align: left;
   background: #f3f3f3;
   font-size: 17px;
+  white-space: nowrap; /* Prevent line break */
+  overflow: hidden; /* Hide overflowing text */
+  text-overflow: ellipsis;
   font-family: "Archivo", sans-serif;
 }
 
@@ -916,6 +964,10 @@ table td {
   background: #f3f3f3;
   font-size: 15px;
   font-family: "Archivo", sans-serif;
+  white-space: nowrap; /* Prevent line break */
+  overflow: hidden; /* Hide overflowing text */
+  text-overflow: ellipsis; /* Add ... at the end */
+  max-width: 200px; /* Optional: Limit width */
 }
 
 .add-user-btn {
@@ -1475,8 +1527,6 @@ h3 {
   border: 1px solid black !important;
 }
 
-
-
 .react-datepicker__day--selected {
   color: rgb(41, 39, 39) !important; /* White text */
   border-radius: 50% !important;
@@ -1489,29 +1539,26 @@ h3 {
   display: inline-block;
 }
 
-.datepicker-wrapper{
-  width:auto;  
+.datepicker-wrapper {
+  width: auto;
 }
-
-
 
 .project-form-group-small .react-datepicker__current-month {
   margin-left: 37%;
-  font-size: 0.944rem
+  font-size: 0.944rem;
 }
-
 
 /* .individual-tabs .input1 {
   width: 193%;
   margin-top: -4%;
 } */
 
-.react-datepicker-wrapper{
-  width:100%;
+.react-datepicker-wrapper {
+  width: 100%;
 }
 
-.date-input-container{
-  width:100%
+.date-input-container {
+  width: 100%;
 }
 
 .row1 .calendar-icon {
@@ -1524,11 +1571,10 @@ h3 {
   pointer-events: none;
 }
 
-
 .project-form-group-small .calendar-icon {
   position: absolute;
-  top: 48%;
-  right:  0.5%;
+  top: 28%;
+  right: 0.5%;
   font-size: 15px; /* Icon size */
   color: #3d3d3d; /* Icon color */
   cursor: pointer; /* Make icon clickable */
@@ -1537,14 +1583,13 @@ h3 {
 
 .popup .calendar-icon {
   position: absolute;
-  top: 48%;
-  right: 10%;
-  font-size: 15px; /* Icon size */
+  top: 28%;
+  right: 5%;
+  font-size: 17px; /* Icon size */
   color: #3d3d3d; /* Icon color */
   cursor: pointer; /* Make icon clickable */
   pointer-events: none; /* Allow click on the input, not the icon */
 }
-
 
 .individual-tabs .calendar-icon {
   position: absolute;
@@ -1565,7 +1610,6 @@ h3 {
   cursor: pointer; /* Make icon clickable */
   pointer-events: none; /* Allow click on the input, not the icon */
 }
-
 
 .input1:focus + .calendar-icon {
   color: #333; /* Change icon color when input is focused */
@@ -1974,8 +2018,6 @@ h3 {
   margin-bottom: 0%;
 }
 
-
-
 /* Button Group */
 .form-buttons {
   display: flex;
@@ -2166,9 +2208,10 @@ h3 {
 
 /* Grid inside each tab */
 .tab-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
 }
 
 /* Input styling */
@@ -2269,7 +2312,7 @@ h3 {
 
 /* Input styling */
 .tab-content input,
-.tab-content textarea{
+.tab-content textarea {
   padding: 10px 12px;
   border-radius: 8px;
   border: 1px solid #ccc;
@@ -2277,27 +2320,45 @@ h3 {
   font-size: 14px;
 }
 
-
 .individual-tabs select {
-  width: 95%;
-  max-width: 590px;
-  padding: 10px 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background-color: #f6f6f6;
-  font-size: 14px;
-  font-family: "Archivo", sans-serif;
-  box-sizing: border-box;
-  margin-top: -2%;
-  background-size: 16px;
-  cursor: pointer;
-  color: #6e6e6e;
+  padding: 8px;
+  border-radius: 5px;
+  width: 39%;
+  background-color: #f1f0f0;
+  border: 1px solid #a9a9a9;
 }
 
-.individual-tabs select:focus{
+.uploaded-files-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* space between files */
+  margin-top: 10px;
+}
+
+.file-chip {
+  background-color: #dedddd;
+  border-radius: 8px;
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.file-chip span {
+  margin-right: 8px;
+}
+
+.file-chip button {
+  background: none;
+  border: none;
+  color: red;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.individual-tabs select:focus {
   color: #000;
 }
-
 
 .tab-content textarea {
   resize: vertical;
@@ -2311,6 +2372,8 @@ h3 {
 .individual-tabs {
   display: flex;
   flex-direction: column;
+  width: auto;
+  flex-shrink: 0;
 }
 
 .individual-tabs label {
@@ -2326,7 +2389,7 @@ h3 {
   height: 90%;
 }
 
-.individual-tabs input{
+.individual-tabs input {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -2334,9 +2397,7 @@ h3 {
   margin-top: -2%;
 }
 
-
-
-.individual-tabs textarea{
+.individual-tabs textarea {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -2768,7 +2829,7 @@ button.delete-building:hover {
   padding: 10px;
   display: grid;
   gap: 30px;
-  /* grid-template-rows: 1fr 2fr; */
+  grid-template-rows: 1fr 2fr;
 }
 
 .top-elements {
@@ -2785,11 +2846,11 @@ button.delete-building:hover {
   display: flex;
   /* grid-template: 1fr 1fr; */
   gap: 130px;
-  width: 85%;
+  width: 100%;
 }
 .top-element input {
   margin-top: 5px;
-  width: 113%;
+  width: 100%;
 }
 
 .top-elements input {
@@ -2813,25 +2874,22 @@ button.delete-building:hover {
   box-sizing: border-box;
 }
 
-
 .table-bottom-elements {
   display: flex;
   flex-wrap: wrap;
-  gap: 15px;
+  gap: 50px;
   margin-top: 16px;
   justify-content: flex-start; /* or space-between if needed */
   width: 100%;
   box-sizing: border-box;
 }
 
-
 .table-bottom-elements > * {
-  flex: 1 1 300px;       /* Grow, shrink, base width */
-  min-width: 250px;      /* Prevent too small */
-  max-width: 410px;       /* Prevent overflow */
+  flex: 1 1 300px; /* Grow, shrink, base width */
+  min-width: 250px; /* Prevent too small */
+  max-width: 410px; /* Prevent overflow */
   box-sizing: border-box;
 }
-
 
 .table-bottom-elements label {
   font-weight: 500;
@@ -2847,9 +2905,9 @@ button.delete-building:hover {
 }
 
 .table-bottom-element > div {
-  flex: 1 1 300px;       /* Grow, shrink, base width */
-  min-width: 250px;      /* Prevent too small */
-  max-width: 410px;       /* Prevent overflow */
+  flex: 1 1 300px; /* Grow, shrink, base width */
+  min-width: 250px; /* Prevent too small */
+  max-width: 410px; /* Prevent overflow */
   box-sizing: border-box;
 }
 
@@ -2860,7 +2918,8 @@ button.delete-building:hover {
 }
 
 .table-bottom-elements textarea {
-  width: 87%;              /* Full width of parent */
+  width: 83%; /* Full width of parent */
+  max-width: 315px;
   padding: 8px;
   border-radius: 6px;
   border: 1px solid #ccc;
@@ -2870,9 +2929,30 @@ button.delete-building:hover {
   box-sizing: border-box;
 }
 
+.table-bottom-elements {
+  display: flex;
+  gap: 110px;
+  flex-wrap: wrap; /* Optional: wrap on smaller screens */
+}
 
-.table-bottom-element textarea{
-  width: 86%;              /* Full width of parent */
+.table-bottom-elements > div {
+  flex: 0 0 auto; /* Prevent shrinking */
+  min-width: 250px; /* Or fixed width: width: 250px; */
+}
+
+.table-bottom-elements .textarea {
+  width: 400px;
+  min-width: 313px;
+  resize: vertical; /* allow user to resize vertically only */
+}
+
+.table-bottom-elements select {
+  width: 100%;
+  min-width: 310px;
+}
+
+.table-bottom-element textarea {
+  width: 86%; /* Full width of parent */
   max-width: 530px !important;
   padding: 8px;
   border-radius: 6px;
@@ -2884,7 +2964,6 @@ button.delete-building:hover {
 }
 
 .table-bottom-elements select {
-  width: 83%;
   padding: 10px;
   font-size: 15px;
   border: 1px solid #ccc;
@@ -2959,8 +3038,7 @@ button.delete-building:hover {
   margin-top: -32%;
 }
 
-
-.add-btn-wrapper .add-attachment-button{
+.add-btn-wrapper .add-attachment-button {
   font-size: 35px;
   background: none;
 }
@@ -2968,6 +3046,35 @@ button.delete-building:hover {
 .add-attachment-icon {
   width: 40px;
   height: 40px;
+}
+
+.attachments-header .add-attachment-button {
+  background: none;
+  font-size: 35px;
+}
+
+.attachment-item {
+  display: flex;
+  justify-content: space-between; /* Push content to left and right ends */
+  align-items: center;
+  padding: 6px 0;
+  border-top: 1px solid #eee;
+}
+
+.attachment-item a {
+  flex-grow: 1; /* Let the link fill the space */
+  text-decoration: none;
+  color: #333;
+}
+
+.remove-attachment {
+  background: none;
+  border: none;
+  color: red;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 10px; /* Space between link and button */
 }
 
 .view-attachment-link {
@@ -3018,7 +3125,7 @@ button.delete-building:hover {
   padding: 20px; */
 }
 
-.project-form-group-small .input1{
+.project-form-group-small .input1 {
   background-color: #f0f0f0;
 }
 
@@ -3059,8 +3166,6 @@ button.delete-building:hover {
   font-family: "Archivo", sans-serif;
 }
 
-
-
 .project-form-group input {
   padding: 10px;
   border-radius: 6px;
@@ -3077,7 +3182,7 @@ button.delete-building:hover {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  background-color: #f1890d;  /* Default background */
+  background-color: #f1890d; /* Default background */
   color: white;
   transition: background-color 0.3s, transform 0.3s;
 }
@@ -3099,7 +3204,6 @@ button.delete-building:hover {
 .comp-off-button:focus {
   outline: none;
 }
-
 
 .project-form-group select,
 .project-form-group textarea {
@@ -3471,7 +3575,7 @@ h4 {
 }
 
 .task-tile .building-tile-small {
- display: inline-block;
+  display: inline-block;
   background: #e0e0e0;
   padding: 5px 10px;
   margin: 5px;
@@ -3878,8 +3982,6 @@ h4 {
   border-radius: 5px;
   cursor: pointer;
 }
-
-
 
 .leave-summary-container .leave-summary-box {
   background-color: #f1890d;

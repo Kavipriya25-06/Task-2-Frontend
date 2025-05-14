@@ -11,8 +11,16 @@ const ManagerProjects = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(0);
   const [projects, setProjects] = useState([]);
+  const [filteredProjects, setFilteredProjects] = useState([]);
+  const [filteredBuildings, setFilteredBuildings] = useState([]);
+  const [filteredTask, setFilteredTask] = useState([]);
   const [buildings, setBuildings] = useState([]);
   const [tasks, setTasks] = useState([]);
+  const [searchText, setSearchText] = useState("");
+  const [searchBuild, setSearchBuild] = useState("");
+  const [searchTask, setSearchTask] = useState("");
+
+  
 
   const tabLabels = ["Projects", "Buildings", "Tasks"];
 
@@ -23,6 +31,7 @@ const ManagerProjects = () => {
       );
       const data = await response.json();
       setProjects(data);
+      setFilteredProjects(data);
     } catch (err) {
       console.log("Unable to fetch projects", err);
     }
@@ -33,6 +42,7 @@ const ManagerProjects = () => {
       const response = await fetch(`${config.apiBaseURL}/buildings/`);
       const data = await response.json();
       setBuildings(data);
+      setFilteredBuildings(data);
     } catch (err) {
       console.log("Unable to fetch buildings", err);
     }
@@ -70,6 +80,51 @@ const ManagerProjects = () => {
     fetchTasks();
   }, []);
 
+    useEffect(() => {
+      const lowerSearch = searchText.toLowerCase();
+      const filtered = projects.filter((u) => {
+        const code = u.project_code?.toLowerCase() || "";
+        const name = u.project_title?.toLowerCase() || "";
+        const discipline = u.discipline?.toLowerCase() || "";
+        return (
+          code.includes(lowerSearch) ||
+          name.includes(lowerSearch) ||
+          discipline.includes(lowerSearch)
+        );
+      });
+      setFilteredProjects(filtered);
+    }, [searchText, projects]);
+
+
+      useEffect(() => {
+      const lowerSearch = searchBuild.toLowerCase();
+      const filtered = buildings.filter((u) => {
+        const bcode = u.building_code?.toLowerCase() || "";
+        const bname = u.building_title?.toLowerCase() || "";
+        return (
+          bcode.includes(lowerSearch) ||
+          bname.includes(lowerSearch)
+        );
+      });
+      setFilteredBuildings(filtered);
+    }, [searchBuild, buildings]);
+
+
+    useEffect(() => {
+      const lowerSearch = searchTask.toLowerCase();
+      const filtered = tasks.filter((u) => {
+        const tcode = u.task_code?.toLowerCase() || "";
+        const tname = u.task_title?.toLowerCase() || "";
+        const priority = u.priority?.toLowerCase() || "";
+        return (
+          tcode.includes(lowerSearch) ||
+          tname.includes(lowerSearch) ||
+          priority.includes(lowerSearch)
+        );
+      });
+      setFilteredTask(filtered);
+    }, [searchTask, tasks]);
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 0:
@@ -77,44 +132,60 @@ const ManagerProjects = () => {
           <div>
             <div className="user-header">
               <h2 className="employee-title">Projects</h2>
+              <div className="search-bar-container">
+                <input
+                  type="text"
+                  placeholder="Search by code, title, or discipline"
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  className="search-bar"
+                />
+              </div>
               <div>
                 <button className="add-user-btn" onClick={handleAddClick}>
                   Create Project
                 </button>
               </div>
             </div>
-            <table className="holiday-table">
-              <thead>
-                <tr>
-                  <th>Project code</th>
-                  <th>Project name</th>
-                  <th>Estimated hours</th>
-                  <th>Total hours</th>
-                  <th>Discipline</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {projects.map((project) => (
-                  <tr key={project.project_id}>
-                    <td
-                      onClick={() => handleProjectClick(project.project_id)}
-                      style={{
-                        cursor: "pointer",
-                        textDecoration: "underline",
-                      }}
-                    >
-                      {project.project_code}
-                    </td>
-                    <td>{project.project_title}</td>
-                    <td>{project.estimated_hours}</td>
-                    <td>-</td>
-                    <td>{project.discipline}</td>
-                    <td>{project.status ? "In progress" : "Completed"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="table-wrapper">
+  <table className="holiday-table">
+    <thead>
+      <tr>
+        <th>Project code</th>
+        <th>Project name</th>
+        <th>Estd. hours</th>
+        <th>Total hours</th>
+        <th>Discipline</th>
+        <th>Status</th>
+        <th>Discipline</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {filteredProjects.map((project) => (
+        <tr key={project.project_id}>
+          <td
+            onClick={() => handleProjectClick(project.project_id)}
+            style={{
+              cursor: "pointer",
+              textDecoration: "underline",
+            }}
+          >
+            {project.project_code}
+          </td>
+          <td>{project.project_title}</td>
+          <td>{project.estimated_hours}</td>
+          <td>-</td>
+          <td>{project.discipline}</td>
+          <td>{project.status ? "In progress" : "Completed"}</td>
+          <td>{project.discipline}</td>
+          <td>{project.status ? "In progress" : "Completed"}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
           </div>
         );
       case 1:
@@ -122,6 +193,15 @@ const ManagerProjects = () => {
           <div>
             <div className="user-header">
               <h2 className="employee-title">Buildings</h2>
+              <div className="search-bar-container">
+                <input
+                  type="text"
+                  placeholder="Search by code, title, or discipline"
+                  value={searchBuild}
+                  onChange={(e) => setSearchBuild(e.target.value)}
+                  className="search-bar"
+                />
+              </div>
               <div>
                 <button
                   className="add-user-btn"
@@ -144,7 +224,7 @@ const ManagerProjects = () => {
                 </tr>
               </thead>
               <tbody>
-                {buildings.map((building) => (
+                {filteredBuildings.map((building) => (
                   <tr key={building.building_id}>
                     <td
                     // onClick={() => handleProjectClick(building.building_id)}
@@ -172,6 +252,15 @@ const ManagerProjects = () => {
           <div>
             <div className="user-header">
               <h2 className="employee-title">Tasks</h2>
+              <div className="search-bar-container">
+                <input
+                  type="text"
+                  placeholder="Search by code, title, or discipline"
+                  value={searchTask}
+                  onChange={(e) => setSearchTask(e.target.value)}
+                  className="search-bar"
+                />
+              </div>
               <div>
                 <button className="add-user-btn" onClick={handleAddTaskClick}>
                   Create Task
@@ -190,7 +279,7 @@ const ManagerProjects = () => {
                 </tr>
               </thead>
               <tbody>
-                {tasks.map((task) => (
+                {filteredTask.map((task) => (
                   <tr key={task.task_id}>
                     <td
                     // onClick={() => handleProjectClick(task.task_id)}

@@ -12,6 +12,7 @@ const ManagerProjectCreate = () => {
   const [selectedTeamleadManager, setSelectedTeamleadManager] = useState([]);
   const [buildings, setBuildings] = useState([]);
   const [areas, setAreas] = useState([]);
+  const [discipline, setDiscipline] = useState([]);
   const { user } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -98,6 +99,7 @@ const ManagerProjectCreate = () => {
     fetchTeamleadManager();
     fetchAreas();
     fetchBuilding();
+    fetchDiscipline();
   }, []);
 
   const fetchAreas = async () => {
@@ -107,6 +109,16 @@ const ManagerProjectCreate = () => {
       setAreas(data);
     } catch (error) {
       console.error("Error fetching Area of work:", error);
+    }
+  };
+
+  const fetchDiscipline = async () => {
+    try {
+      const res = await fetch(`${config.apiBaseURL}/discipline/`);
+      const data = await res.json();
+      setDiscipline(data);
+    } catch (error) {
+      console.error("Error fetching Discipline:", error);
     }
   };
 
@@ -168,16 +180,40 @@ const ManagerProjectCreate = () => {
 
               <div className="project-form-group">
                 <label>Discipline Code</label>
-                <input
+                <select
                   name="discipline_code"
                   value={formData.discipline_code}
-                  onChange={handleChange}
-                />
+                  onChange={(e) => {
+                    const selectedCodee = e.target.value;
+                    const selectedCode = parseInt(selectedCodee);
+                    const selectedItem = discipline.find(
+                      (item) => item.discipline_code === selectedCode
+                    );
+                    console.log(
+                      selectedCode,
+                      "Selected code",
+                      selectedItem,
+                      "Item"
+                    );
+                    setFormData({
+                      ...formData,
+                      discipline_code: selectedCode,
+                      discipline: selectedItem ? selectedItem.name : "",
+                    });
+                  }}
+                >
+                  <option value="">Select Discipline</option>
+                  {discipline.map((item) => (
+                    <option key={item.id} value={item.discipline_code}>
+                      {item.discipline_code} - {item.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
-            
+
             <div className="left-form-second">
-            <div className="roles-box">
+              <div className="roles-box">
                 <label>Project Roles</label>
                 <div className="select-container">
                   {teamleadManager.map((employee) => (
@@ -255,25 +291,29 @@ const ManagerProjectCreate = () => {
                           <span className="tag" key={a.area_name}>
                             {a.name}
                             <button
-                            className="tags-button"
-                            type="button"
-                            onClick={() =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                area_of_work: prev.area_of_work.filter(
-                                  (area) => area !== a.area_name
-                                ),
-                              }))
-                            }
-                          >
-                            ×
-                          </button>
+                              className="tags-button"
+                              type="button"
+                              onClick={() =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  area_of_work: prev.area_of_work.filter(
+                                    (area) => area !== a.area_name
+                                  ),
+                                }))
+                              }
+                            >
+                              ×
+                            </button>
                           </span>
                         </div>
                       ))}
                   </div>
 
-                  <button className="plus-button" type="button" onClick={() => setShowAreaPopup(true)}>
+                  <button
+                    className="plus-button"
+                    type="button"
+                    onClick={() => setShowAreaPopup(true)}
+                  >
                     +
                   </button>
                 </div>
@@ -297,11 +337,17 @@ const ManagerProjectCreate = () => {
                 <div className="date-input-container">
                   <DatePicker
                     selected={formData.start_date}
-                    onChange={(date) => setFormData({ ...formData, start_date: format(date, "yyyy-MM-dd") })}
+                    onChange={(date) =>
+                      setFormData({
+                        ...formData,
+                        start_date: format(date, "yyyy-MM-dd"),
+                      })
+                    }
                     dateFormat="dd-MMM-yyyy"
                     placeholderText="dd-mm-yyyy"
                   />
-                  <i className="fas fa-calendar-alt calendar-icon"></i> {/* Font Awesome Calendar Icon */}
+                  <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+                  {/* Font Awesome Calendar Icon */}
                 </div>
               </div>
               <div className="project-form-group-small">
@@ -388,7 +434,12 @@ const ManagerProjectCreate = () => {
               )}
             </div>
           ))}
-          <button className="btn-save" onClick={() => setShowBuildingPopup(false)}>Done</button>
+          <button
+            className="btn-save"
+            onClick={() => setShowBuildingPopup(false)}
+          >
+            Done
+          </button>
           <button
             onClick={() => {
               setShowBuildingPopup(false);

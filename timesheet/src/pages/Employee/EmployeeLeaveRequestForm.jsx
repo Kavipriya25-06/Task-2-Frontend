@@ -17,6 +17,33 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
     attachment: null,
   });
 
+  const [selectedFiles, setSelectedFiles] = useState([]);
+
+  const handleFileChange = (e) => {
+   const newFiles = Array.from(e.target.files);
+
+    const nonDuplicateFiles = newFiles.filter(
+      (newFile) =>
+        !selectedFiles.some(
+          (existingFile) =>
+            existingFile.name === newFile.name &&
+            existingFile.size === newFile.size
+        )
+    );
+
+    if (nonDuplicateFiles.length < newFiles.length) {
+      alert("This file has already been added. Please choose a different one.");
+    }
+
+    setSelectedFiles((prevFiles) => [...prevFiles, ...nonDuplicateFiles]);
+    e.target.value = "";
+  };
+
+  const removeFile = (index) => {
+    const updatedFiles = selectedFiles.filter((_, i) => i !== index);
+    setSelectedFiles(updatedFiles);
+  };
+
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     setFormData({
@@ -191,21 +218,29 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
 
         <div className="form-group1">
           <label className="label1">
-            Attach handover document (pdf, jpg format)
+            Attachments (Max size 2MB)
           </label>
-          <div className="custom-file-container">
-            <label htmlFor="fileUpload" className="custom-file-label">
-              <button className="choose-btn">Choose File</button>
-              <span className="file-info">Max size 2MB</span>
-            </label>
-            <input
-              type="file"
-              id="fileUpload"
-              name="attachment"
-              accept=".pdf,.jpg,.jpeg,.png"
-              onChange={handleChange}
-              className="real-file-input"
-            />
+            <div className="multi-file-upload">
+                  <label htmlFor="fileUpload" className="upload-label">
+                    {/* <span className="upload-btn">+</span> */}
+                  </label>
+                  <input
+                    type="file"
+                    id="fileUpload"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    multiple
+                    onChange={handleFileChange}
+                    className="file-input"
+                  />
+
+                <div className="uploaded-files-container">
+              {selectedFiles.map((file, index) => (
+                <div key={index} className="file-chip">
+                  <span>{file.name}</span>
+                  <button onClick={() => removeFile(index)}>&times;</button>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 

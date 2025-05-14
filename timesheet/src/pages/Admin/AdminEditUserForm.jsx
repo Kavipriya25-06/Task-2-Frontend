@@ -21,6 +21,7 @@ const EditUserForm = () => {
   const [inputValue, setInputValue] = useState("");
 
 
+
   const fetchUser = async () => {
     try {
       const response = await fetch(
@@ -89,7 +90,7 @@ const EditUserForm = () => {
         crumbs={[
           { label: "Admin", link: "/admin" },
           { label: "Users", link: "/admin/detail/users" },
-          { label: "View User" }, // or "Edit User"
+          { label: editMode ? "Edit User" : "View User" },
         ]}
         showBack={true}
       />

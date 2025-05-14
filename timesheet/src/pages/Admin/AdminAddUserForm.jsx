@@ -120,14 +120,15 @@ const AddUserForm = ({ onCancel, onSave }) => {
 
         <div className="form-group">
           <label>Employee email</label>
-          <input
+          {/* <input
             className="input"
             type="email"
             value={email}
             // onChange={(e) => setEmail(e.target.value)}
             required
             disabled
-          />
+          /> */}
+          <div className="uneditable">{email}</div>
         </div>
 
         <div className="form-group" style={{ position: "relative" }}>

@@ -12,6 +12,7 @@ const ManagerProjectView = () => {
   const [availableTeamleadManager, setAvailableTeamleadManager] = useState([]);
   const [projectData, setProjectData] = useState(null);
   const [buildings, setBuildings] = useState([]);
+  const [discipline, setDiscipline] = useState([]);
   const [areas, setAreas] = useState([]);
   const { user } = useAuth();
   const [formData, setFormData] = useState({
@@ -185,6 +186,7 @@ const ManagerProjectView = () => {
     fetchAreas();
     fetchBuilding();
     fetchProjectData();
+    fetchDiscipline();
   }, [project_id]);
 
   const fetchAreas = async () => {
@@ -194,6 +196,16 @@ const ManagerProjectView = () => {
       setAreas(data);
     } catch (error) {
       console.error("Error fetching Area of work:", error);
+    }
+  };
+
+  const fetchDiscipline = async () => {
+    try {
+      const res = await fetch(`${config.apiBaseURL}/discipline/`);
+      const data = await res.json();
+      setDiscipline(data);
+    } catch (error) {
+      console.error("Error fetching Discipline:", error);
     }
   };
 
@@ -319,11 +331,28 @@ const ManagerProjectView = () => {
               <div className="project-form-group">
                 <label>Discipline Code</label>
                 {editMode ? (
-                  <input
+                  <select
                     name="discipline_code"
                     value={formData.discipline_code}
-                    onChange={handleChange}
-                  />
+                    onChange={(e) => {
+                      const selectedCode = e.target.value;
+                      const selectedItem = discipline.find(
+                        (item) => item.discipline_code === selectedCode
+                      );
+                      setFormData({
+                        ...formData,
+                        discipline_code: selectedCode,
+                        discipline: selectedItem ? selectedItem.name : "",
+                      });
+                    }}
+                  >
+                    <option value="">Select Discipline</option>
+                    {discipline.map((item) => (
+                      <option key={item.id} value={item.discipline_code}>
+                        {item.discipline_code} - {item.name}
+                      </option>
+                    ))}
+                  </select>
                 ) : (
                   <p>{projectData.discipline_code}</p>
                 )}
@@ -481,58 +510,54 @@ const ManagerProjectView = () => {
               </div>
             </div>
           </div>
-           <div className="right-form">
-              <div className="right-form-first">
-                <div className="project-form-group-small">
-                  <label>Start Date</label>
-                  {editMode ? (
-                    <input
-                      type="date"
-                      name="start_date"
-                      value={formData.start_date}
-                      onChange={handleChange}
-                    />
-                  ) : (
-                    <p>{projectData.start_date}</p>
-                  )}
-                </div>
-                <div className="project-form-group-small">
-                  <label>Estd. Hours</label>
-                  {editMode ? (
-                    <input
-                      name="estimated_hours"
-                      value={formData.estimated_hours}
-                      onChange={handleChange}
-                    />
-                  ) : (
-                    <p>{projectData.estimated_hours}</p>
-                  )}
-                </div>
+          <div className="right-form">
+            <div className="right-form-first">
+              <div className="project-form-group-small">
+                <label>Start Date</label>
+                {editMode ? (
+                  <input
+                    type="date"
+                    name="start_date"
+                    value={formData.start_date}
+                    onChange={handleChange}
+                  />
+                ) : (
+                  <p>{projectData.start_date}</p>
+                )}
               </div>
-              <div className="right-form-second">
-                <div className="form-group-full-width">
-                  <label>Project Description</label>
-                  {editMode ? (
-                    <textarea
-                      name="project_description"
-                      value={formData.project_description}
-                      onChange={handleChange}
-                    />
-                  ) : (
-                    <p>{projectData.project_description}</p>
-                  )}
-                </div>
+              <div className="project-form-group-small">
+                <label>Estd. Hours</label>
+                {editMode ? (
+                  <input
+                    name="estimated_hours"
+                    value={formData.estimated_hours}
+                    onChange={handleChange}
+                  />
+                ) : (
+                  <p>{projectData.estimated_hours}</p>
+                )}
               </div>
             </div>
+            <div className="right-form-second">
+              <div className="form-group-full-width">
+                <label>Project Description</label>
+                {editMode ? (
+                  <textarea
+                    name="project_description"
+                    value={formData.project_description}
+                    onChange={handleChange}
+                  />
+                ) : (
+                  <p>{projectData.project_description}</p>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
         <div className="form-buttons">
           {editMode ? (
             <>
-              <button
-                type="submit"
-                onClick={handleUpdate}
-                className="btn-save"
-              >
+              <button type="submit" onClick={handleUpdate} className="btn-save">
                 Save
               </button>
               <button
