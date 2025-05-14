@@ -2150,7 +2150,7 @@ h3 {
 .btn-forgot {
   background: none;
   border: none;
-  color: #68a0db; /* Bootstrap primary blue */
+  color: #333333; /* Bootstrap primary blue */
   font-size: 14px;
   text-decoration: underline;
   cursor: pointer;
@@ -2160,7 +2160,18 @@ h3 {
 }
 
 .btn-forgot:hover {
-  color: #0056b3;
+  color: #535353;
+  text-decoration: none;
+}
+
+.btn-contact {
+  color: #333333;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.btn-contact:hover {
+  color: #535353;
   text-decoration: none;
 }
 
