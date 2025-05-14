@@ -32,7 +32,6 @@ const EditEmployee = () => {
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [managers, setManagers] = useState([]);
-  const [hierarchy, setHierarchy] = useState({});
 
   const [editMode, setEditMode] = useState(false); //  Add this at the top
   const {
@@ -58,14 +57,11 @@ const EditEmployee = () => {
   });
 
   const { formData, setFormData, errors, setErrors, handleChange } =
-    useEmployeeFormHandler({
-      defaultEmployeeFormData,
-    });
+    useEmployeeFormHandler(defaultEmployeeFormData);
 
   useEffect(() => {
     fetchEmployee();
     fetchManagers();
-    fetchHierarchy();
   }, [employee_id]);
 
   const fetchEmployee = async () => {
@@ -117,18 +113,6 @@ const EditEmployee = () => {
     }
   };
 
-  const fetchHierarchy = async () => {
-    try {
-      const res = await fetch(
-        `${config.apiBaseURL}/hierarchy/by_employee/${employee_id}/`
-      );
-      const data = await res.json();
-      setHierarchy(data);
-    } catch (error) {
-      console.error("Error fetching hierarchy:", error);
-    }
-  };
-
   const handleExperienceChange = (e) => {
     const { name, value } = e.target;
     const updated = { ...experienceUI, [name]: value };
@@ -153,7 +137,7 @@ const EditEmployee = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isEditMode) return;
+    if (!editMode) return;
 
     const updatedEmployee = { ...formData };
     console.log(updatedEmployee);
@@ -190,30 +174,6 @@ const EditEmployee = () => {
           body: JSON.stringify(cleanedData),
         }
       );
-
-      // Step 2: PATCH hierarchy
-      const hierarchyPayload = {
-        designation: hierarchy.designation || null,
-        department: hierarchy.department || null,
-        reporting_to: hierarchy.reporting_to || null,
-      };
-
-      const resHier = await fetch(
-        `${config.apiBaseURL}/hierarchy/${hierarchy.hierarchy_id}/`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(hierarchyPayload),
-        }
-      );
-
-      if (resHier.ok) {
-        console.log("Employee and hierarchy updated successfully!");
-
-        fetchHierarchy();
-      } else {
-        console.log("Failed to update. Please check inputs.");
-      }
 
       if (profilePicture) {
         const picturePayload = new FormData();
@@ -257,7 +217,8 @@ const EditEmployee = () => {
       }
 
       if (!response.ok) throw new Error("Failed to update employee");
-      navigate("/hr/detail/employee-details");
+      setEditMode(false);
+      // navigate("/hr/detail/employee-details");
     } catch (error) {
       console.error("Error submitting employee data:", error);
     }
@@ -1417,6 +1378,34 @@ const EditEmployee = () => {
                 <div className="uneditable">{formData.bank_name || "-"}</div>
               )}
             </div>
+            <div className="individual-tabs">
+              <label>Branch Name</label>
+              {editMode ? (
+                <input
+                  name="bank_branch_name"
+                  value={formData.bank_branch_name}
+                  onChange={handleChange}
+                  placeholder="Branch Name"
+                />
+              ) : (
+                <div className="uneditable">
+                  {formData.bank_branch_name || "-"}
+                </div>
+              )}
+            </div>
+            <div className="individual-tabs">
+              <label>Bank Address</label>
+              {editMode ? (
+                <textarea
+                  name="bank_address"
+                  value={formData.bank_address}
+                  onChange={handleChange}
+                  placeholder="Bank Address"
+                />
+              ) : (
+                <div className="uneditable">{formData.bank_address || "-"}</div>
+              )}
+            </div>
           </div>
         );
       case 3:
@@ -1474,6 +1463,21 @@ const EditEmployee = () => {
               ) : (
                 <div className="uneditable">
                   {formData.emergency_contact_name || "-"}
+                </div>
+              )}
+            </div>
+            <div className="individual-tabs">
+              <label>Relationship</label>
+              {editMode ? (
+                <input
+                  name="emergency_contact_relationship"
+                  value={formData.emergency_contact_relationship}
+                  onChange={handleChange}
+                  placeholder="Relationship"
+                />
+              ) : (
+                <div className="uneditable">
+                  {formData.emergency_contact_relationship || "-"}
                 </div>
               )}
             </div>
