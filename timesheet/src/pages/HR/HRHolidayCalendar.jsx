@@ -172,7 +172,7 @@ const HRHolidayCalendar = () => {
           Holiday list {year}
         </button>
       </div>
-      {console.log("varudam........", selectedYear)}
+      {/* {console.log("varudam........", selectedYear)} */}
 
       {/* <div className="calendar-grid">
         {daysInWeek.map((day) => (
