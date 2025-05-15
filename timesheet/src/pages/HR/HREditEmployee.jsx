@@ -75,6 +75,7 @@ const EditEmployee = () => {
       // Set Profile Picture if exists
       if (data.profile_picture) {
         setProfilePictureUrl(config.apiBaseURL + data.profile_picture);
+        delete data.profile_picture;
       }
 
       // Set experience years/months
@@ -140,7 +141,8 @@ const EditEmployee = () => {
     if (!editMode) return;
 
     const updatedEmployee = { ...formData };
-    console.log(updatedEmployee);
+    // delete updatedEmployee.profile_picture; // <- THIS IS IMPORTANT
+    console.log("updated employee", updatedEmployee);
 
     const fieldsToNullify = [
       "dob",
