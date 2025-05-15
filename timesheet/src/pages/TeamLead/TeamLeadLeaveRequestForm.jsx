@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { format } from "date-fns";
+import { format ,differenceInCalendarDays } from "date-fns";
 
 const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
   const { user } = useAuth();
@@ -17,6 +17,18 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
     reason: "",
     attachment: null,
   });
+
+  useEffect(() => {
+    if (formData.startDate && formData.endDate) {
+      const duration = differenceInCalendarDays(
+        new Date(formData.endDate),
+        new Date(formData.startDate)
+      ) + 1; // +1 to include both start and end dates
+      setFormData((prev) => ({ ...prev, duration: duration.toString() }));
+    } else {
+      setFormData((prev) => ({ ...prev, duration: "" }));
+    }
+  }, [formData.startDate, formData.endDate]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -57,10 +69,7 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
     data.append("end_date", format(formData.endDate, "yyyy-MM-dd"));
     data.append("duration", formData.duration);
     data.append("reason", formData.reason);
-    data.append(
-      "resumption_date",
-      format(formData.resumptionDate, "yyyy-MM-dd")
-    );
+    data.append("resumption_date",format(formData.resumptionDate, "yyyy-MM-dd"));
     if (formData.attachment) {
       data.append("attachment", formData.attachment);
     }
@@ -78,7 +87,6 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
         console.log("Leave submitted successfully:", result);
         alert("Leave Request Submitted Successfully!");
         await patchLeaveAvailability(mappedLeaveType, formData.duration);
-
         onClose(); // Close form after successful submission
       } else {
         const errorData = await response.json();
@@ -199,6 +207,7 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
               value={formData.duration}
               onChange={handleChange}
               className="input1"
+              readOnly
             />
           </div>
           <div className="form-group-half1">
@@ -238,7 +247,7 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
 
         <div className="form-group1">
           <label className="label1">
-            Attach Handover Document (pdf, jpg format)
+            Attachments (pdf, jpg format)
           </label>
           <div className="custom-file-container">
             <label htmlFor="fileUpload" className="custom-file-label">

@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { format ,differenceInCalendarDays } from "date-fns";
 
 const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
   const { user } = useAuth();
@@ -17,6 +18,18 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
     attachment: null,
   });
 
+   useEffect(() => {
+      if (formData.startDate && formData.endDate) {
+        const duration = differenceInCalendarDays(
+          new Date(formData.endDate),
+          new Date(formData.startDate)
+        ) + 1; // +1 to include both start and end dates
+        setFormData((prev) => ({ ...prev, duration: duration.toString() }));
+      } else {
+        setFormData((prev) => ({ ...prev, duration: "" }));
+      }
+    }, [formData.startDate, formData.endDate]);
+
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     setFormData({
@@ -27,6 +40,16 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (formData.endDate < formData.startDate) {
+      alert("End date must be the same or after the start date.");
+      return;
+    }
+
+    if (formData.resumptionDate <= formData.endDate) {
+      alert("Resumption date must be after the end date.");
+      return;
+    }
 
     const apiURL = `${config.apiBaseURL}/leaves-taken/`;
 
@@ -77,27 +100,43 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
   };
 
   const patchLeaveAvailability = async (leaveTypeKey, duration) => {
-    const patchURL = `${config.apiBaseURL}/leaves-available/by_employee/${user.employee_id}/`;
-
-    const payload = {
-      [leaveTypeKey]: -parseFloat(duration), // Deduct the requested duration
-    };
+    const employeeId = user.employee_id;
+    const fetchURL = `${config.apiBaseURL}/leaves-available/by_employee/${employeeId}/`;
 
     try {
-      const res = await fetch(patchURL, {
+      // 1. Fetch current leave availability
+      const getRes = await fetch(fetchURL);
+      if (!getRes.ok) {
+        const err = await getRes.json();
+        console.error("Failed to fetch current leave balance:", err);
+        return;
+      }
+
+      const currentData = await getRes.json();
+      const currentLeaveBalance = currentData[leaveTypeKey];
+
+      // 2. Subtract duration manually
+      const updatedLeave = currentLeaveBalance - parseFloat(duration);
+
+      // 3. Send PATCH request with updated value
+      const patchRes = await fetch(fetchURL, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ [leaveTypeKey]: updatedLeave }),
       });
 
-      if (!res.ok) {
-        const err = await res.json();
-        console.error("Leave availability update failed:", err);
+      if (!patchRes.ok) {
+        const err = await patchRes.json();
+        console.error("Leave balance update failed:", err);
+      } else {
+        const result = await patchRes.json();
+        console.log("Leave balance updated:", result);
       }
     } catch (err) {
-      console.error("Error patching leave availability:", err);
+      console.error("Error in patchLeaveAvailability:", err);
     }
   };
+
 
   return (
     <div className="form-containers">
@@ -150,6 +189,7 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
                 dateFormat="dd-MMM-yyyy"
                 placeholderText="dd-mm-yyyy"
                 className="input1"
+                minDate={formData.startDate || null}
               />
               <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
               {/* Font Awesome Calendar Icon */}
@@ -166,6 +206,7 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
               value={formData.duration}
               onChange={handleChange}
               className="input1"
+              readOnly
             />
           </div>
           <div className="form-group-half1">
@@ -181,6 +222,11 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
                 dateFormat="dd-MMM-yyyy"
                 placeholderText="dd-mm-yyyy"
                 className="input1"
+                minDate={
+                  formData.endDate
+                    ? new Date(formData.endDate.getTime() + 86400000)
+                    : null
+                }
               />
               <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
               {/* Font Awesome Calendar Icon */}
@@ -200,7 +246,7 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
 
         <div className="form-group1">
           <label className="label1">
-            Attach handover document (pdf, jpg format)
+            Attachments (pdf, jpg format)
           </label>
           <div className="custom-file-container">
             <label htmlFor="fileUpload" className="custom-file-label">

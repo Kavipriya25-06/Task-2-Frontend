@@ -50,6 +50,7 @@ const TeamLeadLeaveRequests = () => {
         `${config.apiBaseURL}/leaves-taken/by_employee/${user.employee_id}/`
       );
       const data = await response.json();
+      data.sort((a, b) => new Date(b.end_date) - new Date(a.end_date));
       setLeaveRequests(data);
 
       // Fetch attachments per leave_taken_id

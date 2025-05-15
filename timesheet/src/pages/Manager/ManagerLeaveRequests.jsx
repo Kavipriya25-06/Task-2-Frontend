@@ -37,7 +37,7 @@ const ManagerLeaveRequests = () => {
   const filterLeaveRequests = () => {
     const statusFilter = tabLabels[activeTab].toLowerCase();
     const filteredData = leaveRequests.filter(
-      (leave) => leave.status.toLowerCase() === statusFilter
+      (leave) => leave.status.toLowerCase() === statusFilter) .sort((a, b) => new Date(b.end_date) - new Date(a.end_date)
     );
     setFilteredLeaveRequests(filteredData);
   };

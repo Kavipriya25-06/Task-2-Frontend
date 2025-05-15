@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { format ,differenceInCalendarDays } from "date-fns";
 
 const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
   const { user } = useAuth();
@@ -16,6 +17,19 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
     reason: "",
     attachment: null,
   });
+
+    useEffect(() => {
+        if (formData.startDate && formData.endDate) {
+          const duration = differenceInCalendarDays(
+            new Date(formData.endDate),
+            new Date(formData.startDate)
+          ) + 1; // +1 to include both start and end dates
+          setFormData((prev) => ({ ...prev, duration: duration.toString() }));
+        } else {
+          setFormData((prev) => ({ ...prev, duration: "" }));
+        }
+      }, [formData.startDate, formData.endDate]);
+  
 
   const [selectedFiles, setSelectedFiles] = useState([]);
 
@@ -54,6 +68,16 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+     if (formData.endDate < formData.startDate) {
+      alert("End date must be the same or after the start date.");
+      return;
+    }
+
+    if (formData.resumptionDate <= formData.endDate) {
+      alert("Resumption date must be after the end date.");
+      return;
+    }
 
     const apiURL = `${config.apiBaseURL}/leaves-taken/`;
 
@@ -179,6 +203,7 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
                 dateFormat="dd-MMM-yyyy"
                 placeholderText="dd-mm-yyyy"
                 className="input1"
+                minDate={formData.startDate || null}
               />
               <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
               {/* Font Awesome Calendar Icon */}
@@ -195,6 +220,7 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
               value={formData.duration}
               onChange={handleChange}
               className="input1"
+              readOnly
             />
           </div>
           <div className="form-group-half1">
@@ -210,6 +236,11 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
                 dateFormat="dd-MMM-yyyy"
                 placeholderText="dd-mm-yyyy"
                 className="input1"
+                minDate={
+                  formData.endDate
+                    ? new Date(formData.endDate.getTime() + 86400000)
+                    : null
+                }
               />
               <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
               {/* Font Awesome Calendar Icon */}
