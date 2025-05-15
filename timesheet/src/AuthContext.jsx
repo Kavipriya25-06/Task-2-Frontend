@@ -43,30 +43,34 @@ const AuthProvider = ({ children }) => {
       );
 
       if (foundUser) {
-        // Fetch employee details based on user info
-        const employeeResponse = await fetch(
-          `${config.apiBaseURL}/employees-details/${foundUser.employee_id}/`
-        );
-        const employeeDetails = await employeeResponse.json();
-        const loggedInUser = {
-          email: foundUser.email,
-          role: foundUser.role,
-          user_id: foundUser.user_id,
-          employee_id: employeeDetails.employee_id,
-          employee_name: employeeDetails.employee_name,
-          employee_code: employeeDetails.employee_code,
-          status: employeeDetails.status,
-          designation: employeeDetails.designation,
-          department: employeeDetails.department,
-          hierarchy_details: employeeDetails.hierarchy_details,
-        };
+        if (foundUser.status === "active") {
+          // Fetch employee details based on user info
+          const employeeResponse = await fetch(
+            `${config.apiBaseURL}/employees-details/${foundUser.employee_id}/`
+          );
+          const employeeDetails = await employeeResponse.json();
+          const loggedInUser = {
+            email: foundUser.email,
+            role: foundUser.role,
+            user_id: foundUser.user_id,
+            employee_id: employeeDetails.employee_id,
+            employee_name: employeeDetails.employee_name,
+            employee_code: employeeDetails.employee_code,
+            status: employeeDetails.status,
+            designation: employeeDetails.designation,
+            department: employeeDetails.department,
+            hierarchy_details: employeeDetails.hierarchy_details,
+          };
 
-        // const loggedInUser = { email: foundUser.email, role: foundUser.role };
+          // const loggedInUser = { email: foundUser.email, role: foundUser.role };
 
-        setUser(loggedInUser);
-        localStorage.setItem("user", JSON.stringify(loggedInUser)); // Persist user state
-        resetInactivityTimer(); // Start inactivity timer on login
-        return true;
+          setUser(loggedInUser);
+          localStorage.setItem("user", JSON.stringify(loggedInUser)); // Persist user state
+          resetInactivityTimer(); // Start inactivity timer on login
+          return true;
+        } else {
+          throw new Error("User not active contact admin");
+        }
       } else {
         throw new Error("Invalid email or password");
       }

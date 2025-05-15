@@ -67,7 +67,8 @@ const TeamLeadTaskCreate = () => {
           </div>
           <div className="table-bottom-element">
             <div>
-              <label>Task Description</label><br />
+              <label>Task Description</label>
+              <br />
               <textarea
                 name="task_description"
                 value={taskData.task_description || ""}
@@ -77,7 +78,8 @@ const TeamLeadTaskCreate = () => {
               />
             </div>
             <div className="priorities">
-              <label>Priority</label><br />
+              <label>Priority</label>
+              <br />
               <select
                 name="priority"
                 value={taskData.priority || ""}
@@ -91,7 +93,7 @@ const TeamLeadTaskCreate = () => {
               </select>
             </div>
           </div>
-
+          
         </div>
         <div className="form-buttons">
           <button type="submit" className="btn-green">

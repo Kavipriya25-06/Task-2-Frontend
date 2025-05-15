@@ -49,7 +49,8 @@ const ManagerBuildingCreate = () => {
         <div className="building-elements">
           <div className="top-elements">
             <div>
-              <label>Building code</label><br />
+              <label>Building code</label>
+              <br />
               <input
                 name="building_code"
                 value={buildingData.building_code || ""}
@@ -57,7 +58,8 @@ const ManagerBuildingCreate = () => {
               />
             </div>
             <div>
-              <label>Building Title</label><br />
+              <label>Building Title</label>
+              <br />
               <input
                 name="building_title"
                 value={buildingData.building_title || ""}
@@ -67,7 +69,8 @@ const ManagerBuildingCreate = () => {
           </div>
           <div className="bottom-elements">
             <div>
-              <label>Building Description</label><br />
+              <label>Building Description</label>
+              <br />
               <textarea
                 name="building_description"
                 value={buildingData.building_description || ""}

@@ -171,20 +171,20 @@
 //   return (
 //     <div className="create-project-container">
 
-      // <div className="project-header">
-      //    <h2>{editMode ? "Edit Project" : "View Project"}</h2>
-      //   {editMode ? (
-      //             <div></div>
-      //           ) : (
-      //             <button
-      //               type="edit"
-      //               onClick={() => setEditMode(true)}
-      //               className="btn-orange"
-      //             >
-      //               <FaEdit className="edit-icon" />
-      //             </button>
-      //           )}
-      // </div>
+// <div className="project-header">
+//    <h2>{editMode ? "Edit Project" : "View Project"}</h2>
+//   {editMode ? (
+//             <div></div>
+//           ) : (
+//             <button
+//               type="edit"
+//               onClick={() => setEditMode(true)}
+//               className="btn-orange"
+//             >
+//               <FaEdit className="edit-icon" />
+//             </button>
+//           )}
+// </div>
 //       <form onSubmit={handleSubmit}>
 //       <div className="project-header">
 //         <h2>Project: {projectData.project_title}</h2>
@@ -341,45 +341,45 @@
 //                 )}
 //               </div>
 
-              // <div className="area-group">
-              //   <label>Area of Work</label>
-              //   {editMode ? (
-              //     <div className="area-row">
-              //       <div className="tags">
-              //         {areas
-              //           .filter((a) =>
-              //             formData.area_of_work.includes(a.area_name)
-              //           )
-              //           .map((a) => (
-              //             <span className="tag" key={a.area_name}>
-              //               {a.name}
-              //               <button className="tag-button">×</button>
-              //             </span>
-              //           ))}
-              //       </div>
+// <div className="area-group">
+//   <label>Area of Work</label>
+//   {editMode ? (
+//     <div className="area-row">
+//       <div className="tags">
+//         {areas
+//           .filter((a) =>
+//             formData.area_of_work.includes(a.area_name)
+//           )
+//           .map((a) => (
+//             <span className="tag" key={a.area_name}>
+//               {a.name}
+//               <button className="tag-button">×</button>
+//             </span>
+//           ))}
+//       </div>
 
-              //       <button
-              //         type="button"
-              //         onClick={() => setShowAreaPopup(true)}
-              //       >
-              //         +
-              //       </button>
-              //     </div>
-              //   ) : (
-              //     <div className="tags">
-              //       {areas
-              //         .filter((a) =>
-              //           formData.area_of_work.includes(a.area_name)
-              //         )
-              //         .map((a) => (
-              //           <span className="tag" key={a.area_name}>
-              //             {a.name}
-              //             <button className="tag-button">×</button>
-              //           </span>
-              //         ))}
-              //     </div>
-              //   )}
-              // </div>
+//       <button
+//         type="button"
+//         onClick={() => setShowAreaPopup(true)}
+//       >
+//         +
+//       </button>
+//     </div>
+//   ) : (
+//     <div className="tags">
+//       {areas
+//         .filter((a) =>
+//           formData.area_of_work.includes(a.area_name)
+//         )
+//         .map((a) => (
+//           <span className="tag" key={a.area_name}>
+//             {a.name}
+//             <button className="tag-button">×</button>
+//           </span>
+//         ))}
+//     </div>
+//   )}
+// </div>
 
 //               <div className="project-form-group">
 //                 <label>Sub Division</label>
@@ -621,46 +621,46 @@
 //           </button>
 //         </div>
 //       )}
-      // {showAreaPopup && (
-      //   <div className="popup">
-      //     <h4>Select Area of Work</h4>
-      //     {areas.map((a) => (
-      //       <div key={a.id}>
-      //         <input
-      //           type="checkbox"
-      //           value={a.id}
-      //           checked={selectedAreas.includes(a.id)}
-      //           onChange={(e) => {
-      //             const checked = e.target.checked;
-      //             if (checked) {
-      //               setSelectedAreas((prev) => [...prev, a.id]);
-      //             } else {
-      //               setSelectedAreas((prev) =>
-      //                 prev.filter((id) => id !== a.id)
-      //               );
-      //             }
-      //           }}
-      //         />
-      //         {a.name}
-      //       </div>
-      //     ))}
-      //     <button
-      //       onClick={() => {
-      //         setFormData((prev) => ({ ...prev, area_of_work: selectedAreas }));
-      //         setShowAreaPopup(false);
-      //       }}
-      //     >
-      //       Done
-      //     </button>
-      //     <button
-      //       onClick={() => {
-      //         setShowAreaPopup(false);
-      //       }}
-      //     >
-      //       Cancel
-      //     </button>
-      //   </div>
-      // )}
+// {showAreaPopup && (
+//   <div className="popup">
+//     <h4>Select Area of Work</h4>
+//     {areas.map((a) => (
+//       <div key={a.id}>
+//         <input
+//           type="checkbox"
+//           value={a.id}
+//           checked={selectedAreas.includes(a.id)}
+//           onChange={(e) => {
+//             const checked = e.target.checked;
+//             if (checked) {
+//               setSelectedAreas((prev) => [...prev, a.id]);
+//             } else {
+//               setSelectedAreas((prev) =>
+//                 prev.filter((id) => id !== a.id)
+//               );
+//             }
+//           }}
+//         />
+//         {a.name}
+//       </div>
+//     ))}
+//     <button
+//       onClick={() => {
+//         setFormData((prev) => ({ ...prev, area_of_work: selectedAreas }));
+//         setShowAreaPopup(false);
+//       }}
+//     >
+//       Done
+//     </button>
+//     <button
+//       onClick={() => {
+//         setShowAreaPopup(false);
+//       }}
+//     >
+//       Cancel
+//     </button>
+//   </div>
+// )}
 //       </form>
 //     </div>
 //   );
@@ -672,7 +672,7 @@
 
 // src\pages\Manager\ManagerProjectView.jsx
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef} from "react";
 import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
@@ -680,6 +680,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 const TeamLeadProjectView = () => {
   const navigate = useNavigate();
+  const buildingPopupRef = useRef();
   const [teamleadManager, setTeamleadManager] = useState([]);
   const [availableTeamleadManager, setAvailableTeamleadManager] = useState([]);
   const [projectData, setProjectData] = useState(null);
@@ -859,6 +860,20 @@ const TeamLeadProjectView = () => {
     fetchProjectData();
   }, [project_id]);
 
+  useEffect(() => {
+      function handleClickOutside(event) {
+        if (buildingPopupRef.current && !buildingPopupRef.current.contains(event.target)) {
+          setShowBuildingPopup(false);
+        }
+      }
+      if (showBuildingPopup) {
+        document.addEventListener("mousedown", handleClickOutside);
+      }
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, [showBuildingPopup]);
+
   const fetchAreas = async () => {
     try {
       const res = await fetch(`${config.apiBaseURL}/area-of-work/`);
@@ -918,19 +933,19 @@ const TeamLeadProjectView = () => {
   return (
     <div className="create-project-container">
       <div className="project-header">
-         <h2>{editMode ? "Edit Project" : "View Project"}</h2>
+        <h2>{editMode ? "Edit Project" : "View Project"}</h2>
         {editMode ? (
-                  <div></div>
-                ) : (
-                  <button
-                    type="edit"
-                    onClick={() => setEditMode(true)}
-                    className="btn-orange"
-                    title="Edit"
-                  >
-                    <FaEdit className="edit-icon" />
-                  </button>
-                )}
+          <div></div>
+        ) : (
+          <button
+            type="edit"
+            onClick={() => setEditMode(true)}
+            className="btn-orange"
+            title="Edit"
+          >
+            <FaEdit className="edit-icon" />
+          </button>
+        )}
       </div>
       <div>
         <div className="input-elements">
@@ -987,7 +1002,7 @@ const TeamLeadProjectView = () => {
               </div>
             </div>
             <div className="left-form-second">
-            <div className="roles-box">
+              <div className="roles-box">
                 <label>Project Roles</label>
                 {editMode ? (
                   <div className="select-container">
@@ -1204,7 +1219,7 @@ const TeamLeadProjectView = () => {
         </div>
       </div>
       {showBuildingPopup && (
-        <div className="popup">
+        <div className="popup" ref={buildingPopupRef}>
           <h4>Select Buildings</h4>
           {buildings.map((b) => (
             <div key={b.building_id} style={{ marginBottom: "8px" }}>
@@ -1265,7 +1280,8 @@ const TeamLeadProjectView = () => {
             </div>
           ))}
           <button
-            className="btn-save" onClick={() => {
+            className="btn-save"
+            onClick={() => {
               const invalid = selectedBuildings.find(
                 (b) => !b.building_hours || parseFloat(b.building_hours) <= 0
               );

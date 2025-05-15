@@ -19,9 +19,7 @@ const ManagerProjects = () => {
   const [searchText, setSearchText] = useState("");
   const [searchBuild, setSearchBuild] = useState("");
   const [searchTask, setSearchTask] = useState("");
-
   
-
   const tabLabels = ["Projects", "Buildings", "Tasks"];
 
   const fetchProjects = async () => {
@@ -80,50 +78,45 @@ const ManagerProjects = () => {
     fetchTasks();
   }, []);
 
-    useEffect(() => {
-      const lowerSearch = searchText.toLowerCase();
-      const filtered = projects.filter((u) => {
-        const code = u.project_code?.toLowerCase() || "";
-        const name = u.project_title?.toLowerCase() || "";
-        const discipline = u.discipline?.toLowerCase() || "";
-        return (
-          code.includes(lowerSearch) ||
-          name.includes(lowerSearch) ||
-          discipline.includes(lowerSearch)
-        );
-      });
-      setFilteredProjects(filtered);
-    }, [searchText, projects]);
+  useEffect(() => {
+    const lowerSearch = searchText.toLowerCase();
+    const filtered = projects.filter((u) => {
+      const code = u.project_code?.toLowerCase() || "";
+      const name = u.project_title?.toLowerCase() || "";
+      const discipline = u.discipline?.toLowerCase() || "";
+      return (
+        code.includes(lowerSearch) ||
+        name.includes(lowerSearch) ||
+        discipline.includes(lowerSearch)
+      );
+    });
+    setFilteredProjects(filtered);
+  }, [searchText, projects]);
 
+  useEffect(() => {
+    const lowerSearch = searchBuild.toLowerCase();
+    const filtered = buildings.filter((u) => {
+      const bcode = u.building_code?.toLowerCase() || "";
+      const bname = u.building_title?.toLowerCase() || "";
+      return bcode.includes(lowerSearch) || bname.includes(lowerSearch);
+    });
+    setFilteredBuildings(filtered);
+  }, [searchBuild, buildings]);
 
-      useEffect(() => {
-      const lowerSearch = searchBuild.toLowerCase();
-      const filtered = buildings.filter((u) => {
-        const bcode = u.building_code?.toLowerCase() || "";
-        const bname = u.building_title?.toLowerCase() || "";
-        return (
-          bcode.includes(lowerSearch) ||
-          bname.includes(lowerSearch)
-        );
-      });
-      setFilteredBuildings(filtered);
-    }, [searchBuild, buildings]);
-
-
-    useEffect(() => {
-      const lowerSearch = searchTask.toLowerCase();
-      const filtered = tasks.filter((u) => {
-        const tcode = u.task_code?.toLowerCase() || "";
-        const tname = u.task_title?.toLowerCase() || "";
-        const priority = u.priority?.toLowerCase() || "";
-        return (
-          tcode.includes(lowerSearch) ||
-          tname.includes(lowerSearch) ||
-          priority.includes(lowerSearch)
-        );
-      });
-      setFilteredTask(filtered);
-    }, [searchTask, tasks]);
+  useEffect(() => {
+    const lowerSearch = searchTask.toLowerCase();
+    const filtered = tasks.filter((u) => {
+      const tcode = u.task_code?.toLowerCase() || "";
+      const tname = u.task_title?.toLowerCase() || "";
+      const priority = u.priority?.toLowerCase() || "";
+      return (
+        tcode.includes(lowerSearch) ||
+        tname.includes(lowerSearch) ||
+        priority.includes(lowerSearch)
+      );
+    });
+    setFilteredTask(filtered);
+  }, [searchTask, tasks]);
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -157,8 +150,8 @@ const ManagerProjects = () => {
         <th>Total hours</th>
         <th>Discipline</th>
         <th>Status</th>
-        <th>Variation Hours</th>
-        <th>Consumed hours</th>
+        <th>Discipline</th>
+        <th>Status</th>
       </tr>
     </thead>
     <tbody>

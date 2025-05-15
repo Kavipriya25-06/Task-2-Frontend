@@ -19,10 +19,7 @@ const EditUserForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [editMode, setEditMode] = useState(false); //  Add this at the top
   const [inputValue, setInputValue] = useState("");
-  const [status, setStatus] = useState("Active"); // or "Inactive"
 
-
-  
 
 
   const fetchUser = async () => {

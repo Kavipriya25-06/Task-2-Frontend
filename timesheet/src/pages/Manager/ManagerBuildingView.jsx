@@ -411,30 +411,54 @@ const ManagerBuildingView = () => {
                           updateTaskHours(task.task_id, e.target.value)
                         }
                       />
-                     <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-                       <div className="date-input-container">
-                           <DatePicker
-                              selected={selected.start_date ? new Date(selected.start_date) : null}
-                              onChange={(date) =>
-                                updateTaskDates(task.task_id, "start_date", format(date, "yyyy-MM-dd"))
-                              }
-                              dateFormat="dd-MMM-yyyy"
-                              placeholderText="dd-mm-yyyy"
-                              className="custom-datepicker"
-                            />
-                          <i className="fas fa-calendar-alt calendar-icon"></i> {/* Font Awesome Calendar Icon */}
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "16px",
+                          alignItems: "center",
+                        }}
+                      >
+                        <div className="date-input-container">
+                          <DatePicker
+                            selected={
+                              selected.start_date
+                                ? new Date(selected.start_date)
+                                : null
+                            }
+                            onChange={(date) =>
+                              updateTaskDates(
+                                task.task_id,
+                                "start_date",
+                                format(date, "yyyy-MM-dd")
+                              )
+                            }
+                            dateFormat="dd-MMM-yyyy"
+                            placeholderText="dd-mm-yyyy"
+                            className="custom-datepicker"
+                          />
+                          <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+                          {/* Font Awesome Calendar Icon */}
                         </div>
-                         <div className="date-input-container">
-                             <DatePicker
-                                selected={selected.end_date ? new Date(selected.end_date) : null}
-                                onChange={(date) =>
-                                  updateTaskDates(task.task_id, "end_date", format(date, "yyyy-MM-dd"))
-                                }
-                                dateFormat="dd-MMM-yyyy"
-                                placeholderText="dd-mm-yyyy"
-                                className="custom-datepicker"
-                              />
-                          <i className="fas fa-calendar-alt calendar-icon"></i> {/* Font Awesome Calendar Icon */}
+                        <div className="date-input-container">
+                          <DatePicker
+                            selected={
+                              selected.end_date
+                                ? new Date(selected.end_date)
+                                : null
+                            }
+                            onChange={(date) =>
+                              updateTaskDates(
+                                task.task_id,
+                                "end_date",
+                                format(date, "yyyy-MM-dd")
+                              )
+                            }
+                            dateFormat="dd-MMM-yyyy"
+                            placeholderText="dd-mm-yyyy"
+                            className="custom-datepicker"
+                          />
+                          <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+                          {/* Font Awesome Calendar Icon */}
                         </div>
                       </div>
                     </>

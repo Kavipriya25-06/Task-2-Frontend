@@ -404,7 +404,10 @@ const ManagerAttendanceAdmin = () => {
                 <button type="submit" className="btn-save">
                   Submit
                 </button>
-                <button onClick={() => setShowAddPopup(false)} className="btn-cancel">
+                <button
+                  onClick={() => setShowAddPopup(false)}
+                  className="btn-cancel"
+                >
                   Cancel
                 </button>
               </div>

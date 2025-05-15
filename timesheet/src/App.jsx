@@ -262,7 +262,7 @@ const App = () => {
                 <Route path="employee-details" element={<EmployeeList />} />
                 <Route path="holidays" element={<HRHolidayCalendar />} />
                 <Route
-                  path="holidays/holiday-list"
+                  path="holidays/holiday-list/:year/"
                   element={<HRHolidayList />}
                 />
                 <Route
@@ -274,10 +274,10 @@ const App = () => {
                   element={<EditEmployee />}
                 />
                 <Route path="holidays" element={<HRHolidayCalendar />} />
-                <Route
+                {/* <Route
                   path="holidays/holiday-list"
                   element={<HRHolidayList />}
-                />
+                /> */}
                 <Route path="settings" element={<HRSettings />} />
               </Route>
             </Route>

@@ -5,7 +5,7 @@ import { isDev } from "./constants/devmode";
 
 const ProtectedRoute = ({ allowedRoles, children }) => {
   const { user } = useAuth();
-  
+
   // Bypass all protection in development mode
   if (isDev) return children;
 

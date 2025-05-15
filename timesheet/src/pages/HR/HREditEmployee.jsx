@@ -32,7 +32,6 @@ const EditEmployee = () => {
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [managers, setManagers] = useState([]);
-  const [hierarchy, setHierarchy] = useState({});
 
   const [editMode, setEditMode] = useState(false); //  Add this at the top
   const {
@@ -58,14 +57,11 @@ const EditEmployee = () => {
   });
 
   const { formData, setFormData, errors, setErrors, handleChange } =
-    useEmployeeFormHandler({
-      defaultEmployeeFormData,
-    });
+    useEmployeeFormHandler(defaultEmployeeFormData);
 
   useEffect(() => {
     fetchEmployee();
     fetchManagers();
-    fetchHierarchy();
   }, [employee_id]);
 
   const fetchEmployee = async () => {
@@ -117,18 +113,6 @@ const EditEmployee = () => {
     }
   };
 
-  const fetchHierarchy = async () => {
-    try {
-      const res = await fetch(
-        `${config.apiBaseURL}/hierarchy/by_employee/${employee_id}/`
-      );
-      const data = await res.json();
-      setHierarchy(data);
-    } catch (error) {
-      console.error("Error fetching hierarchy:", error);
-    }
-  };
-
   const handleExperienceChange = (e) => {
     const { name, value } = e.target;
     const updated = { ...experienceUI, [name]: value };
@@ -153,7 +137,7 @@ const EditEmployee = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isEditMode) return;
+    if (!editMode) return;
 
     const updatedEmployee = { ...formData };
     console.log(updatedEmployee);
@@ -190,30 +174,6 @@ const EditEmployee = () => {
           body: JSON.stringify(cleanedData),
         }
       );
-
-      // Step 2: PATCH hierarchy
-      const hierarchyPayload = {
-        designation: hierarchy.designation || null,
-        department: hierarchy.department || null,
-        reporting_to: hierarchy.reporting_to || null,
-      };
-
-      const resHier = await fetch(
-        `${config.apiBaseURL}/hierarchy/${hierarchy.hierarchy_id}/`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(hierarchyPayload),
-        }
-      );
-
-      if (resHier.ok) {
-        console.log("Employee and hierarchy updated successfully!");
-
-        fetchHierarchy();
-      } else {
-        console.log("Failed to update. Please check inputs.");
-      }
 
       if (profilePicture) {
         const picturePayload = new FormData();
@@ -257,7 +217,8 @@ const EditEmployee = () => {
       }
 
       if (!response.ok) throw new Error("Failed to update employee");
-      navigate("/hr/detail/employee-details");
+      setEditMode(false);
+      // navigate("/hr/detail/employee-details");
     } catch (error) {
       console.error("Error submitting employee data:", error);
     }
@@ -308,85 +269,93 @@ const EditEmployee = () => {
               )}
             </div>
 
-
             <div className="attachments-wrapper">
               <label htmlFor="">Attachments</label>
               <div className="attachments-box">
-                  <div className="attachments-header">
-                    {editMode && (
-                      <>
-                        {/* Hidden input to trigger file selection */}
-                        <input
-                          type="file"
-                          multiple
-                          id="new-attachments-input"
-                          style={{ display: "none" }}
-                          onChange={handleAttachmentChange}
-                        />
-                        <label htmlFor="new-attachments-input" className="add-attachment-button">
-                          +
-                        </label>
-                      </>
-                    )}
-                  </div>
+                <div className="attachments-header">
+                  {editMode && (
+                    <>
+                      {/* Hidden input to trigger file selection */}
+                      <input
+                        type="file"
+                        multiple
+                        id="new-attachments-input"
+                        style={{ display: "none" }}
+                        onChange={handleAttachmentChange}
+                      />
+                      <label
+                        htmlFor="new-attachments-input"
+                        className="add-attachment-button"
+                      >
+                        +
+                      </label>
+                    </>
+                  )}
+                </div>
 
-                  <ul className="attachments-list">
-                    {/* Existing attachments */}
-                    {attachments.map((file) => {
-                      const filename = file.file
-                        .split("/")
-                        .pop()
-                        .split("_")
-                        .slice(1)
-                        .join("_");
-                      return (
-                        <li key={file.id} className="attachment-item">
-                          <a
-                            href={config.apiBaseURL + file.file}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {filename}
-                          </a>
-                          {editMode && (
-                            <button
-                              className="remove-attachment"
-                              onClick={async () => {
-                                try {
-                                  await fetch(`${config.apiBaseURL}/attachments/${file.id}/`, {
-                                    method: "DELETE",
-                                  });
-                                  setAttachments((prev) =>
-                                    prev.filter((att) => att.id !== file.id)
-                                  );
-                                } catch (error) {
-                                  console.error("Failed to delete attachment:", error);
-                                }
-                              }}
-                            >
-                              &times;
-                            </button>
-                          )}
-                        </li>
-                      );
-                    })}
-
-                    {/* New (not uploaded) attachments */}
-                    {newAttachments.map((file, index) => (
-                      <li key={`new-${index}`} className="attachment-item">
-                        {file.name}
+                <ul className="attachments-list">
+                  {/* Existing attachments */}
+                  {attachments.map((file) => {
+                    const filename = file.file
+                      .split("/")
+                      .pop()
+                      .split("_")
+                      .slice(1)
+                      .join("_");
+                    return (
+                      <li key={file.id} className="attachment-item">
+                        <a
+                          href={config.apiBaseURL + file.file}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {filename}
+                        </a>
                         {editMode && (
                           <button
-                            type="button"
                             className="remove-attachment"
-                            onClick={() => removeNewAttachment(index)}
+                            onClick={async () => {
+                              try {
+                                await fetch(
+                                  `${config.apiBaseURL}/attachments/${file.id}/`,
+                                  {
+                                    method: "DELETE",
+                                  }
+                                );
+                                setAttachments((prev) =>
+                                  prev.filter((att) => att.id !== file.id)
+                                );
+                              } catch (error) {
+                                console.error(
+                                  "Failed to delete attachment:",
+                                  error
+                                );
+                              }
+                            }}
                           >
                             &times;
                           </button>
                         )}
                       </li>
-                    ))}
-                  </ul>
+                    );
+                  })}
+
+                  {/* New (not uploaded) attachments */}
+                  {newAttachments.map((file, index) => (
+                    <li key={`new-${index}`} className="attachment-item">
+                      {file.name}
+                      {editMode && (
+                        <button
+                          type="button"
+                          className="remove-attachment"
+                          onClick={() => removeNewAttachment(index)}
+                        >
+                          &times;
+                        </button>
+                      )}
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
 
@@ -508,11 +477,14 @@ const EditEmployee = () => {
                     placeholderText="dd-mm-yyyy"
                     className="input1"
                   />
-                  <i className="fas fa-calendar-alt calendar-icon"></i> {/* Optional icon */}
+                  <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+                  {/* Optional icon */}
                 </div>
               ) : (
                 <div className="uneditable">
-                  {formData.dob ? format(parseISO(formData.dob), "dd-MM-yyyy") : "-"}
+                  {formData.dob
+                    ? format(parseISO(formData.dob), "dd-MM-yyyy")
+                    : "-"}
                 </div>
               )}
             </div>
@@ -520,23 +492,25 @@ const EditEmployee = () => {
               <label>Date of Joining</label>
               {editMode ? (
                 <div className="date-input-container">
-                <DatePicker
-                  selected={formData.doj ? parseISO(formData.doj) : null}
-                  onChange={(date) =>
-                    setFormData({
-                      ...formData,
-                      doj: format(date, "yyyy-MM-dd"),
-                    })
-                  }
-                  dateFormat="dd-MM-yyyy"
-                  placeholderText="dd-mm-yyyy"
-                  className="input1"
-                />
-                <i className="fas fa-calendar-alt calendar-icon"></i>
-              </div>
+                  <DatePicker
+                    selected={formData.doj ? parseISO(formData.doj) : null}
+                    onChange={(date) =>
+                      setFormData({
+                        ...formData,
+                        doj: format(date, "yyyy-MM-dd"),
+                      })
+                    }
+                    dateFormat="dd-MM-yyyy"
+                    placeholderText="dd-mm-yyyy"
+                    className="input1"
+                  />
+                  <i className="fas fa-calendar-alt calendar-icon"></i>
+                </div>
               ) : (
                 <div className="uneditable">
-                  {formData.doj ? format(parseISO(formData.doj), "dd-MM-yyyy") : "-"}
+                  {formData.doj
+                    ? format(parseISO(formData.doj), "dd-MM-yyyy")
+                    : "-"}
                 </div>
               )}
             </div>
@@ -785,23 +759,34 @@ const EditEmployee = () => {
               )}
             </div>
             <div className="individual-tabs">
-                  <label>Passport Validity</label>
-                  {editMode ? (
-                  <div className="date-input-container">
-                    <DatePicker
-                      selected={formData.passport_validity ? new Date(formData.passport_validity) : null}
-                      onChange={(date) => handleChange({ target: { name: "passport_validity", value: date.toISOString().split('T')[0] } })}
-                      dateFormat="dd-MMM-yyy"
-                      className="date-input"
-                    />
-                    <i className="fas fa-calendar-alt calendar-icon"></i>
-                  </div>
-                  ) : (
-                    <div className="uneditable">
-                      {formData.passport_validity || "-"}
-                    </div>
-                  )}
+              <label>Passport Validity</label>
+              {editMode ? (
+                <div className="date-input-container">
+                  <DatePicker
+                    selected={
+                      formData.passport_validity
+                        ? new Date(formData.passport_validity)
+                        : null
+                    }
+                    onChange={(date) =>
+                      handleChange({
+                        target: {
+                          name: "passport_validity",
+                          value: date.toISOString().split("T")[0],
+                        },
+                      })
+                    }
+                    dateFormat="dd-MMM-yyy"
+                    className="date-input"
+                  />
+                  <i className="fas fa-calendar-alt calendar-icon"></i>
                 </div>
+              ) : (
+                <div className="uneditable">
+                  {formData.passport_validity || "-"}
+                </div>
+              )}
+            </div>
             <div className="individual-tabs">
               <label>Status</label>
               {/* {isEditMode ? (
@@ -1143,6 +1128,7 @@ const EditEmployee = () => {
               {editMode ? (
                 <div style={{ display: "flex", gap: "10px" }}>
                   <select
+                    className="no-arrow"
                     name="arris_years"
                     value={experienceUI.arris_years}
                     // onChange={handleExperienceChange}
@@ -1156,6 +1142,7 @@ const EditEmployee = () => {
                     ))}
                   </select>
                   <select
+                    className="no-arrow"
                     name="arris_months"
                     value={experienceUI.arris_months}
                     // onChange={handleExperienceChange}
@@ -1181,6 +1168,7 @@ const EditEmployee = () => {
               {editMode ? (
                 <div style={{ display: "flex", gap: "10px" }}>
                   <select
+                    className="no-arrow"
                     name="total_years"
                     value={experienceUI.total_years}
                     onChange={handleExperienceChange}
@@ -1193,6 +1181,7 @@ const EditEmployee = () => {
                     ))}
                   </select>
                   <select
+                    className="no-arrow"
                     name="total_months"
                     value={experienceUI.total_months}
                     onChange={handleExperienceChange}
@@ -1393,6 +1382,34 @@ const EditEmployee = () => {
                 <div className="uneditable">{formData.bank_name || "-"}</div>
               )}
             </div>
+            <div className="individual-tabs">
+              <label>Branch Name</label>
+              {editMode ? (
+                <input
+                  name="bank_branch_name"
+                  value={formData.bank_branch_name}
+                  onChange={handleChange}
+                  placeholder="Branch Name"
+                />
+              ) : (
+                <div className="uneditable">
+                  {formData.bank_branch_name || "-"}
+                </div>
+              )}
+            </div>
+            <div className="individual-tabs">
+              <label>Bank Address</label>
+              {editMode ? (
+                <textarea
+                  name="bank_address"
+                  value={formData.bank_address}
+                  onChange={handleChange}
+                  placeholder="Bank Address"
+                />
+              ) : (
+                <div className="uneditable">{formData.bank_address || "-"}</div>
+              )}
+            </div>
           </div>
         );
       case 3:
@@ -1450,6 +1467,21 @@ const EditEmployee = () => {
               ) : (
                 <div className="uneditable">
                   {formData.emergency_contact_name || "-"}
+                </div>
+              )}
+            </div>
+            <div className="individual-tabs">
+              <label>Relationship</label>
+              {editMode ? (
+                <input
+                  name="emergency_contact_relationship"
+                  value={formData.emergency_contact_relationship}
+                  onChange={handleChange}
+                  placeholder="Relationship"
+                />
+              ) : (
+                <div className="uneditable">
+                  {formData.emergency_contact_relationship || "-"}
                 </div>
               )}
             </div>

@@ -146,20 +146,19 @@ const ManagerAttendance = () => {
       </div>
 
       <div>
-        <table  className="attend-table">
+        <table className="attend-table">
           <thead>
             <tr>
               <th>Employee</th>
               {weekDays.map((day) => (
                 <th
-                key={day.key}
-                style={{
-                  color: day.weekday === 'Sun' ? 'orange' : 'inherit'
-                }}
-              >
-                {day.weekday} ({day.date})
-              </th>
-              
+                  key={day.key}
+                  style={{
+                    color: day.weekday === "Sun" ? "orange" : "inherit",
+                  }}
+                >
+                  {day.weekday} ({day.date})
+                </th>
               ))}
               <th>Total Hours</th>
             </tr>
@@ -193,7 +192,7 @@ const ManagerAttendance = () => {
                     //         hrs
                     //       </div>
 
-
+                    
                     <td
                       key={day.key}
                       onClick={() => {

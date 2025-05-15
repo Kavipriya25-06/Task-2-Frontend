@@ -35,9 +35,7 @@ const AddEmployee = () => {
   });
 
   const { formData, setFormData, errors, setErrors, handleChange } =
-    useEmployeeFormHandler({
-      defaultEmployeeFormData,
-    });
+    useEmployeeFormHandler(defaultEmployeeFormData);
 
   const {
     newAttachments,
@@ -162,34 +160,6 @@ const AddEmployee = () => {
         console.log(" All attachments uploaded");
       }
 
-      // Step 3: Create Hierarchy
-      try {
-        const hierarchyPayload = {
-          employee: newEmployeeId,
-          department: cleanedData.department || null,
-          designation: cleanedData.designation || null,
-          reporting_to: cleanedData.reporting_manager || null,
-        };
-
-        const hierarchyResponse = await fetch(
-          `${config.apiBaseURL}/hierarchy/`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(hierarchyPayload),
-          }
-        );
-
-        if (!hierarchyResponse.ok)
-          throw new Error("Failed to create Hierarchy");
-
-        console.log("Hierarchy created successfully");
-      } catch (err) {
-        console.error("Hierarchy creation failed:", err);
-      }
-
       // After everything success
       navigate("/hr/detail/employee-details");
     } catch (error) {
@@ -239,11 +209,16 @@ const AddEmployee = () => {
               </div>
             </div>
 
-           <div className="attachments-wrapper">
+            <div className="attachments-wrapper">
               <label>Attachments</label>
               <div className="attachments-box">
                 <div className="add-btn-wrapper">
-                  <label htmlFor="attachments-input" className="add-attachment-button">+</label>
+                  <label
+                    htmlFor="attachments-input"
+                    className="add-attachment-button"
+                  >
+                    +
+                  </label>
                   <input
                     type="file"
                     id="attachments-input"
@@ -615,7 +590,7 @@ const AddEmployee = () => {
                 </select>
               </div>
             </div>
-            <div className="individual-tabs">
+            {/* <div className="individual-tabs">
               <label>Arris Experience</label>
               <div style={{ display: "flex", gap: "10px" }}>
                 <select
@@ -643,8 +618,8 @@ const AddEmployee = () => {
                   ))}
                 </select>
               </div>
-            </div>
-            <div className="individual-tabs">
+            </div> */}
+            {/* <div className="individual-tabs">
               <label>Total Experience</label>
               <div style={{ display: "flex", gap: "10px" }}>
                 <select
@@ -672,7 +647,7 @@ const AddEmployee = () => {
                   ))}
                 </select>
               </div>
-            </div>
+            </div> */}
 
             <div className="individual-tabs">
               <label>Probation confirmation date</label>
@@ -754,6 +729,24 @@ const AddEmployee = () => {
                 placeholder="Bank Name"
               />
             </div>
+            <div className="individual-tabs">
+              <label>Branch Name</label>
+              <input
+                name="bank_branch_name"
+                value={formData.bank_branch_name}
+                onChange={handleChange}
+                placeholder="Branch Name"
+              />
+            </div>
+            <div className="individual-tabs">
+              <label>Bank Address</label>
+              <textarea
+                name="bank_address"
+                value={formData.bank_address}
+                onChange={handleChange}
+                placeholder="Bank Address"
+              />
+            </div>
           </div>
         );
       case 3:
@@ -766,6 +759,15 @@ const AddEmployee = () => {
                 value={formData.emergency_contact_name}
                 onChange={handleChange}
                 placeholder="Emergency Contact Name"
+              />
+            </div>
+            <div className="individual-tabs">
+              <label>Relationship</label>
+              <input
+                name="emergency_contact_relationship"
+                value={formData.emergency_contact_relationship}
+                onChange={handleChange}
+                placeholder="Relationship"
               />
             </div>
             <div className="individual-tabs">

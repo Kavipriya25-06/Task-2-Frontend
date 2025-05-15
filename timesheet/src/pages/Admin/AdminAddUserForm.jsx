@@ -166,11 +166,7 @@ const AddUserForm = ({ onCancel, onSave }) => {
             Save
           </button>
 
-          <button
-            type="button"
-            className="btn-red"
-            onClick={handleCancel}
-          >
+          <button type="button" className="btn-red" onClick={handleCancel}>
             Cancel
           </button>
         </div>

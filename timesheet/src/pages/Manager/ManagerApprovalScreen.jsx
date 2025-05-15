@@ -235,20 +235,29 @@ const ManagerApprovalScreen = () => {
       {/* <h3>Daily Timesheet Entry</h3> */}
       <div className="timesheet-info">
         <p>
-          <strong>Employee ID:</strong><br /> 
+          <strong>Employee ID:</strong>
+          <br />
           {employee_id}
         </p>
         <p>
-          <strong>Date:</strong><br /> 
+          <strong>Date:</strong>
+          <br />
           {date}
         </p>
         <p>
-          <strong>Intime:</strong><br />
-          {attendanceDetails.in_time || "--:--"}</p>
-        <p> <strong>Outtime:</strong><br />
-         {attendanceDetails.out_time || "--:--"}</p>
+          <strong>Intime:</strong>
+          <br />
+          {attendanceDetails.in_time || "--:--"}
+        </p>
         <p>
-          <strong>Total logged hours: </strong><br />
+          {" "}
+          <strong>Outtime:</strong>
+          <br />
+          {attendanceDetails.out_time || "--:--"}
+        </p>
+        <p>
+          <strong>Total logged hours: </strong>
+          <br />
           {attendanceDetails.total_duration || "0.00"} hrs
         </p>
         {attendanceDetails.comp_off && (
@@ -295,8 +304,12 @@ const ManagerApprovalScreen = () => {
           </button>
         ) : (
           <>
-            <button className="submit-button2" onClick={handleApprove}>Approve</button>
-            <button className="save-button2" onClick={handleReject}>Reject</button>
+            <button className="submit-button2" onClick={handleApprove}>
+              Approve
+            </button>
+            <button className="save-button2" onClick={handleReject}>
+              Reject
+            </button>
           </>
         )}
       </div>

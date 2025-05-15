@@ -125,28 +125,34 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
         <div className="row1">
           <div className="form-group-half1">
             <label className="label1">Start Date</label>
-              <div className="date-input-container">
-                <DatePicker
-                  selected={formData.startDate}
-                  onChange={(date) => handleChange({ target: { name: "startDate", value: date } })}
-                  dateFormat="dd-MMM-yyyy"
-                  placeholderText="dd-mm-yyyy"
-                  className="input1"
-                />
-                <i className="fas fa-calendar-alt calendar-icon"></i> {/* Font Awesome Calendar Icon */}
-              </div>
-          </div>
-          <div className="form-group-half1">
-            <label className="label1">End Date</label>
-              <div className="date-input-container">
+            <div className="date-input-container">
               <DatePicker
-                selected={formData.endDate}
-                onChange={(date) => handleChange({ target: { name: "endDate", value: date } })}
+                selected={formData.startDate}
+                onChange={(date) =>
+                  handleChange({ target: { name: "startDate", value: date } })
+                }
                 dateFormat="dd-MMM-yyyy"
                 placeholderText="dd-mm-yyyy"
                 className="input1"
               />
-              <i className="fas fa-calendar-alt calendar-icon"></i> {/* Font Awesome Calendar Icon */}
+              <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+              {/* Font Awesome Calendar Icon */}
+            </div>
+          </div>
+          <div className="form-group-half1">
+            <label className="label1">End Date</label>
+            <div className="date-input-container">
+              <DatePicker
+                selected={formData.endDate}
+                onChange={(date) =>
+                  handleChange({ target: { name: "endDate", value: date } })
+                }
+                dateFormat="dd-MMM-yyyy"
+                placeholderText="dd-mm-yyyy"
+                className="input1"
+              />
+              <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+              {/* Font Awesome Calendar Icon */}
             </div>
           </div>
         </div>
@@ -167,12 +173,17 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
             <div className="date-input-container">
               <DatePicker
                 selected={formData.resumptionDate}
-                onChange={(date) => handleChange({ target: { name: "resumptionDate", value: date } })}
+                onChange={(date) =>
+                  handleChange({
+                    target: { name: "resumptionDate", value: date },
+                  })
+                }
                 dateFormat="dd-MMM-yyyy"
                 placeholderText="dd-mm-yyyy"
                 className="input1"
               />
-              <i className="fas fa-calendar-alt calendar-icon"></i> {/* Font Awesome Calendar Icon */}
+              <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+              {/* Font Awesome Calendar Icon */}
             </div>
           </div>
         </div>

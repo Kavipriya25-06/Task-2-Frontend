@@ -29,15 +29,15 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-     if (formData.endDate < formData.startDate) {
-    alert("End date must be the same or after the start date.");
-    return;
-  }
+    if (formData.endDate < formData.startDate) {
+      alert("End date must be the same or after the start date.");
+      return;
+    }
 
     if (formData.resumptionDate <= formData.endDate) {
-    alert("Resumption date must be after the end date.");
-    return;
-  }
+      alert("Resumption date must be after the end date.");
+      return;
+    }
 
     const apiURL = `${config.apiBaseURL}/leaves-taken/`;
 
@@ -57,7 +57,10 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
     data.append("end_date", format(formData.endDate, "yyyy-MM-dd"));
     data.append("duration", formData.duration);
     data.append("reason", formData.reason);
-    data.append("resumption_date", format(formData.resumptionDate, "yyyy-MM-dd"));
+    data.append(
+      "resumption_date",
+      format(formData.resumptionDate, "yyyy-MM-dd")
+    );
     if (formData.attachment) {
       data.append("attachment", formData.attachment);
     }
@@ -88,43 +91,43 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
     }
   };
 
- const patchLeaveAvailability = async (leaveTypeKey, duration) => {
-  const employeeId = user.employee_id;
-  const fetchURL = `${config.apiBaseURL}/leaves-available/by_employee/${employeeId}/`;
+  const patchLeaveAvailability = async (leaveTypeKey, duration) => {
+    const employeeId = user.employee_id;
+    const fetchURL = `${config.apiBaseURL}/leaves-available/by_employee/${employeeId}/`;
 
-  try {
-    // 1. Fetch current leave availability
-    const getRes = await fetch(fetchURL);
-    if (!getRes.ok) {
-      const err = await getRes.json();
-      console.error("Failed to fetch current leave balance:", err);
-      return;
+    try {
+      // 1. Fetch current leave availability
+      const getRes = await fetch(fetchURL);
+      if (!getRes.ok) {
+        const err = await getRes.json();
+        console.error("Failed to fetch current leave balance:", err);
+        return;
+      }
+
+      const currentData = await getRes.json();
+      const currentLeaveBalance = currentData[leaveTypeKey];
+
+      // 2. Subtract duration manually
+      const updatedLeave = currentLeaveBalance - parseFloat(duration);
+
+      // 3. Send PATCH request with updated value
+      const patchRes = await fetch(fetchURL, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [leaveTypeKey]: updatedLeave }),
+      });
+
+      if (!patchRes.ok) {
+        const err = await patchRes.json();
+        console.error("Leave balance update failed:", err);
+      } else {
+        const result = await patchRes.json();
+        console.log("Leave balance updated:", result);
+      }
+    } catch (err) {
+      console.error("Error in patchLeaveAvailability:", err);
     }
-
-    const currentData = await getRes.json();
-    const currentLeaveBalance = currentData[leaveTypeKey];
-
-    // 2. Subtract duration manually
-    const updatedLeave = currentLeaveBalance - parseFloat(duration);
-
-    // 3. Send PATCH request with updated value
-    const patchRes = await fetch(fetchURL, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ [leaveTypeKey]: updatedLeave }),
-    });
-
-    if (!patchRes.ok) {
-      const err = await patchRes.json();
-      console.error("Leave balance update failed:", err);
-    } else {
-      const result = await patchRes.json();
-      console.log("Leave balance updated:", result);
-    }
-  } catch (err) {
-    console.error("Error in patchLeaveAvailability:", err);
-  }
-};
+  };
 
 
   return (
@@ -157,12 +160,15 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
             <div className="date-input-container">
               <DatePicker
                 selected={formData.startDate}
-                onChange={(date) => handleChange({ target: { name: "startDate", value: date } })}
+                onChange={(date) =>
+                  handleChange({ target: { name: "startDate", value: date } })
+                }
                 dateFormat="dd-MMM-yyyy"
                 placeholderText="dd-mm-yyyy"
                 className="input1"
               />
-              <i className="fas fa-calendar-alt calendar-icon"></i> {/* Font Awesome Calendar Icon */}
+              <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+              {/* Font Awesome Calendar Icon */}
             </div>
           </div>
           <div className="form-group-half1">
@@ -170,13 +176,16 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
             <div className="date-input-container">
               <DatePicker
                 selected={formData.endDate}
-                onChange={(date) => handleChange({ target: { name: "endDate", value: date } })}
+                onChange={(date) =>
+                  handleChange({ target: { name: "endDate", value: date } })
+                }
                 dateFormat="dd-MMM-yyyy"
                 placeholderText="dd-mm-yyyy"
                 className="input1"
                 minDate={formData.startDate || null}
               />
-              <i className="fas fa-calendar-alt calendar-icon"></i> {/* Font Awesome Calendar Icon */}
+              <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+              {/* Font Awesome Calendar Icon */}
             </div>
           </div>
         </div>
@@ -197,13 +206,22 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
             <div className="date-input-container">
               <DatePicker
                 selected={formData.resumptionDate}
-                onChange={(date) => handleChange({ target: { name: "resumptionDate", value: date } })}
+                onChange={(date) =>
+                  handleChange({
+                    target: { name: "resumptionDate", value: date },
+                  })
+                }
                 dateFormat="dd-MMM-yyyy"
                 placeholderText="dd-mm-yyyy "
                 className="input1"
-                minDate={formData.endDate ? new Date(formData.endDate.getTime() + 86400000) : null}
+                minDate={
+                  formData.endDate
+                    ? new Date(formData.endDate.getTime() + 86400000)
+                    : null
+                }
               />
-              <i className="fas fa-calendar-alt calendar-icon"></i> {/* Font Awesome Calendar Icon */}
+              <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+              {/* Font Awesome Calendar Icon */}
             </div>
           </div>
         </div>
@@ -240,7 +258,7 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
               </div>
             )}
             <div className="file-info">Max size 2MB</div>
-
+            
           </div>
         </div>
 
