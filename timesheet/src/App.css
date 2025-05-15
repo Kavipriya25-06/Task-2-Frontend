@@ -139,6 +139,17 @@ select {
   background-color: rgb(244, 244, 244);
 }
 
+textarea {
+  width: 100%;
+  height: 50px; /* ensure all have the same height */
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+  background-color: rgb(244, 244, 244);
+}
+
 .date-input-container .input1{
   width: 100%;
   height: 40px; /* ensure all have the same height */
@@ -282,7 +293,23 @@ select {
   border-radius: 8px;
   padding: 10px;
   position: relative;
+  z-index: 1;
 }
+
+
+#datepicker-portal-root {
+  position: relative; /* or fixed */
+  z-index: 9999;
+}
+
+.react-datepicker__month-container{
+  top: 20px;
+}
+
+h2.react-datepicker__current-month{
+  text-align: center !important;
+}
+
 
 
 .variation-table {
@@ -851,7 +878,6 @@ table input[type="number"]:focus {
 .toggle-button.active .toggle-text {
   color: #f1890d;
   margin-right: 20px;
-
 }
 
 
@@ -1355,46 +1381,125 @@ main {
   align-items: center;
   margin: 20px;
 }
+
 .holiday-calendar {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.calendar-headers .calendar-nav-dropdown {
-  border-radius: 5px;
-  font-size: 19px;
-  margin-left: 50px;
-  background-color: rgb(235, 234, 234);
-  border: 2px solid rgb(196, 195, 195);
-}
-
-.calendar-nav-dropdown {
-  border-radius: 5px;
-  font-size: 19px;
-  background-color: rgb(235, 234, 234);
-  border: 2px solid rgb(196, 195, 195);
-  padding: 10px;
-}
 
 .calendar-header {
   display: flex;
-  justify-content: space-between;
-  width: 90%;
-  font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: #333;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  white-space: nowrap;
+  overflow-x: auto;
 }
+
+.calendar-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.calendar-header button.left,
+.calendar-header button.right {
+  background-color: rgb(163, 162, 162);
+  color: #fff;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+.year-selector button.lefts,
+.year-selector button.rights{
+  background-color: rgb(163, 162, 162);
+  color: #fff;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+.calendar-header button.lefts:hover,
+.calendar-header button.rights:hover {
+  background-color: gray;
+}
+
+.calendar-header .calendar-nav-dropdown {
+  padding: 6px 10px;
+  font-size: 17px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #dadada;
+  cursor: pointer;
+  margin-left: 30px;
+}
+
 
 .calendar-headers {
   display: flex;
-  width: 70%;
-  font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: #333;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  white-space: nowrap;
+  overflow-x: auto;
 }
+
+.calendar-headers h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.calendar-headers button.lefts,
+.calendar-headers button.rights {
+  background-color: rgb(163, 162, 162);
+  color: #fff;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+    flex-shrink: 0; /* Prevent shrinking */
+
+}
+
+.calendar-headers button.lefts:hover,
+.calendar-headers button.rights:hover {
+  background-color: gray;
+}
+
+.calendar-headers .calendar-nav-dropdown {
+  padding: 6px 10px;
+  font-size: 17px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #dadada;
+  cursor: pointer;
+  margin-left: 40px;
+}
+
 
 .calendar-cell1.weekend {
   border-radius: 10px;
@@ -1454,82 +1559,6 @@ input[type="text"] {
 /* Container for the buttons and the heading */
 
 /* Styling for the left and right buttons */
-.left {
-  width: 30px; /* Set width for square shape */
-  height: 30px; /* Set height equal to width */
-  background-color: #dcdbdb;
-  border: none;
-  font-size: 24px; /* Make the < and > bigger */
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 6px; /* Slightly rounded corners */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s ease;
-  margin-right: -4%;
-}
-
-.right {
-  width: 30px; /* Set width for square shape */
-  height: 30px; /* Set height equal to width */
-  background-color: #dcdbdb;
-  border: none;
-  font-size: 24px; /* Make the < and > bigger */
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 6px; /* Slightly rounded corners */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s ease;
-  margin-left: -4%;
-}
-
-.lefts {
-  width: 20px; /* Set width for square shape */
-  height: 20px; /* Set height equal to width */
-  background-color: #dcdbdb;
-  border: none;
-  font-size: 24px; /* Make the < and > bigger */
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 6px; /* Slightly rounded corners */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s ease;
-  padding: 13px;
-  /* margin-left: 10%; */
-  margin-top: 0.2%;
-}
-
-.rights {
-  width: 20px; /* Set width for square shape */
-  height: 20px; /* Set height equal to width */
-  background-color: #dcdbdb;
-  border: none;
-  font-size: 24px; /* Make the < and > bigger */
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 6px; /* Slightly rounded corners */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s ease;
-  padding: 13px;
-  /* margin-right: 15%; */
-}
-
-.left:hover,
-.right:hover {
-  background-color: #c0bfbf; /* Darker shade on hover */
-}
-
-.lefts:hover,
-.rights:hover {
-  background-color: #c0bfbf; /* Darker shade on hover */
-}
 
 .calendar-header h3 {
   font-size: 24px; /* Adjust font size */
@@ -1589,6 +1618,7 @@ h3 {
   border-radius: 12px;
   cursor: pointer;
   font-size: 20px;
+  margin-left: 40px;
 }
 
 .calendar-title-btn:hover {
@@ -2592,7 +2622,6 @@ h3 {
   border-radius: 6px;
   background-color: #f6f6f6;
   margin-top: -2%;
-  width: 90%;
 }
 
 .individual-tab select {

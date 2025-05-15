@@ -83,6 +83,7 @@ const UsersPage = () => {
             <th>Name</th>
             <th>Access Role</th>
             <th>Email</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
@@ -100,6 +101,7 @@ const UsersPage = () => {
               <td>{u.employee_id?.employee_name}</td>
               <td>{u.role}</td>
               <td>{u.email}</td>
+              <td>{u.status}</td>
             </tr>
           ))}
         </tbody>

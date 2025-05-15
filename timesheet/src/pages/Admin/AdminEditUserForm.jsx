@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import config from "../../config";
 import roleOptions from "../../constants/roleOptions";
 
-
 import { FaEdit } from "react-icons/fa";
 import Breadcrumbs from "../../components/Breadcrumbs";
 
@@ -20,7 +19,12 @@ const EditUserForm = () => {
   const [editMode, setEditMode] = useState(false); //  Add this at the top
   const [inputValue, setInputValue] = useState("");
 
+  
+  const [status, setStatus] = useState("");
 
+  const toggleStatus = () => {
+    setStatus((prev) => (prev === "Active" ? "Inactive" : "Active"));
+  };
 
   const fetchUser = async () => {
     try {
@@ -28,10 +32,12 @@ const EditUserForm = () => {
         `${config.apiBaseURL}/user-details/${user_id}/`
       );
       const data = await response.json();
+      console.log("Data", data);
       setEmployeeID(data.employee_id);
       setRole(data.role);
       setEmail(data.email);
       setPassword(data.password);
+      setStatus(data.status);
     } catch (error) {
       console.error("Error fetching user", error);
     }
@@ -193,14 +199,18 @@ const EditUserForm = () => {
           )}
         </div>
 
-       <div className="form-group">
+        <div className="form-group">
           <label>Status</label>
           {editMode ? (
             <div className="status-toggle">
               <div
-                className={`toggle-button ${status === "Inactive" ? "inactive" : "active"}`}
+                className={`toggle-button ${
+                  status === "Inactive" ? "inactive" : "active"
+                }`}
                 onClick={() =>
-                  setStatus((prev) => (prev === "Active" ? "Inactive" : "Active"))
+                  setStatus((prev) =>
+                    prev === "Active" ? "Inactive" : "Active"
+                  )
                 }
               >
                 <div className="toggle-circle" />
@@ -211,28 +221,27 @@ const EditUserForm = () => {
             <div className="uneditable">{status}</div>
           )}
         </div>
-
       </form>
       {editMode ? (
-          <div className="form-buttons">
-            <button
-              type="submit"
-              className="btn-save"
-              onClick={() => setEditMode(false)}
-            >
-              Update
-            </button>
-            <button
-              type="button"
-              className="btn-cancel"
-              onClick={() => setEditMode(false)}
-            >
-              Cancel
-            </button>
-          </div>
-        ) : (
-          <div></div>
-        )}
+        <div className="form-buttons">
+          <button
+            type="submit"
+            className="btn-save"
+            onClick={() => setEditMode(false)}
+          >
+            Update
+          </button>
+          <button
+            type="button"
+            className="btn-cancel"
+            onClick={() => setEditMode(false)}
+          >
+            Cancel
+          </button>
+        </div>
+      ) : (
+        <div></div>
+      )}
     </div>
   );
 };

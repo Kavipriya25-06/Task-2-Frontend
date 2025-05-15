@@ -10,7 +10,7 @@ const HolidayList = () => {
   // const HRHolidayList = () => {
   const { year } = useParams();
   const [calendarData, setCalendarData] = useState([]);
-  const [selectedYear, setSelectedYear] = useState(year);
+  const [selectedYear, setSelectedYear] = useState(parseInt(year));
   const [showPopup, setShowPopup] = useState(false);
   const [formData, setFormData] = useState({ date: "", notes: "" });
 
@@ -117,6 +117,7 @@ const HolidayList = () => {
           >
             &gt;
           </button>
+          {console.log("year is...", selectedYear)}
         </div>
       </div>
       <table className="holiday-table">
@@ -132,7 +133,7 @@ const HolidayList = () => {
         <tbody>
           {holidayData.map((entry) => (
             <tr key={entry.calendar_id}>
-              <td>{entry.date}</td>
+              <td>{entry.date ? format(new Date(entry.date), 'dd-MMM-yyyy') : ''}</td>
               <td>{entry.month_name}</td>
               <td>{entry.day_name}</td>
               <td>{entry.notes || "Weekend"}</td>
@@ -194,58 +195,61 @@ const HolidayList = () => {
         </div>
       )} */}
 
-      {showPopup && (
-        <div className="custom-modal-overlay">
-          <div className="custom-modal">
-            <button className="close-btn" onClick={() => setShowPopup(false)}>
-              &times;
-            </button>
-            <h3>Add Holiday</h3>
-            <label>
-              Date:
-              <br />
-              <div className="date-input-container">
-                <DatePicker
-                  selected={formData.date ? new Date(formData.date) : null}
-                  onChange={
-                    (date) =>
-                      setFormData({
-                        ...formData,
-                        date: format(date, "yyyy-MM-dd"),
-                      }) // ← just set the Date object directly
-                  }
-                  dateFormat="dd-MM-yyyy"
-                  placeholderText="dd-mm-yyyy"
-                  className="input1" // Or any input styling class
-                />
-                <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
-                {/* Font Awesome Calendar Icon */}
-              </div>
-              {/* <input
-              type="date"
-              value={formData.date}
-              onChange={(e) =>
-                setFormData({ ...formData, date: e.target.value })
-              }
-            /> */}
-            </label>
-            <label>
-              Holidays:
-              <input
-                type="text"
-                value={formData.notes}
-                onChange={(e) =>
-                  setFormData({ ...formData, notes: e.target.value })
-                }
-              />
-            </label>
-            <div className="modal-buttons">
-              <button onClick={handlePatchHoliday}>Submit</button>
-              <button onClick={() => setShowPopup(false)}>Cancel</button>
-            </div>
-          </div>
+     {showPopup && (
+  <div
+    className="custom-modal-overlay"
+    onClick={() => setShowPopup(false)} // Close on overlay click
+  >
+    <div
+      className="custom-modal"
+      onClick={(e) => e.stopPropagation()} // Prevent closing on modal content click
+    >
+      <button className="close-btn" onClick={() => setShowPopup(false)}>
+        &times;
+      </button>
+      <h3>Add Holiday</h3>
+
+      <label>
+        Date:
+        <br />
+        <div className="date-input-container">
+         <DatePicker
+            selected={formData.date ? new Date(formData.date) : null}
+            onChange={(date) =>
+              setFormData({
+                ...formData,
+                date: format(date, "yyyy-MM-dd"),
+              })
+            }
+            dateFormat="dd-MM-yyyy"
+            placeholderText="dd-mm-yyyy"
+            className="input1"
+            scrollableYearDropdown
+            openToDate={new Date(selectedYear, 0, 1)} // ⬅️ This sets calendar default open year
+          />
+          <i className="fas fa-calendar-alt calendar-icon"></i>
         </div>
-      )}
+      </label>
+
+      <label>
+        Holidays:
+        <input
+          type="text"
+          value={formData.notes}
+          onChange={(e) =>
+            setFormData({ ...formData, notes: e.target.value })
+          }
+        />
+      </label>
+
+      <div className="modal-buttons">
+        <button onClick={handlePatchHoliday}>Submit</button>
+        <button onClick={() => setShowPopup(false)}>Cancel</button>
+      </div>
+    </div>
+  </div>
+)}
+
       {/* <Modal
   isOpen={showPopup}
   onRequestClose={() => setShowPopup(false)}
