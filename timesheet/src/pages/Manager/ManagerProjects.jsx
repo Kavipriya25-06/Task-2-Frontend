@@ -157,8 +157,8 @@ const ManagerProjects = () => {
         <th>Total hours</th>
         <th>Discipline</th>
         <th>Status</th>
-        <th>Discipline</th>
-        <th>Status</th>
+        <th>Variation Hours</th>
+        <th>Consumed hours</th>
       </tr>
     </thead>
     <tbody>
@@ -196,7 +196,7 @@ const ManagerProjects = () => {
               <div className="search-bar-container">
                 <input
                   type="text"
-                  placeholder="Search by code, title, or discipline"
+                  placeholder="Search by code, name"
                   value={searchBuild}
                   onChange={(e) => setSearchBuild(e.target.value)}
                   className="search-bar"
@@ -255,7 +255,7 @@ const ManagerProjects = () => {
               <div className="search-bar-container">
                 <input
                   type="text"
-                  placeholder="Search by code, title, or discipline"
+                  placeholder="Search by code, name"
                   value={searchTask}
                   onChange={(e) => setSearchTask(e.target.value)}
                   className="search-bar"

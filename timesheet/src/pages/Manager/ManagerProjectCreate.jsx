@@ -277,8 +277,29 @@ const ManagerProjectCreate = () => {
                   </button>
                 </div>
               </div>
-
               <div className="project-form-group">
+                <label className="attaches">Attachments</label>
+                  <a
+                    href="#"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="view-attachment-link"
+                  >
+                    <img
+                      src="/src/assets/pin svg.svg" // replace this with your actual image path
+                      alt="Attachment"
+                      style={{
+                        width: "16px",
+                        height: "16px",
+                        marginRight: "5px",
+                        verticalAlign: "middle",
+                      }}
+                    />
+                    View Attachment
+                  </a>
+              </div>
+
+              {/* <div className="project-form-group">
                 <label>Area of Work</label>
                 <div className="area-row">
                   <div className="tags">
@@ -327,7 +348,7 @@ const ManagerProjectCreate = () => {
                   value={formData.subdivision}
                   onChange={handleChange}
                 />
-              </div>
+              </div> */}
             </div>
           </div>
           <div className="right-form">
@@ -356,6 +377,7 @@ const ManagerProjectCreate = () => {
                   name="estimated_hours"
                   value={formData.estimated_hours}
                   onChange={handleChange}
+                  className="estd"
                 />
               </div>
             </div>

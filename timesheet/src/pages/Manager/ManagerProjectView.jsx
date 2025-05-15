@@ -5,6 +5,10 @@ import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate, useParams } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { format } from "date-fns";
+
 
 const ManagerProjectView = () => {
   const navigate = useNavigate();
@@ -47,6 +51,8 @@ const ManagerProjectView = () => {
     navigate(`/manager/detail/buildings/${building_assign_id}`);
   };
 
+
+  
   const handleRemoveBuilding = async (building) => {
     // If the building has an assign ID, it exists in DB, so delete.
     if (building.building_assign_id) {
@@ -81,6 +87,35 @@ const ManagerProjectView = () => {
       );
     }
   };
+
+
+ const [variations, setVariations] = useState([
+  { date: "2025-05-01", title: "Project Planning", hours: "4" },
+  { date: "2025-05-03", title: "Team Meeting", hours: "2" },
+  { date: "2025-05-07", title: "Code Review", hours: "3" }
+]);
+
+
+const handleVariationChange = (index, field, value) => {
+  const newVariations = [...variations];
+  newVariations[index][field] = value;
+  setVariations(newVariations);
+};
+
+const handleAddVariation = () => {
+  const last = variations[variations.length - 1];
+
+  if (!last || (last.date && last.title && last.hours)) {
+    setVariations([
+      ...variations,
+      { date: "", title: "", hours: "" } // new empty row
+    ]);
+  } else {
+    alert("Please fill the previous variation before adding a new one.");
+  }
+};
+
+
 
   const handleUpdate = async () => {
     // 1️ Update Project
@@ -242,7 +277,7 @@ const ManagerProjectView = () => {
       setProjectData(data);
       setAvailableBuildings(data.assigns[0].buildings);
       setAvailableTeamleadManager(data.assigns[0].employee);
-      setAvailableAreas(data.area_of_work);
+      // setAvailableAreas(data.area_of_work);
 
       console.log("Project data", data);
       console.log("Project assign data", data.assigns);
@@ -452,7 +487,101 @@ const ManagerProjectView = () => {
                   </div>
                 )}
               </div>
-              <div className="project-form-group">
+
+            <div className="project-form-group">
+              <div className="variation-table-wrapper">
+                <label>Variation History</label>
+                <div className="variation-table-container">
+                  <table className="variation-table">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Title</th>
+                        <th>Hours</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {variations.map((variation, index) => (
+                        <tr key={index}>
+                          <td>
+                             {editMode ? (
+                              <div className="date-input-container">
+                                <DatePicker
+                                  selected={variation.date ? new Date(variation.date) : null}
+                                  onChange={(date) => handleVariationChange(index, "date", date)}
+                                  dateFormat="dd-MMM-yyyy"
+                                  placeholderText="Select date"
+                                />
+                              <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+                              {/* Font Awesome Calendar Icon */}
+                              </div> 
+                             ) : (
+                              variation.title
+                            )}                           
+                          </td>
+                          <td>
+                            {editMode ? (
+                              <input
+                                type="text"
+                                placeholder="Enter title"
+                                value={variation.title}
+                                onChange={(e) => handleVariationChange(index, "title", e.target.value)}
+                              />
+                            ) : (
+                              variation.title
+                            )}
+                          </td>
+                          <td>
+                            {editMode ? (
+                              <input
+                                type="number"
+                                placeholder="Hours"
+                                value={variation.hours}
+                                onChange={(e) => handleVariationChange(index, "hours", e.target.value)}
+                              />
+                            ) : (
+                              variation.hours
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {editMode && (
+                    <button
+                      type="button"
+                      onClick={handleAddVariation}
+                    >
+                      +
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+
+               <div className="project-form-group">
+                <label className="attaches">Attachments</label>
+                  <a
+                    href="#"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="view-attachment-link"
+                  >
+                    <img
+                      src="/src/assets/pin svg.svg" // replace this with your actual image path
+                      alt="Attachment"
+                      style={{
+                        width: "16px",
+                        height: "16px",
+                        marginRight: "5px",
+                        verticalAlign: "middle",
+                      }}
+                    />
+                    View Attachment
+                  </a>
+              </div>
+              {/* <div className="project-form-group">
                 <label className="area">Area of Work</label>
                 <div className="area-row">
                   <div className="tags">
@@ -466,7 +595,6 @@ const ManagerProjectView = () => {
                         .map((a) => (
                           <span className="tag" key={a.area_name}>
                             {a.name}
-                            {/* <button className="tag-button">×</button> */}
                           </span>
                         ))
                     )}
@@ -481,7 +609,6 @@ const ManagerProjectView = () => {
                       +
                     </button>
                   ) : (
-                    // </div>
                     <div className="tags">
                       {areas
                         .filter((a) =>
@@ -507,23 +634,30 @@ const ManagerProjectView = () => {
                     <p>{projectData.subdivision}</p>
                   )}
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
           <div className="right-form">
             <div className="right-form-first">
               <div className="project-form-group-small">
                 <label>Start Date</label>
-                {editMode ? (
-                  <input
-                    type="date"
-                    name="start_date"
-                    value={formData.start_date}
-                    onChange={handleChange}
-                  />
-                ) : (
-                  <p>{projectData.start_date}</p>
-                )}
+                  {editMode ? (
+                    <div className="date-input-container">
+                      <DatePicker
+                        selected={formData.start_date ? new Date(formData.start_date) : null}
+                        onChange={(date) => handleChange({ target: { name: 'start_date', value: date } })}
+                        dateFormat="dd-MMM-yyyy"
+                        placeholderText="Select a date"
+                      />
+                        <i className="fas fa-calendar-alt calendar-icon"></i>
+
+                    </div>
+                  ) : (
+                    <p>
+                      {formData.start_date &&
+                        format(new Date(formData.start_date), "dd-MMM-yyyy")}
+                    </p>                  
+                  )}
               </div>
               <div className="project-form-group-small">
                 <label>Estd. Hours</label>

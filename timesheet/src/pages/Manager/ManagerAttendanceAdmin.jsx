@@ -5,6 +5,9 @@ import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { format } from "date-fns";
 
 const ManagerAttendanceAdmin = () => {
   const { user } = useAuth();
@@ -304,13 +307,27 @@ const ManagerAttendanceAdmin = () => {
               </select>
 
               <label>Date</label>
-              <input
+
+              <div className="date-input-container">
+                <DatePicker
+                  selected={newAttendance.date}
+                  onChange={(e) =>
+                    setNewAttendance({ ...newAttendance, date: e.target.value })
+                  }
+                  dateFormat="dd-MMM-yyyy"
+                  placeholderText="dd-mm-yyyy"
+                  className="input1"
+                />
+                <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+                {/* Font Awesome Calendar Icon */}
+              </div>              
+              {/* <input
                 type="date"
                 value={newAttendance.date}
                 onChange={(e) =>
                   setNewAttendance({ ...newAttendance, date: e.target.value })
                 }
-              />
+              /> */}
 
               <label>In Time</label>
               <input

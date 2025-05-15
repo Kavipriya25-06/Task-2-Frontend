@@ -19,7 +19,10 @@ const EditUserForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [editMode, setEditMode] = useState(false); //  Add this at the top
   const [inputValue, setInputValue] = useState("");
+  const [status, setStatus] = useState("Active"); // or "Inactive"
 
+
+  
 
 
   const fetchUser = async () => {
@@ -145,7 +148,7 @@ const EditUserForm = () => {
         </div>
 
         <div className="form-group">
-          <label>Email</label>
+          <label>Employee email</label>
           {/* {editMode ? (
             <input
               className="input"
@@ -193,18 +196,38 @@ const EditUserForm = () => {
           )}
         </div>
 
-        {editMode ? (
+       <div className="form-group">
+          <label>Status</label>
+          {editMode ? (
+            <div className="status-toggle">
+              <div
+                className={`toggle-button ${status === "Inactive" ? "inactive" : "active"}`}
+                onClick={() =>
+                  setStatus((prev) => (prev === "Active" ? "Inactive" : "Active"))
+                }
+              >
+                <div className="toggle-circle" />
+                <div className="toggle-text">{status}</div>
+              </div>
+            </div>
+          ) : (
+            <div className="uneditable">{status}</div>
+          )}
+        </div>
+
+      </form>
+      {editMode ? (
           <div className="form-buttons">
             <button
               type="submit"
-              className="btn btn-green"
+              className="btn-save"
               onClick={() => setEditMode(false)}
             >
               Update
             </button>
             <button
               type="button"
-              className="btn btn-red"
+              className="btn-cancel"
               onClick={() => setEditMode(false)}
             >
               Cancel
@@ -213,7 +236,6 @@ const EditUserForm = () => {
         ) : (
           <div></div>
         )}
-      </form>
     </div>
   );
 };

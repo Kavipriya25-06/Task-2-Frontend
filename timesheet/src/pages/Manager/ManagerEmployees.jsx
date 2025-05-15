@@ -21,7 +21,7 @@ const ManagerEmployees = () => {
   const fetchEmployee = async () => {
     try {
       const response = await fetch(
-        `${config.apiBaseURL}/org-hierarchy/${user.employee_id}/`
+        `${config.apiBaseURL}/all-employee-hierarchy/${user.employee_id}/`
       );
       const data = await response.json();
       setEmployeeData(data);
@@ -34,12 +34,11 @@ const ManagerEmployees = () => {
   };
 
   // Calculate total employees, including team leads and their employees
-  const totalEmployees =
-    teamleadData.length + // Count of team leads
-    teamleadData.reduce(
-      (count, teamlead) => count + teamlead.employees.length,
-      0
-    ); // Add the employees under each team lead
+  const totalEmployees = teamleadData.length; // + // Count of team leads
+  //teamleadData.reduce(
+  //(count, teamlead) => count + teamlead.employees.length,
+  //0
+  //); // Add the employees under each team lead
 
   return (
     <div className="manager-employees">
@@ -60,10 +59,10 @@ const ManagerEmployees = () => {
                 <td>{teamlead.employee_code}</td>
                 <td>{teamlead.teamlead_name}</td>
                 <td>{teamlead.teamlead_role}</td>
-                <td>-</td>
+                <td>{teamlead.reporting_to || "-"}</td>
               </tr>
             ))}
-            {teamleadData.flatMap((teamlead) =>
+            {/* {teamleadData.flatMap((teamlead) =>
               teamlead.employees.map((employee) => (
                 <tr key={employee.employee_id}>
                   <td>{employee.employee_code}</td>
@@ -72,7 +71,7 @@ const ManagerEmployees = () => {
                   <td>{teamlead.teamlead_name}</td>
                 </tr>
               ))
-            )}
+            )} */}
           </tbody>
         </table>
       </div>
