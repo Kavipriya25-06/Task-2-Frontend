@@ -4243,3 +4243,8 @@ select.no-arrow {
   pointer-events: none;
   color: rgb(138, 138, 138);
 }
+/* 
+.comp-off-checkbox-wrapper {
+  margin-top: 10px;
+  font-weight: bold;
+} */

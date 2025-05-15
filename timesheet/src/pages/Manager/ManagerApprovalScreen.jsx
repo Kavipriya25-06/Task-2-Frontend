@@ -274,6 +274,20 @@ const ManagerApprovalScreen = () => {
         )}
       </div>
 
+      {/* {attendanceDetails.comp_off && (
+  <div className="comp-off-checkbox-wrapper">
+    <label>
+      <input
+        type="checkbox"
+        checked={assignCompOff}
+        onChange={(e) => setAssignCompOff(e.target.checked)}
+      />{" "}
+      Grant Comp-Off
+    </label>
+  </div>
+)} */}
+
+
       <table className="timesheet-table">
         <thead>
           <tr>

@@ -245,7 +245,7 @@ const AddEmployee = () => {
               </div>
             </div>
             <div className="individual-tabs">
-              <label>Employee Code</label>
+              <label>Employee Code<span className="required-star">*</span></label>
               <input
                 // style={{ marginTop: "10px" }}
                 name="employee_code"
@@ -256,7 +256,7 @@ const AddEmployee = () => {
               />
             </div>
             <div className="individual-tabs">
-              <label>Employee Name</label>
+              <label>Employee Name<span className="required-star">*</span></label>
               <input
                 name="employee_name"
                 value={formData.employee_name}
@@ -451,12 +451,17 @@ const AddEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>Status</label>
-              <input
+              <select
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
                 placeholder="Status"
-              />
+              >
+                <option value="">Select Status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="resigned">Resigned</option>
+              </select>
             </div>
             <div className="individual-tabs">
               <label>Permanent Address</label>
@@ -669,7 +674,7 @@ const AddEmployee = () => {
               </div>
             </div>
             <div className="individual-tabs">
-              <label>Official Email</label>
+              <label>Official Email <span className="required-star">*</span></label>
               <input
                 name="employee_email"
                 value={formData.employee_email}

@@ -18,6 +18,9 @@
   background: #fef4f4;
   border: 2px solid #ffa500;
 }
+.required-star {
+  color: red;
+}
 
 .calendar-cell1.holiday {
   border: 2px solid #ffa500; /* Orange border for holidays */
