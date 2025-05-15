@@ -672,7 +672,7 @@
 
 // src\pages\Manager\ManagerProjectView.jsx
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef} from "react";
 import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
@@ -680,6 +680,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 const TeamLeadProjectView = () => {
   const navigate = useNavigate();
+  const buildingPopupRef = useRef();
   const [teamleadManager, setTeamleadManager] = useState([]);
   const [availableTeamleadManager, setAvailableTeamleadManager] = useState([]);
   const [projectData, setProjectData] = useState(null);
@@ -858,6 +859,20 @@ const TeamLeadProjectView = () => {
     fetchBuilding();
     fetchProjectData();
   }, [project_id]);
+
+  useEffect(() => {
+      function handleClickOutside(event) {
+        if (buildingPopupRef.current && !buildingPopupRef.current.contains(event.target)) {
+          setShowBuildingPopup(false);
+        }
+      }
+      if (showBuildingPopup) {
+        document.addEventListener("mousedown", handleClickOutside);
+      }
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, [showBuildingPopup]);
 
   const fetchAreas = async () => {
     try {
@@ -1203,7 +1218,7 @@ const TeamLeadProjectView = () => {
         </div>
       </div>
       {showBuildingPopup && (
-        <div className="popup">
+        <div className="popup" ref={buildingPopupRef}>
           <h4>Select Buildings</h4>
           {buildings.map((b) => (
             <div key={b.building_id} style={{ marginBottom: "8px" }}>

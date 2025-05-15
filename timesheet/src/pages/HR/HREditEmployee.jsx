@@ -1128,6 +1128,7 @@ const EditEmployee = () => {
               {editMode ? (
                 <div style={{ display: "flex", gap: "10px" }}>
                   <select
+                    className="no-arrow"
                     name="arris_years"
                     value={experienceUI.arris_years}
                     // onChange={handleExperienceChange}
@@ -1141,6 +1142,7 @@ const EditEmployee = () => {
                     ))}
                   </select>
                   <select
+                    className="no-arrow"
                     name="arris_months"
                     value={experienceUI.arris_months}
                     // onChange={handleExperienceChange}
@@ -1166,6 +1168,7 @@ const EditEmployee = () => {
               {editMode ? (
                 <div style={{ display: "flex", gap: "10px" }}>
                   <select
+                    className="no-arrow"
                     name="total_years"
                     value={experienceUI.total_years}
                     onChange={handleExperienceChange}
@@ -1178,6 +1181,7 @@ const EditEmployee = () => {
                     ))}
                   </select>
                   <select
+                    className="no-arrow"
                     name="total_months"
                     value={experienceUI.total_months}
                     onChange={handleExperienceChange}

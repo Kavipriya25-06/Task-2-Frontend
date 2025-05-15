@@ -590,7 +590,7 @@ const AddEmployee = () => {
                 </select>
               </div>
             </div>
-            <div className="individual-tabs">
+            {/* <div className="individual-tabs">
               <label>Arris Experience</label>
               <div style={{ display: "flex", gap: "10px" }}>
                 <select
@@ -618,8 +618,8 @@ const AddEmployee = () => {
                   ))}
                 </select>
               </div>
-            </div>
-            <div className="individual-tabs">
+            </div> */}
+            {/* <div className="individual-tabs">
               <label>Total Experience</label>
               <div style={{ display: "flex", gap: "10px" }}>
                 <select
@@ -647,7 +647,7 @@ const AddEmployee = () => {
                   ))}
                 </select>
               </div>
-            </div>
+            </div> */}
 
             <div className="individual-tabs">
               <label>Probation confirmation date</label>

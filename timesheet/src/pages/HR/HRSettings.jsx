@@ -20,13 +20,13 @@ const HRSettings = () => {
 
       setCompOffData({
         half_day: {
-          min_hours: half_day?.min_hours || "",
-          max_hours: half_day?.max_hours || "",
+          min_hours: half_day?.min_hours === 0 || half_day?.min_hours === "0.00" ? "" : half_day?.min_hours || "",
+          max_hours: half_day?.max_hours === 0 || half_day?.max_hours === "0.00" ? "" : half_day?.max_hours || "",
           id: half_day?.id,
         },
         full_day: {
-          min_hours: full_day?.min_hours || "",
-          max_hours: full_day?.max_hours || "",
+          min_hours: full_day?.min_hours === 0 || full_day?.min_hours === "0.00" ? "" : full_day?.min_hours || "",
+          max_hours: full_day?.max_hours === 0 || full_day?.max_hours === "0.00" ? "" : full_day?.max_hours || "",
           id: full_day?.id,
         },
       });
@@ -42,18 +42,20 @@ const HRSettings = () => {
   }, []);
 
   const handleInputChange = (type, field, value) => {
+    // Allow only numbers, limit to 2 digits, and max value of 12
+    const sanitized = value.replace(/[^0-9]/g, "").slice(0, 2);
+    const numeric = sanitized ? Math.min(parseInt(sanitized, 10), 12) : "";
     setCompOffData((prev) => ({
       ...prev,
       [type]: {
         ...prev[type],
-        [field]: value,
+        [field]: numeric,
       },
     }));
   };
 
   const handleSubmit = async () => {
     try {
-      // For Half Day
       const halfDayPayload = {
         leave_type: "half_day",
         min_hours: compOffData.half_day.min_hours,
@@ -66,7 +68,6 @@ const HRSettings = () => {
         max_hours: compOffData.full_day.max_hours,
       };
 
-      // Update or create Half Day
       const halfDayMethod = compOffData.half_day.id ? "PATCH" : "POST";
       const halfDayURL = compOffData.half_day.id
         ? `${config.apiBaseURL}/comp-off/${compOffData.half_day.id}/`
@@ -78,7 +79,6 @@ const HRSettings = () => {
         body: JSON.stringify(halfDayPayload),
       });
 
-      // Update or create Full Day
       const fullDayMethod = compOffData.full_day.id ? "PATCH" : "POST";
       const fullDayURL = compOffData.full_day.id
         ? `${config.apiBaseURL}/comp-off/${compOffData.full_day.id}/`
@@ -100,9 +100,7 @@ const HRSettings = () => {
   return (
     <div className="settings-container">
       <h2>Settings</h2>
-      <div className="tab-container">
-        {/* <button className="active-tab">Set Comp Off Timings</button> */}
-      </div>
+      <div className="tab-container"></div>
 
       {loading ? (
         <p>Loading...</p>
@@ -120,20 +118,24 @@ const HRSettings = () => {
               <td>Half Day</td>
               <td>
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   value={compOffData.half_day.min_hours}
                   onChange={(e) =>
                     handleInputChange("half_day", "min_hours", e.target.value)
                   }
+                  placeholder="00"
                 />
               </td>
               <td>
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   value={compOffData.half_day.max_hours}
                   onChange={(e) =>
                     handleInputChange("half_day", "max_hours", e.target.value)
                   }
+                  placeholder="00"
                 />
               </td>
             </tr>
@@ -141,20 +143,24 @@ const HRSettings = () => {
               <td>Full Day</td>
               <td>
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   value={compOffData.full_day.min_hours}
                   onChange={(e) =>
                     handleInputChange("full_day", "min_hours", e.target.value)
                   }
+                  placeholder="00"
                 />
               </td>
               <td>
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="timedelta"
                   value={compOffData.full_day.max_hours}
                   onChange={(e) =>
                     handleInputChange("full_day", "max_hours", e.target.value)
                   }
+                  placeholder="00"
                 />
               </td>
             </tr>
