@@ -20,6 +20,7 @@ import {
 import LogoutPopup from "./pages/Logout_popup.jsx"; // adjust the import path as needed
 
 import Login from "./pages/Login.jsx";
+import HeroSlider from "./components/HeroSlider.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import HomeRedirect from "./pages/HomeRedirect.jsx";
 import RoleSwitcher from "./pages/RoleSwitcher.jsx";
@@ -204,7 +205,7 @@ const App = () => {
         {/* Main Content */}
         <main className="main">
           <Routes>
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/" element={<HeroSlider />} />
             <Route path="/login" element={<Login />} />
             <Route
               path="/home/*"

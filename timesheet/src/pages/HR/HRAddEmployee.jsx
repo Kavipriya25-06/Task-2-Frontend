@@ -245,7 +245,9 @@ const AddEmployee = () => {
               </div>
             </div>
             <div className="individual-tabs">
-              <label>Employee Code<span className="required-star">*</span></label>
+              <label>
+                Employee Code <span className="required-star">*</span>
+              </label>
               <input
                 // style={{ marginTop: "10px" }}
                 name="employee_code"
@@ -256,7 +258,10 @@ const AddEmployee = () => {
               />
             </div>
             <div className="individual-tabs">
-              <label>Employee Name<span className="required-star">*</span></label>
+              <label>
+                Employee Name
+                <span className="required-star">*</span>
+              </label>
               <input
                 name="employee_name"
                 value={formData.employee_name}
@@ -674,7 +679,9 @@ const AddEmployee = () => {
               </div>
             </div>
             <div className="individual-tabs">
-              <label>Official Email <span className="required-star">*</span></label>
+              <label>
+                Official Email <span className="required-star">*</span>
+              </label>
               <input
                 name="employee_email"
                 value={formData.employee_email}

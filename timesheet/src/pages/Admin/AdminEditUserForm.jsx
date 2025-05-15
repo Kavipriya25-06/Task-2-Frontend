@@ -19,7 +19,6 @@ const EditUserForm = () => {
   const [editMode, setEditMode] = useState(false); //  Add this at the top
   const [inputValue, setInputValue] = useState("");
 
-  
   const [status, setStatus] = useState("");
 
   const toggleStatus = () => {
@@ -59,14 +58,15 @@ const EditUserForm = () => {
   }, [user_id]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     const updatedUser = {
-      employee_id: employeeID,
-      role,
-      email,
+      // employee_id: employeeID,
+      role: role,
+      email: email,
     };
 
     if (password) updatedUser.password = password; // only include if edited
+    if (status) updatedUser.status = status;
 
     try {
       const response = await fetch(`${config.apiBaseURL}/users/${user_id}/`, {
@@ -80,7 +80,8 @@ const EditUserForm = () => {
       }
 
       console.log("User updated successfully");
-      navigate("/admin/detail/users");
+      setEditMode(false);
+      // navigate("/admin/detail/users");
     } catch (error) {
       console.error("Error updating user", error);
     }
@@ -99,6 +100,13 @@ const EditUserForm = () => {
           { label: editMode ? "Edit User" : "View User" },
         ]}
         showBack={true}
+        onBack={() => {
+          if (editMode) {
+            setEditMode(false); // Exit edit mode
+          } else {
+            navigate("/admin/detail/users"); // Go back to user list
+          }
+        }}
       />
       <div className="table-top-bar">
         <div>
@@ -152,17 +160,7 @@ const EditUserForm = () => {
 
         <div className="form-group">
           <label>Employee email</label>
-          {/* {editMode ? (
-            <input
-              className="input"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          ) : ( */}
           <div className="uneditable">{email}</div>
-          {/* )} */}
         </div>
 
         <div className="form-group" style={{ position: "relative" }}>
@@ -205,29 +203,41 @@ const EditUserForm = () => {
             <div className="status-toggle">
               <div
                 className={`toggle-button ${
-                  status === "Inactive" ? "inactive" : "active"
+                  status === "inactive" ? "inactive" : "active"
                 }`}
                 onClick={() =>
                   setStatus((prev) =>
-                    prev === "Active" ? "Inactive" : "Active"
+                    prev === "active" ? "inactive" : "active"
                   )
                 }
               >
                 <div className="toggle-circle" />
-                <div className="toggle-text">{status}</div>
+                <div className="toggle-text">
+                  {status === "active" ? "Active" : "Inactive"}
+                </div>
               </div>
             </div>
           ) : (
-            <div className="uneditable">{status}</div>
+            <div className="uneditable">
+              {status === "active"
+                ? "Active"
+                : status === "inactive"
+                ? "Inactive"
+                : status === "resigned"
+                ? "Resigned"
+                : "-"}
+            </div>
           )}
         </div>
       </form>
-      {editMode ? (
+      {editMode && (
         <div className="form-buttons">
           <button
             type="submit"
             className="btn-save"
-            onClick={() => setEditMode(false)}
+            onClick={() => {
+              handleSubmit();
+            }}
           >
             Update
           </button>
@@ -239,8 +249,6 @@ const EditUserForm = () => {
             Cancel
           </button>
         </div>
-      ) : (
-        <div></div>
       )}
     </div>
   );

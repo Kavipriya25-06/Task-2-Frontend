@@ -101,7 +101,15 @@ const UsersPage = () => {
               <td>{u.employee_id?.employee_name}</td>
               <td>{u.role}</td>
               <td>{u.email}</td>
-              <td>{u.status}</td>
+              <td>
+                {u.status === "active"
+                  ? "Active"
+                  : u.status === "inactive"
+                  ? "Inactive"
+                  : u.status === "resigned"
+                  ? "Resigned"
+                  : "-"}
+              </td>
             </tr>
           ))}
         </tbody>

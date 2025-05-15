@@ -816,14 +816,27 @@ const EditEmployee = () => {
               ) : (
                 <p className="data">{formData.permanent_address}</p> */}
               {editMode ? (
-                <input
+                <select
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
                   placeholder="Status"
-                />
+                >
+                  <option value="">Select Status</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                  <option value="resigned">Resigned</option>
+                </select>
               ) : (
-                <div className="uneditable">{formData.status || "-"}</div>
+                <div className="uneditable">
+                  {formData.status === "active"
+                    ? "Active"
+                    : formData.status === "inactive"
+                    ? "Inactive"
+                    : formData.status === "resigned"
+                    ? "Resigned"
+                    : "-"}
+                </div>
               )}
             </div>
             <div className="individual-tabs">

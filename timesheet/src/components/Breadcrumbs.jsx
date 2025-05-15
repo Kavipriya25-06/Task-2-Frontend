@@ -4,8 +4,12 @@ import { useNavigate } from "react-router-dom";
 import "./Breadcrumbs.css";
 import { FaArrowLeft } from "react-icons/fa";
 
-
-const Breadcrumbs = ({ crumbs = [], showBack = false, backPath = null }) => {
+const Breadcrumbs = ({
+  crumbs = [],
+  showBack = false,
+  backPath = null,
+  onBack,
+}) => {
   const navigate = useNavigate();
 
   return (
@@ -14,7 +18,9 @@ const Breadcrumbs = ({ crumbs = [], showBack = false, backPath = null }) => {
         <button
           className="back-button"
           onClick={() => {
-            if (backPath) {
+            if (onBack) {
+              onBack();
+            } else if (backPath) {
               navigate(backPath);
             } else {
               navigate(-1); // Go back one step by default
