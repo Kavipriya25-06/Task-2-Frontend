@@ -117,8 +117,7 @@
   font-size: 24px;
 }
 
-/* input,
-select {
+input {
   width: 90%;
   padding: 10px;
   margin-bottom: 15px;
@@ -131,6 +130,17 @@ input,
 select {
   width: 100%;
   height: 40px; /* ensure all have the same height */
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+  background-color: rgb(244, 244, 244);
+}
+
+textarea {
+  width: 100%;
+  height: 50px; /* ensure all have the same height */
   padding: 8px 12px;
   font-size: 14px;
   border: 1px solid #ccc;
@@ -282,7 +292,23 @@ select {
   border-radius: 8px;
   padding: 10px;
   position: relative;
+  z-index: 1;
 }
+
+
+#datepicker-portal-root {
+  position: relative; /* or fixed */
+  z-index: 9999;
+}
+
+.react-datepicker__month-container{
+  top: 20px;
+}
+
+h2.react-datepicker__current-month{
+  text-align: center !important;
+}
+
 
 
 .variation-table {
@@ -335,7 +361,7 @@ select {
 
 .top-bar {
   background: #f1890d;
-  padding: 0px 0px;
+  padding: 5px 0px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -661,12 +687,10 @@ select {
   margin-bottom: -5px;
 }
 
-
-
 table input[type="time"] {
-  width: 115px; /* Fixed width */
-  min-width: 115px;
-  max-width: 115px;
+  width: 140px; /* Fixed width */
+  min-width: 140px;
+  max-width: 140px;
   padding: 8px 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -680,9 +704,9 @@ table input[type="time"] {
 }
 
 table input[type="number"] {
-  width: 100px; /* Fixed width */
-  min-width: 100px;
-  max-width: 100px;
+  width: 140px; /* Fixed width */
+  min-width: 140px;
+  max-width: 140px;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -714,12 +738,18 @@ table input[type="number"]:focus {
   margin-top: 3%;
 }
 
-
-.task-select {
-  min-width: 160px;
-  color: gray;
+.timesheet-table .task-select {
+  width: 100%;
+  padding: 10px 12px;
+  background-color: #f3f3f3;
+  color: #808080;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: "Arial", sans-serif;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  box-sizing: border-box;
+  border: 1px solid rgb(192, 192, 192);
 }
-
 
 .task-select:focus {
   outline: none;
@@ -851,7 +881,6 @@ table input[type="number"]:focus {
 .toggle-button.active .toggle-text {
   color: #f1890d;
   margin-right: 20px;
-
 }
 
 
@@ -991,7 +1020,6 @@ table input[type="number"]:focus {
   box-sizing: border-box;
   transition: border-color 0.3s;
   margin-top: 2%;
-  background-color: rgb(239, 239, 239);
 }
 
 .search-bar:focus {
@@ -1013,7 +1041,7 @@ table input[type="number"]:focus {
 .add-user-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0px 40px;
+  gap: 30px 40px;
   margin-bottom: 30px;
 }
 
@@ -1103,7 +1131,6 @@ table th {
   overflow: hidden; /* Hide overflowing text */
   text-overflow: ellipsis;
   font-family: "Archivo", sans-serif;
-  max-width: 150px; /* Optional: Limit width */
 }
 
 table td {
@@ -1355,46 +1382,125 @@ main {
   align-items: center;
   margin: 20px;
 }
+
 .holiday-calendar {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.calendar-headers .calendar-nav-dropdown {
-  border-radius: 5px;
-  font-size: 19px;
-  margin-left: 50px;
-  background-color: rgb(235, 234, 234);
-  border: 2px solid rgb(196, 195, 195);
-}
-
-.calendar-nav-dropdown {
-  border-radius: 5px;
-  font-size: 19px;
-  background-color: rgb(235, 234, 234);
-  border: 2px solid rgb(196, 195, 195);
-  padding: 10px;
-}
 
 .calendar-header {
   display: flex;
-  justify-content: space-between;
-  width: 90%;
-  font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: #333;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  white-space: nowrap;
+  overflow-x: auto;
 }
+
+.calendar-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.calendar-header button.left,
+.calendar-header button.right {
+  background-color: rgb(163, 162, 162);
+  color: #fff;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+.year-selector button.lefts,
+.year-selector button.rights{
+  background-color: rgb(163, 162, 162);
+  color: #fff;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+.calendar-header button.lefts:hover,
+.calendar-header button.rights:hover {
+  background-color: gray;
+}
+
+.calendar-header .calendar-nav-dropdown {
+  padding: 6px 10px;
+  font-size: 17px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #dadada;
+  cursor: pointer;
+  margin-left: 30px;
+}
+
 
 .calendar-headers {
   display: flex;
-  width: 70%;
-  font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: #333;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  white-space: nowrap;
+  overflow-x: auto;
 }
+
+.calendar-headers h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.calendar-headers button.lefts,
+.calendar-headers button.rights {
+  background-color: rgb(163, 162, 162);
+  color: #fff;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+    flex-shrink: 0; /* Prevent shrinking */
+
+}
+
+.calendar-headers button.lefts:hover,
+.calendar-headers button.rights:hover {
+  background-color: gray;
+}
+
+.calendar-headers .calendar-nav-dropdown {
+  padding: 6px 10px;
+  font-size: 17px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #dadada;
+  cursor: pointer;
+  margin-left: 40px;
+}
+
 
 .calendar-cell1.weekend {
   border-radius: 10px;
@@ -1454,82 +1560,6 @@ input[type="text"] {
 /* Container for the buttons and the heading */
 
 /* Styling for the left and right buttons */
-.left {
-  width: 30px; /* Set width for square shape */
-  height: 30px; /* Set height equal to width */
-  background-color: #dcdbdb;
-  border: none;
-  font-size: 24px; /* Make the < and > bigger */
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 6px; /* Slightly rounded corners */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s ease;
-  margin-right: -4%;
-}
-
-.right {
-  width: 30px; /* Set width for square shape */
-  height: 30px; /* Set height equal to width */
-  background-color: #dcdbdb;
-  border: none;
-  font-size: 24px; /* Make the < and > bigger */
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 6px; /* Slightly rounded corners */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s ease;
-  margin-left: -4%;
-}
-
-.lefts {
-  width: 20px; /* Set width for square shape */
-  height: 20px; /* Set height equal to width */
-  background-color: #dcdbdb;
-  border: none;
-  font-size: 24px; /* Make the < and > bigger */
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 6px; /* Slightly rounded corners */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s ease;
-  padding: 13px;
-  /* margin-left: 10%; */
-  margin-top: 0.2%;
-}
-
-.rights {
-  width: 20px; /* Set width for square shape */
-  height: 20px; /* Set height equal to width */
-  background-color: #dcdbdb;
-  border: none;
-  font-size: 24px; /* Make the < and > bigger */
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 6px; /* Slightly rounded corners */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s ease;
-  padding: 13px;
-  /* margin-right: 15%; */
-}
-
-.left:hover,
-.right:hover {
-  background-color: #c0bfbf; /* Darker shade on hover */
-}
-
-.lefts:hover,
-.rights:hover {
-  background-color: #c0bfbf; /* Darker shade on hover */
-}
 
 .calendar-header h3 {
   font-size: 24px; /* Adjust font size */
@@ -1589,6 +1619,7 @@ h3 {
   border-radius: 12px;
   cursor: pointer;
   font-size: 20px;
+  margin-left: 40px;
 }
 
 .calendar-title-btn:hover {
@@ -1697,8 +1728,6 @@ h3 {
   font-size: 0.944rem;
 }
 
-
-
 /* .individual-tabs .input1 {
   width: 193%;
   margin-top: -4%;
@@ -1725,17 +1754,7 @@ h3 {
 .project-form-group-small .calendar-icon {
   position: absolute;
   top: 28%;
-  right: 5%;
-  font-size: 15px; /* Icon size */
-  color: #3d3d3d; /* Icon color */
-  cursor: pointer; /* Make icon clickable */
-  pointer-events: none; /* Allow click on the input, not the icon */
-}
-
-.variation-table-wrapper .calendar-icon{
-  position: absolute;
-  top: 28%;
-  right: 15%;
+  right: 0.5%;
   font-size: 15px; /* Icon size */
   color: #3d3d3d; /* Icon color */
   cursor: pointer; /* Make icon clickable */
@@ -1754,9 +1773,9 @@ h3 {
 
 .individual-tabs .calendar-icon {
   position: absolute;
-  top: 10%;
-  right: 3%;
-  font-size: 16px; /* Icon size */
+  top: 8%;
+  right: 8%;
+  font-size: 15px; /* Icon size */
   color: #3d3d3d; /* Icon color */
   cursor: pointer; /* Make icon clickable */
   pointer-events: none; /* Allow click on the input, not the icon */
@@ -1765,16 +1784,6 @@ h3 {
 .custom-modal .calendar-icon {
   position: absolute;
   top: 19%;
-  right: 3%;
-  font-size: 17px; /* Icon size */
-  color: #3d3d3d; /* Icon color */
-  cursor: pointer; /* Make icon clickable */
-  pointer-events: none; /* Allow click on the input, not the icon */
-}
-
-.att-popup .calendar-icon {
-  position: absolute;
-  top: 35%;
   right: 3%;
   font-size: 17px; /* Icon size */
   color: #3d3d3d; /* Icon color */
@@ -1877,15 +1886,13 @@ h3 {
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  background-color: rgb(242, 241, 241);
+  width: 95%;
 }
 .att-popup input {
   margin-top: 5px;
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  background-color: rgb(242, 241, 241);
-
 }
 
 .att-popup textarea {
@@ -1893,9 +1900,8 @@ h3 {
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  background-color: rgb(242, 241, 241);
+  width: 90%;
 }
-
 .att-popup button {
   padding: 10px;
   border: none;
@@ -2395,7 +2401,7 @@ h3 {
 .tab-content {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 16px;
   align-items: flex-start;
 }
 
@@ -2492,7 +2498,7 @@ h3 {
 .tab-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px 40px;
+  gap: 20px;
 }
 
 /* Input styling */
@@ -2506,15 +2512,11 @@ h3 {
 }
 
 .individual-tabs select {
-  padding: 9px;
+  padding: 8px;
   border-radius: 5px;
-  width: 100%;
-  background-color: #f4f3f3;
+  width: 39%;
+  background-color: #f1f0f0;
   border: 1px solid #a9a9a9;
-  color: gray;
-  margin-top: -2%;
-  font-size: 14px;
-  overflow-x: hidden;
 }
 
 .uploaded-files-container {
@@ -2592,7 +2594,6 @@ h3 {
   border-radius: 6px;
   background-color: #f6f6f6;
   margin-top: -2%;
-  width: 90%;
 }
 
 .individual-tab select {
@@ -3034,20 +3035,17 @@ button.delete-building:hover {
   padding: 0px;
   display: flex;
   /* grid-template: 1fr 1fr; */
-  gap: 127px;
+  gap: 130px;
   width: 100%;
 }
 .top-element input {
   margin-top: 5px;
-  width: 107%;
-  background-color: rgb(241, 239, 239);
+  width: 100%;
 }
 
 .top-elements input {
   margin-top: 5px;
-  width: 147%;
-  background-color: rgb(241, 239, 239);
-
+  width: 140%;
 }
 
 .bottom-elements {
@@ -3283,7 +3281,7 @@ button.delete-building:hover {
 }
 
 .view-attachment-link:hover {
-  background-color: rgb(230, 229, 229);
+  background-color: rgb(169, 169, 169);
   color: black;
   font-weight: 600;
   transform: translateY(-1px);
@@ -3335,11 +3333,9 @@ button.delete-building:hover {
 }
 
 .project-form-group-small input {
-  width: 100%;
-  height: 60%;
+  width: 95%;
+  height: 25%;
   padding: 9px;
-  background-color: rgb(234, 234, 234);
-  font-size: 14px;
 }
 
 .left-form-second .roles-box {
@@ -3406,7 +3402,7 @@ button.delete-building:hover {
   border: 1px solid #ccc;
   font-size: 14px;
   background-color: #f1f1f1;
-  width: 90%;
+  width: 100%;
 }
 
 .building-row input {
@@ -3415,23 +3411,6 @@ button.delete-building:hover {
 
 .building-row button {
   background-color: white;
-  color: black;
-  border: none;
-  padding: 6px 6px;
-  border-radius: 50%;
-  cursor: pointer;
-  margin-left: 1%;
-  width: 24px; /* Set fixed width */
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1%;
-  margin-top: 1%;
-}
-
-.variation-table-wrapper button{
-    background-color: white;
   color: black;
   border: none;
   padding: 6px 6px;
@@ -4089,7 +4068,7 @@ h4 {
   border: 1px solid #ccc;
   font-size: 14px;
   background-color: #f1f0f0;
-  width: 95%;
+  width: 90%;
   height: 100%;
   margin-top: 5px;
 }

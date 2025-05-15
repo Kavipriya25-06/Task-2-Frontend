@@ -8,6 +8,8 @@ import { useNavigate, useParams} from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
+import ReactDOM from "react-dom";
+
 
 
 const ManagerProjectView = () => {
@@ -506,6 +508,8 @@ const handleAddVariation = () => {
             <div className="project-form-group">
               <div className="variation-table-wrapper">
                 <label>Variation History</label>
+                <div id="datepicker-portal-root"></div>
+
                 <div className="variation-table-container">
                   <table className="variation-table">
                     <thead>
@@ -521,12 +525,30 @@ const handleAddVariation = () => {
                           <td>
                              {editMode ? (
                               <div className="date-input-container">
-                                <DatePicker
-                                  selected={variation.date ? new Date(variation.date) : null}
-                                  onChange={(date) => handleVariationChange(index, "date", date)}
-                                  dateFormat="dd-MMM-yyyy"
-                                  placeholderText="Select date"
-                                />
+<DatePicker
+  selected={variation.date ? new Date(variation.date) : null}
+  onChange={(date) => handleVariationChange(index, "date", date)}
+  dateFormat="dd-MMM-yyyy"
+  placeholderText="Select date"
+  calendarClassName="custom-calendar"
+  popperClassName="custom-popper"
+  popperPlacement="bottom-start"
+  popperModifiers={[
+    {
+      name: "preventOverflow",
+      options: {
+        boundary: "viewport",
+      },
+    },
+  ]}
+  popperContainer={({ children }) => {
+    const portalRoot = document.getElementById("datepicker-portal-root");
+    if (portalRoot) {
+      return ReactDOM.createPortal(children, portalRoot);
+    }
+    return children; // fallback if portalRoot missing
+  }}
+/>                             
                               <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
                               {/* Font Awesome Calendar Icon */}
                               </div> 

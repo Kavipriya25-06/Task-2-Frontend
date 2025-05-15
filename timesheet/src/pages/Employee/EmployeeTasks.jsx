@@ -56,7 +56,7 @@ const EmployeeTasks = () => {
           </thead>
           <tbody>
             {tasks.map((task, index) => (
-              <tr key={task.task_id}>
+              <tr key={task.task_assign_id}>
                 <td
                   key={index}
                   onClick={() => handleTaskClick(task.task_assign_id)}
@@ -65,20 +65,20 @@ const EmployeeTasks = () => {
                     textDecoration: "underline",
                   }}
                 >
-                  {task.task?.task_title || "N/A"}
+                  {task?.task?.task_title || "N/A"}
                 </td>
-                <td>{task.task_hours || "N/A"}</td>
+                <td>{task?.task_hours || "N/A"}</td>
                 <td>
-                  {task.building_assign.building
-                    ? `${task.building_assign.building.building_id} - ${task.building_assign.building.building_title}`
+                  {task?.building_assign?.building
+                    ? `${task.building_assign.building?.building_id} - ${task.building_assign.building?.building_title}`
                     : "N/A"}
                 </td>
                 <td>
-                  {task.building_assign.project_assign.project
-                    ? `${task.building_assign.project_assign.project.project_id} - ${task.building_assign.project_assign.project.project_title}`
+                  {task?.building_assign?.project_assign?.project
+                    ? `${task.building_assign.project_assign.project?.project_id} - ${task.building_assign.project_assign.project?.project_title}`
                     : "N/A"}
                 </td>
-                <td>{task.start_date || "N/A"}</td>
+                <td>{task?.start_date || "N/A"}</td>
               </tr>
             ))}
           </tbody>
