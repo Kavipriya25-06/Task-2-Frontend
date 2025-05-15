@@ -117,39 +117,14 @@
   font-size: 24px;
 }
 
-/* input,
-select {
+input {
   width: 90%;
   padding: 10px;
   margin-bottom: 15px;
   border: 1px solid #ccc;
   border-radius: 5px;
   background: #f1f1f1;
-} */
-
-input,
-select {
-  width: 100%;
-  height: 40px; /* ensure all have the same height */
-  padding: 8px 12px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  box-sizing: border-box;
-  background-color: rgb(244, 244, 244);
 }
-
-.date-input-container .input1{
-  width: 100%;
-  height: 40px; /* ensure all have the same height */
-  padding: 8px 12px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  box-sizing: border-box;
-}
-
-
 
 .button-group {
   display: flex;
@@ -269,59 +244,6 @@ select {
 .circle-gray {
   background-color: #9e9e9e; /* gray */
 }
-
-
-.variation-table-wrapper {
-  margin-top: 20px;
-}
-
-.variation-table-container {
-  max-height: 200px;
-  overflow-y: auto;
-  border: none;
-  border-radius: 8px;
-  padding: 10px;
-  position: relative;
-}
-
-
-.variation-table {
-  width: 100%;
-  border-collapse: collapse;
-    border-spacing: 0;
-  border: 2px solid #ddd;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.variation-table th,
-.variation-table td {
-  padding: 8px;
-  border: 2px solid #ddd;
-  text-align: left;
-}
-
-.variation-table input {
-  width: 100%;
-  padding: 6px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.add-row-btn {
-  margin-top: 10px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  position: absolute;
-  left: 10px;
-  bottom: 10px;
-}
-
-
 .admin-page {
   flex: 1;
   display: flex;
@@ -335,7 +257,7 @@ select {
 
 .top-bar {
   background: #f1890d;
-  padding: 0px 0px;
+  padding: 5px 0px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -661,12 +583,10 @@ select {
   margin-bottom: -5px;
 }
 
-
-
 table input[type="time"] {
-  width: 115px; /* Fixed width */
-  min-width: 115px;
-  max-width: 115px;
+  width: 140px; /* Fixed width */
+  min-width: 140px;
+  max-width: 140px;
   padding: 8px 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -680,9 +600,9 @@ table input[type="time"] {
 }
 
 table input[type="number"] {
-  width: 100px; /* Fixed width */
-  min-width: 100px;
-  max-width: 100px;
+  width: 140px; /* Fixed width */
+  min-width: 140px;
+  max-width: 140px;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -714,12 +634,18 @@ table input[type="number"]:focus {
   margin-top: 3%;
 }
 
-
-.task-select {
-  min-width: 160px;
-  color: gray;
+.timesheet-table .task-select {
+  width: 100%;
+  padding: 10px 12px;
+  background-color: #f3f3f3;
+  color: #808080;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: "Arial", sans-serif;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  box-sizing: border-box;
+  border: 1px solid rgb(192, 192, 192);
 }
-
 
 .task-select:focus {
   outline: none;
@@ -785,79 +711,6 @@ table input[type="number"]:focus {
 .form {
   display: inline-block;
 }
-.toggle-button {
-  width: 90px;
-  height: 34px;
-  border-radius: 50px;
-  position: relative;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 10px;
-  box-sizing: border-box;
-  font-size: 13px;
-  font-weight: 500;
-  background-color: #e2e1e1;
-  transition: background-color 0.3s ease;
-}
-
-
-
-/* Toggle Circle */
-.toggle-button.active .toggle-circle {
-  width: 26px;
-  height: 26px;
-  background-color: #f1890d;
-  border-radius: 50%;
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  transition: left 0.3s ease;
-}
-
-.toggle-button.inactive .toggle-circle {
-  width: 26px;
-  height: 26px;
-  background-color: black;
-  border-radius: 50%;
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  transition: left 0.3s ease;
-}
-
-.toggle-button.active .toggle-circle {
-  left: 60px;
-}
-
-/* Shared Text Styles */
-.toggle-text {
-  flex: 1;
-  text-align: center;
-  z-index: 1;
-  padding: 0 10px;
-  font-size: 13px;
-  transition: color 0.3s ease;
-}
-
-/* Inactive Text Style */
-.toggle-button.inactive .toggle-text {
-  color: black;
-  margin-left: 25px;
-}
-
-/* Active Text Style */
-.toggle-button.active .toggle-text {
-  color: #f1890d;
-  margin-right: 20px;
-
-}
-
-
-/* When status is Inactive */
-
-
 
 .form-group {
   padding: 20px;
@@ -991,7 +844,6 @@ table input[type="number"]:focus {
   box-sizing: border-box;
   transition: border-color 0.3s;
   margin-top: 2%;
-  background-color: rgb(239, 239, 239);
 }
 
 .search-bar:focus {
@@ -1013,7 +865,7 @@ table input[type="number"]:focus {
 .add-user-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0px 40px;
+  gap: 30px 40px;
   margin-bottom: 30px;
 }
 
@@ -1103,7 +955,6 @@ table th {
   overflow: hidden; /* Hide overflowing text */
   text-overflow: ellipsis;
   font-family: "Archivo", sans-serif;
-  max-width: 150px; /* Optional: Limit width */
 }
 
 table td {
@@ -1697,8 +1548,6 @@ h3 {
   font-size: 0.944rem;
 }
 
-
-
 /* .individual-tabs .input1 {
   width: 193%;
   margin-top: -4%;
@@ -1725,17 +1574,7 @@ h3 {
 .project-form-group-small .calendar-icon {
   position: absolute;
   top: 28%;
-  right: 5%;
-  font-size: 15px; /* Icon size */
-  color: #3d3d3d; /* Icon color */
-  cursor: pointer; /* Make icon clickable */
-  pointer-events: none; /* Allow click on the input, not the icon */
-}
-
-.variation-table-wrapper .calendar-icon{
-  position: absolute;
-  top: 28%;
-  right: 15%;
+  right: 0.5%;
   font-size: 15px; /* Icon size */
   color: #3d3d3d; /* Icon color */
   cursor: pointer; /* Make icon clickable */
@@ -1754,9 +1593,9 @@ h3 {
 
 .individual-tabs .calendar-icon {
   position: absolute;
-  top: 10%;
-  right: 3%;
-  font-size: 16px; /* Icon size */
+  top: 8%;
+  right: 8%;
+  font-size: 15px; /* Icon size */
   color: #3d3d3d; /* Icon color */
   cursor: pointer; /* Make icon clickable */
   pointer-events: none; /* Allow click on the input, not the icon */
@@ -1765,16 +1604,6 @@ h3 {
 .custom-modal .calendar-icon {
   position: absolute;
   top: 19%;
-  right: 3%;
-  font-size: 17px; /* Icon size */
-  color: #3d3d3d; /* Icon color */
-  cursor: pointer; /* Make icon clickable */
-  pointer-events: none; /* Allow click on the input, not the icon */
-}
-
-.att-popup .calendar-icon {
-  position: absolute;
-  top: 35%;
   right: 3%;
   font-size: 17px; /* Icon size */
   color: #3d3d3d; /* Icon color */
@@ -1877,15 +1706,13 @@ h3 {
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  background-color: rgb(242, 241, 241);
+  width: 95%;
 }
 .att-popup input {
   margin-top: 5px;
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  background-color: rgb(242, 241, 241);
-
 }
 
 .att-popup textarea {
@@ -1893,9 +1720,8 @@ h3 {
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  background-color: rgb(242, 241, 241);
+  width: 90%;
 }
-
 .att-popup button {
   padding: 10px;
   border: none;
@@ -2395,7 +2221,7 @@ h3 {
 .tab-content {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 16px;
   align-items: flex-start;
 }
 
@@ -2492,7 +2318,7 @@ h3 {
 .tab-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px 40px;
+  gap: 20px;
 }
 
 /* Input styling */
@@ -2506,15 +2332,11 @@ h3 {
 }
 
 .individual-tabs select {
-  padding: 9px;
+  padding: 8px;
   border-radius: 5px;
-  width: 100%;
-  background-color: #f4f3f3;
+  width: 39%;
+  background-color: #f1f0f0;
   border: 1px solid #a9a9a9;
-  color: gray;
-  margin-top: -2%;
-  font-size: 14px;
-  overflow-x: hidden;
 }
 
 .uploaded-files-container {
@@ -3034,20 +2856,17 @@ button.delete-building:hover {
   padding: 0px;
   display: flex;
   /* grid-template: 1fr 1fr; */
-  gap: 127px;
+  gap: 130px;
   width: 100%;
 }
 .top-element input {
   margin-top: 5px;
-  width: 107%;
-  background-color: rgb(241, 239, 239);
+  width: 100%;
 }
 
 .top-elements input {
   margin-top: 5px;
-  width: 147%;
-  background-color: rgb(241, 239, 239);
-
+  width: 140%;
 }
 
 .bottom-elements {
@@ -3283,7 +3102,7 @@ button.delete-building:hover {
 }
 
 .view-attachment-link:hover {
-  background-color: rgb(230, 229, 229);
+  background-color: rgb(169, 169, 169);
   color: black;
   font-weight: 600;
   transform: translateY(-1px);
@@ -3335,11 +3154,9 @@ button.delete-building:hover {
 }
 
 .project-form-group-small input {
-  width: 100%;
-  height: 60%;
+  width: 95%;
+  height: 25%;
   padding: 9px;
-  background-color: rgb(234, 234, 234);
-  font-size: 14px;
 }
 
 .left-form-second .roles-box {
@@ -3406,7 +3223,7 @@ button.delete-building:hover {
   border: 1px solid #ccc;
   font-size: 14px;
   background-color: #f1f1f1;
-  width: 90%;
+  width: 100%;
 }
 
 .building-row input {
@@ -3415,23 +3232,6 @@ button.delete-building:hover {
 
 .building-row button {
   background-color: white;
-  color: black;
-  border: none;
-  padding: 6px 6px;
-  border-radius: 50%;
-  cursor: pointer;
-  margin-left: 1%;
-  width: 24px; /* Set fixed width */
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1%;
-  margin-top: 1%;
-}
-
-.variation-table-wrapper button{
-    background-color: white;
   color: black;
   border: none;
   padding: 6px 6px;
@@ -4089,7 +3889,7 @@ h4 {
   border: 1px solid #ccc;
   font-size: 14px;
   background-color: #f1f0f0;
-  width: 95%;
+  width: 90%;
   height: 100%;
   margin-top: 5px;
 }
