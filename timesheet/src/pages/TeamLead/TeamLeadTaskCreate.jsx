@@ -77,7 +77,7 @@ const TeamLeadTaskCreate = () => {
                 className="textarea"
               />
             </div>
-            <div className="priorities">
+            <div>
               <label>Priority</label>
               <br />
               <select

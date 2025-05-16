@@ -254,7 +254,24 @@ const TeamLeadDailyTimeSheetEntry = () => {
     setRows(updatedRows);
   };
 
-  const handleAddRow = () => {
+const handleAddRow = () => {
+    if (newRows.length > 0) {
+      const lastRow = newRows[newRows.length - 1];
+      if (
+        !lastRow.project?.trim() ||
+        !lastRow.building?.trim() ||
+        !lastRow.task?.trim() ||
+        !lastRow.start_time?.trim() ||
+        !lastRow.end_time?.trim() ||
+        !lastRow.hours
+      ) {
+        alert(
+          "Please fill out all fields in the current row before adding a new one."
+        );
+        return;
+      }
+    }
+
     setNewRows([
       ...newRows,
       {
@@ -632,13 +649,13 @@ const TeamLeadDailyTimeSheetEntry = () => {
 
       <div className="button-container">
         <button
-          className="btn-save"
+          className="btn-cancel"
           onClick={handleSave}
           disabled={totalAssignedHours > maxAllowedHours}
         >
           Save
         </button>
-        <button className="btn-cancel" onClick={handleSubmit}>
+        <button className="btn-save" onClick={handleSubmit}>
           Submit
         </button>
       </div>

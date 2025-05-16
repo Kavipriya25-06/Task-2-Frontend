@@ -145,7 +145,7 @@ const ManagerAttendance = () => {
         </div>
       </div>
 
-      <div>
+      <div className="table-scroll-container">
         <table className="attend-table">
           <thead>
             <tr>

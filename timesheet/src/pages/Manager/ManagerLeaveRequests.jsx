@@ -13,6 +13,13 @@ const ManagerLeaveRequests = () => {
   const tabLabels = ["Pending", "Approved", "Rejected"];
   const [activeTab, setActiveTab] = useState(0);
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 2;
+  const indexOfLastRow = currentPage * rowsPerPage;
+  const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+  const currentRows = filteredLeaveRequests.slice(indexOfFirstRow, indexOfLastRow);
+  const totalPages = Math.ceil(filteredLeaveRequests.length / rowsPerPage);
+
 
   useEffect(() => {
     fetchLeaveRequests();
@@ -137,7 +144,7 @@ const ManagerLeaveRequests = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredLeaveRequests.map((leave) => (
+            {currentRows.map((leave) => (
               <tr key={leave.leave_taken_id}>
                 <td>{leave.employee.employee_code}</td>
                 <td>{leave.employee.employee_name}</td>
@@ -167,6 +174,24 @@ const ManagerLeaveRequests = () => {
           </tbody>
         </table>
       </div>
+      <div className="pagination-controls">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+        <span>
+          {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
+      </div>
+
     </div>
   );
 };

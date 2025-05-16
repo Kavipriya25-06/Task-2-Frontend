@@ -677,6 +677,9 @@ import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate, useParams } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { format } from "date-fns";
 
 const TeamLeadProjectView = () => {
   const navigate = useNavigate();
@@ -703,9 +706,11 @@ const TeamLeadProjectView = () => {
   const [showAreaPopup, setShowAreaPopup] = useState(false);
   const [selectedBuildings, setSelectedBuildings] = useState([]);
   const [availableBuildings, setAvailableBuildings] = useState([]);
+    const [discipline, setDiscipline] = useState([]);
   const [selectedAreas, setSelectedAreas] = useState([]);
   const [availableAreas, setAvailableAreas] = useState([]);
   const { project_id } = useParams();
+  
   const [editMode, setEditMode] = useState(false); //  Add this at the top
 
   const handleChange = (e) => {
@@ -858,6 +863,7 @@ const TeamLeadProjectView = () => {
     fetchAreas();
     fetchBuilding();
     fetchProjectData();
+    fetchDiscipline();
   }, [project_id]);
 
   useEffect(() => {
@@ -883,6 +889,16 @@ const TeamLeadProjectView = () => {
       console.error("Error fetching Area of work:", error);
     }
   };
+
+    const fetchDiscipline = async () => {
+      try {
+        const res = await fetch(`${config.apiBaseURL}/discipline/`);
+        const data = await res.json();
+        setDiscipline(data);
+      } catch (error) {
+        console.error("Error fetching Discipline:", error);
+      }
+    };
 
   const fetchTeamleadManager = async () => {
     try {
@@ -990,12 +1006,29 @@ const TeamLeadProjectView = () => {
               </div>
               <div className="project-form-group">
                 <label>Discipline Code</label>
-                {editMode ? (
-                  <input
+                 {editMode ? (
+                  <select
                     name="discipline_code"
                     value={formData.discipline_code}
-                    onChange={handleChange}
-                  />
+                    onChange={(e) => {
+                      const selectedCode = e.target.value;
+                      const selectedItem = discipline.find(
+                        (item) => item.discipline_code === selectedCode
+                      );
+                      setFormData({
+                        ...formData,
+                        discipline_code: selectedCode,
+                        discipline: selectedItem ? selectedItem.name : "",
+                      });
+                    }}
+                  >
+                    <option value="">Select Discipline</option>
+                    {discipline.map((item) => (
+                      <option key={item.id} value={item.discipline_code}>
+                        {item.discipline_code} - {item.name}
+                      </option>
+                    ))}
+                  </select>
                 ) : (
                   <p>{projectData.discipline_code}</p>
                 )}
@@ -1155,15 +1188,22 @@ const TeamLeadProjectView = () => {
               <div className="project-form-group-small">
                 <label>Start Date</label>
                 {editMode ? (
-                  <input
-                    type="date"
-                    name="start_date"
-                    value={formData.start_date}
-                    onChange={handleChange}
-                  />
-                ) : (
-                  <p>{projectData.start_date}</p>
-                )}
+                    <div className="date-input-container">
+                      <DatePicker
+                        selected={formData.start_date ? new Date(formData.start_date) : null}
+                        onChange={(date) => handleChange({ target: { name: 'start_date', value: date } })}
+                        dateFormat="dd-MMM-yyyy"
+                        placeholderText="dd-mm-yyyy"
+                      />
+                        <i className="fas fa-calendar-alt calendar-icon"></i>
+
+                    </div>
+                  ) : (
+                    <p>
+                      {formData.start_date &&
+                        format(new Date(formData.start_date), "dd-MMM-yyyy")}
+                    </p>                  
+                  )}
               </div>
               <div className="project-form-group-small">
                 <label>Estd. Hours</label>

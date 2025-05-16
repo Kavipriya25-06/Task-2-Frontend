@@ -557,6 +557,7 @@ const EmployeeDailyTimeSheetEntry = () => {
                   }
                 />
               </td>
+              
               <td>
                 <input
                   type="number"
@@ -582,8 +583,8 @@ const EmployeeDailyTimeSheetEntry = () => {
 
       <div className="button-container">
         {/* <button onClick={() => navigate(-1)} className="cancel-button1">Back</button> */}
-        <button className="btn-save">Save</button>
-        <button className="btn-cancel">Submit</button>
+        <button className="btn-cancel">Save</button>
+        <button className="btn-save">Submit</button>
       </div>
     </div>
   );

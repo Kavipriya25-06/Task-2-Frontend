@@ -8,7 +8,7 @@ import { useNavigate, useParams} from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
-import ReactDOM from "react-dom";
+
 
 
 
@@ -506,94 +506,96 @@ const handleAddVariation = () => {
               </div>
 
             <div className="project-form-group">
-              <div className="variation-table-wrapper">
-                <label>Variation History</label>
-                <div id="datepicker-portal-root"></div>
+                <div className="variation-table-wrapper">
+              <label className="attaches">Variation Entries</label>
+              <div className="variation-table-container">
+                <table className="variation-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Title</th>
+                      <th>Hours</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {variations.map((variation, index) => (
+                      <tr key={index}>
+                        <td>   
+                          {editMode ? (
+                            <div className="date-wrapper">
+                              <DatePicker
+                                selected={variation.date ? new Date(variation.date) : null}
+                                onChange={(date) =>
+                                  handleVariationChange(
+                                    index,
+                                    "date",
+                                    date ? date.toISOString().slice(0, 10) : ""
+                                  )
+                                }
+                                dateFormat="dd-MMM-yyyy"
+                                placeholderText="dd-mm-yyyy"
+                                className="input1"
+                                calendarClassName="custom-datepicker"
+                                popperPlacement="bottom-start"
+                                popperModifiers={[
+                                  {
+                                    name: "preventOverflow",
+                                    options: {
+                                      boundary: "viewport",
+                                    },
+                                  },
+                                ]}
+                                popperContainer={({ children }) => (
+                                  <div className="datepicker-portal">{children}</div>
+                                )}
+                              />
+                                                <i className="fas fa-calendar-alt calendar-icon"></i>
 
-                <div className="variation-table-container">
-                  <table className="variation-table">
-                    <thead>
-                      <tr>
-                        <th>Date</th>
-                        <th>Title</th>
-                        <th>Hours</th>
+                                            </div>
+                          ) : (
+                            variation.date
+                          )}
+                        </td>
+                        <td>
+                          {editMode ? (
+                            <input
+                              type="text"
+                              placeholder="Enter title"
+                              value={variation.title}
+                              onChange={(e) => handleVariationChange(index, "title", e.target.value)}
+                            />
+                          ) : (
+                            variation.title
+                          )}
+                        </td>
+                        <td>
+                          {editMode ? (
+                            <input
+                              type="number"
+                              placeholder="Hours"
+                              value={variation.hours}
+                              onChange={(e) => handleVariationChange(index, "hours", e.target.value)}
+                            />
+                          ) : (
+                            variation.hours
+                          )}
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {variations.map((variation, index) => (
-                        <tr key={index}>
-                          <td>
-                             {editMode ? (
-                              <div className="date-input-container">
-<DatePicker
-  selected={variation.date ? new Date(variation.date) : null}
-  onChange={(date) => handleVariationChange(index, "date", date)}
-  dateFormat="dd-MMM-yyyy"
-  placeholderText="Select date"
-  calendarClassName="custom-calendar"
-  popperClassName="custom-popper"
-  popperPlacement="bottom-start"
-  popperModifiers={[
-    {
-      name: "preventOverflow",
-      options: {
-        boundary: "viewport",
-      },
-    },
-  ]}
-  popperContainer={({ children }) => {
-    const portalRoot = document.getElementById("datepicker-portal-root");
-    if (portalRoot) {
-      return ReactDOM.createPortal(children, portalRoot);
-    }
-    return children; // fallback if portalRoot missing
-  }}
-/>                             
-                              <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
-                              {/* Font Awesome Calendar Icon */}
-                              </div> 
-                             ) : (
-                              variation.title
-                            )}                           
-                          </td>
-                          <td>
-                            {editMode ? (
-                              <input
-                                type="text"
-                                placeholder="Enter title"
-                                value={variation.title}
-                                onChange={(e) => handleVariationChange(index, "title", e.target.value)}
-                              />
-                            ) : (
-                              variation.title
-                            )}
-                          </td>
-                          <td>
-                            {editMode ? (
-                              <input
-                                type="number"
-                                placeholder="Hours"
-                                value={variation.hours}
-                                onChange={(e) => handleVariationChange(index, "hours", e.target.value)}
-                              />
-                            ) : (
-                              variation.hours
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  {editMode && (
-                    <button
-                      type="button"
-                      onClick={handleAddVariation}
-                    >
-                      +
-                    </button>
-                  )}
-                </div>
+                    ))}
+                  </tbody>
+                </table>
+                {editMode && (
+                  <button
+                                  type="button"
+                                  onClick={handleAddVariation}
+                                  className="plus-button"
+                                >
+                                  +
+                                </button>
+                              )}
               </div>
+            </div>
+
             </div>
 
 
@@ -703,6 +705,7 @@ const handleAddVariation = () => {
                     name="estimated_hours"
                     value={formData.estimated_hours}
                     onChange={handleChange}
+                    className="estd"
                   />
                 ) : (
                   <p>{projectData.estimated_hours}</p>

@@ -17,6 +17,12 @@ const EmployeeLeaveRequests = () => {
   });
   const [leaveRequests, setLeaveRequests] = useState([]);
   const [selectedLeaveType, setSelectedLeaveType] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 2;
+  const indexOfLastRow = currentPage * rowsPerPage;
+  const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+  const currentLeaveRequests = leaveRequests.slice(indexOfFirstRow, indexOfLastRow);
+  const totalPages = Math.ceil(leaveRequests.length / rowsPerPage);
 
   useEffect(() => {
     fetchLeaveSummary();
@@ -106,17 +112,17 @@ const EmployeeLeaveRequests = () => {
               </tr>
             </thead>
             <tbody>
-              {leaveRequests.map((request, idx) => (
-                <tr key={idx}>
-                  <td>{request.leave_type}</td>
-                  <td>{request.duration}</td>
-                  <td>{request.start_date}</td>
-                  <td>{request.end_date}</td>
-                  <td>{request.reason}</td>
-                  <td>{request.status}</td>
-                </tr>
-              ))}
-            </tbody>
+            {currentLeaveRequests.map((request, idx) => (
+              <tr key={idx}>
+                <td>{request.leave_type}</td>
+                <td>{request.duration}</td>
+                <td>{request.start_date}</td>
+                <td>{request.end_date}</td>
+                <td>{request.reason}</td>
+                <td>{request.status}</td>
+              </tr>
+            ))}
+          </tbody>
           </table>
         </>
       ) : (
@@ -125,6 +131,23 @@ const EmployeeLeaveRequests = () => {
           onClose={() => setSelectedLeaveType(null)} // Go back to boxes + table when closed
         />
       )}
+            <div className="pagination-controls">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+        <span>
+          {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };
