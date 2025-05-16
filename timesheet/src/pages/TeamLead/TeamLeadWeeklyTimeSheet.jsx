@@ -21,6 +21,7 @@ const TeamLeadWeeklyTimeSheetEntry = () => {
 
   const [taskRows, setTaskRows] = useState([
     {
+      date:"",
       project: "",
       building: "",
       task: "",
@@ -41,7 +42,7 @@ const TeamLeadWeeklyTimeSheetEntry = () => {
   console.log("the date is ", date);
 
   const [rows, setRows] = useState([
-    { project: "", building: "", task: "", hours: "" },
+    { date:"", project: "", building: "", task: "", hours: "" },
   ]);
   const [totalLoggedHours, setTotalLoggedHours] = useState(0);
 
@@ -145,32 +146,34 @@ const TeamLeadWeeklyTimeSheetEntry = () => {
             total_duration: latestRecord.total_duration || "0.00",
           });
 
-          // Step 3: Build Timesheet Rows
-          let timesheetRows = [];
-          if (latestRecord.timesheets && latestRecord.timesheets.length > 0) {
-            let fetchedRows = latestRecord.timesheets.map((ts) => ({
-              timesheet_id: ts.id, // VERY IMPORTANT: keep the ID for PATCHing
-              project:
-                ts.task_assign?.building_assign?.project_assign?.project
-                  ?.project_title || "",
-              building:
-                ts.task_assign?.building_assign?.building?.building_title || "",
-              task: ts.task_assign?.task?.task_title || "",
-              hours: parseFloat(ts.task_hours || "0").toString(),
-              start_time: ts.start_time || "",
-              end_time: ts.end_time || "",
-            }));
+         let allTimesheets = [];
 
-            setDisplayRows(fetchedRows);
-          } else {
-            setDisplayRows([]); // No fetched rows
-          }
-
-          setRows(timesheetRows);
+          data.forEach((record) => {
+            if (record.timesheets && record.timesheets.length > 0) {
+              record.timesheets.forEach((ts) => {
+                allTimesheets.push({
+                  date:ts.date,
+                  timesheet_id: ts.timesheet_id,
+                  project:
+                    ts.task_assign?.building_assign?.project_assign?.project
+                      ?.project_title || "",
+                  building:
+                    ts.task_assign?.building_assign?.building?.building_title || "",
+                  task: ts.task_assign?.task?.task_title || "",
+                  hours: parseFloat(ts.task_hours || "0").toString(),
+                  start_time: ts.start_time || "",
+                  end_time: ts.end_time || "",
+                });
+              });
+            }
+          });
+          setDisplayRows(allTimesheets);
+          // setRows(timesheetRows);
         } else {
           console.warn("No biometric data found for this date.");
           setRows([
             {
+              date:"",
               project: "",
               building: "",
               task: "",
@@ -189,6 +192,7 @@ const TeamLeadWeeklyTimeSheetEntry = () => {
         console.error("Failed to fetch biometric task data:", error);
         setRows([
           {
+            date:"",
             project: "",
             building: "",
             task: "",
@@ -306,91 +310,91 @@ const TeamLeadWeeklyTimeSheetEntry = () => {
     setRows(updatedRows);
   };
 
-  const handleAddRow = () => {
-    setNewRows([
-      ...newRows,
-      {
-        project: "",
-        building: "",
-        task: "",
-        hours: "",
-        start_time: "",
-        end_time: "",
-      },
-    ]);
-  };
+  // const handleAddRow = () => {
+  //   setNewRows([
+  //     ...newRows,
+  //     {
+  //       project: "",
+  //       building: "",
+  //       task: "",
+  //       hours: "",
+  //       start_time: "",
+  //       end_time: "",
+  //     },
+  //   ]);
+  // };
 
   //  console.log("Task assign id",row.task_assign_id);
 
-  const handleSubmit = async () => {
-    try {
-      // ---------------- PATCH updated existing rows ----------------
-      for (let row of updatedRows) {
-        const { start_time, end_time } = validateTimes(row);
-        const payload = {
-          employee: employee_id,
-          date: date,
-          project: row.project,
-          building: row.building,
-          task_assign: row.task_assign_id,
-          task_hours: parseFloat(row.hours || 0),
-          start_time,
-          end_time,
-        };
+  // const handleSubmit = async () => {
+  //   try {
+  //     // ---------------- PATCH updated existing rows ----------------
+  //     for (let row of updatedRows) {
+  //       const { start_time, end_time } = validateTimes(row);
+  //       const payload = {
+  //         employee: employee_id,
+  //         date: date,
+  //         project: row.project,
+  //         building: row.building,
+  //         task_assign: row.task_assign_id,
+  //         task_hours: parseFloat(row.hours || 0),
+  //         start_time,
+  //         end_time,
+  //       };
 
-        const response = await fetch(
-          `${config.apiBaseURL}/timesheet/${row.timesheet_id}/`,
-          {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          }
-        );
+  //       const response = await fetch(
+  //         `${config.apiBaseURL}/timesheet/${row.timesheet_id}/`,
+  //         {
+  //           method: "PATCH",
+  //           headers: { "Content-Type": "application/json" },
+  //           body: JSON.stringify(payload),
+  //         }
+  //       );
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.error("Failed to PATCH row:", errorData);
-          alert(`Failed to update task "${row.task}".`);
-          return;
-        }
-      }
+  //       if (!response.ok) {
+  //         const errorData = await response.json();
+  //         console.error("Failed to PATCH row:", errorData);
+  //         alert(`Failed to update task "${row.task}".`);
+  //         return;
+  //       }
+  //     }
 
-      // ---------------- POST new rows ----------------
-      for (let row of newRows) {
-        const { start_time, end_time } = validateTimes(row);
-        const payload = {
-          employee: employee_id,
-          date: date,
-          project: row.project,
-          building: row.building,
-          task_assign: row.task_assign_id,
-          task_hours: parseFloat(row.hours || 0),
-          start_time,
-          end_time,
-          submitted: true,
-        };
+  //     // ---------------- POST new rows ----------------
+  //     for (let row of newRows) {
+  //       const { start_time, end_time } = validateTimes(row);
+  //       const payload = {
+  //         employee: employee_id,
+  //         date: date,
+  //         project: row.project,
+  //         building: row.building,
+  //         task_assign: row.task_assign_id,
+  //         task_hours: parseFloat(row.hours || 0),
+  //         start_time,
+  //         end_time,
+  //         submitted: true,
+  //       };
 
-        const response = await fetch(`${config.apiBaseURL}/timesheet/`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
+  //       const response = await fetch(`${config.apiBaseURL}/timesheet/`, {
+  //         method: "POST",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify(payload),
+  //       });
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.error("Failed to POST new row:", errorData);
-          alert(`Failed to submit new task "${row.task}".`);
-          return;
-        }
-      }
+  //       if (!response.ok) {
+  //         const errorData = await response.json();
+  //         console.error("Failed to POST new row:", errorData);
+  //         alert(`Failed to submit new task "${row.task}".`);
+  //         return;
+  //       }
+  //     }
 
-      alert("All timesheet rows saved successfully!");
-      // Optionally refresh data here
-    } catch (error) {
-      console.error("Submission failed:", error);
-      alert(error);
-    }
-  };
+  //     alert("All timesheet rows saved successfully!");
+  //     // Optionally refresh data here
+  //   } catch (error) {
+  //     console.error("Submission failed:", error);
+  //     alert(error);
+  //   }
+  // };
 
   const validateTimes = (row) => {
     const start = row.start_time;
@@ -461,6 +465,7 @@ const TeamLeadWeeklyTimeSheetEntry = () => {
       <table className="timesheet-table">
         <thead>
           <tr>
+            <th>Date</th>
             <th>Project name</th>
             <th>Buildings</th>
             <th>Tasks</th>
@@ -473,63 +478,24 @@ const TeamLeadWeeklyTimeSheetEntry = () => {
           {/* Display fetched (existing) rows */}
           {displayRows.map((row, index) => (
             <tr key={"display-" + index}>
+              <td>{row.date}</td>
               <td>
-                <input
-                  type="text"
-                  placeholder="Enter project"
-                  value={row.project}
-                  onChange={(e) =>
-                    handleDisplayRowChange(index, "project", e.target.value)
-                  }
-                />
+                <span>{row.project}</span>
               </td>
               <td>
-                <input
-                  type="text"
-                  placeholder="Enter building"
-                  value={row.building}
-                  onChange={(e) =>
-                    handleDisplayRowChange(index, "building", e.target.value)
-                  }
-                />
+                <span>{row.building}</span>
               </td>
               <td>
-                <input
-                  type="text"
-                  placeholder="Enter task"
-                  value={row.task}
-                  onChange={(e) =>
-                    handleDisplayRowChange(index, "task", e.target.value)
-                  }
-                />
+                <span>{row.task}</span>
               </td>
               <td>
-                <input
-                  type="time"
-                  value={row.start_time ? row.start_time.slice(0, 5) : ""}
-                  onChange={(e) =>
-                    handleDisplayRowChange(index, "start_time", e.target.value)
-                  }
-                />
+                <span>{row.start_time?.slice(0, 5)}</span>
               </td>
               <td>
-                <input
-                  type="time"
-                  value={row.end_time ? row.end_time.slice(0, 5) : ""}
-                  onChange={(e) =>
-                    handleDisplayRowChange(index, "end_time", e.target.value)
-                  }
-                />
+                <span>{row.end_time?.slice(0, 5)}</span>
               </td>
               <td>
-                <input
-                  type="number"
-                  placeholder="Hours"
-                  value={row.hours}
-                  onChange={(e) =>
-                    handleDisplayRowChange(index, "hours", e.target.value)
-                  }
-                />
+                <span>{row.hours}</span>
               </td>
             </tr>
           ))}
@@ -605,16 +571,16 @@ const TeamLeadWeeklyTimeSheetEntry = () => {
         </tbody>
       </table>
 
-      <button>
+      {/* <button>
         <div
           style={{ fontSize: "24px", cursor: "pointer" }}
           onClick={handleAddRow}
         >
           +
         </div>
-      </button>
+      </button> */}
 
-      <div className="button-container">
+      {/* <div className="button-container">
         <button
           className="save-button2"
           onClick={handleSubmit}
@@ -625,7 +591,7 @@ const TeamLeadWeeklyTimeSheetEntry = () => {
         <button className="submit-button2" onClick={handleSubmit}>
           Submit
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };
