@@ -147,9 +147,9 @@ const ManagerProjects = () => {
         <th>Project code</th>
         <th>Project name</th>
         <th>Estd. hours</th>
+        <th>Variation hours</th>
         <th>Total hours</th>
-        <th>Discipline</th>
-        <th>Status</th>
+        <th>Consumed hours</th>
         <th>Discipline</th>
         <th>Status</th>
       </tr>
@@ -168,9 +168,9 @@ const ManagerProjects = () => {
           </td>
           <td>{project.project_title}</td>
           <td>{project.estimated_hours}</td>
-          <td>-</td>
-          <td>{project.discipline}</td>
-          <td>{project.status ? "In progress" : "Completed"}</td>
+          <td>{project.variation_hours}</td>
+          <td>{project.total_hours}</td>
+          <td>{project.consumed_hours}</td>
           <td>{project.discipline}</td>
           <td>{project.status ? "In progress" : "Completed"}</td>
         </tr>

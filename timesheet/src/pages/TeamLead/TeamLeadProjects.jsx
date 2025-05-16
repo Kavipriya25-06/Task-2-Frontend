@@ -240,7 +240,7 @@ const TeamLeadProjects = () => {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch(`${config.apiBaseURL}/projects/`);
+      const response = await fetch(`${config.apiBaseURL}/project-creator/${user.employee_id}/`);
       const data = await response.json();
       setProjects(data);
     } catch (err) {
@@ -311,7 +311,9 @@ const TeamLeadProjects = () => {
                   {/* <th>Building</th> */}
 
                   <th>Estimated hours</th>
+                  <th>Variation hours</th>
                   <th>Total hours</th>
+                  <th>Consumed hours</th>
                   <th>Discipline</th>
                   <th>Status</th>
                 </tr>
@@ -331,7 +333,9 @@ const TeamLeadProjects = () => {
                     <td>{project.project_title}</td>
                     {/* <td></td> */}
                     <td>{project.estimated_hours}</td>
-                    <td></td>
+                    <td>{project.variation_hours}</td>
+                    <td>{project.total_hours}</td>
+                    <td>{project.consumed_hours}</td>
                     <td>{project.discipline}</td>
                     <td>{project.status ? "Completed" : "In progress"}</td>
                   </tr>
