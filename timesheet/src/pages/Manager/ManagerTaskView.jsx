@@ -234,7 +234,7 @@ const ManagerTaskView = () => {
                 ) : (
                   <div className="select-container">
                     {availableEmployees?.map((emp) => (
-                      <p key={emp.employee_id}>
+                      <p key={emp.employee_id} className="view-roles">
                         {emp.employee_name} - {emp.designation}
                       </p>
                     ))}
@@ -258,24 +258,25 @@ const ManagerTaskView = () => {
                 {taskData.attachments && taskData.attachments.length > 0 ? (
                   taskData.attachments.map((file, index) => (
                     <div key={index} style={{ marginBottom: "5px" }}>
-                      <a
-                        href={config.apiBaseURL + file.file}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="view-attachment-link"
-                      >
-                        <img
-                          src="/src/assets/pin svg.svg"
-                          alt="Attachment"
-                          style={{
-                            width: "16px",
-                            height: "16px",
-                            marginRight: "5px",
-                            verticalAlign: "middle",
-                          }}
-                        />
-                        {file.file.split("/").pop()}
-                      </a>
+                    <a
+                     href={config.apiBaseURL + file.file}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="view-attachment-link"
+                  >
+                    <img
+                      src="/src/assets/pin svg.svg" // replace this with your actual image path
+                      alt="Attachment"
+                      style={{
+                        width: "16px",
+                        height: "16px",
+                        marginRight: "5px",
+                        verticalAlign: "middle",
+                      }}
+                    />
+                    {file.file.split("/").pop()}
+                  </a>
+                      
                     </div>
                   ))
                 ) : (
@@ -306,13 +307,16 @@ const ManagerTaskView = () => {
                       }
                       dateFormat="dd-MMM-yyyy"
                       placeholderText="dd-mm-yyyy"
-                      className="custom-datepicker"
+                      className="input1"
                     />
                     <i className="fas fa-calendar-alt calendar-icon"></i>
                   </div>
                 ) : (
-                  <p>{taskData?.start_date || ""}</p>
-                )}
+                <p className="view-date">
+                  {taskData?.start_date
+                    ? format(new Date(taskData.start_date), "dd-MMM-yyyy")
+                    : ""}
+                </p>                 )}
               </div>
 
               <div className="project-form-group-small">
@@ -333,14 +337,17 @@ const ManagerTaskView = () => {
                       }
                       dateFormat="dd-MMM-yyyy"
                       placeholderText="dd-mm-yyyy"
-                      className="custom-datepicker"
+                      className="input1"
                       popperPlacement="bottom-start"
                     />
                     <i className="fas fa-calendar-alt calendar-icon"></i>
                   </div>
                 ) : (
-                  <p>{taskData?.end_date || ""}</p>
-                )}
+                <p className="view-date">
+                  {taskData?.end_date
+                    ? format(new Date(taskData.end_date), "dd-MMM-yyyy")
+                    : ""}
+                </p>                 )}
               </div>
               <div className="project-form-group-small">
                 <label>Project Hours</label>
@@ -359,7 +366,7 @@ const ManagerTaskView = () => {
                     onChange={handleChange}
                   />
                 ) : (
-                  <p>{taskData?.task_hours || ""}</p>
+                  <p className="view-data">{taskData?.task_hours || ""}</p>
                 )}
               </div>
             </div>
@@ -379,7 +386,7 @@ const ManagerTaskView = () => {
                     <option value="Critical">Critical</option>
                   </select>
                 ) : (
-                  <p>{taskData?.priority || ""}</p>
+                  <p className="view-text">{taskData?.priority || ""}</p>
                 )}
               </div>
               <div className="project-form-group">
@@ -393,7 +400,7 @@ const ManagerTaskView = () => {
                     placeholder="Enter comments"
                   />
                 ) : (
-                  <p>{taskData?.comments || ""}</p>
+                  <p className="view-text">{taskData?.comments || ""}</p>
                 )}
               </div>
             </div>

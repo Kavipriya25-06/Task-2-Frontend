@@ -278,25 +278,24 @@ const ManagerProjectCreate = () => {
                 </div>
               </div>
               <div className="project-form-group">
-                <label className="attaches">Attachments</label>
-                  <a
-                    href="#"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="view-attachment-link"
-                  >
-                    <img
-                      src="/src/assets/pin svg.svg" // replace this with your actual image path
-                      alt="Attachment"
-                      style={{
-                        width: "16px",
-                        height: "16px",
-                        marginRight: "5px",
-                        verticalAlign: "middle",
-                      }}
-                    />
-                    View Attachment
-                  </a>
+                <div className="file-upload-section">
+                  <label className="file-upload-label">Attachments</label>
+                  <div className="file-upload-box">
+                    <div className="upload-button-wrapper">
+                      <label htmlFor="file-upload-input" className="uploads-button">
+                        +
+                      </label>
+                      <input
+                        type="file"
+                        id="file-upload-input"
+                        name="attachments"
+                        multiple
+                        style={{ display: "none" }}
+                      />
+                    </div>
+                    {/* File list can go here if needed */}
+                  </div>
+                </div>
               </div>
 
               {/* <div className="project-form-group">

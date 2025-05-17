@@ -352,7 +352,7 @@ const handleAddVariation = () => {
                     onChange={handleChange}
                   />
                 ) : (
-                  <p>{projectData.project_title}</p>
+                  <p className="view-data">{projectData.project_title}</p>
                 )}
               </div>
               <div className="project-form-group">
@@ -364,7 +364,7 @@ const handleAddVariation = () => {
                     onChange={handleChange}
                   />
                 ) : (
-                  <p>{projectData.project_type}</p>
+                  <p className="view-data">{projectData.project_type}</p>
                 )}
               </div>
 
@@ -377,7 +377,7 @@ const handleAddVariation = () => {
                     onChange={handleChange}
                   />
                 ) : (
-                  <p>{projectData.project_code}</p>
+                  <p className="view-data">{projectData.project_code}</p>
                 )}
               </div>
               <div className="project-form-group">
@@ -406,7 +406,7 @@ const handleAddVariation = () => {
                     ))}
                   </select>
                 ) : (
-                  <p>{projectData.discipline_code}</p>
+                  <p className="view-data">{projectData.discipline_code}</p>
                 )}
               </div>
             </div>
@@ -451,7 +451,7 @@ const handleAddVariation = () => {
                 ) : (
                   <div className="select-container">
                     {availableTeamleadManager.map((emp) => (
-                      <p key={emp.employee_id}>
+                      <p key={emp.employee_id} className="view-roles" >
                         {emp.employee_name} - {emp.designation}
                       </p>
                     ))}
@@ -553,7 +553,7 @@ const handleAddVariation = () => {
 
                                             </div>
                           ) : (
-                            variation.date
+                            variation.date ? format(new Date(variation.date), "dd-MMM-yyyy") : ""
                           )}
                         </td>
                         <td>
@@ -574,7 +574,12 @@ const handleAddVariation = () => {
                               type="number"
                               placeholder="Hours"
                               value={variation.hours}
-                              onChange={(e) => handleVariationChange(index, "hours", e.target.value)}
+                             onChange={(e) => {
+                              const value = e.target.value;
+                              if (Number(value) >= 0 || value === "") {
+                                handleVariationChange(index, "hours", value);
+                              }
+                            }}
                             />
                           ) : (
                             variation.hours
@@ -692,7 +697,7 @@ const handleAddVariation = () => {
 
                     </div>
                   ) : (
-                    <p>
+                    <p className="view-date">
                       {formData.start_date &&
                         format(new Date(formData.start_date), "dd-MMM-yyyy")}
                     </p>                  
@@ -708,7 +713,7 @@ const handleAddVariation = () => {
                     className="estd"
                   />
                 ) : (
-                  <p>{projectData.estimated_hours}</p>
+                  <p className="view-data">{projectData.estimated_hours}</p>
                 )}
               </div>
             </div>
@@ -722,7 +727,7 @@ const handleAddVariation = () => {
                     onChange={handleChange}
                   />
                 ) : (
-                  <p>{projectData.project_description}</p>
+                  <p className="view-description">{projectData.project_description}</p>
                 )}
               </div>
             </div>

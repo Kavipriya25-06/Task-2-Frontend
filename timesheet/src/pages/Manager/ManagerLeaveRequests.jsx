@@ -5,6 +5,8 @@ import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate } from "react-router-dom";
+import { format } from "date-fns";
+
 
 const ManagerLeaveRequests = () => {
   const { user } = useAuth();
@@ -149,8 +151,16 @@ const ManagerLeaveRequests = () => {
                 <td>{leave.employee.employee_code}</td>
                 <td>{leave.employee.employee_name}</td>
                 <td>{leave.duration}</td>
-                <td>{leave.start_date}</td>
-                <td>{leave.end_date}</td>
+                <td>
+                  {leave.start_date
+                    ? format(new Date(leave.start_date), "dd-MMM-yyyy")
+                    : ""}
+                </td>
+                <td>
+                  {leave.end_date
+                    ? format(new Date(leave.end_date), "dd-MMM-yyyy")
+                    : ""}
+                </td>
                 <td>{leave.leave_type}</td>
                 <td>{leave.reason}</td>
                 {activeTab === 0 && (

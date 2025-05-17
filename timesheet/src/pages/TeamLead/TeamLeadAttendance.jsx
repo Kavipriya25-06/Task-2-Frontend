@@ -144,7 +144,7 @@ const TeamLeadAttendance = () => {
                 <th
                   key={day.key}
                   style={{
-                    color: day.weekday === "Sun" ? "#ffbf00" : "inherit",
+                    color: day.weekday === "Sun" ? "orange" : "inherit",
                   }}
                 >
                   {day.weekday} ({day.date})

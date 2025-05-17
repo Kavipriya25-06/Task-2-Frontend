@@ -638,10 +638,9 @@ const handleAddRow = () => {
           ))}
         </tbody>
       </table>
-      <button>
+      <button  onClick={handleAddRow} style={{cursor: "pointer"}}>
         <div
-          style={{ fontSize: "24px", cursor: "pointer" }}
-          onClick={handleAddRow}
+          style={{ fontSize: "24px"}}
         >
           +
         </div>

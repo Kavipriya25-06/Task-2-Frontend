@@ -197,38 +197,52 @@ const EditUserForm = () => {
           )}
         </div>
 
-        <div className="form-group">
-          <label>Status</label>
-          {editMode ? (
-            <div className="status-toggle">
-              <div
-                className={`toggle-button ${
-                  status === "inactive" ? "inactive" : "active"
-                }`}
-                onClick={() =>
-                  setStatus((prev) =>
-                    prev === "active" ? "inactive" : "active"
-                  )
-                }
-              >
-                <div className="toggle-circle" />
-                <div className="toggle-text">
-                  {status === "active" ? "Active" : "Inactive"}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="uneditable">
-              {status === "active"
-                ? "Active"
-                : status === "inactive"
-                ? "Inactive"
-                : status === "resigned"
-                ? "Resigned"
-                : "-"}
-            </div>
-          )}
+<div className="form-group">
+  <label>Status</label>
+  {editMode ? (
+    <div className="status-toggle">
+      <div
+        className={`toggle-button ${
+          status === "resigned"
+            ? "inactive resigned"
+            : status === "inactive"
+            ? "inactive"
+            : "active"
+        }`}
+        // Disable toggle if status is "resigned"
+        onClick={() => {
+          if (status !== "resigned") {
+            setStatus((prev) => (prev === "active" ? "inactive" : "active"));
+          }
+        }}
+      >
+        <div
+          className={`toggle-circle ${
+            status === "resigned" ? "resigned-circle" : ""
+          }`}
+        />
+        <div className="toggle-text">
+          {status === "resigned"
+            ? "Resigned"
+            : status === "active"
+            ? "Active"
+            : "Inactive"}
         </div>
+      </div>
+    </div>
+  ) : (
+    <div className="uneditable">
+      {status === "active"
+        ? "Active"
+        : status === "inactive"
+        ? "Inactive"
+        : status === "resigned"
+        ? "Resigned"
+        : "-"}
+    </div>
+  )}
+</div>
+
       </form>
       {editMode && (
         <div className="form-buttons">

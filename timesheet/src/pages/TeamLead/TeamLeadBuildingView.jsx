@@ -5,6 +5,8 @@ import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate, useParams } from "react-router-dom";
+import { format } from "date-fns";
+
 
 const TeamLeadBuildingView = () => {
   const { user } = useAuth();
@@ -222,7 +224,7 @@ const TeamLeadBuildingView = () => {
             onClick={() => setEditMode(true)}
             className="btn-orange"
           >
-            Edit
+            <FaEdit className="edit-icon" />
           </button>
         )}
       </div>
@@ -249,7 +251,7 @@ const TeamLeadBuildingView = () => {
             </div>
             <div className="left-form-second">
               <div className="project-form-group">
-                <label>Building Desciption</label>
+                <label>Building Description</label>
                 <p>{buildingsAssign.building?.building_description}</p>
               </div>
               <div className="project-form-group">
@@ -301,8 +303,12 @@ const TeamLeadBuildingView = () => {
             <div className="right-form-building-first">
               <div className="project-form-group-small">
                 <label>Start Date</label>
-                <p>{project?.start_date || ""}</p>
-              </div>
+                <p>
+                  {project?.start_date
+                    ? format(new Date(project.start_date), "dd-MMM-yyyy")
+                    : ""}
+                </p>             
+               </div>
               <div className="project-form-group-small">
                 <label>Project Hours</label>
                 <p>{project?.estimated_hours || ""}</p>
@@ -316,7 +322,7 @@ const TeamLeadBuildingView = () => {
                     onChange={handleChange}
                   />
                 ) : (
-                  <p>{buildingsAssign.building_hours || ""}</p>
+                  <p className="view-data">{buildingsAssign.building_hours || ""}</p>
                 )}
               </div>
             </div>
@@ -360,7 +366,7 @@ const TeamLeadBuildingView = () => {
                 ) : (
                   <div className="select-container">
                     {availableTeamleadManager.map((emp) => (
-                      <p key={emp.employee_id}>
+                      <p key={emp.employee_id} className="view-roles">
                         {emp.employee_name} - {emp.designation}
                       </p>
                     ))}

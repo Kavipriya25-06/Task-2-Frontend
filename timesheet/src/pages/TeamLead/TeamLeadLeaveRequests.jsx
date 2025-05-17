@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import TeamLeadLeaveRequestForm from "./TeamLeadLeaveRequestForm";
+import { format } from "date-fns";
+
 
 const TeamLeadLeaveRequests = () => {
   const { user } = useAuth();
@@ -100,6 +102,7 @@ const TeamLeadLeaveRequests = () => {
       <h2 className="team-lead-title">Leave Application</h2>
 
       {/* Conditionally Render Form or Summary + Table */}
+      <div>
       {!selectedLeaveType ? (
         <>
           {/* Leave Summary Boxes */}
@@ -140,8 +143,16 @@ const TeamLeadLeaveRequests = () => {
                 <tr key={idx}>
                   <td>{request.leave_type}</td>
                   <td>{request.duration}</td>
-                  <td>{request.start_date}</td>
-                  <td>{request.end_date}</td>
+                 <td>
+                    {request.start_date
+                      ? format(new Date(request.start_date), "dd-MMM-yyyy")
+                      : ""}
+                  </td>
+                  <td>
+                    {request.end_date
+                      ? format(new Date(request.end_date), "dd-MMM-yyyy")
+                      : ""}
+                  </td>
                   <td>{request.reason}</td>
                   <td>{request.status}</td>
                   <td>
@@ -172,7 +183,8 @@ const TeamLeadLeaveRequests = () => {
           onClose={() => setSelectedLeaveType(null)} // Go back to boxes + table when closed
         />
       )}
-      <div className="pagination-controls">
+      </div>
+      {/* <div className="pagination-controls">
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
@@ -188,7 +200,7 @@ const TeamLeadLeaveRequests = () => {
         >
           Next
         </button>
-      </div>
+      </div> */}
 
     </div>
   );

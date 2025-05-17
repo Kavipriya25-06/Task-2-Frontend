@@ -6,6 +6,8 @@ import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate } from "react-router-dom";
 import EmployeeLeaveRequestForm from "./EmployeeLeaveRequestForm";
+import { format } from "date-fns";
+
 
 const EmployeeLeaveRequests = () => {
   const { user } = useAuth();
@@ -116,8 +118,16 @@ const EmployeeLeaveRequests = () => {
               <tr key={idx}>
                 <td>{request.leave_type}</td>
                 <td>{request.duration}</td>
-                <td>{request.start_date}</td>
-                <td>{request.end_date}</td>
+                <td>
+                  {request.start_date
+                    ? format(new Date(request.start_date), "dd-MMM-yyyy")
+                    : ""}
+                </td>
+                <td>
+                  {request.end_date
+                    ? format(new Date(request.end_date), "dd-MMM-yyyy")
+                    : ""}
+                </td>
                 <td>{request.reason}</td>
                 <td>{request.status}</td>
               </tr>
@@ -131,24 +141,8 @@ const EmployeeLeaveRequests = () => {
           onClose={() => setSelectedLeaveType(null)} // Go back to boxes + table when closed
         />
       )}
-            <div className="pagination-controls">
-        <button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-        >
-          Previous
-        </button>
-        <span>
-          {currentPage} of {totalPages}
-        </span>
-        <button
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-          disabled={currentPage === totalPages}
-        >
-          Next
-        </button>
-      </div>
     </div>
+    
   );
 };
 
