@@ -36,17 +36,31 @@ const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       // Call API to authenticate user
-      const response = await fetch(`${config.apiBaseURL}/users/`);
-      const users = await response.json();
-      const foundUser = users.find(
-        (u) => u.email === email && u.password === password
+      const response = await fetch(
+        `${config.apiBaseURL}/login-details/${email}/${password}/`
       );
-
-      if (foundUser) {
+      const foundUser = await response.json();
+      console.log("Found user", foundUser);
+      // const foundUser = users.find(
+      //   (u) => u.email === email && u.password === password
+      // );
+      if (foundUser.error === "Password is incorrect") {
+        return "passwordinvalid";
+      }
+      if (foundUser.error === "User not found") {
+        return "nouser";
+      }
+      if (foundUser.error === "Please provide password") {
+        return "invalid";
+      }
+      if (foundUser.error === "Please provide user and password") {
+        return "nouser";
+      }
+      if (!foundUser.error) {
         if (foundUser.status === "active") {
           // Fetch employee details based on user info
           const employeeResponse = await fetch(
-            `${config.apiBaseURL}/employees-details/${foundUser.employee_id}/`
+            `${config.apiBaseURL}/employees-details/${foundUser.employee_id.employee_id}/`
           );
           const employeeDetails = await employeeResponse.json();
           const loggedInUser = {
@@ -67,16 +81,18 @@ const AuthProvider = ({ children }) => {
           setUser(loggedInUser);
           localStorage.setItem("user", JSON.stringify(loggedInUser)); // Persist user state
           resetInactivityTimer(); // Start inactivity timer on login
-          return true;
+          return "logged";
         } else {
+          return "inactive";
           throw new Error("User not active contact admin");
         }
       } else {
+        return "invalid";
         throw new Error("Invalid email or password");
       }
     } catch (error) {
       console.error("Login error:", error);
-      return false;
+      return "nouser";
     }
   };
 

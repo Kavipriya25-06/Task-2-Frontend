@@ -13,13 +13,27 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const success = await login(email, password);
-    if (success) {
+
+    const tryLogin = await login(email, password);
+    // if (success) {
+    //   console.log("User logged in successfully");
+    //   // Redirect logic here (e.g., navigate to dashboard)
+    //   navigate("/home"); // Redirect to dashboard
+    // } else {
+    //   alert("Invalid email or password");
+    // }
+    if (tryLogin === "logged") {
       console.log("User logged in successfully");
       // Redirect logic here (e.g., navigate to dashboard)
       navigate("/home"); // Redirect to dashboard
-    } else {
+    } else if (tryLogin === "inactive") {
+      alert("User is inactive, contact Admin");
+    } else if (tryLogin === "passwordinvalid") {
+      alert("Password is incorrect");
+    } else if (tryLogin === "invalid") {
       alert("Invalid email or password");
+    } else if (tryLogin === "nouser") {
+      alert("User does not exist, contact Admin");
     }
   };
 
