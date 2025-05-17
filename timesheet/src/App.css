@@ -149,7 +149,7 @@ textarea {
 }
 
 .date-wrapper .input1 {
-    width: 100%;
+    width: 125% !important;
 
 }
 
@@ -333,6 +333,7 @@ h2.react-datepicker__current-month {
   padding: 6px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  width: 100% !important;
 }
 
 .add-row-btn {
@@ -1809,9 +1810,9 @@ h3 {
 }
 
 .row1 .calendar-icon {
-  position:relative;
-  top: 25%;
-  right: 5%;
+  position:absolute;
+  top: 30%;
+  right: 22%;
   font-size: 15px; /* Icon size */
   color: #3d3d3d; /* Icon color */
   cursor: pointer; /* Make icon clickable */
@@ -1821,7 +1822,7 @@ h3 {
 .date-wrapper .calendar-icon {
   position:relative;
   top: 25%;
-  right: 13%;
+  left: 8%;
   font-size: 15px; /* Icon size */
   color: #3d3d3d; /* Icon color */
   cursor: pointer; /* Make icon clickable */
@@ -1830,8 +1831,8 @@ h3 {
 
 .project-form-group-small .calendar-icon {
   position: absolute;
-  top: 44%;
-  right: 4%;
+  top: 30%;
+  right: 6%;
   font-size: 15px; /* Icon size */
   color: #3d3d3d; /* Icon color */
   cursor: pointer; /* Make icon clickable */
@@ -1841,7 +1842,7 @@ h3 {
 .right-form-first .calendar-icon {
   position: absolute;
   top: 32%;
-  right: 4%;
+  right: 8%;
   font-size: 15px; /* Icon size */
   color: #3d3d3d; /* Icon color */
   cursor: pointer; /* Make icon clickable */
@@ -1869,9 +1870,9 @@ h3 {
 }
 
 .individual-tabs .calendar-icon {
-  position:relative;
+  position:absolute;
   top: 15%;
-  right: -13%;
+  right: 3%;
   font-size: 15px; /* Icon size */
   color: #3d3d3d; /* Icon color */
   cursor: pointer; /* Make icon clickable */
@@ -2271,9 +2272,7 @@ h3 {
   cursor: pointer;
 }
 
-.file-upload-box:hover {
-  background-color: #dceaff;
-}
+
 
 /* Profile Preview */
 .profile-preview {
@@ -3317,6 +3316,245 @@ button.delete-building:hover {
   /* padding: 20px; */
 }
 
+.plus-upload-wrapper{
+  background-color: #ebebeb;
+  border: 1px solid rgb(202, 202, 202);
+  height: 100px;
+  width: 90%;
+  border-radius: 8px;
+    display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+    gap: 10px;
+
+}
+
+.real-file-input {
+  display: none;
+}
+
+.plus-upload-button {
+  display: inline-block;
+  width: 25px;
+  height: 25px;
+  background-color: white;
+  color: black;
+  font-size: 20px;
+  text-align: center;
+  line-height: 25px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-weight: 200;
+  margin-top:7px;
+  margin-left: 5px;
+}
+
+.selected-files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.file-chip {
+  background-color: white;
+  padding: 4px 8px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.file-name {
+  font-size: 12px !important;
+  margin-right: 6px;
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: black !important;
+  font-weight: 100;
+}
+
+.remove-file {
+  background: none;
+  border: none;
+  color: #d00;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.attachment-section {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  background-color: #fafafa;
+  margin-bottom: 16px;
+}
+
+.attachment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.attachment-label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+}
+
+.add-file-btn {
+  background-color: #007bff;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.attachment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.attachment-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  background-color: #f0f0f0;
+  padding: 6px 8px;
+  border-radius: 5px;
+}
+
+.attachment-icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+}
+
+.attachment-name {
+  font-size: 14px;
+  color: #000;
+}
+
+.no-attachments {
+  color: #888;
+  font-style: italic;
+}
+
+
+.pagination-controls {
+  display: flex;
+  justify-content:end;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* For your cropper modal wrapper */
+.crop-container {
+  position: relative;
+  z-index: 9999; /* Ensure it's above everything else */
+  background: white;
+  padding: 40px;
+
+}
+
+/* Optional: for safety */
+.reactEasyCrop_CropArea {
+  z-index: 10000;
+}
+
+/* For crop controls (buttons and slider) */
+.controls {
+  position: relative;
+  margin-top: 20px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Ensure the modal itself (from MUI or your component) allows overflow */
+.MuiModal-root {
+  z-index: 1300; /* Default MUI modal index */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.controls .btn-crop{
+  padding: 7px;
+  border-radius: 10px;
+  border: none;
+  margin-top: 170px;
+  cursor: pointer;
+}
+
+.view-data {
+  font-size: 14px !important;
+  color: gray;            /* Dark gray-blue */
+  font-weight: 500;          /* Medium weight */
+  padding: 8px 12px;
+  background-color: #e5e6e6; /* Light background for contrast */
+  border-radius: 6px;
+  display: inline-block;
+  margin: 4px 0;
+  max-width: 50%;
+  word-wrap: break-word;
+}
+
+.project-form-group .plus-upload-button{
+  font-weight: 100 !important;
+}
+
+.view-text{
+  color: gray;
+}
+
+.view-date {
+  font-size: 14px !important;
+  color: gray;            /* Dark gray-blue */
+  font-weight: 500;          /* Medium weight */
+  padding: 8px 12px;
+  background-color: #e5e6e6; /* Light background for contrast */
+  border-radius: 6px;
+  display: inline-block;
+  margin: 4px 0;
+  max-width: 70%;
+  word-wrap: break-word;
+}
+
+.view-description {
+  font-size: 14px !important;
+  color: gray;            /* Dark gray-blue */
+  font-weight: 500;          /* Medium weight */
+  padding: 8px 12px;
+  background-color: #e5e6e6; /* Light background for contrast */
+  border-radius: 6px;
+  display: inline-block;
+  margin: 4px 0;
+  max-width: 100%;
+  word-wrap: break-word;
+  height:80px;
+}
+
+.view-roles {
+  font-size: 14px !important;
+  color: gray;            /* Dark gray-blue */
+  font-weight: 500;          /* Medium weight */
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin: 0px;
+  max-width: 50%;
+}
+
+
 .project-form-group .building-row {
   display: flex;
   flex-direction: column;
@@ -3335,6 +3573,82 @@ button.delete-building:hover {
   padding: 0;
   background-color: #f0f0f0;
 }
+
+
+
+.file-upload-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.file-upload-label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #2c3e50;
+}
+
+.file-upload-box {
+  position: relative;
+  padding: 20px;
+  background-color: #f1f1f1;
+  border: 1px solid #d6d6d6;
+  border-radius: 8px;
+  height: 50px;
+}
+
+/* Upload button in top-left corner */
+.upload-button-wrapper {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+}
+
+.uploads-button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight:200 !important;
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+
+/* Optional: File display styles */
+.uploaded-file-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.uploaded-file-item {
+  background: #ffffff;
+  border: 1px solid #dfe6e9;
+  padding: 6px 10px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.file-name {
+  color: #34495e;
+  font-size: 14px;
+}
+
+.remove-file-button {
+  background: transparent;
+  border: none;
+  color: #e74c3c;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
 
 .readonly-tags .tag {
   background-color: #f0f0f0;

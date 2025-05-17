@@ -221,11 +221,9 @@ const HolidayList = () => {
                 date: format(date, "yyyy-MM-dd"),
               })
             }
-            dateFormat="dd-MM-yyyy"
+            dateFormat="dd-MMM-yyyy"
             placeholderText="dd-mm-yyyy"
             className="input1"
-            scrollableYearDropdown
-            openToDate={new Date(selectedYear, 0, 1)} // ⬅️ This sets calendar default open year
           />
           <i className="fas fa-calendar-alt calendar-icon"></i>
         </div>

@@ -65,7 +65,7 @@ const ManagerTaskCreate = () => {
               />
             </div>
           </div>
-          <div className="table-bottom-elements">
+          <div className="table-bottom-element">
             <div>
               <label>Task Description</label>
               <br />

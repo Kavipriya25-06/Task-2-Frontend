@@ -3,6 +3,9 @@ import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate, useParams } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { format } from "date-fns";
 
 const TeamLeadTaskView = () => {
   const { user } = useAuth();
@@ -152,7 +155,7 @@ const TeamLeadTaskView = () => {
             onClick={() => setEditMode(true)}
             className="btn-orange"
           >
-            Edit
+            <FaEdit className="edit-icon" />
           </button>
         )}
       </div>
@@ -225,7 +228,7 @@ const TeamLeadTaskView = () => {
                 ) : (
                   <div className="select-container">
                     {availableEmployees.map((emp) => (
-                      <p key={emp.employee_id}>
+                      <p key={emp.employee_id} className="view-roles">
                         {emp.employee_name} - {emp.designation}
                       </p>
                     ))}
@@ -233,7 +236,7 @@ const TeamLeadTaskView = () => {
                 )}
               </div>
               <div className="project-form-group">
-                <label>Attachments</label>
+                <label className="attaches">Attachments</label>
                 {editMode && (
                   <input
                     type="file"
@@ -246,46 +249,101 @@ const TeamLeadTaskView = () => {
                     }
                   />
                 )}
-                {task?.attachments ? (
-                  <a
-                    href={task.attachments}
+                {taskData.attachments && taskData.attachments.length > 0 ? (
+                  taskData.attachments.map((file, index) => (
+                    <div key={index} style={{ marginBottom: "5px" }}>
+                    <a
+                     href={config.apiBaseURL + file.file}
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="view-attachment-link"
                   >
-                    View Attachment
+                    <img
+                      src="/src/assets/pin svg.svg" // replace this with your actual image path
+                      alt="Attachment"
+                      style={{
+                        width: "16px",
+                        height: "16px",
+                        marginRight: "5px",
+                        verticalAlign: "middle",
+                      }}
+                    />
+                    {file.file.split("/").pop()}
                   </a>
+                      
+                    </div>
+                  ))
                 ) : (
                   <p>No attachments</p>
                 )}
               </div>
             </div>
           </div>
+
           <div className="right-form">
             <div className="right-form-building-first">
               <div className="project-form-group-small">
                 <label>Start Date</label>
                 {editMode ? (
-                  <input
-                    type="date"
-                    name="start_date"
-                    value={formData.start_date}
-                    onChange={handleChange}
-                  />
+                  <div className="date-input-container">
+                    <DatePicker
+                      selected={
+                        formData.start_date
+                          ? new Date(formData.start_date)
+                          : null
+                      }
+                      onChange={(date) =>
+                        handleChange({
+                          target: {
+                            name: "start_date",
+                            value: format(date, "yyyy-MM-dd"),
+                          },
+                        })
+                      }
+                      dateFormat="dd-MMM-yyyy"
+                      placeholderText="dd-mm-yyyy"
+                      className="input1"
+                    />
+                    <i className="fas fa-calendar-alt calendar-icon"></i>
+                  </div>
                 ) : (
-                  <p>{taskData?.start_date || ""}</p>
-                )}
+                <p className="view-date">
+                  {taskData?.start_date
+                    ? format(new Date(taskData.start_date), "dd-MMM-yyyy")
+                    : ""}
+                </p> 
+               )}
               </div>
+
               <div className="project-form-group-small">
                 <label>End Date</label>
                 {editMode ? (
-                  <input
-                    type="date"
-                    name="end_date"
-                    value={formData.end_date}
-                    onChange={handleChange}
-                  />
+                  <div className="date-input-container">
+                    <DatePicker
+                      selected={
+                        formData.end_date ? new Date(formData.end_date) : null
+                      }
+                      onChange={(date) =>
+                        handleChange({
+                          target: {
+                            name: "end_date",
+                            value: format(date, "yyyy-MM-dd"),
+                          },
+                        })
+                      }
+                      dateFormat="dd-MMM-yyyy"
+                      placeholderText="dd-mm-yyyy"
+                      className="input1"
+                      popperPlacement="bottom-start"
+                    />
+                    <i className="fas fa-calendar-alt calendar-icon"></i>
+                  </div>
                 ) : (
-                  <p>{taskData?.end_date || ""}</p>
+                <p className="view-date">
+                  {taskData?.end_date
+                    ? format(new Date(taskData.end_date), "dd-MMM-yyyy")
+                    : ""}
+                </p> 
                 )}
               </div>
               <div className="project-form-group-small">
@@ -294,7 +352,7 @@ const TeamLeadTaskView = () => {
               </div>
               <div className="project-form-group-small">
                 <label>Building Hours</label>
-                <p>{taskData.building_assign?.building_hours || ""}</p>
+                <p>{taskData?.building_assign?.building_hours || ""}</p>
               </div>
               <div className="project-form-group-small">
                 <label>Task Hours</label>
@@ -305,7 +363,7 @@ const TeamLeadTaskView = () => {
                     onChange={handleChange}
                   />
                 ) : (
-                  <p>{taskData?.task_hours || ""}</p>
+                  <p className="view-data">{taskData?.task_hours || ""}</p>
                 )}
               </div>
             </div>
@@ -325,7 +383,7 @@ const TeamLeadTaskView = () => {
                     <option value="Critical">Critical</option>
                   </select>
                 ) : (
-                  <p>{taskData?.priority || ""}</p>
+                  <p className="view-text">{taskData?.priority || ""}</p>
                 )}
               </div>
               <div className="project-form-group">
@@ -339,7 +397,7 @@ const TeamLeadTaskView = () => {
                     placeholder="Enter comments"
                   />
                 ) : (
-                  <p>{taskData?.comments || ""}</p>
+                  <p className="view-text">{taskData?.comments || ""}</p>
                 )}
               </div>
             </div>

@@ -15,7 +15,7 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
     duration: "",
     resumptionDate: "",
     reason: "",
-    attachment: null,
+    attachment: [],
   });
 
    useEffect(() => {
@@ -245,22 +245,46 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
         </div>
 
         <div className="form-group1">
-          <label className="label1">
-            Attachments (pdf, jpg format)
-          </label>
-          <div className="custom-file-container">
-            <label htmlFor="fileUpload" className="custom-file-label">
-              <button className="choose-btn">Choose File</button>
-              <span className="file-info">Max size 2MB</span>
-            </label>
+          <label className="label1">Attachments (pdf, jpg format) Max Size 2MB</label>
+
+          <div className="plus-upload-wrapper">
+            <label htmlFor="fileUpload" className="plus-upload-button">+</label>
             <input
               type="file"
               id="fileUpload"
-              name="attachment"
+              name="attachments"
+              multiple
               accept=".pdf,.jpg,.jpeg,.png"
-              onChange={handleChange}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  attachment: [...(prev.attachment || []), ...Array.from(e.target.files)],
+                }))
+              }
               className="real-file-input"
             />
+
+            {formData.attachment && formData.attachment.length > 0 && (
+              <div className="selected-files">
+                {formData.attachment.map((file, index) => (
+                  <div key={index} className="file-chip">
+                    <span className="file-name">{file.name}</span>
+                    <button
+                      type="button"
+                      className="remove-file"
+                      onClick={() => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          attachment: prev.attachment.filter((_, i) => i !== index),
+                        }));
+                      }}
+                    >
+                      &times;
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

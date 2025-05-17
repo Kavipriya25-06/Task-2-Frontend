@@ -759,6 +759,32 @@ const TeamLeadProjectView = () => {
     }
   };
 
+   const [variations, setVariations] = useState([
+    { date: "2025-05-01", title: "Project Planning", hours: "4" },
+    { date: "2025-05-03", title: "Team Meeting", hours: "2" },
+    { date: "2025-05-07", title: "Code Review", hours: "3" }
+  ]);
+  
+  
+  const handleVariationChange = (index, field, value) => {
+    const newVariations = [...variations];
+    newVariations[index][field] = value;
+    setVariations(newVariations);
+  };
+  
+  const handleAddVariation = () => {
+    const last = variations[variations.length - 1];
+  
+    if (!last || (last.date && last.title && last.hours)) {
+      setVariations([
+        ...variations,
+        { date: "", title: "", hours: "" } // new empty row
+      ]);
+    } else {
+      alert("Please fill the previous variation before adding a new one.");
+    }
+  };
+
   const handleUpdate = async () => {
     // 1️ Update Project
     const payload = {
@@ -933,7 +959,7 @@ const TeamLeadProjectView = () => {
       setProjectData(data);
       setAvailableBuildings(data.assigns[0].buildings);
       setAvailableTeamleadManager(data.assigns[0].employee);
-      setAvailableAreas(data.area_of_work);
+      // setAvailableAreas(data.area_of_work);
 
       console.log("Project data", data);
       console.log("Project assign data", data.assigns);
@@ -976,7 +1002,7 @@ const TeamLeadProjectView = () => {
                     onChange={handleChange}
                   />
                 ) : (
-                  <p>{projectData.project_title}</p>
+                  <p className="view-data">{projectData.project_title}</p>
                 )}
               </div>
               <div className="project-form-group">
@@ -988,7 +1014,7 @@ const TeamLeadProjectView = () => {
                     onChange={handleChange}
                   />
                 ) : (
-                  <p>{projectData.project_type}</p>
+                  <p className="view-data">{projectData.project_type}</p>
                 )}
               </div>
 
@@ -1001,7 +1027,7 @@ const TeamLeadProjectView = () => {
                     onChange={handleChange}
                   />
                 ) : (
-                  <p>{projectData.project_code}</p>
+                  <p className="view-data">{projectData.project_code}</p>
                 )}
               </div>
               <div className="project-form-group">
@@ -1030,7 +1056,7 @@ const TeamLeadProjectView = () => {
                     ))}
                   </select>
                 ) : (
-                  <p>{projectData.discipline_code}</p>
+                  <p className="view-data">{projectData.discipline_code}</p>
                 )}
               </div>
             </div>
@@ -1074,7 +1100,7 @@ const TeamLeadProjectView = () => {
                 ) : (
                   <div className="select-container">
                     {availableTeamleadManager.map((emp) => (
-                      <p key={emp.employee_id}>
+                      <p key={emp.employee_id} className="view-roles">
                         {emp.employee_name} - {emp.designation}
                       </p>
                     ))}
@@ -1128,7 +1154,147 @@ const TeamLeadProjectView = () => {
                   </div>
                 )}
               </div>
-              <div className="area-group">
+              <div className="project-form-group">
+                <div className="variation-table-wrapper">
+              <label className="attaches">Variation Entries</label>
+              <div className="variation-table-container">
+                <table className="variation-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Title</th>
+                      <th>Hours</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {variations.map((variation, index) => (
+                      <tr key={index}>
+                        <td>   
+                          {editMode ? (
+                            <div className="date-wrapper">
+                              <DatePicker
+                                selected={variation.date ? new Date(variation.date) : null}
+                                onChange={(date) =>
+                                  handleVariationChange(
+                                    index,
+                                    "date",
+                                    date ? date.toISOString().slice(0, 10) : ""
+                                  )
+                                }
+                                dateFormat="dd-MMM-yyyy"
+                                placeholderText="dd-mm-yyyy"
+                                className="input1"
+                                calendarClassName="custom-datepicker"
+                                popperPlacement="bottom-start"
+                                popperModifiers={[
+                                  {
+                                    name: "preventOverflow",
+                                    options: {
+                                      boundary: "viewport",
+                                    },
+                                  },
+                                ]}
+                                popperContainer={({ children }) => (
+                                  <div className="datepicker-portal">{children}</div>
+                                )}
+                              />
+                              <i className="fas fa-calendar-alt calendar-icon"></i>
+
+                            </div>
+                          ) : (
+                            variation.date ? format(new Date(variation.date), "dd-MMM-yyyy") : ""
+                            
+                          )}
+                        </td>
+                        <td>
+                          {editMode ? (
+                            <input
+                              type="text"
+                              placeholder="Enter title"
+                              value={variation.title}
+                              onChange={(e) => handleVariationChange(index, "title", e.target.value)}
+                            />
+                          ) : (
+                            variation.title
+                          )}
+                        </td>
+                        <td>
+                          {editMode ? (
+                            <input
+                              type="number"
+                              placeholder="Hours"
+                              value={variation.hours}
+                              onChange={(e) => {
+                              const value = e.target.value;
+                              if (Number(value) >= 0 || value === "") {
+                                handleVariationChange(index, "hours", value);
+                              }
+                            }}                            />
+                          ) : (
+                            variation.hours
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {editMode && (
+                  <button
+                        type="button"
+                        onClick={handleAddVariation}
+                        className="plus-button"
+                        >
+                        +
+                      </button>
+                        )}
+              </div>
+            </div>
+
+              <div className="project-form-group">
+                <label className="attaches">Attachments</label>
+                {editMode && (
+                  <input
+                    type="file"
+                    multiple
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        attachments: Array.from(e.target.files),
+                      }))
+                    }
+                  />
+                )}
+                {projectData.attachments && projectData.attachments.length > 0 ? (
+                  projectData.attachments.map((file, index) => (
+                    <div key={index} style={{ marginBottom: "5px" }}>
+                                        <a
+                     href={config.apiBaseURL + file.file}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="view-attachment-link"
+                  >
+                    <img
+                      src="/src/assets/pin svg.svg" // replace this with your actual image path
+                      alt="Attachment"
+                      style={{
+                        width: "16px",
+                        height: "16px",
+                        marginRight: "5px",
+                        verticalAlign: "middle",
+                      }}
+                    />
+                    {file.file.split("/").pop()}
+                  </a>
+
+                    </div>
+                  ))
+                ) :  !editMode ?  (
+                  <p>No attachments</p>
+                ):null}
+              </div>
+
+            </div>
+              {/* <div className="area-group">
                 <label>Area of Work</label>
                 {editMode ? (
                   <div className="area-row">
@@ -1180,7 +1346,7 @@ const TeamLeadProjectView = () => {
                 ) : (
                   <p>{projectData.subdivision}</p>
                 )}
-              </div>
+              </div> */}
             </div>
           </div>
           <div className="right-form">
@@ -1199,7 +1365,7 @@ const TeamLeadProjectView = () => {
 
                     </div>
                   ) : (
-                    <p>
+                    <p className="view-date">
                       {formData.start_date &&
                         format(new Date(formData.start_date), "dd-MMM-yyyy")}
                     </p>                  
@@ -1214,7 +1380,7 @@ const TeamLeadProjectView = () => {
                     onChange={handleChange}
                   />
                 ) : (
-                  <p>{projectData.estimated_hours}</p>
+                  <p className="view-data">{projectData.estimated_hours}</p>
                 )}
               </div>
             </div>
@@ -1228,7 +1394,7 @@ const TeamLeadProjectView = () => {
                     onChange={handleChange}
                   />
                 ) : (
-                  <p>{projectData.project_description}</p>
+                  <p className="view-description">{projectData.project_description}</p>
                 )}
               </div>
             </div>

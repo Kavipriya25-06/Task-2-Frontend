@@ -242,6 +242,27 @@ const TeamLeadProjectCreate = () => {
               </div>
 
               <div className="project-form-group">
+                <div className="file-upload-section">
+                  <label className="file-upload-label">Attachments</label>
+                  <div className="file-upload-box">
+                    <div className="upload-button-wrapper">
+                      <label htmlFor="file-upload-input" className="uploads-button">
+                        +
+                      </label>
+                      <input
+                        type="file"
+                        id="file-upload-input"
+                        name="attachments"
+                        multiple
+                        style={{ display: "none" }}
+                      />
+                    </div>
+                    {/* File list can go here if needed */}
+                  </div>
+                </div>
+              </div>
+
+              {/* <div className="project-form-group">
                 <label>Area of Work</label>
                 <div className="area-row">
                   <div className="tags">
@@ -290,7 +311,7 @@ const TeamLeadProjectCreate = () => {
                   value={formData.subdivision}
                   onChange={handleChange}
                 />
-              </div>
+              </div> */}
             </div>
           </div>
           <div className="right-form">
