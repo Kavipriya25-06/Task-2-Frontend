@@ -8,6 +8,8 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./App.css";
+import "./Updated_App.css";
+import "./index.css";
 import App from "./App.jsx";
 import { AuthProvider } from "./AuthContext.jsx";
 
