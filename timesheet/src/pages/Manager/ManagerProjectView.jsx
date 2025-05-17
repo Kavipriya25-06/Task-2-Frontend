@@ -10,8 +10,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 
 
-
-
 const ManagerProjectView = () => {
   const navigate = useNavigate();
   const buildingPopupRef = useRef();
@@ -35,6 +33,7 @@ const ManagerProjectView = () => {
     area_of_work: [],
   });
   const [showBuildingPopup, setShowBuildingPopup] = useState(false);
+  const [buildingData, setBuildingData] = useState({});
   const [showAreaPopup, setShowAreaPopup] = useState(false);
   const [selectedBuildings, setSelectedBuildings] = useState([]);
   const [availableBuildings, setAvailableBuildings] = useState([]);
@@ -217,6 +216,42 @@ const handleAddVariation = () => {
     alert("Project updated successfully!");
     setEditMode(false);
     fetchProjectData(); // refresh UI
+  };
+
+
+  const handleBuildingChange = (e) => {
+    const { name, value } = e.target;
+    setBuildingData((prev) => ({ ...prev, [name]: value }));
+  };
+
+
+  const handleBuildingSubmit = async (e) => {
+    e.preventDefault();
+    const payload = buildingData;
+    try {
+      const res = await fetch(`${config.apiBaseURL}/buildings/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert("Building created successfully!");
+        setBuildingData({});
+        setShowBuildingPopup(false);
+        fetchBuilding();
+      } else {
+        console.error(data);
+        alert("Failed to create Building.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const handleBuildingCancel = () => {
+    setShowBuildingPopup(false);
+    setBuildingData({});
   };
 
   useEffect(() => {
@@ -459,7 +494,7 @@ const handleAddVariation = () => {
                 )}
               </div>
               <div className="project-form-group">
-                <label>Building(s)</label>
+                <label>Sub-Division</label>
                 {editMode ? (
                   <div className="building-row">
                     {availableBuildings.map((b, i) => (
@@ -754,107 +789,71 @@ const handleAddVariation = () => {
           )}
         </div>
         {showBuildingPopup && (
-          <div className="popup" ref={buildingPopupRef}>
-            <h4>Select Buildings</h4>
-            {buildings.map((b) => (
-              <div key={b.building_id} style={{ marginBottom: "8px" }}>
-                <input
-                  type="checkbox"
-                  value={b.building_id}
-                  checked={
-                    selectedBuildings.some(
-                      (item) => item.building_id === b.building_id
-                    ) ||
-                    availableBuildings.some(
-                      (ab) => ab.building_id === b.building_id
-                    )
-                  }
-                  onChange={(e) => {
-                    const checked = e.target.checked;
-                    const existing = selectedBuildings.find(
-                      (item) => item.building_id === b.building_id
-                    );
-
-                    if (checked && !existing) {
-                      const assigned = availableBuildings.find(
-                        (ab) => ab.building_id === b.building_id
-                      );
-                      setSelectedBuildings((prev) => [
-                        ...prev,
-                        {
-                          ...b,
-                          building_hours: assigned
-                            ? assigned.building_hours
-                            : "",
-                        },
-                      ]);
-                    } else if (!checked) {
-                      setSelectedBuildings((prev) =>
-                        prev.filter(
-                          (item) => item.building_id !== b.building_id
-                        )
-                      );
-                    }
-                  }}
-                />
-                {b.building_title}
-                {selectedBuildings.some(
-                  (s) => s.building_id === b.building_id
-                ) && (
-                  <input
-                    type="number"
-                    placeholder="Hours"
-                    style={{ marginLeft: "10px" }}
-                    onChange={(e) => {
-                      setSelectedBuildings((prev) =>
-                        prev.map((item) =>
-                          item.building_id === b.building_id
-                            ? { ...item, building_hours: e.target.value }
-                            : item
-                        )
-                      );
-                    }}
-                  />
-                )}
+        <div className="popup" ref={buildingPopupRef}>
+          <div className="create-building-container">
+            <h2>Create Sub-Division</h2>
+            <form onSubmit={handleBuildingSubmit}>
+              <div className="building-elements">
+                <div className="top-elements">
+                  <div>
+                    <label>Sub-Division code</label>
+                    <br />
+                    <input
+                      name="building_code"
+                      value={buildingData.building_code || ""}
+                      onChange={handleBuildingChange}
+                    />
+                  </div>
+                  <div>
+                    <label>Sub-Division Title</label>
+                    <br />
+                    <input
+                      name="building_title"
+                      value={buildingData.building_title || ""}
+                      onChange={handleBuildingChange}
+                    />
+                  </div>
+                </div>
+                <div className="bottom-elements">
+                  <div>
+                    <label>Sub-Division Description</label>
+                    <br />
+                    <textarea
+                      name="building_description"
+                      value={buildingData.building_description || ""}
+                      onChange={handleBuildingChange}
+                      rows={4}
+                      className="textarea"
+                    />
+                  </div>
+                  <div>
+                    <label>Sub-Division Hours</label>
+                    <br />
+                    <input
+                      name="building_hours"
+                      value={buildingData.building_hours || ""}
+                      onChange={handleBuildingChange}
+                    />
+                  </div>
+                </div>
               </div>
-            ))}
-            <button
-              className="btn-save"
-              onClick={() => {
-                const invalid = selectedBuildings.find(
-                  (b) => !b.building_hours || parseFloat(b.building_hours) <= 0
-                );
-
-                if (invalid) {
-                  alert(
-                    `Please enter valid hours for building "${invalid.building_title}".`
-                  );
-                  return;
-                }
-                setAvailableBuildings((prev) => [
-                  ...prev,
-                  ...selectedBuildings.filter(
-                    (b) => !prev.some((ab) => ab.building_id === b.building_id)
-                  ),
-                ]);
-                setSelectedBuildings([]);
-                setShowBuildingPopup(false);
-              }}
-            >
-              Done
-            </button>
-
-            <button
-              onClick={() => {
-                setSelectedBuildings([]);
-                setShowBuildingPopup(false);
-              }}
-              className="btn-cancel"
-            >
-              Cancel
-            </button>
+              <div className="form-buttons">
+                <button type="submit" className="btn-green">
+                  Create
+                </button>
+                <button
+                  type="button"
+                  className="btn-red"
+                  onClick={handleBuildingCancel}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
           </div>
-        )}
+        </div>
+      )}
+        
         {showAreaPopup && (
           <div className="popup">
             <h4>Select Area of Work</h4>

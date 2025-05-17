@@ -14,7 +14,7 @@ const ManagerBuildingCreate = () => {
   };
 
   const handleCancel = () => {
-    navigate("/manager/detail/projects/");
+    navigate("/manager/detail/projects/"); 
   };
 
   const handleSubmit = async (e) => {
@@ -44,12 +44,12 @@ const ManagerBuildingCreate = () => {
 
   return (
     <div className="create-building-container">
-      <h2>Create Building</h2>
+      <h2>Create Sub-Division</h2>
       <form onSubmit={handleSubmit}>
         <div className="building-elements">
           <div className="top-elements">
             <div>
-              <label>Building code</label>
+              <label>Sub-Division code</label>
               <br />
               <input
                 name="building_code"
@@ -58,7 +58,7 @@ const ManagerBuildingCreate = () => {
               />
             </div>
             <div>
-              <label>Building Title</label>
+              <label>Sub-Division Title</label>
               <br />
               <input
                 name="building_title"
@@ -69,7 +69,7 @@ const ManagerBuildingCreate = () => {
           </div>
           <div className="bottom-elements">
             <div>
-              <label>Building Description</label>
+              <label>Sub-Division Description</label>
               <br />
               <textarea
                 name="building_description"

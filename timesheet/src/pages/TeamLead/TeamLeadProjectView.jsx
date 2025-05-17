@@ -1082,7 +1082,7 @@ const TeamLeadProjectView = () => {
                 )}
               </div>
               <div className="project-form-group">
-                <label>Building(s)</label>
+                <label>Sub-Division</label>
                 {editMode ? (
                   <div className="building-row">
                     {availableBuildings.map((b, i) => (
@@ -1260,7 +1260,7 @@ const TeamLeadProjectView = () => {
       </div>
       {showBuildingPopup && (
         <div className="popup" ref={buildingPopupRef}>
-          <h4>Select Buildings</h4>
+          <h4>Select Sub-Division</h4>
           {buildings.map((b) => (
             <div key={b.building_id} style={{ marginBottom: "8px" }}>
               <input

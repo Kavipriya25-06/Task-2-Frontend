@@ -94,6 +94,7 @@ const AddEmployee = () => {
       "doj",
       "passport_validity",
       "probation_confirmation_date",
+      "contract_end_date",
       "resignation_date",
       "relieving_date",
       "year_of_passing",
@@ -678,6 +679,27 @@ const AddEmployee = () => {
                 {/* Font Awesome Calendar Icon */}
               </div>
             </div>
+
+            <div className="individual-tabs">
+              <label>Contract End date</label>
+              <div className="date-input-container">
+                <DatePicker
+                  selected={formData.contract_end_date}
+                  onChange={(date) =>
+                    setFormData({
+                      ...formData,
+                      contract_end_date: format(date, "yyyy-MM-dd"),
+                    })
+                  }
+                  dateFormat="dd-MMM-yyyy"
+                  placeholderText="Select Contract End date"
+                  className="input1"
+                />
+                <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+                {/* Font Awesome Calendar Icon */}
+              </div>
+            </div>
+
             <div className="individual-tabs">
               <label>
                 Official Email <span className="required-star">*</span>

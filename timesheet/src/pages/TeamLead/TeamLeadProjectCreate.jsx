@@ -208,7 +208,7 @@ const TeamLeadProjectCreate = () => {
                 </div>
               </div>
               <div className="project-form-group">
-                <label>Building(s)</label>
+                <label>Sub-Division</label>
 
                 <div className="building-row">
                   {selectedBuildings.map((b, i) => (
@@ -346,7 +346,7 @@ const TeamLeadProjectCreate = () => {
       </form>
       {showBuildingPopup && (
         <div className="popup">
-          <h4>Select Buildings</h4>
+          <h4>Select Sub-Division</h4>
           {buildings.map((b) => (
             <div
               style={{

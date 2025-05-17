@@ -60,10 +60,10 @@ const ManagerBuildingView = () => {
         building_assign: building_assign_id,
         task_hours: task.task_hours || "0", // default or collect via UI
         status: "inprogress",
-        comments: "",
+        // comments: "",
         start_date: task.start_date || null,
         end_date: task.end_date || null,
-        employee: task.employee || [],
+        // employee: task.employee || [],
       };
 
       const method = task.task_assign_id ? "PATCH" : "POST";
@@ -216,7 +216,7 @@ const ManagerBuildingView = () => {
   return (
     <div className="create-project-container">
       <div className="project-header">
-        <h2>Building {buildingsAssign.building?.building_title}</h2>
+        <h2>Sub-Division {buildingsAssign.building?.building_title}</h2>
         {!editMode && (
           <button
             type="edit"
@@ -240,17 +240,17 @@ const ManagerBuildingView = () => {
                 <p>{project?.project_title || ""}</p>
               </div>
               <div className="project-form-group">
-                <label>Building Code</label>
+                <label>Sub-Division Code</label>
                 <p>{buildingsAssign.building?.building_code}</p>
               </div>
               <div className="project-form-group">
-                <label>Building Title</label>
+                <label>Sub-Division Title</label>
                 <p>{buildingsAssign.building?.building_title}</p>
               </div>
             </div>
             <div className="left-form-second">
               <div className="project-form-group">
-                <label className="description">Building Description</label>
+                <label className="description">Sub-Division Description</label>
                 <p>{buildingsAssign.building?.building_description}</p>
               </div>
               <div className="project-form-group">
@@ -309,7 +309,7 @@ const ManagerBuildingView = () => {
                 <p>{project?.estimated_hours || ""}</p>
               </div>
               <div className="project-form-group-small">
-                <label>Building Hours</label>
+                <label>Sub-Division Hours</label>
                 {editMode ? (
                   <input
                     name="building_hours"
@@ -323,7 +323,7 @@ const ManagerBuildingView = () => {
             </div>
             <div className="right-form-second">
               <div className="roles-box">
-                <label>Building Roles</label>
+                <label>Sub-Division Roles</label>
                 {editMode ? (
                   <div className="select-container">
                     {teamleadManager.map((employee) => (

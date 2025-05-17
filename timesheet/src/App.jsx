@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import "normalize.css";
 import "./App.css";
 import "./index.css";
+import "./Updated_App.css";
 import { useAuth } from "./AuthContext";
 import {
   BrowserRouter as Router,
@@ -451,7 +452,7 @@ const App = () => {
                   element={<EmployeeDailyTimeSheetEntry />}
                 />
                 <Route
-                  path="time-sheet-entry/createweekly"
+                  path="time-sheet-entry/createweekly/:date"
                   element={<EmployeeWeeklyTimeSheetEntry />}
                 />
 

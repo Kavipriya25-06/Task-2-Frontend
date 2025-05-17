@@ -149,6 +149,7 @@ const EditEmployee = () => {
       "doj",
       "passport_validity",
       "probation_confirmation_date",
+      "contract_end_date",
       "resignation_date",
       "relieving_date",
       "year_of_passing",
@@ -1256,6 +1257,23 @@ const EditEmployee = () => {
                 </div>
               )}
             </div>
+
+             <div className="individual-tabs">
+              <label>Contract End date</label>
+                            {editMode ? (
+                <input
+                  type="date"
+                  name="contract_end_date"
+                  value={formData.contract_end_date}
+                  onChange={handleChange}
+                />
+              ) : (
+                <div className="uneditable">
+                  {formData.contract_end_date || "-"}
+                </div>
+              )}
+            </div>
+
             <div className="individual-tabs">
               <label>Official Email</label>
               <div className="uneditable">{formData.employee_email || "-"}</div>

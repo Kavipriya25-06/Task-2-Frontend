@@ -348,22 +348,22 @@ const TeamLeadProjects = () => {
         return (
           <div>
             <div className="user-header">
-              <h2 className="employee-title">Buildings</h2>
+              <h2 className="employee-title">Sub-Division</h2>
               <div>
                 <button
                   className="add-user-btn"
                   onClick={handleAddBuildingClick}
                 >
-                  Create Building
+                  Create Sub-Division
                 </button>
               </div>
             </div>
             <table className="holiday-table">
               <thead>
                 <tr>
-                  <th>Building code</th>
-                  <th>Building name</th>
-                  <th>Building Description</th>
+                  <th>Sub-Division code</th>
+                  <th>Sub-Division name</th>
+                  <th>Sub-Division Description</th>
                   {/* <th>Total hours</th>
                   <th>Estimated hours</th>
                   <th>Discipline</th>
