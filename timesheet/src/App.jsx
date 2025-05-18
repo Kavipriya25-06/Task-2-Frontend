@@ -2,6 +2,8 @@
 
 import { FaEdit } from "react-icons/fa";
 import React from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useState, useEffect } from "react";
 import "normalize.css";
 import "./App.css";
@@ -190,7 +192,13 @@ const App = () => {
                 </>
               )}
             </div>
-
+            <ToastContainer
+              toastClassName="custom-toast"
+              position="top-center"
+              bodyClassName="custom-toast-body"
+              progressClassName="custom-toast-progress"
+              autoClose={3000}
+            />
             {/* Popup */}
             {showLogoutPopup && <LogoutPopup onClose={closePopup} />}
             {/* </NavLink> */}

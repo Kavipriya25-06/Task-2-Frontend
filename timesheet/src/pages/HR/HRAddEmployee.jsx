@@ -13,6 +13,7 @@ import { defaultEmployeeFormData } from "../../constants/defaultEmployeeFormData
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
+import { toast } from "react-toastify";
 
 const tabLabels = [
   "Employee details",
@@ -25,6 +26,7 @@ const AddEmployee = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(0);
   const [managers, setManagers] = useState([]);
+  const [error, setError] = useState(""); // to show the error
   const [experienceUI, setExperienceUI] = useState({
     arris_years: "",
     arris_months: "",
@@ -88,6 +90,7 @@ const AddEmployee = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
     const fieldsToNullify = [
       "dob",
@@ -101,7 +104,6 @@ const AddEmployee = () => {
       "arris_experience",
       "total_experience",
       "personal_email",
-      "employee_email",
       "contact_number",
       "aadhaar_number",
       "PAN",
@@ -126,6 +128,13 @@ const AddEmployee = () => {
     if (profilePicture) {
       formPayload.append("profile_picture", profilePicture);
     }
+    console.log(formPayload, "Form payload");
+
+    if (!formData.employee_email) {
+      // alert("Please enter email");
+      toast.error("Please enter an email");
+      return;
+    }
 
     try {
       //  Step 1: Post Employee data
@@ -134,10 +143,24 @@ const AddEmployee = () => {
         body: formPayload,
       });
 
-      if (!response.ok) throw new Error("Failed to add employee");
-
       const responseData = await response.json();
-      const newEmployeeId = responseData.data.employee_id; //  Get employee_id from response
+      console.log("error response", responseData);
+
+      if (!response.ok) {
+        if (responseData.error) {
+          setError(responseData.error); // your custom error: "Email already exists"
+          console.log("Error response", responseData);
+        } else if (responseData.employee_email) {
+          setError(responseData.employee_email[0]); // DRF validation: ["Email already exists."]
+          console.log("Email error", responseData.employee_email[0]);
+          alert(responseData.employee_email[0]);
+        } else {
+          setError("An unexpected error occurred.");
+        }
+        return;
+      }
+
+      const newEmployeeId = responseData?.data.employee_id; //  Get employee_id from response
 
       console.log("Employee created with ID:", newEmployeeId);
 
@@ -261,7 +284,7 @@ const AddEmployee = () => {
             <div className="individual-tabs">
               <label>
                 Employee Name
-                <span className="required-star">*</span>
+                <span className="required-star"> *</span>
               </label>
               <input
                 name="employee_name"
@@ -507,11 +530,10 @@ const AddEmployee = () => {
                 name="employment_type"
                 value={formData.employment_type}
                 onChange={handleChange}
-                // placeholder="Employment Type"
               >
                 <option value="">Select Employment Type</option>
                 <option value="Fulltime">Full-Time</option>
-                <option value="Parttime">Part-Time</option>
+                <option value="Parttime">Probation</option>
                 <option value="Internship">Internship</option>
                 <option value="Contract">Contract</option>
               </select>
@@ -710,6 +732,7 @@ const AddEmployee = () => {
                 onChange={handleChange}
                 placeholder="Official Email"
                 className={errors.employee_email ? "input-error" : ""}
+                required
               />
               {errors.employee_email && (
                 <span className="error-message">{errors.employee_email}</span>

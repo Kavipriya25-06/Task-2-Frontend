@@ -7,7 +7,6 @@ import config from "../../config";
 import { useNavigate, useParams } from "react-router-dom";
 import { format } from "date-fns";
 
-
 const TeamLeadBuildingView = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -251,11 +250,7 @@ const TeamLeadBuildingView = () => {
             </div>
             <div className="left-form-second">
               <div className="project-form-group">
-<<<<<<< HEAD
                 <label>Sub-Division Desciption</label>
-=======
-                <label>Building Description</label>
->>>>>>> 45dcc0853505136788a1571ef34f0bfc6918ec4d
                 <p>{buildingsAssign.building?.building_description}</p>
               </div>
               <div className="project-form-group">
@@ -311,8 +306,8 @@ const TeamLeadBuildingView = () => {
                   {project?.start_date
                     ? format(new Date(project.start_date), "dd-MMM-yyyy")
                     : ""}
-                </p>             
-               </div>
+                </p>
+              </div>
               <div className="project-form-group-small">
                 <label>Project Hours</label>
                 <p>{project?.estimated_hours || ""}</p>
@@ -326,7 +321,9 @@ const TeamLeadBuildingView = () => {
                     onChange={handleChange}
                   />
                 ) : (
-                  <p className="view-data">{buildingsAssign.building_hours || ""}</p>
+                  <p className="view-data">
+                    {buildingsAssign.building_hours || ""}
+                  </p>
                 )}
               </div>
             </div>
