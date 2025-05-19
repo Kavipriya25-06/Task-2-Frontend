@@ -28,6 +28,7 @@ export const defaultEmployeeFormData = {
   arris_experience: "",
   total_experience: "",
   probation_confirmation_date: "",
+  contract_end_date: "",
   employee_email: "",
   reporting_manager: "",
   resignation_date: "",
