@@ -35,11 +35,7 @@ const ManagerEmployees = () => {
 
   // Calculate total employees, including team leads and their employees
   const totalEmployees = teamleadData.length; // + // Count of team leads
-  //teamleadData.reduce(
-  //(count, teamlead) => count + teamlead.employees.length,
-  //0
-  //); // Add the employees under each team lead
-
+ 
   return (
     <div className="manager-employees">
       <div className="employee-list">
@@ -62,16 +58,7 @@ const ManagerEmployees = () => {
                 <td>{teamlead.reporting_to || "-"}</td>
               </tr>
             ))}
-            {/* {teamleadData.flatMap((teamlead) =>
-              teamlead.employees.map((employee) => (
-                <tr key={employee.employee_id}>
-                  <td>{employee.employee_code}</td>
-                  <td>{employee.employee_name}</td>
-                  <td>{employee.employee_role}</td>
-                  <td>{teamlead.teamlead_name}</td>
-                </tr>
-              ))
-            )} */}
+            
           </tbody>
         </table>
       </div>
