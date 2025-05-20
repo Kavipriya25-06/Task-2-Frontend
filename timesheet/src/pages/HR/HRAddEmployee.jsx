@@ -13,11 +13,11 @@ import { defaultEmployeeFormData } from "../../constants/defaultEmployeeFormData
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
+import { getCleanFilename } from "../../utils/filenameUtils";
 import Cropper from "react-easy-crop";
 import getCroppedImg from "../../constants/cropimage"; // Path to the helper
 import Slider from "@mui/material/Slider";
 import Modal from "@mui/material/Modal";
-
 
 const tabLabels = [
   "Employee details",
@@ -99,6 +99,7 @@ const AddEmployee = () => {
       "doj",
       "passport_validity",
       "probation_confirmation_date",
+      "contract_end_date",
       "resignation_date",
       "relieving_date",
       "year_of_passing",
@@ -182,30 +183,33 @@ const AddEmployee = () => {
   const [imageSrc, setImageSrc] = useState(null);
   const [originalImageSrc, setOriginalImageSrc] = useState(null); // full original image for cropping
 
-const handleFileChange = (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      setOriginalImageSrc(reader.result); // set full image for cropper
-      setShowCropper(true);               // open cropper immediately
-    };
-    reader.readAsDataURL(file);
-  }
-};
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setOriginalImageSrc(reader.result); // set full image for cropper
+        setShowCropper(true); // open cropper immediately
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
-const handleCropSave = async () => {
-  const croppedImage = await getCroppedImg(originalImageSrc, croppedAreaPixels);
-  setProfilePicture(croppedImage); // cropped preview shown
-  setShowCropper(false);
-};
+  const handleCropSave = async () => {
+    const croppedImage = await getCroppedImg(
+      originalImageSrc,
+      croppedAreaPixels
+    );
+    setProfilePicture(croppedImage); // cropped preview shown
+    setShowCropper(false);
+  };
 
-// When user clicks image to edit crop again:
-const handleEditClick = () => {
-  if (originalImageSrc) {
-    setShowCropper(true);  // open cropper with original full image again
-  }
-};
+  // When user clicks image to edit crop again:
+  const handleEditClick = () => {
+    if (originalImageSrc) {
+      setShowCropper(true); // open cropper with original full image again
+    }
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -214,63 +218,67 @@ const handleEditClick = () => {
           <div className="tab-content">
             <div className="profile-picture-wrapper">
               <label>Profile picture</label>
-<div className="profile-picture-container">
-  <input
-    type="file"
-    accept="image/*"
-    id="profile-picture-input"
-    style={{ display: "none" }}
-    onChange={handleFileChange}
-  />
-  
-  {/* Profile picture - click to edit crop */}
-  <img
-    src={profilePicture || usePlaceholder}
-    alt="Profile Preview"
-    className="profile-picture"
-    onClick={handleEditClick} // open cropper modal only
-    style={{ cursor: originalImageSrc ? "pointer" : "default" }}
-  />
+              <div className="profile-picture-container">
+                <input
+                  type="file"
+                  accept="image/*"
+                  id="profile-picture-input"
+                  style={{ display: "none" }}
+                  onChange={handleFileChange}
+                />
 
-  {/* Camera icon to open file selector */}
-  <label htmlFor="profile-picture-input" className="camera-icon-overlay">
-    <img
-      src={cameraIcon}
-      alt="Camera Icon"
-      className="camera-icon"
-      style={{ cursor: "pointer" }}
-    />
-  </label>
-</div>
+                {/* Profile picture - click to edit crop */}
+                <img
+                  src={profilePicture || usePlaceholder}
+                  alt="Profile Preview"
+                  className="profile-picture"
+                  onClick={handleEditClick} // open cropper modal only
+                  style={{ cursor: originalImageSrc ? "pointer" : "default" }}
+                />
 
+                {/* Camera icon to open file selector */}
+                <label
+                  htmlFor="profile-picture-input"
+                  className="camera-icon-overlay"
+                >
+                  <img
+                    src={cameraIcon}
+                    alt="Camera Icon"
+                    className="camera-icon"
+                    style={{ cursor: "pointer" }}
+                  />
+                </label>
+              </div>
 
-{showCropper && (
-  <Modal open={showCropper} onClose={() => setShowCropper(false)}>
-    <div className="crop-container">
-      <Cropper
-        image={originalImageSrc}
-        crop={crop}
-        zoom={zoom}
-        aspect={1}
-        onCropChange={setCrop}
-        onCropComplete={(_, croppedAreaPixels) => setCroppedAreaPixels(croppedAreaPixels)}
-        onZoomChange={setZoom}
-      />
-      <div className="controls">
-        <Slider
-          value={zoom}
-          min={1}
-          max={3}
-          step={0.1}
-          onChange={(_, value) => setZoom(value)}
-        />
-        <button onClick={handleCropSave}
-        className="btn-crop">Crop & Save</button>
-      </div>
-    </div>
-  </Modal>
-)}
-
+              {showCropper && (
+                <Modal open={showCropper} onClose={() => setShowCropper(false)}>
+                  <div className="crop-container">
+                    <Cropper
+                      image={originalImageSrc}
+                      crop={crop}
+                      zoom={zoom}
+                      aspect={1}
+                      onCropChange={setCrop}
+                      onCropComplete={(_, croppedAreaPixels) =>
+                        setCroppedAreaPixels(croppedAreaPixels)
+                      }
+                      onZoomChange={setZoom}
+                    />
+                    <div className="controls">
+                      <Slider
+                        value={zoom}
+                        min={1}
+                        max={3}
+                        step={0.1}
+                        onChange={(_, value) => setZoom(value)}
+                      />
+                      <button onClick={handleCropSave} className="btn-crop">
+                        Crop & Save
+                      </button>
+                    </div>
+                  </div>
+                </Modal>
+              )}
             </div>
 
             <div className="attachments-wrapper">
@@ -293,18 +301,21 @@ const handleEditClick = () => {
                   />
                 </div>
                 <div className="attachments-list">
-                  {newAttachments.map((file, index) => (
-                    <div key={index} className="attachment-item">
-                      <span className="attachment-name">{file.name}</span>
-                      <button
-                        type="button"
-                        className="remove-attachment"
-                        onClick={() => removeNewAttachment(index)}
-                      >
-                        &times;
-                      </button>
-                    </div>
-                  ))}
+                  {newAttachments.map((file, index) => {
+                    const filename = getCleanFilename(file.name);
+                    return (
+                      <div key={index} className="attachment-item">
+                        <span className="attachment-name">{file.name}</span>
+                        <button
+                          type="button"
+                          className="remove-attachment"
+                          onClick={() => removeNewAttachment(index)}
+                        >
+                          &times;
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>

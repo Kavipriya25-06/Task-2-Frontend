@@ -6,6 +6,8 @@ import config from "../../config";
 import { cleanFormData } from "../../utils/cleanFormData";
 import cameraIcon from "../../assets/camera.png";
 import userPlaceholder from "../../assets/user.png";
+import { getCleanFilename } from "../../utils/filenameUtils";
+import usePlaceholder from "../../assets/profile icon.svg";
 import plusIcon from "../../assets/plus.png";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -243,7 +245,7 @@ const EditEmployee = () => {
           throw new Error("Failed to upload profile picture");
         }
 
-        // 👇 ADD THIS HERE
+        //  ADD THIS HERE
         const refreshed = await fetch(
           `${config.apiBaseURL}/employees/${employee_id}/`
         );
@@ -306,7 +308,7 @@ const EditEmployee = () => {
 
                 {/* Profile picture - click to edit crop */}
                 <img
-                  src={profilePicture || profilePictureUrl || userPlaceholder}
+                  src={profilePicture || profilePictureUrl || usePlaceholder}
                   alt="Profile Preview"
                   className="profile-picture"
                   onClick={
@@ -456,23 +458,29 @@ const EditEmployee = () => {
 
             <div className="individual-tabs">
               <label>Employee Code</label>
-
               <div className="uneditable">{formData.employee_code || "-"}</div>
             </div>
             <div className="individual-tabs">
-              <label>Employee Name</label>
               {editMode ? (
-                <input
-                  name="employee_name"
-                  value={formData.employee_name}
-                  onChange={handleChange}
-                  placeholder="Employee Name"
-                  required
-                />
+                <>
+                  <label>
+                    Employee Name <span className="required-star">*</span>
+                  </label>
+                  <input
+                    name="employee_name"
+                    value={formData.employee_name}
+                    onChange={handleChange}
+                    placeholder="Employee Name"
+                    required
+                  />
+                </>
               ) : (
-                <div className="uneditable">
-                  {formData.employee_name || "-"}
-                </div>
+                <>
+                  <label>Employee Name</label>
+                  <div className="uneditable">
+                    {formData.employee_name || "-"}
+                  </div>
+                </>
               )}
             </div>
 
@@ -518,7 +526,7 @@ const EditEmployee = () => {
                         dob: format(date, "yyyy-MM-dd"), // Store in backend-friendly format
                       })
                     }
-                    dateFormat="dd-MM-yyyy"
+                    dateFormat="dd-MMM-yyyy"
                     placeholderText="dd-mm-yyyy"
                     className="input1"
                   />
@@ -527,7 +535,7 @@ const EditEmployee = () => {
               ) : (
                 <div className="uneditable">
                   {formData.dob
-                    ? format(parseISO(formData.dob), "dd-MM-yyyy")
+                    ? format(parseISO(formData.dob), "dd-MMM-yyyy")
                     : "-"}
                 </div>
               )}
@@ -544,7 +552,7 @@ const EditEmployee = () => {
                         doj: format(date, "yyyy-MM-dd"),
                       })
                     }
-                    dateFormat="dd-MM-yyyy"
+                    dateFormat="dd-MMM-yyyy"
                     placeholderText="dd-mm-yyyy"
                     className="input1"
                   />
@@ -553,7 +561,7 @@ const EditEmployee = () => {
               ) : (
                 <div className="uneditable">
                   {formData.doj
-                    ? format(parseISO(formData.doj), "dd-MM-yyyy")
+                    ? format(parseISO(formData.doj), "dd-MMM-yyyy")
                     : "-"}
                 </div>
               )}
@@ -718,7 +726,7 @@ const EditEmployee = () => {
                       handleChange({
                         target: {
                           name: "passport_validity",
-                          value: date.toISOString().split("T")[0],
+                          value: format(date, "yyyy-MM-dd"),
                         },
                       })
                     }
@@ -730,7 +738,10 @@ const EditEmployee = () => {
               ) : (
                 <div className="uneditable">
                   {formData.passport_validity
-                    ? format(parseISO(formData.passport_validity), "dd-MM-yyyy")
+                    ? format(
+                        parseISO(formData.passport_validity),
+                        "dd-MMM-yyyy"
+                      )
                     : "-"}
                 </div>
               )}
@@ -846,12 +857,22 @@ const EditEmployee = () => {
             <div className="individual-tabs">
               <label>Department</label>
               {editMode ? (
-                <input
+                <select
                   name="department"
                   value={formData.department}
                   onChange={handleChange}
-                  placeholder="Department"
-                />
+                  // placeholder="Department"
+                >
+                  <option value="">Select Department</option>
+                  <option value="Structural-Detailing">
+                    Structural-Detailing
+                  </option>
+                  <option value="Structural-Design">Structural-Design</option>
+                  <option value="Piping">Piping</option>
+                  <option value="Electrical&Instrumentation">
+                    Electrical&Instrumentation
+                  </option>
+                </select>
               ) : (
                 <div className="uneditable">{formData.department || "-"}</div>
               )}
@@ -1028,7 +1049,7 @@ const EditEmployee = () => {
                       handleChange({
                         target: {
                           name: "probation_confirmation_date",
-                          value: date.toISOString().split("T")[0],
+                          value: format(date, "yyyy-MM-dd"),
                         },
                       })
                     }
@@ -1042,7 +1063,7 @@ const EditEmployee = () => {
                   {formData.probation_confirmation_date
                     ? format(
                         parseISO(formData.probation_confirmation_date),
-                        "dd-MM-yyyy"
+                        "dd-MMM-yyyy"
                       )
                     : "-"}
                 </div>
@@ -1062,7 +1083,7 @@ const EditEmployee = () => {
                       handleChange({
                         target: {
                           name: "contract_end_date",
-                          value: date.toISOString().split("T")[0],
+                          value: format(date, "yyyy-MM-dd"),
                         },
                       })
                     }
@@ -1074,7 +1095,10 @@ const EditEmployee = () => {
               ) : (
                 <div className="uneditable">
                   {formData.contract_end_date
-                    ? format(parseISO(formData.contract_end_date), "dd-MM-yyyy")
+                    ? format(
+                        parseISO(formData.contract_end_date),
+                        "dd-MMM-yyyy"
+                      )
                     : "-"}
                 </div>
               )}
