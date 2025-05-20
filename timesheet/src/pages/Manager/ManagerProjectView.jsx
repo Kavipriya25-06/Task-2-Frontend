@@ -9,7 +9,6 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 
-
 const ManagerProjectView = () => {
   const navigate = useNavigate();
   const buildingPopupRef = useRef();
@@ -53,8 +52,6 @@ const ManagerProjectView = () => {
     navigate(`/manager/detail/buildings/${building_assign_id}`);
   };
 
-
-  
   const handleRemoveBuilding = async (building) => {
     // If the building has an assign ID, it exists in DB, so delete.
     if (building.building_assign_id) {
@@ -90,7 +87,6 @@ const ManagerProjectView = () => {
     }
   };
 
-
  const [variations, setVariations] = useState([
   { date: "2025-05-01", title: "Project Planning", hours: "4" },
   { date: "2025-05-03", title: "Team Meeting", hours: "2" },
@@ -116,8 +112,6 @@ const handleAddVariation = () => {
     alert("Please fill the previous variation before adding a new one.");
   }
 };
-
-
 
   const handleUpdate = async () => {
     // 1️ Update Project
@@ -224,30 +218,50 @@ const handleAddVariation = () => {
     setBuildingData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // console.log("The Project Assign Id isssss ",projectData.assign[0].project_assign_id);
 
   const handleBuildingSubmit = async (e) => {
-    e.preventDefault();
-    const payload = buildingData;
-    try {
-      const res = await fetch(`${config.apiBaseURL}/buildings/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        alert("Building created successfully!");
-        setBuildingData({});
-        setShowBuildingPopup(false);
-        fetchBuilding();
-      } else {
-        console.error(data);
-        alert("Failed to create Building.");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
+  e.preventDefault();
+
+  
+
+  const payload = {
+    building: {
+      building_code: buildingData.building_code,
+      building_title: buildingData.building_title,
+      building_description: buildingData.building_description,
+    },
+    assign: {
+      building_hours: buildingData.building_hours,
+      project_assign:projectData.assigns[0].project_assign_id,
+      // Optionally omit these if not available
+      // employee: [],
+      // project_assign: null
+    },
   };
+
+  try {
+    const res = await fetch(`${config.apiBaseURL}/buildings-create/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert("Building created successfully!");
+      setBuildingData({});
+      setShowBuildingPopup(false);
+      fetchProjectData(); // Refresh UI
+    } else {
+      console.error(data);
+      alert("Failed to create Building.");
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
+};
 
   const handleBuildingCancel = () => {
     setShowBuildingPopup(false);
