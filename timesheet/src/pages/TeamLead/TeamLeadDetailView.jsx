@@ -10,14 +10,33 @@ const TeamLeadDetailView = () => {
   const location = useLocation();
   const currentTab = location.pathname.split("/").slice(1)[2];
 
-  const tabs = [
-    { label: "Projects", path: "projects" },
-    { label: "Time Sheet Entry", path: "time-sheet-entry" },
-    { label: "Employees", path: "employees" },
-    { label: "Leave requests", path: "leave-requests" },
-    { label: "Attendance", path: "attendance" },
-  ];
+  // const tabs = [
+  //   { label: "Projects", path: "projects" },
+  //   { label: "Time Sheet Entry", path: "time-sheet-entry" },
+  //   { label: "Employees", path: "employees" },
+  //   { label: "Leave requests", path: "leave-requests" },
+  //   { label: "Attendance", path: "attendance" },
+  // ];
 
+  const tabs = [
+    {
+      label: "Projects",
+      path: "projects",
+      tabname: ["projects", "buildings", "tasks"],
+    },
+    {
+      label: "Time Sheet Entry",
+      path: "time-sheet-entry",
+      tabname: ["time-sheet-entry"],
+    },
+    { label: "Employees", path: "employees", tabname: ["employees"] },
+    {
+      label: "Leave requests",
+      path: "leave-requests",
+      tabname: ["leave-requests"],
+    },
+    { label: "Attendance", path: "attendance", tabname: ["attendance"] },
+  ];
   return (
     <div className="admin-page">
       <div className="main-content">

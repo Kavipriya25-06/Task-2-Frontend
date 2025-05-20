@@ -243,6 +243,7 @@ const App = () => {
               }
             >
               <Route index element={<AdminDashboard />} />
+              <Route path="detail" element={<Navigate to="/admin" replace />} />
               <Route path="detail" element={<AdminDetailView />}>
                 <Route path="users" element={<UsersPage />}></Route>
                 <Route path="users/add-user" element={<AddUserForm />} />
@@ -268,6 +269,7 @@ const App = () => {
               }
             >
               <Route index element={<HRDashboard />} />
+              <Route path="detail" element={<Navigate to="/hr" replace />} />
               <Route path="detail" element={<HRDetailView />}>
                 <Route path="employee-details" element={<EmployeeList />} />
                 <Route path="holidays" element={<HRHolidayCalendar />} />
@@ -302,6 +304,10 @@ const App = () => {
               }
             >
               <Route index element={<ManagerDashboard />} />
+              <Route
+                path="detail"
+                element={<Navigate to="/manager" replace />}
+              />
               <Route path="detail" element={<ManagerDetailView />}>
                 <Route path="projects" element={<ManagerProjects />} />
                 <Route
@@ -365,6 +371,10 @@ const App = () => {
               }
             >
               <Route index element={<TeamLeadDashboard />} />
+              <Route
+                path="detail"
+                element={<Navigate to="/teamlead" replace />}
+              />
               <Route path="detail" element={<TeamLeadDetailView />}>
                 <Route path="projects" element={<TeamLeadProjects />} />
                 <Route
@@ -450,6 +460,10 @@ const App = () => {
               }
             >
               <Route index element={<EmployeeDashboard />} />
+              <Route
+                path="detail"
+                element={<Navigate to="/employee" replace />}
+              />
               <Route path="detail" element={<EmployeeDetailView />}>
                 <Route
                   path="time-sheet-entry"
