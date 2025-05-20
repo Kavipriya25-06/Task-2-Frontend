@@ -243,9 +243,14 @@ const App = () => {
               }
             >
               <Route index element={<AdminDashboard />} />
+              <Route path="detail" element={<Navigate to="/admin" replace />} />
               <Route path="detail" element={<AdminDetailView />}>
                 <Route path="users" element={<UsersPage />}></Route>
                 <Route path="users/add-user" element={<AddUserForm />} />
+                <Route
+                  path="users/edit-user/"
+                  element={<Navigate to="/admin/detail/users" replace />}
+                />
                 <Route
                   path="users/edit-user/:user_id"
                   element={<EditUserForm />}
@@ -268,9 +273,14 @@ const App = () => {
               }
             >
               <Route index element={<HRDashboard />} />
+              <Route path="detail" element={<Navigate to="/hr" replace />} />
               <Route path="detail" element={<HRDetailView />}>
                 <Route path="employee-details" element={<EmployeeList />} />
                 <Route path="holidays" element={<HRHolidayCalendar />} />
+                <Route
+                  path="holidays/holiday-list/"
+                  element={<Navigate to="/hr/detail/holidays" replace />}
+                />
                 <Route
                   path="holidays/holiday-list/:year/"
                   element={<HRHolidayList />}
@@ -278,6 +288,12 @@ const App = () => {
                 <Route
                   path="employee-details/add-employee"
                   element={<AddEmployee />}
+                />
+                <Route
+                  path="employee-details/edit-employee/"
+                  element={
+                    <Navigate to="/hr/detail/employee-details" replace />
+                  }
                 />
                 <Route
                   path="employee-details/edit-employee/:employee_id"
@@ -302,6 +318,10 @@ const App = () => {
               }
             >
               <Route index element={<ManagerDashboard />} />
+              <Route
+                path="detail"
+                element={<Navigate to="/manager" replace />}
+              />
               <Route path="detail" element={<ManagerDetailView />}>
                 <Route path="projects" element={<ManagerProjects />} />
                 <Route
@@ -313,12 +333,20 @@ const App = () => {
                   element={<ManagerProjectCreate />}
                 />
                 <Route
+                  path="buildings/"
+                  element={<Navigate to="/manager/detail/projects" replace />}
+                />
+                <Route
                   path="buildings/create"
                   element={<ManagerBuildingCreate />}
                 />
                 <Route
                   path="buildings/:building_assign_id"
                   element={<ManagerBuildingView />}
+                />
+                <Route
+                  path="tasks/"
+                  element={<Navigate to="/manager/detail/projects" replace />}
                 />
                 <Route path="tasks/create" element={<ManagerTaskCreate />} />
                 <Route
@@ -339,6 +367,14 @@ const App = () => {
                 <Route
                   path="attendance/attendance-admin"
                   element={<ManagerAttendanceAdmin />}
+                />
+                <Route
+                  path="attendance/timesheetapproval/"
+                  element={<Navigate to="/manager/detail/attendance" replace />}
+                />
+                <Route
+                  path="attendance/timesheetapproval/:employee_id/"
+                  element={<Navigate to="/manager/detail/attendance" replace />}
                 />
                 <Route
                   path="attendance/timesheetapproval/:employee_id/:date"
@@ -365,6 +401,10 @@ const App = () => {
               }
             >
               <Route index element={<TeamLeadDashboard />} />
+              <Route
+                path="detail"
+                element={<Navigate to="/teamlead" replace />}
+              />
               <Route path="detail" element={<TeamLeadDetailView />}>
                 <Route path="projects" element={<TeamLeadProjects />} />
                 <Route
@@ -380,12 +420,20 @@ const App = () => {
                   element={<TeamLeadProjectView />}
                 />
                 <Route
+                  path="buildings/"
+                  element={<Navigate to="/teamlead/detail/projects" replace />}
+                />
+                <Route
                   path="buildings/create"
                   element={<TeamLeadBuildingCreate />}
                 />
                 <Route
                   path="buildings/:building_assign_id"
                   element={<TeamLeadBuildingView />}
+                />
+                <Route
+                  path="tasks/"
+                  element={<Navigate to="/teamlead/detail/projects" replace />}
                 />
                 <Route path="tasks/create" element={<TeamLeadTaskCreate />} />
                 <Route
@@ -397,6 +445,12 @@ const App = () => {
                   element={<TeamLeadTimeSheetEntry />}
                 />
                 <Route
+                  path="time-sheet-entry/createdaily/"
+                  element={
+                    <Navigate to="/teamlead/detail/time-sheet-entry" replace />
+                  }
+                />
+                <Route
                   path="time-sheet-entry/createdaily/:date"
                   element={<TeamLeadDailyTimeSheetEntry />}
                 />
@@ -405,8 +459,10 @@ const App = () => {
                   element={<TeamLeadApprovalScreen />}
                 />
                 <Route
-                  path="time-sheet-entry/approvalscreen"
-                  element={<TeamLeadApprovalScreen />}
+                  path="time-sheet-entry/createweekly/"
+                  element={
+                    <Navigate to="/teamlead/detail/time-sheet-entry" replace />
+                  }
                 />
                 <Route
                   path="time-sheet-entry/createweekly/:date"
@@ -434,6 +490,18 @@ const App = () => {
                   element={<TeamLeadAttendanceAdmin />}
                 />
                 <Route
+                  path="attendance/timesheetapproval/"
+                  element={
+                    <Navigate to="/teamlead/detail/attendance" replace />
+                  }
+                />
+                <Route
+                  path="attendance/timesheetapproval/:employee_id/"
+                  element={
+                    <Navigate to="/teamlead/detail/attendance" replace />
+                  }
+                />
+                <Route
                   path="attendance/timesheetapproval/:employee_id/:date"
                   element={<TeamLeadApprovalScreen />}
                 />
@@ -450,14 +518,34 @@ const App = () => {
               }
             >
               <Route index element={<EmployeeDashboard />} />
+              <Route
+                path="detail"
+                element={<Navigate to="/employee" replace />}
+              />
+              <Route
+                path="detail/"
+                element={<Navigate to="/employee" replace />}
+              />
               <Route path="detail" element={<EmployeeDetailView />}>
                 <Route
                   path="time-sheet-entry"
                   element={<EmployeeTimeSheetEntry />}
                 />
                 <Route
+                  path="time-sheet-entry/createdaily/"
+                  element={
+                    <Navigate to="/employee/detail/time-sheet-entry" replace />
+                  }
+                />
+                <Route
                   path="time-sheet-entry/createdaily/:date"
                   element={<EmployeeDailyTimeSheetEntry />}
+                />
+                <Route
+                  path="time-sheet-entry/createweekly/"
+                  element={
+                    <Navigate to="/employee/detail/time-sheet-entry" replace />
+                  }
                 />
                 <Route
                   path="time-sheet-entry/createweekly/:date"

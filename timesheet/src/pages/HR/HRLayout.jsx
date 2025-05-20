@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Outlet } from "react-router-dom";
+import Breadcrumbs from "../../components/Breadcrumbs";
 
 const HRLayout = () => {
   return (
@@ -19,6 +20,7 @@ const HRLayout = () => {
     //   </main>
     // </div>
     <div className="admin-layout">
+      <Breadcrumbs />
       <Outlet />
     </div>
   );

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import config from "../../config";
 import roleOptions from "../../constants/roleOptions";
-import Breadcrumbs from "../../components/Breadcrumbs";
+// import Breadcrumbs from "../../components/Breadcrumbs";
 
 const AddUserForm = ({ onCancel, onSave }) => {
   const [employeeID, setEmployeeID] = useState("");
@@ -64,14 +64,14 @@ const AddUserForm = ({ onCancel, onSave }) => {
 
   return (
     <div className="add-user-container">
-      <Breadcrumbs
+      {/* <Breadcrumbs
         crumbs={[
           { label: "Admin", link: "/admin" },
           { label: "Users", link: "/admin/detail/users" },
           { label: "Add User" }, // or "Edit User"
         ]}
         showBack={true}
-      />
+      /> */}
 
       <div className="table-top-bar">
         <div>Add User</div>

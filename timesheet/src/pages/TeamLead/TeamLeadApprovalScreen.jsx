@@ -83,14 +83,23 @@ const TeamLeadApprovalScreen = () => {
               const project =
                 entry.task_assign?.building_assign?.project_assign?.project
                   ?.project_title || "";
+
+              const building = entry.task_assign?.building_assign?.building?.building_title || "";
+
               const task = entry.task_assign?.task?.task_title || "";
+
+              const start_time = (entry.start_time || "0");
+              const end_time = (entry.end_time || "0");
 
               const hours = parseFloat(entry.task_hours || "0");
 
               timesheetRows.push({
                 timesheet_id: entry.timesheet_id,
                 project,
+                building,
                 task,
+                start_time:start_time.toString(),
+                end_time:end_time.toString(),
                 hours: hours.toString(),
               });
             });
@@ -102,7 +111,7 @@ const TeamLeadApprovalScreen = () => {
             });
           } else {
             // No timesheets found
-            timesheetRows = [{ project: "", task: "", hours: "" }];
+            timesheetRows = [{ project: "",building:"", task: "", start_time:"", end_time:"", hours: "" }];
             setStatus({
               approved: false,
               rejected: false,
@@ -117,7 +126,7 @@ const TeamLeadApprovalScreen = () => {
             out_time: "--:--",
             total_duration: "0.00",
           });
-          setRows([{ project: "", task: "", hours: "" }]);
+          setRows([{ project: "",building:"", task: "", start_time:"",end_time:"", hours: "" }]);
           setStatus({
             approved: false,
             rejected: false,
@@ -130,7 +139,7 @@ const TeamLeadApprovalScreen = () => {
           out_time: "--:--",
           total_duration: "0.00",
         });
-        setRows([{ project: "", task: "", hours: "" }]);
+        setRows([{ project: "",building:"", task: "",start_time:"",end_time:"", hours: ""}]);
         setStatus({
           approved: false,
           rejected: false,
@@ -248,7 +257,10 @@ const TeamLeadApprovalScreen = () => {
         <thead>
           <tr>
             <th>Project name</th>
+            <th>Sub-Division</th>
             <th>Tasks</th>
+            <th>Start Time</th>
+            <th>End Time</th>
             <th>Hours</th>
           </tr>
         </thead>
@@ -256,7 +268,10 @@ const TeamLeadApprovalScreen = () => {
           {rows.map((row, index) => (
             <tr key={index}>
               <td>{row.project}</td>
+              <td>{row.building}</td>
               <td> {row.task}</td>
+              <td>{row.start_time}</td>
+              <td>{row.end_time}</td>
               <td>{row.hours}</td>
             </tr>
           ))}

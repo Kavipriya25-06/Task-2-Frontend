@@ -5,7 +5,7 @@ import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate } from "react-router-dom";
-import Breadcrumbs from "../../components/Breadcrumbs";
+// import Breadcrumbs from "../../components/Breadcrumbs";
 // import editIcon from "src/assets/edit.png";
 
 const UsersPage = () => {
@@ -56,10 +56,10 @@ const UsersPage = () => {
 
   return (
     <div>
-      <Breadcrumbs
+      {/* <Breadcrumbs
         crumbs={[{ label: "Admin", link: "/admin" }, { label: "Users" }]}
         showBack={false}
-      />
+      /> */}
       <div className="user-header">
         <h2 className="employee-title">User credentials</h2>
         <div className="search-bar-container">

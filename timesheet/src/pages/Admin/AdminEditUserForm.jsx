@@ -4,7 +4,7 @@ import config from "../../config";
 import roleOptions from "../../constants/roleOptions";
 
 import { FaEdit } from "react-icons/fa";
-import Breadcrumbs from "../../components/Breadcrumbs";
+// import Breadcrumbs from "../../components/Breadcrumbs";
 
 const EditUserForm = () => {
   const { user_id } = useParams();
@@ -93,7 +93,7 @@ const EditUserForm = () => {
 
   return (
     <div className="add-user-container">
-      <Breadcrumbs
+      {/* <Breadcrumbs
         crumbs={[
           { label: "Admin", link: "/admin" },
           { label: "Users", link: "/admin/detail/users" },
@@ -107,7 +107,7 @@ const EditUserForm = () => {
             navigate("/admin/detail/users"); // Go back to user list
           }
         }}
-      />
+      /> */}
       <div className="table-top-bar">
         <div>
           {editMode ? (
