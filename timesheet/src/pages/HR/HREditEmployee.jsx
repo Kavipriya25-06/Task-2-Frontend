@@ -820,7 +820,7 @@ const EditEmployee = () => {
                 >
                   <option value="">Select Employment Type</option>
                   <option value="Fulltime">Full-Time</option>
-                  <option value="Parttime">Probation</option>
+                  <option value="Probation">Probation</option>
                   <option value="Internship">Internship</option>
                   <option value="Contract">Contract</option>
                 </select>
