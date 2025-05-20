@@ -10,6 +10,10 @@ import plusIcon from "../../assets/plus.png";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { parseISO, format } from "date-fns";
+import Cropper from "react-easy-crop";
+import getCroppedImg from "../../constants/cropimage"; // Path to the helper
+import Slider from "@mui/material/Slider";
+import Modal from "@mui/material/Modal";
 
 import { FaEdit } from "react-icons/fa";
 
@@ -38,6 +42,7 @@ const EditEmployee = () => {
     attachments,
     setAttachments,
     newAttachments,
+    setNewAttachments,
     handleAttachmentChange,
     removeExistingAttachment,
     removeNewAttachment,
@@ -136,6 +141,46 @@ const EditEmployee = () => {
     }));
   };
 
+  const [showCropper, setShowCropper] = useState(false);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [imageSrc, setImageSrc] = useState(null);
+  const [profilePictureBlob, setProfilePictureBlob] = useState(null);
+  const [originalImageSrc, setOriginalImageSrc] = useState(null); // full original image for cropping
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setOriginalImageSrc(reader.result); // set full image for cropper
+        setShowCropper(true); // open cropper immediately
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCropSave = async () => {
+    const blob = await getCroppedImg(originalImageSrc, croppedAreaPixels);
+
+    // Preview
+    const previewUrl = URL.createObjectURL(blob);
+    setProfilePicture(previewUrl); // For preview
+
+    // Store Blob for upload
+    setProfilePictureBlob(blob); // New state to hold actual blob for uploading
+
+    setShowCropper(false);
+  };
+
+  // When user clicks image to edit crop again:
+  const handleEditClick = () => {
+    if (originalImageSrc) {
+      setShowCropper(true); // open cropper with original full image again
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!editMode) return;
@@ -178,9 +223,13 @@ const EditEmployee = () => {
         }
       );
 
-      if (profilePicture) {
+      if (profilePictureBlob) {
         const picturePayload = new FormData();
-        picturePayload.append("profile_picture", profilePicture);
+        picturePayload.append(
+          "profile_picture",
+          profilePictureBlob,
+          "profile.jpg"
+        );
 
         const imageUploadResponse = await fetch(
           `${config.apiBaseURL}/employees/${employee_id}/`,
@@ -190,8 +239,16 @@ const EditEmployee = () => {
           }
         );
 
-        if (!imageUploadResponse.ok)
+        if (!imageUploadResponse.ok) {
           throw new Error("Failed to upload profile picture");
+        }
+
+        // 👇 ADD THIS HERE
+        const refreshed = await fetch(
+          `${config.apiBaseURL}/employees/${employee_id}/`
+        );
+        const updatedData = await refreshed.json();
+        setProfilePictureUrl(config.apiBaseURL + updatedData.profile_picture);
       }
 
       if (newAttachments.length > 0) {
@@ -209,6 +266,7 @@ const EditEmployee = () => {
             console.error("Failed to upload file:", file.name);
           }
         }
+        setNewAttachments([]);
 
         // Refresh the list after all uploads
         const attachResponse = await fetch(
@@ -216,7 +274,7 @@ const EditEmployee = () => {
         );
         const attachData = await attachResponse.json();
         setAttachments(attachData);
-        // setNewAttachments([]);
+        setNewAttachments([]);
       }
 
       if (!response.ok) throw new Error("Failed to update employee");
@@ -235,40 +293,72 @@ const EditEmployee = () => {
         return (
           <div className="tab-content">
             <div className="profile-picture-wrapper">
-              <h4>Profile Photo: </h4>
-              <img
-                src={
-                  profilePicture
-                    ? URL.createObjectURL(profilePicture)
-                    : profilePictureUrl || userPlaceholder
-                }
-                alt="Profile"
-                className="profile-picture-img"
-              />
+              <label>Profile picture</label>
+              <div className="profile-picture-container">
+                <input
+                  type="file"
+                  accept="image/*"
+                  id="profile-picture-input"
+                  style={{ display: "none" }}
+                  onChange={handleFileChange}
+                  disabled={!editMode}
+                />
 
-              {/* Hidden file input */}
-              {editMode && (
-                <>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    id="profile-picture-input"
-                    className="profile-picture-input"
-                    onChange={(e) => setProfilePicture(e.target.files[0])}
+                {/* Profile picture - click to edit crop */}
+                <img
+                  src={profilePicture || profilePictureUrl || userPlaceholder}
+                  alt="Profile Preview"
+                  className="profile-picture"
+                  onClick={
+                    editMode && originalImageSrc ? handleEditClick : undefined
+                  }
+                  style={{
+                    cursor:
+                      editMode && originalImageSrc ? "pointer" : "default",
+                  }}
+                />
+
+                {/* Camera icon to open file selector */}
+                <label
+                  htmlFor="profile-picture-input"
+                  className="camera-icon-overlay"
+                >
+                  <img
+                    src={cameraIcon}
+                    alt="Camera Icon"
+                    className="camera-icon"
+                    style={{ cursor: "pointer" }}
                   />
-
-                  {/* Camera Icon */}
-                  <label
-                    htmlFor="profile-picture-input"
-                    className="camera-icon-label"
-                  >
-                    <img
-                      src={cameraIcon}
-                      alt="Edit"
-                      className="camera-icon-img"
+                </label>
+              </div>
+              {showCropper && (
+                <Modal open={showCropper} onClose={() => setShowCropper(false)}>
+                  <div className="crop-container">
+                    <Cropper
+                      image={originalImageSrc}
+                      crop={crop}
+                      zoom={zoom}
+                      aspect={1}
+                      onCropChange={setCrop}
+                      onCropComplete={(_, croppedAreaPixels) =>
+                        setCroppedAreaPixels(croppedAreaPixels)
+                      }
+                      onZoomChange={setZoom}
                     />
-                  </label>
-                </>
+                    <div className="controls">
+                      <Slider
+                        value={zoom}
+                        min={1}
+                        max={3}
+                        step={0.1}
+                        onChange={(_, value) => setZoom(value)}
+                      />
+                      <button onClick={handleCropSave} className="btn-crop">
+                        Crop & Save
+                      </button>
+                    </div>
+                  </div>
+                </Modal>
               )}
             </div>
 
@@ -299,12 +389,14 @@ const EditEmployee = () => {
                 <ul className="attachments-list">
                   {/* Existing attachments */}
                   {attachments.map((file) => {
-                    const filename = file.file
-                      .split("/")
-                      .pop()
-                      .split("_")
-                      .slice(1)
-                      .join("_");
+                    const fullFilename = file.file.split("/").pop();
+                    const match = fullFilename.match(
+                      /^(.+?)_[a-zA-Z0-9]+\.(\w+)$/
+                    );
+                    const filename = match
+                      ? `${match[1]}.${match[2]}`
+                      : fullFilename;
+
                     return (
                       <li key={file.id} className="attachment-item">
                         <a
@@ -431,7 +523,6 @@ const EditEmployee = () => {
                     className="input1"
                   />
                   <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
-               
                 </div>
               ) : (
                 <div className="uneditable">
@@ -543,7 +634,7 @@ const EditEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>UAN</label>
-      
+
               {editMode ? (
                 <input
                   name="UAN"

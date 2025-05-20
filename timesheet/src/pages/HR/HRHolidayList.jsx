@@ -196,6 +196,7 @@ const HolidayList = () => {
       )} */}
 
      {showPopup && (
+      
   <div
     className="custom-modal-overlay"
     onClick={() => setShowPopup(false)} // Close on overlay click
@@ -212,6 +213,7 @@ const HolidayList = () => {
       <label>
         Date:
         <br />
+        
         <div className="date-input-container">
          <DatePicker
             selected={formData.date ? new Date(formData.date) : null}
@@ -224,6 +226,7 @@ const HolidayList = () => {
             dateFormat="dd-MMM-yyyy"
             placeholderText="dd-mm-yyyy"
             className="input1"
+             shouldCloseOnSelect={true} 
           />
           <i className="fas fa-calendar-alt calendar-icon"></i>
         </div>

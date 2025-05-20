@@ -311,8 +311,8 @@ const ManagerAttendanceAdmin = () => {
               <div className="date-input-container">
                 <DatePicker
                   selected={newAttendance.date}
-                  onChange={(e) =>
-                    setNewAttendance({ ...newAttendance, date: e.target.value })
+                  onChange={(date) =>
+                    setNewAttendance({ ...newAttendance, date: format(date, "yyyy-MM-dd") })
                   }
                   dateFormat="dd-MMM-yyyy"
                   placeholderText="dd-mm-yyyy"

@@ -882,6 +882,55 @@ table input[type="number"]:focus {
   margin-right: 20px;
 }
 
+/* Crop Image */
+.pagination-controls {
+  display: flex;
+  justify-content:end;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* For your cropper modal wrapper */
+.crop-container {
+  position: relative;
+  z-index: 9999; /* Ensure it's above everything else */
+  background: white;
+  padding: 40px;
+
+}
+
+/* Optional: for safety */
+.reactEasyCrop_CropArea {
+  z-index: 10000;
+}
+
+/* For crop controls (buttons and slider) */
+.controls {
+  position: relative;
+  margin-top: 20px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Ensure the modal itself (from MUI or your component) allows overflow */
+.MuiModal-root {
+  z-index: 1300; /* Default MUI modal index */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.controls .btn-crop{
+  padding: 7px;
+  border-radius: 10px;
+  border: none;
+  margin-top: 170px;
+  cursor: pointer;
+}
+
 /* When status is Inactive */
 
 .form-group {
@@ -1766,6 +1815,9 @@ h3 {
   cursor: not-allowed;
 }
 
+.react-datepicker__day--keyboard-selected{
+  background: none !important;
+}
 
 .react-datepicker__day--today {
   /* background-color: #4d9aed !important; Blue background */
@@ -2294,6 +2346,9 @@ h3 {
 .profile-picture {
   margin-top: 10%;
   margin-bottom: 0%;
+  background-color: rgb(234, 234, 234);
+  border: none !important;
+  
 }
 
 /* Button Group */

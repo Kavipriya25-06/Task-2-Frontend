@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import config from "../../config";
 import { cleanFormData } from "../../utils/cleanFormData";
-import usePlaceholder from "../../assets/user.png";
+import usePlaceholder from "../../assets/profile icon.svg";
 import cameraIcon from "../../assets/camera.png";
 import plusIcon from "../../assets/plus.png";
 import { useAttachmentManager } from "../../constants/useAttachmentManager";
@@ -13,7 +13,11 @@ import { defaultEmployeeFormData } from "../../constants/defaultEmployeeFormData
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
-import { toast } from "react-toastify";
+import Cropper from "react-easy-crop";
+import getCroppedImg from "../../constants/cropimage"; // Path to the helper
+import Slider from "@mui/material/Slider";
+import Modal from "@mui/material/Modal";
+
 
 const tabLabels = [
   "Employee details",
@@ -26,7 +30,6 @@ const AddEmployee = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(0);
   const [managers, setManagers] = useState([]);
-  const [error, setError] = useState(""); // to show the error
   const [experienceUI, setExperienceUI] = useState({
     arris_years: "",
     arris_months: "",
@@ -90,20 +93,19 @@ const AddEmployee = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
 
     const fieldsToNullify = [
       "dob",
       "doj",
       "passport_validity",
       "probation_confirmation_date",
-      "contract_end_date",
       "resignation_date",
       "relieving_date",
       "year_of_passing",
       "arris_experience",
       "total_experience",
       "personal_email",
+      "employee_email",
       "contact_number",
       "aadhaar_number",
       "PAN",
@@ -128,13 +130,6 @@ const AddEmployee = () => {
     if (profilePicture) {
       formPayload.append("profile_picture", profilePicture);
     }
-    console.log(formPayload, "Form payload");
-
-    if (!formData.employee_email) {
-      // alert("Please enter email");
-      toast.error("Please enter an email");
-      return;
-    }
 
     try {
       //  Step 1: Post Employee data
@@ -143,24 +138,10 @@ const AddEmployee = () => {
         body: formPayload,
       });
 
+      if (!response.ok) throw new Error("Failed to add employee");
+
       const responseData = await response.json();
-      console.log("error response", responseData);
-
-      if (!response.ok) {
-        if (responseData.error) {
-          setError(responseData.error); // your custom error: "Email already exists"
-          console.log("Error response", responseData);
-        } else if (responseData.employee_email) {
-          setError(responseData.employee_email[0]); // DRF validation: ["Email already exists."]
-          console.log("Email error", responseData.employee_email[0]);
-          alert(responseData.employee_email[0]);
-        } else {
-          setError("An unexpected error occurred.");
-        }
-        return;
-      }
-
-      const newEmployeeId = responseData?.data.employee_id; //  Get employee_id from response
+      const newEmployeeId = responseData.data.employee_id; //  Get employee_id from response
 
       console.log("Employee created with ID:", newEmployeeId);
 
@@ -194,6 +175,38 @@ const AddEmployee = () => {
     }
   };
 
+  const [showCropper, setShowCropper] = useState(false);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [imageSrc, setImageSrc] = useState(null);
+  const [originalImageSrc, setOriginalImageSrc] = useState(null); // full original image for cropping
+
+const handleFileChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      setOriginalImageSrc(reader.result); // set full image for cropper
+      setShowCropper(true);               // open cropper immediately
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+const handleCropSave = async () => {
+  const croppedImage = await getCroppedImg(originalImageSrc, croppedAreaPixels);
+  setProfilePicture(croppedImage); // cropped preview shown
+  setShowCropper(false);
+};
+
+// When user clicks image to edit crop again:
+const handleEditClick = () => {
+  if (originalImageSrc) {
+    setShowCropper(true);  // open cropper with original full image again
+  }
+};
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 0:
@@ -201,36 +214,63 @@ const AddEmployee = () => {
           <div className="tab-content">
             <div className="profile-picture-wrapper">
               <label>Profile picture</label>
-              <div className="profile-picture-container">
-                <input
-                  type="file"
-                  accept="image/*"
-                  id="profile-picture-input"
-                  style={{ display: "none" }}
-                  onChange={(e) => setProfilePicture(e.target.files[0])}
-                />
-                <label
-                  htmlFor="profile-picture-input"
-                  className="profile-picture-label"
-                >
-                  <img
-                    src={
-                      profilePicture
-                        ? URL.createObjectURL(profilePicture)
-                        : usePlaceholder
-                    }
-                    alt="Profile Preview"
-                    className="profile-picture"
-                  />
-                  <div className="camera-icon-overlay">
-                    <img
-                      src={cameraIcon}
-                      alt="Camera Icon"
-                      className="camera-icon"
-                    />
-                  </div>
-                </label>
-              </div>
+<div className="profile-picture-container">
+  <input
+    type="file"
+    accept="image/*"
+    id="profile-picture-input"
+    style={{ display: "none" }}
+    onChange={handleFileChange}
+  />
+  
+  {/* Profile picture - click to edit crop */}
+  <img
+    src={profilePicture || usePlaceholder}
+    alt="Profile Preview"
+    className="profile-picture"
+    onClick={handleEditClick} // open cropper modal only
+    style={{ cursor: originalImageSrc ? "pointer" : "default" }}
+  />
+
+  {/* Camera icon to open file selector */}
+  <label htmlFor="profile-picture-input" className="camera-icon-overlay">
+    <img
+      src={cameraIcon}
+      alt="Camera Icon"
+      className="camera-icon"
+      style={{ cursor: "pointer" }}
+    />
+  </label>
+</div>
+
+
+{showCropper && (
+  <Modal open={showCropper} onClose={() => setShowCropper(false)}>
+    <div className="crop-container">
+      <Cropper
+        image={originalImageSrc}
+        crop={crop}
+        zoom={zoom}
+        aspect={1}
+        onCropChange={setCrop}
+        onCropComplete={(_, croppedAreaPixels) => setCroppedAreaPixels(croppedAreaPixels)}
+        onZoomChange={setZoom}
+      />
+      <div className="controls">
+        <Slider
+          value={zoom}
+          min={1}
+          max={3}
+          step={0.1}
+          onChange={(_, value) => setZoom(value)}
+        />
+        <button onClick={handleCropSave}
+        className="btn-crop">Crop & Save</button>
+      </div>
+    </div>
+  </Modal>
+)}
+
             </div>
 
             <div className="attachments-wrapper">
@@ -284,7 +324,7 @@ const AddEmployee = () => {
             <div className="individual-tabs">
               <label>
                 Employee Name
-                <span className="required-star"> *</span>
+                <span className="required-star">*</span>
               </label>
               <input
                 name="employee_name"
@@ -530,10 +570,11 @@ const AddEmployee = () => {
                 name="employment_type"
                 value={formData.employment_type}
                 onChange={handleChange}
+                // placeholder="Employment Type"
               >
                 <option value="">Select Employment Type</option>
                 <option value="Fulltime">Full-Time</option>
-                <option value="Parttime">Probation</option>
+                <option value="Parttime">Part-Time</option>
                 <option value="Internship">Internship</option>
                 <option value="Contract">Contract</option>
               </select>
@@ -701,27 +742,6 @@ const AddEmployee = () => {
                 {/* Font Awesome Calendar Icon */}
               </div>
             </div>
-
-            <div className="individual-tabs">
-              <label>Contract End date</label>
-              <div className="date-input-container">
-                <DatePicker
-                  selected={formData.contract_end_date}
-                  onChange={(date) =>
-                    setFormData({
-                      ...formData,
-                      contract_end_date: format(date, "yyyy-MM-dd"),
-                    })
-                  }
-                  dateFormat="dd-MMM-yyyy"
-                  placeholderText="Select Contract End date"
-                  className="input1"
-                />
-                <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
-                {/* Font Awesome Calendar Icon */}
-              </div>
-            </div>
-
             <div className="individual-tabs">
               <label>
                 Official Email <span className="required-star">*</span>
@@ -732,7 +752,6 @@ const AddEmployee = () => {
                 onChange={handleChange}
                 placeholder="Official Email"
                 className={errors.employee_email ? "input-error" : ""}
-                required
               />
               {errors.employee_email && (
                 <span className="error-message">{errors.employee_email}</span>
