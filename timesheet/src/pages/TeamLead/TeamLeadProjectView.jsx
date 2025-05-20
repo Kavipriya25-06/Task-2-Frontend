@@ -703,7 +703,11 @@ const TeamLeadProjectView = () => {
     area_of_work: [],
   });
   const [showBuildingPopup, setShowBuildingPopup] = useState(false);
+    const [buildingData, setBuildingData] = useState({});
   const [showAreaPopup, setShowAreaPopup] = useState(false);
+    const [showAttachments, setShowAttachments] = useState(false);
+  const [attachments, setAttachments] = useState([]);
+
   const [selectedBuildings, setSelectedBuildings] = useState([]);
   const [availableBuildings, setAvailableBuildings] = useState([]);
     const [discipline, setDiscipline] = useState([]);
@@ -723,6 +727,17 @@ const TeamLeadProjectView = () => {
   const buildingClick = (building_assign_id) => {
     navigate(`/teamlead/detail/buildings/${building_assign_id}`);
   };
+
+  
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    setAttachments((prev) => [...prev, ...files]);
+  };
+
+ const handleRemoveFile = (index) => {
+  setAttachments((prev) => prev.filter((_, i) => i !== index));
+};
+
 
   const handleRemoveBuilding = async (building) => {
     // If the building has an assign ID, it exists in DB, so delete.
@@ -883,6 +898,42 @@ const TeamLeadProjectView = () => {
     setEditMode(false);
     fetchProjectData(); // refresh UI
   };
+
+  const handleBuildingChange = (e) => {
+      const { name, value } = e.target;
+      setBuildingData((prev) => ({ ...prev, [name]: value }));
+    };
+  
+  
+    const handleBuildingSubmit = async (e) => {
+      e.preventDefault();
+      const payload = buildingData;
+      try {
+        const res = await fetch(`${config.apiBaseURL}/buildings/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert("Building created successfully!");
+          setBuildingData({});
+          setShowBuildingPopup(false);
+          fetchBuilding();
+        } else {
+          console.error(data);
+          alert("Failed to create Building.");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+  
+    const handleBuildingCancel = () => {
+      setShowBuildingPopup(false);
+      setBuildingData({});
+    };
+  
 
   useEffect(() => {
     fetchTeamleadManager();
@@ -1252,45 +1303,113 @@ const TeamLeadProjectView = () => {
 
               <div className="project-form-group">
                 <label className="attaches">Attachments</label>
-                {editMode && (
-                  <input
-                    type="file"
-                    multiple
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        attachments: Array.from(e.target.files),
-                      }))
-                    }
-                  />
-                )}
-                {projectData.attachments && projectData.attachments.length > 0 ? (
-                  projectData.attachments.map((file, index) => (
-                    <div key={index} style={{ marginBottom: "5px" }}>
-                                        <a
-                     href={config.apiBaseURL + file.file}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="view-attachment-link"
-                  >
-                    <img
-                      src="/src/assets/pin svg.svg" // replace this with your actual image path
-                      alt="Attachment"
-                      style={{
-                        width: "16px",
-                        height: "16px",
-                        marginRight: "5px",
-                        verticalAlign: "middle",
-                      }}
+               {editMode ? (
+                  <div className="plus-upload-wrappers">
+                    <label
+                      htmlFor="file-upload-input"
+                      className="plus-upload-button"
+                    >
+                      +
+                    </label>
+                    <input
+                      type="file"
+                      id="file-upload-input"
+                      name="attachments"
+                      multiple
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      style={{ display: "none" }}
+                      onChange={handleFileChange}
+                      className="real-file-input"
                     />
-                    {file.file.split("/").pop()}
-                  </a>
 
-                    </div>
-                  ))
-                ) :  !editMode ?  (
-                  <p>No attachments</p>
-                ):null}
+                  {attachments.length > 0 && (
+      <div className="selected-files">
+        {attachments.map((file, index) => (
+          <div key={index} className="file-chip">
+            <a
+              href={URL.createObjectURL(file)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="file-name"
+            >
+              {file.name}
+            </a>
+            <button
+              type="button"
+              className="remove-file"
+              onClick={() => handleRemoveFile(index)}
+            >
+              ×
+            </button>
+          </div>
+        ))}
+      </div>
+    )}
+                  </div>
+                ) : attachments.length > 0 ? (
+                  <>
+                    {/* 📎 View Attachments Toggle */}
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowAttachments((prev) => !prev);
+                      }}
+                      className="view-attachment-link"
+                      style={{
+                        display: "inline-block",
+                        marginBottom: "10px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <img
+                        src="/src/assets/pin svg.svg"
+                        alt="Attachment"
+                        style={{
+                          width: "16px",
+                          height: "16px",
+                          marginRight: "5px",
+                          verticalAlign: "middle",
+                        }}
+                      />{" "}
+                      {showAttachments
+                        ? "Hide Attachments"
+                        : "View Attachments"}
+                    </a>
+
+                    {/* Attachments List Toggle */}
+                    {showAttachments && (
+                      <ul className="attachment-list">
+                        {attachments.map((file, index) => (
+                          <li key={index}>
+                            <a
+                              href={URL.createObjectURL(file)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="view-attachment-link"
+                            >
+                              <img
+                                src="/src/assets/pin svg.svg"
+                                alt="Attachment"
+                                style={{
+                                  width: "16px",
+                                  height: "16px",
+                                  marginRight: "5px",
+                                  verticalAlign: "middle",
+                                }}
+                              />
+                              {file.name}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </>
+                ) : (
+                  <p style={{ color: "#666" }}>
+                    No attachments added.
+                  </p>
+                )}
               </div>
 
             </div>
@@ -1424,104 +1543,74 @@ const TeamLeadProjectView = () => {
           )}
         </div>
       </div>
-      {showBuildingPopup && (
+        {showBuildingPopup && (
         <div className="popup" ref={buildingPopupRef}>
-          <h4>Select Sub-Division</h4>
-          {buildings.map((b) => (
-            <div key={b.building_id} style={{ marginBottom: "8px" }}>
-              <input
-                type="checkbox"
-                value={b.building_id}
-                checked={
-                  selectedBuildings.some(
-                    (item) => item.building_id === b.building_id
-                  ) ||
-                  availableBuildings.some(
-                    (ab) => ab.building_id === b.building_id
-                  )
-                }
-                onChange={(e) => {
-                  const checked = e.target.checked;
-                  const existing = selectedBuildings.find(
-                    (item) => item.building_id === b.building_id
-                  );
-
-                  if (checked && !existing) {
-                    const assigned = availableBuildings.find(
-                      (ab) => ab.building_id === b.building_id
-                    );
-                    setSelectedBuildings((prev) => [
-                      ...prev,
-                      {
-                        ...b,
-                        building_hours: assigned ? assigned.building_hours : "",
-                      },
-                    ]);
-                  } else if (!checked) {
-                    setSelectedBuildings((prev) =>
-                      prev.filter((item) => item.building_id !== b.building_id)
-                    );
-                  }
-                }}
-              />
-              {b.building_title}
-              {selectedBuildings.some(
-                (s) => s.building_id === b.building_id
-              ) && (
-                <input
-                  type="number"
-                  placeholder="Hours"
-                  style={{ marginLeft: "10px" }}
-                  onChange={(e) => {
-                    setSelectedBuildings((prev) =>
-                      prev.map((item) =>
-                        item.building_id === b.building_id
-                          ? { ...item, building_hours: e.target.value }
-                          : item
-                      )
-                    );
-                  }}
-                />
-              )}
-            </div>
-          ))}
-          <button
-            className="btn-save"
-            onClick={() => {
-              const invalid = selectedBuildings.find(
-                (b) => !b.building_hours || parseFloat(b.building_hours) <= 0
-              );
-
-              if (invalid) {
-                alert(
-                  `Please enter valid hours for building "${invalid.building_title}".`
-                );
-                return;
-              }
-              setAvailableBuildings((prev) => [
-                ...prev,
-                ...selectedBuildings.filter(
-                  (b) => !prev.some((ab) => ab.building_id === b.building_id)
-                ),
-              ]);
-              setSelectedBuildings([]);
-              setShowBuildingPopup(false);
-            }}
-          >
-            Done
-          </button>
-
-          <button
-            onClick={() => {
-              setSelectedBuildings([]);
-              setShowBuildingPopup(false);
-            }}
-            className="btn-cancel"
-          >
-            Cancel
-          </button>
+          <div className="create-building-container">
+            <h2>Create Sub-Division</h2>
+            <form onSubmit={handleBuildingSubmit}>
+              <div className="building-elements">
+                <div className="bottom-element">
+                  <div>
+                    <label>Sub-Division code</label>
+                    <br />
+                    <input
+                      name="building_code"
+                      value={buildingData.building_code || ""}
+                      onChange={handleBuildingChange}
+                      className="bottom-inputs"
+                    />
+                  </div>
+                  <div>
+                    <label>Sub-Division Title</label>
+                    <br />
+                    <input
+                      name="building_title"
+                      value={buildingData.building_title || ""}
+                      onChange={handleBuildingChange}
+                      className="bottom-inputs"
+                    />
+                  </div>
+                </div>
+                <div className="bottom-element">
+                  <div>
+                    <label>Sub-Division Description</label>
+                    <br />
+                    <textarea
+                      name="building_description"
+                      value={buildingData.building_description || ""}
+                      onChange={handleBuildingChange}
+                      rows={4}
+                      className="textarea"
+                    />
+                  </div>
+                  <div>
+                    <label>Sub-Division Hours</label>
+                    <br />
+                    <input
+                      name="building_hours"
+                      value={buildingData.building_hours || ""}
+                      onChange={handleBuildingChange}
+                      className="bottom-inputs"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="form-buttons">
+                <button type="submit" className="btn-green">
+                  Create
+                </button>
+                <button
+                  type="button"
+                  className="btn-red"
+                  onClick={handleBuildingCancel}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      )}
+        )}
       {showAreaPopup && (
         <div className="popup">
           <h4>Select Area of Work</h4>

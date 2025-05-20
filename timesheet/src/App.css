@@ -2322,6 +2322,8 @@ h3 {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  flex-direction: column;
+  overflow-y: auto;
 }
 
 
@@ -3141,6 +3143,72 @@ button.delete-building:hover {
   background: #f1f1f1;
 }
 
+.bottom-element {
+  display: flex;
+  gap: 50px; /* spacing between columns */
+}
+
+.bottom-element > div {
+  flex: 1; /* equal width */
+}
+
+.bottom-element label {
+  display: block;
+  margin-bottom: -10px !important;
+  font-weight: 500;
+}
+
+.bottom-element .textarea {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: rgb(244, 244, 244);
+}
+
+.file-upload-box {
+  background: #fff;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+
+
+
+
+.attachment-list-inside {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.attachment-list-inside a {
+  text-decoration: none;
+  color: #000;
+}
+
+.uploaded-file {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.remove-file {
+  background: none;
+  border: none;
+  color: red;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+
+
 /* These above are the styles you add for create projects */
 
 /* These below are the styles you add for create buildings */
@@ -3381,7 +3449,20 @@ button.delete-building:hover {
   flex-direction: column;
   align-items: flex-start;
     gap: 10px;
+    overflow-y: auto;
+}
 
+.plus-upload-wrappers{
+  background-color: #ebebeb;
+  border: 1px solid rgb(202, 202, 202);
+  height: 100px;
+  width: 100%;
+  border-radius: 8px;
+    display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+    gap: 10px;
+    overflow-y: auto;
 }
 
 .real-file-input {
@@ -3402,13 +3483,15 @@ button.delete-building:hover {
   font-weight: 200;
   margin-top:7px;
   margin-left: 5px;
+  position: sticky;
 }
 
 .selected-files {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 6px;
+  margin: 6px;
+  margin-top: -2%;
 }
 
 .file-chip {
@@ -3428,6 +3511,7 @@ button.delete-building:hover {
   text-overflow: ellipsis;
   color: black !important;
   font-weight: 100;
+  text-decoration: none;
 }
 
 .remove-file {
@@ -3473,9 +3557,19 @@ button.delete-building:hover {
 
 .attachment-list {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
 }
+
+.attachment-list li {
+  display: flex;
+  align-items: center;  /* 🔥 this keeps icon and text vertically aligned */
+  white-space: nowrap;
+}
+
 
 .attachment-link {
   display: flex;
@@ -3594,7 +3688,8 @@ button.delete-building:hover {
   border-radius: 6px;
   display: inline-block;
   margin: 4px 0;
-  max-width: 100%;
+  min-width: 80%;
+  max-width: 80%;
   word-wrap: break-word;
   height:80px;
 }
@@ -3653,10 +3748,10 @@ button.delete-building:hover {
 
 /* Upload button in top-left corner */
 .upload-button-wrapper {
-  position: absolute;
-  top: 5px;
-  left: 5px;
+  position: sticky;
 }
+
+
 
 .uploads-button {
   display: inline-flex;
@@ -3670,6 +3765,7 @@ button.delete-building:hover {
   height: 26px;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  right: 100%;
 }
 
 
@@ -3678,6 +3774,8 @@ button.delete-building:hover {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+
+  
 }
 
 .uploaded-file-item {
