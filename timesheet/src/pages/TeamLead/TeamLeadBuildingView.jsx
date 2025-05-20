@@ -250,14 +250,7 @@ const TeamLeadBuildingView = () => {
             </div>
             <div className="left-form-second">
               <div className="project-form-group">
-
-
                 <label>Sub-Division Desciption</label>
-
-                <label>Building Description</label>
-
-                <label>Sub-Division Desciption</label>
-
                 <p>{buildingsAssign.building?.building_description}</p>
               </div>
               <div className="project-form-group">
