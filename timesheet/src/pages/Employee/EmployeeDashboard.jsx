@@ -14,12 +14,13 @@ import {
 const EmployeeDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
+  const location = useLocation(); 
 
   const tiles = [
     { label: "Time Sheet Entry", path: "detail/time-sheet-entry" },
     { label: "Leave requests", path: "detail/leave-requests" },
     { label: "Tasks", path: "detail/tasks" },
+    { label: "Comp-off Request", path: "detail/compoffrequest" },
   ];
 
   // Current tab from path name

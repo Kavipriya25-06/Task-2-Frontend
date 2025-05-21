@@ -16,6 +16,7 @@ const EmployeeDetailView = () => {
     { label: "Time Sheet Entry", path: "time-sheet-entry" },
     { label: "Leave requests", path: "leave-requests" },
     { label: "Tasks", path: "tasks" },
+    {label:"Comp-off Request", path: "compoffrequest"},
   ];
 
   return (

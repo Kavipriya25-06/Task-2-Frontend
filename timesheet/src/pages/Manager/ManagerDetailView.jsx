@@ -24,6 +24,7 @@ const ManagerDetailView = () => {
       tabname: ["leave-requests"],
     },
     { label: "Attendance", path: "attendance", tabname: ["attendance"] },
+    { label: "Comp-off", path: "compoff request", tabname: ["compoff"] },
   ];
 
   return (

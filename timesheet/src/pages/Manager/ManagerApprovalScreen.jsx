@@ -60,12 +60,14 @@ const ManagerApprovalScreen = () => {
                 entry.task_assign?.building_assign?.project_assign?.project
                   ?.project_title || "";
 
-              const building = entry.task_assign?.building_assign?.building?.building_title || "";
+              const building =
+                entry.task_assign?.building_assign?.building?.building_title ||
+                "";
 
               const task = entry.task_assign?.task?.task_title || "";
 
-              const start_time = (entry.start_time || "0");
-              const end_time = (entry.end_time || "0");
+              const start_time = entry.start_time || "0";
+              const end_time = entry.end_time || "0";
 
               const hours = parseFloat(entry.task_hours || "0");
 
@@ -74,8 +76,8 @@ const ManagerApprovalScreen = () => {
                 project,
                 building,
                 task,
-                start_time:start_time.toString(),
-                end_time:end_time.toString(),
+                start_time: start_time.toString(),
+                end_time: end_time.toString(),
                 hours: hours.toString(),
               });
             });
@@ -87,7 +89,16 @@ const ManagerApprovalScreen = () => {
             });
           } else {
             // No timesheets found
-            timesheetRows = [{ project: "",building:"", task: "", start_time:"", end_time:"", hours: "" }];
+            timesheetRows = [
+              {
+                project: "",
+                building: "",
+                task: "",
+                start_time: "",
+                end_time: "",
+                hours: "",
+              },
+            ];
             setStatus({
               approved: false,
               rejected: false,
@@ -104,7 +115,16 @@ const ManagerApprovalScreen = () => {
             comp_off: false,
             leave_deduction: 0,
           });
-          setRows([{ project: "",building:"", task: "", start_time:"",end_time:"", hours: "" }]);
+          setRows([
+            {
+              project: "",
+              building: "",
+              task: "",
+              start_time: "",
+              end_time: "",
+              hours: "",
+            },
+          ]);
           setStatus({
             approved: false,
             rejected: false,
@@ -119,7 +139,16 @@ const ManagerApprovalScreen = () => {
           comp_off: false,
           leave_deduction: 0,
         });
-        setRows([{ project: "",building:"", task: "",start_time:"",end_time:"", hours: "" }]);
+        setRows([
+          {
+            project: "",
+            building: "",
+            task: "",
+            start_time: "",
+            end_time: "",
+            hours: "",
+          },
+        ]);
         setStatus({
           approved: false,
           rejected: false,
@@ -142,99 +171,73 @@ const ManagerApprovalScreen = () => {
 
   const handleApprove = async () => {
     try {
+      const newApproved = !status.approved;
+
       for (let row of rows) {
         const timesheetId = row.timesheet_id;
-        const patchData = { approved: true };
+        const patchData = {
+          approved: newApproved,
+          rejected: false, // reset rejected
+        };
 
-        const response = await fetch(
-          `${config.apiBaseURL}/timesheet/${timesheetId}/`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(patchData),
-          }
-        );
-
-        if (!response.ok) {
-          console.error(`Failed to approve timesheet ID ${timesheetId}`);
-        }
+        await fetch(`${config.apiBaseURL}/timesheet/${timesheetId}/`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(patchData),
+        });
       }
 
-      // If comp_off checkbox is ticked, assign comp off
-      if (assignCompOff) {
-        // Get the comp_off value - if total_duration >= 4 consider full day, else half day
-        const hours = parseFloat(attendanceDetails.total_duration || "0");
+      // Update comp-off if approved
+      if (assignCompOff && newApproved) {
         const compOffValue = attendanceDetails.leave_deduction || 0;
-
-        // Fetch existing leave data
         const leaveResponse = await fetch(
           `${config.apiBaseURL}/leaves-available/by_employee/${employee_id}/`
         );
-
         const leaveData = await leaveResponse.json();
-
-        const updatedLeaveData = {
-          comp_off: parseFloat(leaveData.comp_off || 0) + compOffValue,
-        };
-
         const leave_id = leaveData.leave_avail_id;
 
-        // Patch the updated leave data
-        const patchLeaveResponse = await fetch(
-          `${config.apiBaseURL}/leaves-available/${leave_id}/`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(updatedLeaveData),
-          }
-        );
-
-        if (!patchLeaveResponse.ok) {
-          console.error("Failed to update comp_off leave balance");
-        } else {
-          console.log("Comp-off leave updated successfully");
-        }
+        await fetch(`${config.apiBaseURL}/leaves-available/${leave_id}/`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            comp_off: parseFloat(leaveData.comp_off || 0) + compOffValue,
+          }),
+        });
       }
 
-      // alert("All rows approved successfully!");
-      setStatus({ approved: true, rejected: false });
+      setStatus({
+        approved: newApproved,
+        rejected: false,
+      });
     } catch (err) {
-      console.error("Error approving timesheets", err);
-      alert("Error occurred while approving.");
+      console.error("Error toggling approve", err);
     }
   };
 
   const handleReject = async () => {
     try {
+      const newRejected = !status.rejected;
+
       for (let row of rows) {
         const timesheetId = row.timesheet_id;
-        const patchData = { rejected: true, approved: false }; // optional to reset approved
+        const patchData = {
+          rejected: newRejected,
+          approved: false, // reset approved
+        };
 
-        const response = await fetch(
-          `${config.apiBaseURL}/timesheet/${timesheetId}/`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(patchData),
-          }
-        );
-
-        if (!response.ok) {
-          console.error(`Failed to reject timesheet ID ${timesheetId}`);
-        }
+        await fetch(`${config.apiBaseURL}/timesheet/${timesheetId}/`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(patchData),
+        });
       }
 
-      // alert("All rows rejected successfully!");
-      setStatus({ approved: false, rejected: true });
+      setStatus({
+        approved: false,
+        rejected: newRejected,
+      });
     } catch (err) {
-      console.error("Error rejecting timesheets", err);
-      alert("Error occurred while rejecting.");
+      console.error("Error toggling reject", err);
     }
   };
 
@@ -295,7 +298,6 @@ const ManagerApprovalScreen = () => {
   </div>
 )} */}
 
-
       <table className="timesheet-table">
         <thead>
           <tr>
@@ -307,7 +309,7 @@ const ManagerApprovalScreen = () => {
             <th>Hours</th>
           </tr>
         </thead>
-        <tbody>     
+        <tbody>
           {rows.map((row, index) => (
             <tr key={index}>
               <td>{row.project}</td>
@@ -322,12 +324,12 @@ const ManagerApprovalScreen = () => {
       </table>
 
       <div className="button-container">
-        {status.approved ? ( //  CHANGE: conditionally render approved button
-          <button className="submit-button2" disabled>
+        {status.approved ? (
+          <button className="submit-button2" onClick={handleApprove}>
             Approved
           </button>
-        ) : status.rejected ? ( //  CHANGE: conditionally render rejected button
-          <button className="save-button2" disabled>
+        ) : status.rejected ? (
+          <button className="save-button2" onClick={handleReject}>
             Rejected
           </button>
         ) : (

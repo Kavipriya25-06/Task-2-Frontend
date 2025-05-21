@@ -77,6 +77,8 @@ import ManagerApprovalScreen from "./pages/Manager/ManagerApprovalScreen.jsx";
 import ManagerLeaveApplication from "./pages/Manager/ManagerLeaveApplication.jsx";
 import ManagerLeaveRequestForm from "./pages/Manager/ManagerLeaveRequestForm.jsx";
 
+import ManagerCompoff from "./pages/Manager/ManagerCompoff.jsx";
+
 // Team Lead pages
 import TeamLeadDashboard from "./pages/TeamLead/TeamLeadDashboard.jsx";
 import TeamLeadLayout from "./pages/TeamLead/TeamLeadLayout.jsx";
@@ -109,6 +111,8 @@ import EmployeeTaskDetail from "./pages/Employee/EmployeeTaskDetail.jsx";
 import EmployeeDailyTimeSheetEntry from "./pages/Employee/EmployeeDailyTimeSheetEntry.jsx";
 import EmployeeWeeklyTimeSheetEntry from "./pages/Employee/EmployeeWeeklyTimeSheetEntry.jsx";
 import EmployeeLeaveRequestForm from "./pages/Employee/EmployeeLeaveRequestForm.jsx";
+
+import EmployeeCompoffRequest from "./pages/Employee/EmployeeCompoffRequest.jsx";
 
 const App = () => {
   const { user } = useAuth();
@@ -388,6 +392,7 @@ const App = () => {
                   path="leave-requests/Leaveapplication"
                   element={<ManagerLeaveApplication />}
                 />
+                <Route path="Compoff" element={<ManagerCompoff />} />
               </Route>
             </Route>
 
@@ -565,6 +570,10 @@ const App = () => {
                   path="tasks/:task_assign_id"
                   element={<EmployeeTaskDetail />}
                 />
+                <Route
+                  path="compoffrequest"
+                  element={<EmployeeCompoffRequest />}
+                />
               </Route>
             </Route>
           </Routes>
@@ -572,7 +581,7 @@ const App = () => {
 
         {/* Bottom Bar */}
         <footer className="bottom-bar">
-          <div>Your Partner in Engineering Excellence.</div>
+          <div>Your Partner in Engineering Excellence.</div>
         </footer>
       </div>
     </Router>
