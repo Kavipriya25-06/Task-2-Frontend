@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
+import { useAttachmentManager } from "../../constants/useAttachmentManager";
+
 
 const TeamLeadProjectCreate = () => {
   const [teamleadManager, setTeamleadManager] = useState([]);
@@ -28,18 +30,32 @@ const TeamLeadProjectCreate = () => {
     discipline: "",
     area_of_work: [],
   });
+    const {
+      attachments,
+      setAttachments,
+      newAttachments,
+      setNewAttachments,
+      handleAttachmentChange,
+      removeExistingAttachment,
+      removeNewAttachment
+     } = useAttachmentManager([]);
   const [showBuildingPopup, setShowBuildingPopup] = useState(false);
   const [buildingData, setBuildingData] = useState({});
   const [showAreaPopup, setShowAreaPopup] = useState(false);
   const [selectedBuildings, setSelectedBuildings] = useState([]);
   const [selectedAreas, setSelectedAreas] = useState([]);
-  const [attachments, setAttachments] = useState([]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     console.log("Form data", formData);
   };
+
+  //   const handleAttachmentChange = (e) => {
+  //   const files = Array.from(e.target.files);
+  //   setNewAttachments((prev) => [...prev, ...files]);
+  //   e.target.value = ""; // Allow re-selecting same files
+  // };
 
   const handleCancel = () => {
     navigate("/teamlead/detail/projects/");
@@ -87,6 +103,31 @@ const TeamLeadProjectCreate = () => {
       });
 
       const data = await response.json();
+            if (newAttachments.length > 0) {
+        for (const file of newAttachments) {
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("project", data.project_id);
+
+          const uploadRes = await fetch(`${config.apiBaseURL}/attachments/`, {
+            method: "POST",
+            body: formData,
+          });
+
+          if (!uploadRes.ok) {
+            console.error("Failed to upload file:", file.name);
+          }
+        }
+        setNewAttachments([]);
+
+        // Refresh the list after all uploads
+        // const attachResponse = await fetch(
+        //   `${config.apiBaseURL}/attachments/project/${project_id}`
+        // );
+        // const attachData = await attachResponse.json();
+        // setAttachments(attachData);
+        // setNewAttachments([]);
+      }
       if (response.ok) {
         alert("All steps completed!");
         navigate("/teamlead/detail/projects/");
@@ -134,6 +175,7 @@ const TeamLeadProjectCreate = () => {
     } catch (error) {
       console.error("Error:", error);
     }
+
   };
 
   const handleBuildingCancel = () => {
@@ -340,14 +382,33 @@ const TeamLeadProjectCreate = () => {
                       multiple
                       accept=".pdf,.jpg,.jpeg,.png"
                       style={{ display: "none" }}
-                      onChange={handleFileChange}
+                      onChange={handleAttachmentChange}
                       className="real-file-input"
                     />
 
-                    {attachments.length > 0 && (
+                    {(attachments.length > 0 || newAttachments.length > 0) && (
                       <div className="selected-files">
                         {attachments.map((file, index) => (
                           <div key={index} className="file-chip">
+                            <a
+                              href={file.url || "#"}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="file-name"
+                            >
+                              {file.name}
+                            </a>
+                            <button
+                              type="button"
+                              className="remove-file"
+                              onClick={() => removeExistingAttachment(index)}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                         {newAttachments.map((file, index) => (
+                          <div key={`new-${index}`} className="file-chip">
                             <a
                               href={URL.createObjectURL(file)}
                               target="_blank"
@@ -359,7 +420,7 @@ const TeamLeadProjectCreate = () => {
                             <button
                               type="button"
                               className="remove-file"
-                              onClick={() => handleRemoveFile(index)}
+                              onClick={() => removeNewAttachment(index)}
                             >
                               ×
                             </button>

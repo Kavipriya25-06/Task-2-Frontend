@@ -8,6 +8,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
+import { useAttachmentManager } from "../../constants/useAttachmentManager";
 
 const ManagerProjectView = () => {
   const navigate = useNavigate();
@@ -31,6 +32,17 @@ const ManagerProjectView = () => {
     discipline: "",
     area_of_work: [],
   });
+
+  const {
+    attachments,
+    setAttachments,
+    newAttachments,
+    setNewAttachments,
+    handleAttachmentChange,
+    removeExistingAttachment,
+    removeNewAttachment,
+  } = useAttachmentManager([]);
+
   const [showBuildingPopup, setShowBuildingPopup] = useState(false);
   const [buildingData, setBuildingData] = useState({});
   const [showAttachments, setShowAttachments] = useState(false);
@@ -38,7 +50,7 @@ const ManagerProjectView = () => {
   const [selectedBuildings, setSelectedBuildings] = useState([]);
   const [availableBuildings, setAvailableBuildings] = useState([]);
   const [selectedAreas, setSelectedAreas] = useState([]);
-  const [attachments, setAttachments] = useState([]);
+
   const [availableAreas, setAvailableAreas] = useState([]);
   const { project_id } = useParams();
   const [editMode, setEditMode] = useState(false); //  Add this at the top
@@ -98,12 +110,12 @@ const ManagerProjectView = () => {
     }
   };
 
- const [variations, setVariations] = useState([
-  { date: "2025-05-01", title: "Project Planning", hours: "4" },
-  { date: "2025-05-03", title: "Team Meeting", hours: "2" },
-  { date: "2025-05-07", title: "Code Review", hours: "3" }
-]);
-
+  const [variations, setVariations] = useState([
+    { date: "2025-05-01", title: "Project Planning", hours: "4" },
+    { date: "2025-05-03", title: "Team Meeting", hours: "2" },
+    { date: "2025-05-07", title: "Code Review", hours: "3" },
+  ]);
+  
 
   const handleVariationChange = (index, field, value) => {
     const newVariations = [...variations];
@@ -114,15 +126,15 @@ const ManagerProjectView = () => {
   const handleAddVariation = () => {
     const last = variations[variations.length - 1];
 
-  if (!last || (last.date && last.title && last.hours)) {
-    setVariations([
-      ...variations,
-      { date: "", title: "", hours: "" } // new empty row
-    ]);
-  } else {
-    alert("Please fill the previous variation before adding a new one.");
-  }
-};
+    if (!last || (last.date && last.title && last.hours)) {
+      setVariations([
+        ...variations,
+        { date: "", title: "", hours: "" }, // new empty row
+      ]);
+    } else {
+      alert("Please fill the previous variation before adding a new one.");
+    }
+  };
 
   const handleUpdate = async () => {
     // 1️ Update Project
@@ -179,6 +191,32 @@ const ManagerProjectView = () => {
       return;
     }
 
+    if (newAttachments.length > 0) {
+      for (const file of newAttachments) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("project", project_id);
+
+        const uploadRes = await fetch(`${config.apiBaseURL}/attachments/`, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!uploadRes.ok) {
+          console.error("Failed to upload file:", file.name);
+        }
+      }
+      setNewAttachments([]);
+
+      // Refresh the list after all uploads
+      const attachResponse = await fetch(
+        `${config.apiBaseURL}/attachments/project/${project_id}`
+      );
+      const attachData = await attachResponse.json();
+      setAttachments(attachData);
+      setNewAttachments([]);
+    }
+
     // const buildingUpdates = availableBuildings.map((b) => ({
     //   building_assign_id: b.building_assign_id || null,
     //   building_id: b.building?.building_id || b.building_id,
@@ -230,47 +268,45 @@ const ManagerProjectView = () => {
   // console.log("The Project Assign Id isssss ",projectData.assign[0].project_assign_id);
 
   const handleBuildingSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  
+    const payload = {
+      building: {
+        building_code: buildingData.building_code,
+        building_title: buildingData.building_title,
+        building_description: buildingData.building_description,
+      },
+      assign: {
+        building_hours: buildingData.building_hours,
+        project_assign: projectData.assigns[0].project_assign_id,
+        // Optionally omit these if not available
+        // employee: [],
+        // project_assign: null
+      },
+    };
 
-  const payload = {
-    building: {
-      building_code: buildingData.building_code,
-      building_title: buildingData.building_title,
-      building_description: buildingData.building_description,
-    },
-    assign: {
-      building_hours: buildingData.building_hours,
-      project_assign:projectData.assigns[0].project_assign_id,
-      // Optionally omit these if not available
-      // employee: [],
-      // project_assign: null
-    },
-  };
+    try {
+      const res = await fetch(`${config.apiBaseURL}/buildings-create/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-  try {
-    const res = await fetch(`${config.apiBaseURL}/buildings-create/`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+      const data = await res.json();
 
-    const data = await res.json();
-
-    if (res.ok) {
-      alert("Building created successfully!");
-      setBuildingData({});
-      setShowBuildingPopup(false);
-      fetchProjectData(); // Refresh UI
-    } else {
-      console.error(data);
-      alert("Failed to create Building.");
+      if (res.ok) {
+        alert("Building created successfully!");
+        setBuildingData({});
+        setShowBuildingPopup(false);
+        fetchProjectData(); // Refresh UI
+      } else {
+        console.error(data);
+        alert("Failed to create Building.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
     }
-  } catch (error) {
-    console.error("Error:", error);
-  }
-};
+  };
 
   const handleBuildingCancel = () => {
     setShowBuildingPopup(false);
@@ -356,6 +392,13 @@ const ManagerProjectView = () => {
       setAvailableBuildings(data.assigns[0].buildings);
       setAvailableTeamleadManager(data.assigns[0].employee);
       // setAvailableAreas(data.area_of_work);
+
+      const attachResponse = await fetch(
+        `${config.apiBaseURL}/attachments/project/${project_id}`
+      );
+      const attachData = await attachResponse.json();
+      setAttachments(attachData);
+      setNewAttachments([]);
 
       console.log("Project data", data);
       console.log("Project assign data", data.assigns);
@@ -683,8 +726,10 @@ const ManagerProjectView = () => {
               </div>
               <div className="project-form-group">
                 <label className="attaches">Attachments</label>
+
                 {editMode ? (
                   <div className="plus-upload-wrappers">
+                    {/* Upload button */}
                     <label
                       htmlFor="file-upload-input"
                       className="plus-upload-button"
@@ -698,14 +743,68 @@ const ManagerProjectView = () => {
                       multiple
                       accept=".pdf,.jpg,.jpeg,.png"
                       style={{ display: "none" }}
-                      onChange={handleFileChange}
+                      onChange={handleAttachmentChange}
                       className="real-file-input"
                     />
 
-                    {attachments.length > 0 && (
+                    {/* Show existing and new attachments */}
+                    {attachments.length > 0 || newAttachments.length > 0 ? (
                       <div className="selected-files">
-                        {attachments.map((file, index) => (
-                          <div key={index} className="file-chip">
+                        {/* Existing backend attachments */}
+                        {attachments.map((file, index) => {
+                          if (!file?.file) return null;
+                          const fullFilename = file.file.split("/").pop();
+                          const match = fullFilename.match(
+                            /^(.+?)_[a-zA-Z0-9]+\.(\w+)$/
+                          );
+                          const filename = match
+                            ? `${match[1]}.${match[2]}`
+                            : fullFilename;
+
+                          return (
+                            <div
+                              key={`existing-${index}`}
+                              className="file-chip"
+                            >
+                              <a
+                                href={`${config.apiBaseURL}${file.file}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="file-name"
+                              >
+                                {filename}
+                              </a>
+                              <button
+                                type="button"
+                                className="remove-file"
+                                onClick={async () => {
+                                  try {
+                                    await fetch(
+                                      `${config.apiBaseURL}/attachments/${file.id}/`,
+                                      {
+                                        method: "DELETE",
+                                      }
+                                    );
+                                    setAttachments((prev) =>
+                                      prev.filter((att) => att.id !== file.id)
+                                    );
+                                  } catch (error) {
+                                    console.error(
+                                      "Failed to delete attachment:",
+                                      error
+                                    );
+                                  }
+                                }}
+                              >
+                                ×
+                              </button>
+                            </div>
+                          );
+                        })}
+
+                        {/* New file attachments */}
+                        {newAttachments.map((file, index) => (
+                          <div key={`new-${index}`} className="file-chip">
                             <a
                               href={URL.createObjectURL(file)}
                               target="_blank"
@@ -717,18 +816,20 @@ const ManagerProjectView = () => {
                             <button
                               type="button"
                               className="remove-file"
-                              onClick={() => handleRemoveFile(index)}
+                              onClick={() => removeNewAttachment(index)}
                             >
                               ×
                             </button>
                           </div>
                         ))}
                       </div>
+                    ) : (
+                      <p style={{ color: "#666" }}>No attachments added.</p>
                     )}
                   </div>
                 ) : attachments.length > 0 ? (
                   <>
-                    {/* 📎 View Attachments Toggle */}
+                    {/* 📎 Toggle View */}
                     <a
                       href="#"
                       onClick={(e) => {
@@ -751,37 +852,48 @@ const ManagerProjectView = () => {
                           marginRight: "5px",
                           verticalAlign: "middle",
                         }}
-                      />{" "}
+                      />
                       {showAttachments
                         ? "Hide Attachments"
                         : "View Attachments"}
                     </a>
 
-                    {/* Attachments List Toggle */}
+                    {/* Render attachments from backend */}
                     {showAttachments && (
                       <ul className="attachment-list">
-                        {attachments.map((file, index) => (
-                          <li key={index}>
-                            <a
-                              href={URL.createObjectURL(file)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="view-attachment-link"
-                            >
-                              <img
-                                src="/src/assets/pin svg.svg"
-                                alt="Attachment"
-                                style={{
-                                  width: "16px",
-                                  height: "16px",
-                                  marginRight: "5px",
-                                  verticalAlign: "middle",
-                                }}
-                              />
-                              {file.name}
-                            </a>
-                          </li>
-                        ))}
+                        {attachments.map((file, index) => {
+                          if (!file?.file) return null;
+                          const fullFilename = file.file.split("/").pop();
+                          const match = fullFilename.match(
+                            /^(.+?)_[a-zA-Z0-9]+\.(\w+)$/
+                          );
+                          const filename = match
+                            ? `${match[1]}.${match[2]}`
+                            : fullFilename;
+
+                          return (
+                            <li key={index}>
+                              <a
+                                href={`${config.apiBaseURL}${file.file}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="view-attachment-link"
+                              >
+                                <img
+                                  src="/src/assets/pin svg.svg"
+                                  alt="Attachment"
+                                  style={{
+                                    width: "16px",
+                                    height: "16px",
+                                    marginRight: "5px",
+                                    verticalAlign: "middle",
+                                  }}
+                                />
+                                {filename}
+                              </a>
+                            </li>
+                          );
+                        })}
                       </ul>
                     )}
                   </>

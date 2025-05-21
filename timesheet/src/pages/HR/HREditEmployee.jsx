@@ -36,7 +36,6 @@ const EditEmployee = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(0);
 
-  const [isEditMode, setIsEditMode] = useState(false);
   const [managers, setManagers] = useState([]);
 
   const [editMode, setEditMode] = useState(false); //  Add this at the top
@@ -380,10 +379,12 @@ const EditEmployee = () => {
                       />
                       <label
                         htmlFor="new-attachments-input"
-                        className="add-attachment-button"
+                        className="plus-upload-button"
                       >
                         +
+              
                       </label>
+                      
                     </>
                   )}
                 </div>
@@ -410,6 +411,7 @@ const EditEmployee = () => {
                         </a>
                         {editMode && (
                           <button
+                          type="button"
                             className="remove-attachment"
                             onClick={async () => {
                               try {

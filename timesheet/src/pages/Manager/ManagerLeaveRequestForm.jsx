@@ -1,9 +1,10 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { format ,differenceInCalendarDays } from "date-fns";
+import { format, differenceInCalendarDays } from "date-fns";
+import { useAttachmentManager } from "../../constants/useAttachmentManager";
 
 const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
   const { user } = useAuth();
@@ -17,18 +18,28 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
     reason: "",
     attachment: [],
   });
+  const {
+    attachments,
+    setAttachments,
+    newAttachments,
+    handleAttachmentChange,
+    setNewAttachments,
+    removeExistingAttachment,
+    removeNewAttachment,
+  } = useAttachmentManager([]);
 
-   useEffect(() => {
-      if (formData.startDate && formData.endDate) {
-        const duration = differenceInCalendarDays(
+  useEffect(() => {
+    if (formData.startDate && formData.endDate) {
+      const duration =
+        differenceInCalendarDays(
           new Date(formData.endDate),
           new Date(formData.startDate)
         ) + 1; // +1 to include both start and end dates
-        setFormData((prev) => ({ ...prev, duration: duration.toString() }));
-      } else {
-        setFormData((prev) => ({ ...prev, duration: "" }));
-      }
-    }, [formData.startDate, formData.endDate]);
+      setFormData((prev) => ({ ...prev, duration: duration.toString() }));
+    } else {
+      setFormData((prev) => ({ ...prev, duration: "" }));
+    }
+  }, [formData.startDate, formData.endDate]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -64,12 +75,37 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
     const mappedLeaveType = leaveTypeMap[formData.leaveType] || "others";
 
     const data = new FormData();
+    if (newAttachments.length > 0) {
+      for (const file of newAttachments) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("employee", user.employee_id);
+
+        const uploadRes = await fetch(`${config.apiBaseURL}/attachments/`, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!uploadRes.ok) {
+          console.error("Failed to upload file:", file.name);
+        }
+      }
+      setNewAttachments([]);
+
+      // Refresh the list after all uploads
+      // const attachResponse = await fetch(
+      //   `${config.apiBaseURL}/attachments/project/${project_id}`
+      // );
+      // const attachData = await attachResponse.json();
+      // setAttachments(attachData);
+      // setNewAttachments([]);
+    }
     data.append("leave_type", mappedLeaveType);
-    data.append("start_date", formData.startDate);
-    data.append("end_date", formData.endDate);
+    data.append("start_date",format(formData.startDate, "yyyy-MM-dd"));
+    data.append("end_date", format(formData.endDate, "yyyy-MM-dd"));
     data.append("duration", formData.duration);
     data.append("reason", formData.reason);
-    data.append("resumption_date", formData.resumptionDate);
+    data.append("resumption_date", format(formData.resumptionDate, "yyyy-MM-dd"));
     if (formData.attachment) {
       data.append("attachment", formData.attachment);
     }
@@ -136,7 +172,6 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
       console.error("Error in patchLeaveAvailability:", err);
     }
   };
-
 
   return (
     <div className="form-containers">
@@ -245,41 +280,62 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
         </div>
 
         <div className="form-group1">
-          <label className="label1">Attachments (pdf, jpg format) Max Size 2MB</label>
+          <label className="label1">
+            Attachments (pdf, jpg format) Max Size 2MB
+          </label>
 
           <div className="plus-upload-wrapper">
-            <label htmlFor="fileUpload" className="plus-upload-button">+</label>
+            <label htmlFor="file-upload-input" className="plus-upload-button">
+              +
+            </label>
             <input
               type="file"
-              id="fileUpload"
+              id="file-upload-input"
               name="attachments"
               multiple
               accept=".pdf,.jpg,.jpeg,.png"
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  attachment: [...(prev.attachment || []), ...Array.from(e.target.files)],
-                }))
-              }
+              style={{ display: "none" }}
+              onChange={handleAttachmentChange}
               className="real-file-input"
             />
 
-            {formData.attachment && formData.attachment.length > 0 && (
+            {(attachments.length > 0 || newAttachments.length > 0) && (
               <div className="selected-files">
-                {formData.attachment.map((file, index) => (
+                {attachments.map((file, index) => (
                   <div key={index} className="file-chip">
-                    <span className="file-name">{file.name}</span>
+                    <a
+                      href={file.url || "#"}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="file-name"
+                    >
+                      {file.name}
+                    </a>
                     <button
                       type="button"
                       className="remove-file"
-                      onClick={() => {
-                        setFormData((prev) => ({
-                          ...prev,
-                          attachment: prev.attachment.filter((_, i) => i !== index),
-                        }));
-                      }}
+                      onClick={() => removeExistingAttachment(index)}
                     >
-                      &times;
+                      ×
+                    </button>
+                  </div>
+                ))}
+                {newAttachments.map((file, index) => (
+                  <div key={`new-${index}`} className="file-chip">
+                    <a
+                      href={URL.createObjectURL(file)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="file-name"
+                    >
+                      {file.name}
+                    </a>
+                    <button
+                      type="button"
+                      className="remove-file"
+                      onClick={() => removeNewAttachment(index)}
+                    >
+                      ×
                     </button>
                   </div>
                 ))}

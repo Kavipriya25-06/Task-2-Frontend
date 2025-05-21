@@ -1,6 +1,6 @@
 // src\pages\Manager\ManagerProjectView.jsx
 
-import React, { useEffect, useState,useRef} from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
@@ -8,6 +8,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
+import { useAttachmentManager } from "../../constants/useAttachmentManager";
 
 const TeamLeadProjectView = () => {
   const navigate = useNavigate();
@@ -31,11 +32,19 @@ const TeamLeadProjectView = () => {
     discipline: "",
     area_of_work: [],
   });
+  const {
+    attachments,
+    setAttachments,
+    newAttachments,
+    setNewAttachments,
+    handleAttachmentChange,
+    removeExistingAttachment,
+    removeNewAttachment,
+  } = useAttachmentManager([]);
   const [showBuildingPopup, setShowBuildingPopup] = useState(false);
   const [buildingData, setBuildingData] = useState({});
   const [showAreaPopup, setShowAreaPopup] = useState(false);
-    const [showAttachments, setShowAttachments] = useState(false);
-  const [attachments, setAttachments] = useState([]);
+  const [showAttachments, setShowAttachments] = useState(false);
 
   const [selectedBuildings, setSelectedBuildings] = useState([]);
   const [availableBuildings, setAvailableBuildings] = useState([]);
@@ -55,16 +64,14 @@ const TeamLeadProjectView = () => {
     navigate(`/teamlead/detail/buildings/${building_assign_id}`);
   };
 
-  
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
     setAttachments((prev) => [...prev, ...files]);
   };
 
- const handleRemoveFile = (index) => {
-  setAttachments((prev) => prev.filter((_, i) => i !== index));
-};
-
+  const handleRemoveFile = (index) => {
+    setAttachments((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const handleRemoveBuilding = async (building) => {
     // If the building has an assign ID, it exists in DB, so delete.
@@ -101,26 +108,25 @@ const TeamLeadProjectView = () => {
     }
   };
 
-   const [variations, setVariations] = useState([
+  const [variations, setVariations] = useState([
     { date: "2025-05-01", title: "Project Planning", hours: "4" },
     { date: "2025-05-03", title: "Team Meeting", hours: "2" },
-    { date: "2025-05-07", title: "Code Review", hours: "3" }
+    { date: "2025-05-07", title: "Code Review", hours: "3" },
   ]);
-  
-  
+
   const handleVariationChange = (index, field, value) => {
     const newVariations = [...variations];
     newVariations[index][field] = value;
     setVariations(newVariations);
   };
-  
+
   const handleAddVariation = () => {
     const last = variations[variations.length - 1];
-  
+
     if (!last || (last.date && last.title && last.hours)) {
       setVariations([
         ...variations,
-        { date: "", title: "", hours: "" } // new empty row
+        { date: "", title: "", hours: "" }, // new empty row
       ]);
     } else {
       alert("Please fill the previous variation before adding a new one.");
@@ -172,6 +178,31 @@ const TeamLeadProjectView = () => {
           body: JSON.stringify(assignPayload),
         }
       );
+      if (newAttachments.length > 0) {
+        for (const file of newAttachments) {
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("project", project_id);
+
+          const uploadRes = await fetch(`${config.apiBaseURL}/attachments/`, {
+            method: "POST",
+            body: formData,
+          });
+
+          if (!uploadRes.ok) {
+            console.error("Failed to upload file:", file.name);
+          }
+        }
+        setNewAttachments([]);
+
+        // Refresh the list after all uploads
+        const attachResponse = await fetch(
+          `${config.apiBaseURL}/attachments/project/${project_id}`
+        );
+        const attachData = await attachResponse.json();
+        setAttachments(attachData);
+        setNewAttachments([]);
+      }
 
       if (!teamRes.ok) {
         alert("Failed to update project assign");
@@ -226,8 +257,7 @@ const TeamLeadProjectView = () => {
     fetchProjectData(); // refresh UI
   };
 
-
-   const handleBuildingChange = (e) => {
+  const handleBuildingChange = (e) => {
     const { name, value } = e.target;
     setBuildingData((prev) => ({ ...prev, [name]: value }));
   };
@@ -235,47 +265,45 @@ const TeamLeadProjectView = () => {
   // console.log("The Project Assign Id isssss ",projectData.assign[0].project_assign_id);
 
   const handleBuildingSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  
+    const payload = {
+      building: {
+        building_code: buildingData.building_code,
+        building_title: buildingData.building_title,
+        building_description: buildingData.building_description,
+      },
+      assign: {
+        building_hours: buildingData.building_hours,
+        project_assign: projectData.assigns[0].project_assign_id,
+        // Optionally omit these if not available
+        // employee: [],
+        // project_assign: null
+      },
+    };
 
-  const payload = {
-    building: {
-      building_code: buildingData.building_code,
-      building_title: buildingData.building_title,
-      building_description: buildingData.building_description,
-    },
-    assign: {
-      building_hours: buildingData.building_hours,
-      project_assign:projectData.assigns[0].project_assign_id,
-      // Optionally omit these if not available
-      // employee: [],
-      // project_assign: null
-    },
-  };
+    try {
+      const res = await fetch(`${config.apiBaseURL}/buildings-create/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-  try {
-    const res = await fetch(`${config.apiBaseURL}/buildings-create/`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+      const data = await res.json();
 
-    const data = await res.json();
-
-    if (res.ok) {
-      alert("Building created successfully!");
-      setBuildingData({});
-      setShowBuildingPopup(false);
-      fetchProjectData(); // Refresh UI
-    } else {
-      console.error(data);
-      alert("Failed to create Building.");
+      if (res.ok) {
+        alert("Building created successfully!");
+        setBuildingData({});
+        setShowBuildingPopup(false);
+        fetchProjectData(); // Refresh UI
+      } else {
+        console.error(data);
+        alert("Failed to create Building.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
     }
-  } catch (error) {
-    console.error("Error:", error);
-  }
-};
+  };
 
   const handleBuildingCancel = () => {
     setShowBuildingPopup(false);
@@ -291,18 +319,21 @@ const TeamLeadProjectView = () => {
   }, [project_id]);
 
   useEffect(() => {
-      function handleClickOutside(event) {
-        if (buildingPopupRef.current && !buildingPopupRef.current.contains(event.target)) {
-          setShowBuildingPopup(false);
-        }
+    function handleClickOutside(event) {
+      if (
+        buildingPopupRef.current &&
+        !buildingPopupRef.current.contains(event.target)
+      ) {
+        setShowBuildingPopup(false);
       }
-      if (showBuildingPopup) {
-        document.addEventListener("mousedown", handleClickOutside);
-      }
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    }, [showBuildingPopup]);
+    }
+    if (showBuildingPopup) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showBuildingPopup]);
 
   const fetchAreas = async () => {
     try {
@@ -314,15 +345,15 @@ const TeamLeadProjectView = () => {
     }
   };
 
-    const fetchDiscipline = async () => {
-      try {
-        const res = await fetch(`${config.apiBaseURL}/discipline/`);
-        const data = await res.json();
-        setDiscipline(data);
-      } catch (error) {
-        console.error("Error fetching Discipline:", error);
-      }
-    };
+  const fetchDiscipline = async () => {
+    try {
+      const res = await fetch(`${config.apiBaseURL}/discipline/`);
+      const data = await res.json();
+      setDiscipline(data);
+    } catch (error) {
+      console.error("Error fetching Discipline:", error);
+    }
+  };
 
   const fetchTeamleadManager = async () => {
     try {
@@ -359,6 +390,13 @@ const TeamLeadProjectView = () => {
       setAvailableTeamleadManager(data.assigns[0].employee);
       // setAvailableAreas(data.area_of_work);
 
+      const attachResponse = await fetch(
+        `${config.apiBaseURL}/attachments/project/${project_id}`
+      );
+      const attachData = await attachResponse.json();
+      setAttachments(attachData);
+      setNewAttachments([]);
+
       console.log("Project data", data);
       console.log("Project assign data", data.assigns);
       console.log("buildings assign data", data.assigns[0].buildings); // Check here later Suriya
@@ -384,397 +422,483 @@ const TeamLeadProjectView = () => {
   if (!projectData) return <p>Loading...</p>;
 
   return (
-     <div className="create-project-container">
-       <div className="project-header">
-         <h2>{editMode ? "Edit Project" : "View Project"}</h2>
-         <div>
-           {!editMode ? (
-             <button
-               type="edit"
-               onClick={() => setEditMode(true)}
-               className="btn-orange"
-               title="Edit"
-             >
-               <FaEdit className="edit-icon" />
-             </button>
-           ) : (
-             <div></div>
-           )}
-         </div>
-       </div>
-       <div>
-         <div className="input-elements">
-           <div className="left-form">
-             <div className="left-form-first">
-               <div className="project-form-group">
-                 <label>Project Title</label>
-                 {editMode ? (
-                   <input
-                     name="project_title"
-                     value={formData.project_title || ""}
-                     onChange={handleChange}
-                   />
-                 ) : (
-                   <p className="view-data">{projectData.project_title}</p>
-                 )}
-               </div>
-               <div className="project-form-group">
-                 <label>Project Type</label>
-                 {editMode ? (
-                   <input
-                     name="project_type"
-                     value={formData.project_type}
-                     onChange={handleChange}
-                   />
-                 ) : (
-                   <p className="view-data">{projectData.project_type}</p>
-                 )}
-               </div>
- 
-               <div className="project-form-group">
-                 <label>Project Code</label>
-                 {editMode ? (
-                   <input
-                     name="project_code"
-                     value={formData.project_code}
-                     onChange={handleChange}
-                   />
-                 ) : (
-                   <p className="view-data">{projectData.project_code}</p>
-                 )}
-               </div>
-               <div className="project-form-group">
-                 <label>Discipline Code</label>
-                 {editMode ? (
-                   <select
-                     name="discipline_code"
-                     value={formData.discipline_code}
-                     onChange={(e) => {
-                       const selectedCode = e.target.value;
-                       const selectedItem = discipline.find(
-                         (item) => item.discipline_code === selectedCode
-                       );
-                       setFormData({
-                         ...formData,
-                         discipline_code: selectedCode,
-                         discipline: selectedItem ? selectedItem.name : "",
-                       });
-                     }}
-                   >
-                     <option value="">Select Discipline</option>
-                     {discipline.map((item) => (
-                       <option key={item.id} value={item.discipline_code}>
-                         {item.discipline_code} - {item.name}
-                       </option>
-                     ))}
-                   </select>
-                 ) : (
-                   <p className="view-data">{projectData.discipline_code}</p>
-                 )}
-               </div>
-             </div>
-             <div className="left-form-second">
-               <div className="roles-box">
-                 <label>Project Roles</label>
-                 {editMode ? (
-                   <div className="select-container">
-                     {teamleadManager.map((employee) => (
-                       <div
-                         key={employee.employee_id}
-                         className="employee-checkbox"
-                       >
-                         {employee.employee_name} - {employee.designation}
-                         <input
-                           type="checkbox"
-                           className="larger-checkbox"
-                           value={employee.employee_id}
-                           checked={availableTeamleadManager.some(
-                             (e) => e.employee_id === employee.employee_id
-                           )}
-                           onChange={(e) => {
-                             const checked = e.target.checked;
-                             if (checked) {
-                               setAvailableTeamleadManager((prev) => [
-                                 ...prev,
-                                 employee,
-                               ]);
-                             } else {
-                               setAvailableTeamleadManager((prev) =>
-                                 prev.filter(
-                                   (emp) =>
-                                     emp.employee_id !== employee.employee_id
-                                 )
-                               );
-                             }
-                           }}
-                         />
-                       </div>
-                     ))}
-                   </div>
-                 ) : (
-                   <div className="select-container">
-                     {availableTeamleadManager.map((emp) => (
-                       <p key={emp.employee_id} className="view-roles" >
-                         {emp.employee_name} - {emp.designation}
-                       </p>
-                     ))}
-                   </div>
-                 )}
-               </div>
-               <div className="project-form-group">
-                 <label>Sub-Division</label>
-                 {editMode ? (
-                   <div className="building-row">
-                     {availableBuildings.map((b, i) => (
-                       <div key={i} className="building-tile">
-                         <div className="building-tile-small">
-                           {console.log("building individual", b)}
-                           {b.building?.building_title || b.building_title}
-                         </div>
-                         <div className="building-tile-small">
-                           {b.building_hours} hrs
-                         </div>
-                         <button
-                           className="tag-button"
-                           onClick={() => handleRemoveBuilding(b)}
-                         >
-                           ×
-                         </button>
-                       </div>
-                     ))}
-                     <button
-                       type="button"
-                       onClick={() => setShowBuildingPopup(true)}
-                     >
-                       +
-                     </button>
-                   </div>
-                 ) : (
-                   <div className="building-row">
-                     {availableBuildings.map((b, i) => (
-                       <div key={i} className="building-tile">
-                         <div
-                           onClick={() => buildingClick(b.building_assign_id)}
-                           className="building-tile-small"
-                         >
-                           {b.building?.building_title}
-                         </div>
-                         <div className="building-tile-smalls">
-                           {b.building_hours} hrs
-                         </div>
-                       </div>
-                     ))}
-                   </div>
-                 )}
-               </div>
- 
-             <div className="project-form-group">
-                 <div className="variation-table-wrapper">
-               <label className="attaches">Variation Entries</label>
-               <div className="variation-table-container">
-                 <table className="variation-table">
-                   <thead>
-                     <tr>
-                       <th>Date</th>
-                       <th>Title</th>
-                       <th>Hours</th>
-                     </tr>
-                   </thead>
-                   <tbody>
-                     {variations.map((variation, index) => (
-                       <tr key={index}>
-                         <td>   
-                           {editMode ? (
-                             <div className="date-wrapper">
-                               <DatePicker
-                                 selected={variation.date ? new Date(variation.date) : null}
-                                 onChange={(date) =>
-                                   handleVariationChange(
-                                     index,
-                                     "date",
-                                     date ? date.toISOString().slice(0, 10) : ""
-                                   )
-                                 }
-                                 dateFormat="dd-MMM-yyyy"
-                                 placeholderText="dd-mm-yyyy"
-                                 className="input1"
-                                 calendarClassName="custom-datepicker"
-                                 popperPlacement="bottom-start"
-                                 popperModifiers={[
-                                   {
-                                     name: "preventOverflow",
-                                     options: {
-                                       boundary: "viewport",
-                                     },
-                                   },
-                                 ]}
-                                 popperContainer={({ children }) => (
-                                   <div className="datepicker-portal">{children}</div>
-                                 )}
-                               />
-                                                 <i className="fas fa-calendar-alt calendar-icon"></i>
- 
-                                             </div>
-                           ) : (
-                             variation.date ? format(new Date(variation.date), "dd-MMM-yyyy") : ""
-                           )}
-                         </td>
-                         <td>
-                           {editMode ? (
-                             <input
-                               type="text"
-                               placeholder="Enter title"
-                               value={variation.title}
-                               onChange={(e) => handleVariationChange(index, "title", e.target.value)}
-                             />
-                           ) : (
-                             variation.title
-                           )}
-                         </td>
-                         <td>
-                           {editMode ? (
-                             <input
-                               type="number"
-                               placeholder="Hours"
-                               value={variation.hours}
-                              onChange={(e) => {
-                              const value = e.target.value;
-                              if (Number(value) >= 0 || value === "") {
-                                handleVariationChange(index, "hours", value);
-                              }
-                            }}                            />
-                          ) : (
-                            variation.hours
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                {editMode && (
-                  <button
-                        type="button"
-                        onClick={handleAddVariation}
-                        className="plus-button"
-                        >
-                        +
-                      </button>
-                        )}
-              </div>
-            </div>
-
-              <div className="project-form-group">
-                <label className="attaches">Attachments</label>
-               {editMode ? (
-                  <div className="plus-upload-wrappers">
-                    <label
-                      htmlFor="file-upload-input"
-                      className="plus-upload-button"
-                    >
-                      +
-                    </label>
-                    <input
-                      type="file"
-                      id="file-upload-input"
-                      name="attachments"
-                      multiple
-                      accept=".pdf,.jpg,.jpeg,.png"
-                      style={{ display: "none" }}
-                      onChange={handleFileChange}
-                      className="real-file-input"
-                    />
-
-                  {attachments.length > 0 && (
-      <div className="selected-files">
-        {attachments.map((file, index) => (
-          <div key={index} className="file-chip">
-            <a
-              href={URL.createObjectURL(file)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="file-name"
-            >
-              {file.name}
-            </a>
+    <div className="create-project-container">
+      <div className="project-header">
+        <h2>{editMode ? "Edit Project" : "View Project"}</h2>
+        <div>
+          {!editMode ? (
             <button
-              type="button"
-              className="remove-file"
-              onClick={() => handleRemoveFile(index)}
+              type="edit"
+              onClick={() => setEditMode(true)}
+              className="btn-orange"
+              title="Edit"
             >
-              ×
+              <FaEdit className="edit-icon" />
             </button>
-          </div>
-        ))}
+          ) : (
+            <div></div>
+          )}
+        </div>
       </div>
-    )}
-                  </div>
-                ) : attachments.length > 0 ? (
-                  <>
-                    {/* 📎 View Attachments Toggle */}
-                    <a
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setShowAttachments((prev) => !prev);
-                      }}
-                      className="view-attachment-link"
-                      style={{
-                        display: "inline-block",
-                        marginBottom: "10px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      <img
-                        src="/src/assets/pin svg.svg"
-                        alt="Attachment"
-                        style={{
-                          width: "16px",
-                          height: "16px",
-                          marginRight: "5px",
-                          verticalAlign: "middle",
-                        }}
-                      />{" "}
-                      {showAttachments
-                        ? "Hide Attachments"
-                        : "View Attachments"}
-                    </a>
-
-                    {/* Attachments List Toggle */}
-                    {showAttachments && (
-                      <ul className="attachment-list">
-                        {attachments.map((file, index) => (
-                          <li key={index}>
-                            <a
-                              href={URL.createObjectURL(file)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="view-attachment-link"
-                            >
-                              <img
-                                src="/src/assets/pin svg.svg"
-                                alt="Attachment"
-                                style={{
-                                  width: "16px",
-                                  height: "16px",
-                                  marginRight: "5px",
-                                  verticalAlign: "middle",
-                                }}
-                              />
-                              {file.name}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </>
+      <div>
+        <div className="input-elements">
+          <div className="left-form">
+            <div className="left-form-first">
+              <div className="project-form-group">
+                <label>Project Title</label>
+                {editMode ? (
+                  <input
+                    name="project_title"
+                    value={formData.project_title || ""}
+                    onChange={handleChange}
+                  />
                 ) : (
-                  <p style={{ color: "#666" }}>
-                    No attachments added.
-                  </p>
+                  <p className="view-data">{projectData.project_title}</p>
+                )}
+              </div>
+              <div className="project-form-group">
+                <label>Project Type</label>
+                {editMode ? (
+                  <input
+                    name="project_type"
+                    value={formData.project_type}
+                    onChange={handleChange}
+                  />
+                ) : (
+                  <p className="view-data">{projectData.project_type}</p>
                 )}
               </div>
 
+              <div className="project-form-group">
+                <label>Project Code</label>
+                {editMode ? (
+                  <input
+                    name="project_code"
+                    value={formData.project_code}
+                    onChange={handleChange}
+                  />
+                ) : (
+                  <p className="view-data">{projectData.project_code}</p>
+                )}
+              </div>
+              <div className="project-form-group">
+                <label>Discipline Code</label>
+                {editMode ? (
+                  <select
+                    name="discipline_code"
+                    value={formData.discipline_code}
+                    onChange={(e) => {
+                      const selectedCode = e.target.value;
+                      const selectedItem = discipline.find(
+                        (item) => item.discipline_code === selectedCode
+                      );
+                      setFormData({
+                        ...formData,
+                        discipline_code: selectedCode,
+                        discipline: selectedItem ? selectedItem.name : "",
+                      });
+                    }}
+                  >
+                    <option value="">Select Discipline</option>
+                    {discipline.map((item) => (
+                      <option key={item.id} value={item.discipline_code}>
+                        {item.discipline_code} - {item.name}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <p className="view-data">{projectData.discipline_code}</p>
+                )}
+              </div>
             </div>
+            <div className="left-form-second">
+              <div className="roles-box">
+                <label>Project Roles</label>
+                {editMode ? (
+                  <div className="select-container">
+                    {teamleadManager.map((employee) => (
+                      <div
+                        key={employee.employee_id}
+                        className="employee-checkbox"
+                      >
+                        {employee.employee_name} - {employee.designation}
+                        <input
+                          type="checkbox"
+                          className="larger-checkbox"
+                          value={employee.employee_id}
+                          checked={availableTeamleadManager.some(
+                            (e) => e.employee_id === employee.employee_id
+                          )}
+                          onChange={(e) => {
+                            const checked = e.target.checked;
+                            if (checked) {
+                              setAvailableTeamleadManager((prev) => [
+                                ...prev,
+                                employee,
+                              ]);
+                            } else {
+                              setAvailableTeamleadManager((prev) =>
+                                prev.filter(
+                                  (emp) =>
+                                    emp.employee_id !== employee.employee_id
+                                )
+                              );
+                            }
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="select-container">
+                    {availableTeamleadManager.map((emp) => (
+                      <p key={emp.employee_id} className="view-roles">
+                        {emp.employee_name} - {emp.designation}
+                      </p>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="project-form-group">
+                <label>Sub-Division</label>
+                {editMode ? (
+                  <div className="building-row">
+                    {availableBuildings.map((b, i) => (
+                      <div key={i} className="building-tile">
+                        <div className="building-tile-small">
+                          {console.log("building individual", b)}
+                          {b.building?.building_title || b.building_title}
+                        </div>
+                        <div className="building-tile-small">
+                          {b.building_hours} hrs
+                        </div>
+                        <button
+                          className="tag-button"
+                          onClick={() => handleRemoveBuilding(b)}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => setShowBuildingPopup(true)}
+                    >
+                      +
+                    </button>
+                  </div>
+                ) : (
+                  <div className="building-row">
+                    {availableBuildings.map((b, i) => (
+                      <div key={i} className="building-tile">
+                        <div
+                          onClick={() => buildingClick(b.building_assign_id)}
+                          className="building-tile-small"
+                        >
+                          {b.building?.building_title}
+                        </div>
+                        <div className="building-tile-smalls">
+                          {b.building_hours} hrs
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="project-form-group">
+                <div className="variation-table-wrapper">
+                  <label className="attaches">Variation Entries</label>
+                  <div className="variation-table-container">
+                    <table className="variation-table">
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>Title</th>
+                          <th>Hours</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {variations.map((variation, index) => (
+                          <tr key={index}>
+                            <td>
+                              {editMode ? (
+                                <div className="date-wrapper">
+                                  <DatePicker
+                                    selected={
+                                      variation.date
+                                        ? new Date(variation.date)
+                                        : null
+                                    }
+                                    onChange={(date) =>
+                                      handleVariationChange(
+                                        index,
+                                        "date",
+                                        date
+                                          ? date.toISOString().slice(0, 10)
+                                          : ""
+                                      )
+                                    }
+                                    dateFormat="dd-MMM-yyyy"
+                                    placeholderText="dd-mm-yyyy"
+                                    className="input1"
+                                    calendarClassName="custom-datepicker"
+                                    popperPlacement="bottom-start"
+                                    popperModifiers={[
+                                      {
+                                        name: "preventOverflow",
+                                        options: {
+                                          boundary: "viewport",
+                                        },
+                                      },
+                                    ]}
+                                    popperContainer={({ children }) => (
+                                      <div className="datepicker-portal">
+                                        {children}
+                                      </div>
+                                    )}
+                                  />
+                                  <i className="fas fa-calendar-alt calendar-icon"></i>
+                                </div>
+                              ) : variation.date ? (
+                                format(new Date(variation.date), "dd-MMM-yyyy")
+                              ) : (
+                                ""
+                              )}
+                            </td>
+                            <td>
+                              {editMode ? (
+                                <input
+                                  type="text"
+                                  placeholder="Enter title"
+                                  value={variation.title}
+                                  onChange={(e) =>
+                                    handleVariationChange(
+                                      index,
+                                      "title",
+                                      e.target.value
+                                    )
+                                  }
+                                />
+                              ) : (
+                                variation.title
+                              )}
+                            </td>
+                            <td>
+                              {editMode ? (
+                                <input
+                                  type="number"
+                                  placeholder="Hours"
+                                  value={variation.hours}
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (Number(value) >= 0 || value === "") {
+                                      handleVariationChange(
+                                        index,
+                                        "hours",
+                                        value
+                                      );
+                                    }
+                                  }}
+                                />
+                              ) : (
+                                variation.hours
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {editMode && (
+                      <button
+                        type="button"
+                        onClick={handleAddVariation}
+                        className="plus-button"
+                      >
+                        +
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="project-form-group">
+                  <label className="attaches">Attachments</label>
+
+                  {editMode ? (
+                    <div className="plus-upload-wrappers">
+                      {/* Upload button */}
+                      <label
+                        htmlFor="file-upload-input"
+                        className="plus-upload-button"
+                      >
+                        +
+                      </label>
+                      <input
+                        type="file"
+                        id="file-upload-input"
+                        name="attachments"
+                        multiple
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        style={{ display: "none" }}
+                        onChange={handleAttachmentChange}
+                        className="real-file-input"
+                      />
+
+                      {/* Show existing and new attachments */}
+                      {attachments.length > 0 || newAttachments.length > 0 ? (
+                        <div className="selected-files">
+                          {/* Existing backend attachments */}
+                          {attachments.map((file, index) => {
+                            if (!file?.file) return null;
+                            const fullFilename = file.file.split("/").pop();
+                            const match = fullFilename.match(
+                              /^(.+?)_[a-zA-Z0-9]+\.(\w+)$/
+                            );
+                            const filename = match
+                              ? `${match[1]}.${match[2]}`
+                              : fullFilename;
+
+                            return (
+                              <div
+                                key={`existing-${index}`}
+                                className="file-chip"
+                              >
+                                <a
+                                  href={`${config.apiBaseURL}${file.file}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="file-name"
+                                >
+                                  {filename}
+                                </a>
+                                <button
+                                  type="button"
+                                  className="remove-file"
+                                  onClick={async () => {
+                                    try {
+                                      await fetch(
+                                        `${config.apiBaseURL}/attachments/${file.id}/`,
+                                        {
+                                          method: "DELETE",
+                                        }
+                                      );
+                                      setAttachments((prev) =>
+                                        prev.filter((att) => att.id !== file.id)
+                                      );
+                                    } catch (error) {
+                                      console.error(
+                                        "Failed to delete attachment:",
+                                        error
+                                      );
+                                    }
+                                  }}
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            );
+                          })}
+
+                          {/* New file attachments */}
+                          {newAttachments.map((file, index) => (
+                            <div key={`new-${index}`} className="file-chip">
+                              <a
+                                href={URL.createObjectURL(file)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="file-name"
+                              >
+                                {file.name}
+                              </a>
+                              <button
+                                type="button"
+                                className="remove-file"
+                                onClick={() => removeNewAttachment(index)}
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p style={{ color: "#666" }}>No attachments added.</p>
+                      )}
+                    </div>
+                  ) : attachments.length > 0 ? (
+                    <>
+                      {/* 📎 Toggle View */}
+                      <a
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setShowAttachments((prev) => !prev);
+                        }}
+                        className="view-attachment-link"
+                        style={{
+                          display: "inline-block",
+                          marginBottom: "10px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <img
+                          src="/src/assets/pin svg.svg"
+                          alt="Attachment"
+                          style={{
+                            width: "16px",
+                            height: "16px",
+                            marginRight: "5px",
+                            verticalAlign: "middle",
+                          }}
+                        />
+                        {showAttachments
+                          ? "Hide Attachments"
+                          : "View Attachments"}
+                      </a>
+
+                      {/* Render attachments from backend */}
+                      {showAttachments && (
+                        <ul className="attachment-list">
+                          {attachments.map((file, index) => {
+                            if (!file?.file) return null;
+                            const fullFilename = file.file.split("/").pop();
+                            const match = fullFilename.match(
+                              /^(.+?)_[a-zA-Z0-9]+\.(\w+)$/
+                            );
+                            const filename = match
+                              ? `${match[1]}.${match[2]}`
+                              : fullFilename;
+
+                            return (
+                              <li key={index}>
+                                <a
+                                  href={`${config.apiBaseURL}${file.file}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="view-attachment-link"
+                                >
+                                  <img
+                                    src="/src/assets/pin svg.svg"
+                                    alt="Attachment"
+                                    style={{
+                                      width: "16px",
+                                      height: "16px",
+                                      marginRight: "5px",
+                                      verticalAlign: "middle",
+                                    }}
+                                  />
+                                  {filename}
+                                </a>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      )}
+                    </>
+                  ) : (
+                    <p style={{ color: "#666" }}>No attachments added.</p>
+                  )}
+                </div>
+              </div>
               {/* <div className="area-group">
                 <label>Area of Work</label>
                 {editMode ? (
@@ -835,22 +959,29 @@ const TeamLeadProjectView = () => {
               <div className="project-form-group-small">
                 <label>Start Date</label>
                 {editMode ? (
-                    <div className="date-input-container">
-                      <DatePicker
-                        selected={formData.start_date ? new Date(formData.start_date) : null}
-                        onChange={(date) => handleChange({ target: { name: 'start_date', value: date } })}
-                        dateFormat="dd-MMM-yyyy"
-                        placeholderText="dd-mm-yyyy"
-                      />
-                        <i className="fas fa-calendar-alt calendar-icon"></i>
-
-                    </div>
-                  ) : (
-                    <p className="view-date">
-                      {formData.start_date &&
-                        format(new Date(formData.start_date), "dd-MMM-yyyy")}
-                    </p>                  
-                  )}
+                  <div className="date-input-container">
+                    <DatePicker
+                      selected={
+                        formData.start_date
+                          ? new Date(formData.start_date)
+                          : null
+                      }
+                      onChange={(date) =>
+                        handleChange({
+                          target: { name: "start_date", value: date },
+                        })
+                      }
+                      dateFormat="dd-MMM-yyyy"
+                      placeholderText="dd-mm-yyyy"
+                    />
+                    <i className="fas fa-calendar-alt calendar-icon"></i>
+                  </div>
+                ) : (
+                  <p className="view-date">
+                    {formData.start_date &&
+                      format(new Date(formData.start_date), "dd-MMM-yyyy")}
+                  </p>
+                )}
               </div>
               <div className="project-form-group-small">
                 <label>Estd. Hours</label>
@@ -875,7 +1006,9 @@ const TeamLeadProjectView = () => {
                     onChange={handleChange}
                   />
                 ) : (
-                  <p className="view-description">{projectData.project_description}</p>
+                  <p className="view-description">
+                    {projectData.project_description}
+                  </p>
                 )}
               </div>
             </div>
@@ -905,7 +1038,7 @@ const TeamLeadProjectView = () => {
           )}
         </div>
       </div>
-        {showBuildingPopup && (
+      {showBuildingPopup && (
         <div className="popup" ref={buildingPopupRef}>
           <div className="create-building-container">
             <h2>Create Sub-Division</h2>
@@ -972,7 +1105,7 @@ const TeamLeadProjectView = () => {
             </form>
           </div>
         </div>
-        )}
+      )}
       {showAreaPopup && (
         <div className="popup">
           <h4>Select Area of Work</h4>
@@ -1025,12 +1158,6 @@ const TeamLeadProjectView = () => {
 };
 
 export default TeamLeadProjectView;
-
-
-
-
-
-
 
 // // src\pages\Manager\ManagerProjectView.jsx
 
