@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
@@ -9,6 +9,7 @@ import { format } from "date-fns";
 
 const ManagerProjectCreate = () => {
   const [teamleadManager, setTeamleadManager] = useState([]);
+  const buildingPopupRef = useRef();
   const [selectedTeamleadManager, setSelectedTeamleadManager] = useState([]);
   const [buildings, setBuildings] = useState([]);
   const [areas, setAreas] = useState([]);
@@ -28,9 +29,11 @@ const ManagerProjectCreate = () => {
     area_of_work: [],
   });
   const [showBuildingPopup, setShowBuildingPopup] = useState(false);
+  const [buildingData, setBuildingData] = useState({});
   const [showAreaPopup, setShowAreaPopup] = useState(false);
   const [selectedBuildings, setSelectedBuildings] = useState([]);
   const [selectedAreas, setSelectedAreas] = useState([]);
+  const [attachments, setAttachments] = useState([]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,6 +43,15 @@ const ManagerProjectCreate = () => {
 
   const handleCancel = () => {
     navigate("/manager/detail/projects/");
+  };
+
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    setAttachments((prev) => [...prev, ...files]);
+  };
+
+  const handleRemoveFile = (index) => {
+    setAttachments((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e) => {
@@ -93,6 +105,40 @@ const ManagerProjectCreate = () => {
     } catch (err) {
       console.error("Request error:", err);
     }
+  };
+
+  const handleBuildingChange = (e) => {
+    const { name, value } = e.target;
+    setBuildingData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleBuildingSubmit = async (e) => {
+    e.preventDefault();
+    const payload = buildingData;
+    try {
+      const res = await fetch(`${config.apiBaseURL}/buildings/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert("Building created successfully!");
+        setBuildingData({});
+        setShowBuildingPopup(false);
+        fetchBuilding();
+      } else {
+        console.error(data);
+        alert("Failed to create Building.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const handleBuildingCancel = () => {
+    setShowBuildingPopup(false);
+    setBuildingData({});
   };
 
   useEffect(() => {
@@ -280,20 +326,47 @@ const ManagerProjectCreate = () => {
               <div className="project-form-group">
                 <div className="file-upload-section">
                   <label className="file-upload-label">Attachments</label>
-                  <div className="file-upload-box">
-                    <div className="upload-button-wrapper">
-                      <label htmlFor="file-upload-input" className="uploads-button">
-                        +
-                      </label>
-                      <input
-                        type="file"
-                        id="file-upload-input"
-                        name="attachments"
-                        multiple
-                        style={{ display: "none" }}
-                      />
-                    </div>
-                    {/* File list can go here if needed */}
+                  <div className="plus-upload-wrappers">
+                    <label
+                      htmlFor="file-upload-input"
+                      className="plus-upload-button"
+                    >
+                      +
+                    </label>
+                    <input
+                      type="file"
+                      id="file-upload-input"
+                      name="attachments"
+                      multiple
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      style={{ display: "none" }}
+                      onChange={handleFileChange}
+                      className="real-file-input"
+                    />
+
+                    {attachments.length > 0 && (
+                      <div className="selected-files">
+                        {attachments.map((file, index) => (
+                          <div key={index} className="file-chip">
+                            <a
+                              href={URL.createObjectURL(file)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="file-name"
+                            >
+                              {file.name}
+                            </a>
+                            <button
+                              type="button"
+                              className="remove-file"
+                              onClick={() => handleRemoveFile(index)}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -403,72 +476,71 @@ const ManagerProjectCreate = () => {
         </div>
       </form>
       {showBuildingPopup && (
-        <div className="popup">
-          <h4>Select Buildings</h4>
-          {buildings.map((b) => (
-            <div
-              style={{
-                marginBottom: "3px",
-              }}
-              key={b.building_id}
-              // style={{ marginBottom: "8px" }}
-            >
-              <input
-                type="checkbox"
-                value={b.building_id}
-                onChange={(e) => {
-                  const checked = e.target.checked;
-                  const existing = selectedBuildings.find(
-                    (item) => item.building_id === b.building_id
-                  );
-
-                  if (checked && !existing) {
-                    setSelectedBuildings((prev) => [
-                      ...prev,
-                      { ...b, hours: 0 },
-                    ]);
-                  } else {
-                    setSelectedBuildings((prev) =>
-                      prev.filter((item) => item.building_id !== b.building_id)
-                    );
-                  }
-                }}
-              />
-              {b.building_title}
-              {selectedBuildings.some(
-                (s) => s.building_id === b.building_id
-              ) && (
-                <input
-                  type="number"
-                  placeholder="Hours"
-                  style={{ marginLeft: "10px" }}
-                  onChange={(e) => {
-                    setSelectedBuildings((prev) =>
-                      prev.map((item) =>
-                        item.building_id === b.building_id
-                          ? { ...item, hours: e.target.value }
-                          : item
-                      )
-                    );
-                  }}
-                />
-              )}
-            </div>
-          ))}
-          <button
-            className="btn-save"
-            onClick={() => setShowBuildingPopup(false)}
-          >
-            Done
-          </button>
-          <button
-            onClick={() => {
-              setShowBuildingPopup(false);
-            }}
-            className="btn-cancel"
-          >
-            Cancel
-          </button>
+        <div className="popup" ref={buildingPopupRef}>
+          <div className="create-building-container">
+            <h2>Create Sub-Division</h2>
+            <form onSubmit={handleBuildingSubmit}>
+              <div className="building-elements">
+                <div className="bottom-element">
+                  <div>
+                    <label>Sub-Division code</label>
+                    <br />
+                    <input
+                      name="building_code"
+                      value={buildingData.building_code || ""}
+                      onChange={handleBuildingChange}
+                      className="bottom-inputs"
+                    />
+                  </div>
+                  <div>
+                    <label>Sub-Division Title</label>
+                    <br />
+                    <input
+                      name="building_title"
+                      value={buildingData.building_title || ""}
+                      onChange={handleBuildingChange}
+                      className="bottom-inputs"
+                    />
+                  </div>
+                </div>
+                <div className="bottom-element">
+                  <div>
+                    <label>Sub-Division Description</label>
+                    <br />
+                    <textarea
+                      name="building_description"
+                      value={buildingData.building_description || ""}
+                      onChange={handleBuildingChange}
+                      rows={4}
+                      className="textarea"
+                    />
+                  </div>
+                  <div>
+                    <label>Sub-Division Hours</label>
+                    <br />
+                    <input
+                      name="building_hours"
+                      value={buildingData.building_hours || ""}
+                      onChange={handleBuildingChange}
+                      className="bottom-inputs"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="form-buttons">
+                <button type="submit" className="btn-green">
+                  Create
+                </button>
+                <button
+                  type="button"
+                  className="btn-red"
+                  onClick={handleBuildingCancel}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
       {showAreaPopup && (

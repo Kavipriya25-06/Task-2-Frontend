@@ -210,7 +210,7 @@ const ManagerProjectView = () => {
     setEditMode(false);
     fetchProjectData(); // refresh UI
   };
-  
+
   const handleBuildingChange = (e) => {
     const { name, value } = e.target;
     setBuildingData((prev) => ({ ...prev, [name]: value }));

@@ -34,6 +34,9 @@ const TeamLeadProjectView = () => {
   const [showBuildingPopup, setShowBuildingPopup] = useState(false);
   const [buildingData, setBuildingData] = useState({});
   const [showAreaPopup, setShowAreaPopup] = useState(false);
+    const [showAttachments, setShowAttachments] = useState(false);
+  const [attachments, setAttachments] = useState([]);
+
   const [selectedBuildings, setSelectedBuildings] = useState([]);
   const [availableBuildings, setAvailableBuildings] = useState([]);
   const [selectedAreas, setSelectedAreas] = useState([]);
@@ -51,6 +54,17 @@ const TeamLeadProjectView = () => {
   const buildingClick = (building_assign_id) => {
     navigate(`/teamlead/detail/buildings/${building_assign_id}`);
   };
+
+  
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    setAttachments((prev) => [...prev, ...files]);
+  };
+
+ const handleRemoveFile = (index) => {
+  setAttachments((prev) => prev.filter((_, i) => i !== index));
+};
+
 
   const handleRemoveBuilding = async (building) => {
     // If the building has an assign ID, it exists in DB, so delete.
@@ -624,306 +638,391 @@ const TeamLeadProjectView = () => {
                                placeholder="Hours"
                                value={variation.hours}
                               onChange={(e) => {
-                               const value = e.target.value;
-                               if (Number(value) >= 0 || value === "") {
-                                 handleVariationChange(index, "hours", value);
-                               }
-                             }}
-                             />
-                           ) : (
-                             variation.hours
-                           )}
-                         </td>
-                       </tr>
-                     ))}
-                   </tbody>
-                 </table>
-                 {editMode && (
-                   <button
-                                   type="button"
-                                   onClick={handleAddVariation}
-                                   className="plus-button"
-                                 >
-                                   +
-                                 </button>
-                               )}
-               </div>
-             </div>
- 
-             </div>
- 
- 
-                <div className="project-form-group">
-                 <label className="attaches">Attachments</label>
-                   <a
-                     href="#"
-                     target="_blank"
-                     rel="noopener noreferrer"
-                     className="view-attachment-link"
-                   >
-                     <img
-                       src="/src/assets/pin svg.svg" // replace this with your actual image path
-                       alt="Attachment"
-                       style={{
-                         width: "16px",
-                         height: "16px",
-                         marginRight: "5px",
-                         verticalAlign: "middle",
-                       }}
-                     />
-                     View Attachment
-                   </a>
-               </div>
-               {/* <div className="project-form-group">
-                 <label className="area">Area of Work</label>
-                 <div className="area-row">
-                   <div className="tags">
-                     {formData.area_of_work.length === 0 ? (
-                       <span className="no-data-text">No Area of Work</span>
-                     ) : (
-                       areas
-                         .filter((a) =>
-                           formData.area_of_work.includes(a.area_name)
-                         )
-                         .map((a) => (
-                           <span className="tag" key={a.area_name}>
-                             {a.name}
-                           </span>
-                         ))
-                     )}
-                   </div>
- 
-                   {editMode ? (
-                     <button
-                       className="plus-button"
-                       onClick={() => setShowAreaPopup(true)}
-                       type="button"
-                     >
-                       +
-                     </button>
-                   ) : (
-                     <div className="tags">
-                       {areas
-                         .filter((a) =>
-                           formData.area_of_work.includes(a.area_name)
-                         )
-                         .map((a) => (
-                           <span className="tag" key={a.area_name}>
-                             {a.name}
-                           </span>
-                         ))}
-                     </div>
-                   )}
-                 </div>
-                 <div className="project-form-group">
-                   <label>Sub Division</label>
-                   {editMode ? (
-                     <input
-                       className="subdivision"
-                       value={formData.subdivision}
-                       onChange={handleChange}
-                     />
-                   ) : (
-                     <p>{projectData.subdivision}</p>
-                   )}
-                 </div>
-               </div> */}
-             </div>
-           </div>
-           <div className="right-form">
-             <div className="right-form-first">
-               <div className="project-form-group-small">
-                 <label>Start Date</label>
-                   {editMode ? (
-                     <div className="date-input-container">
-                       <DatePicker
-                         selected={formData.start_date ? new Date(formData.start_date) : null}
-                         onChange={(date) => handleChange({ target: { name: 'start_date', value: date } })}
-                         dateFormat="dd-MMM-yyyy"
-                         placeholderText="Select a date"
-                       />
-                         <i className="fas fa-calendar-alt calendar-icon"></i>
- 
-                     </div>
-                   ) : (
-                     <p className="view-date">
-                       {formData.start_date &&
-                         format(new Date(formData.start_date), "dd-MMM-yyyy")}
-                     </p>                  
-                   )}
-               </div>
-               <div className="project-form-group-small">
-                 <label>Estd. Hours</label>
-                 {editMode ? (
-                   <input
-                     name="estimated_hours"
-                     value={formData.estimated_hours}
-                     onChange={handleChange}
-                     className="estd"
-                   />
-                 ) : (
-                   <p className="view-data">{projectData.estimated_hours}</p>
-                 )}
-               </div>
-             </div>
-             <div className="right-form-second">
-               <div className="form-group-full-width">
-                 <label>Project Description</label>
-                 {editMode ? (
-                   <textarea
-                     name="project_description"
-                     value={formData.project_description}
-                     onChange={handleChange}
-                   />
-                 ) : (
-                   <p className="view-description">{projectData.project_description}</p>
-                 )}
-               </div>
-             </div>
-           </div>
-         </div>
-         <div className="form-buttons">
-           {editMode ? (
-             <>
-               <button type="submit" onClick={handleUpdate} className="btn-save">
-                 Save
-               </button>
-               <button
-                 type="reset"
-                 onClick={() => setEditMode(false)}
-                 className="btn-cancel"
-               >
-                 Cancel
-               </button>
-             </>
-           ) : (
-             // <button
-             //   type="edit"
-             //   onClick={() => setEditMode(true)}
-             //   className="btn-orange"
-             // >
-             //   Edit
-             // </button>
-             <div></div>
-           )}
-         </div>
-         {showBuildingPopup && (
-         <div className="popup" ref={buildingPopupRef}>
-           <div className="create-building-container">
-             <h2>Create Sub-Division</h2>
-             <form onSubmit={handleBuildingSubmit}>
-               <div className="building-elements">
-                 <div className="top-elements">
-                   <div>
-                     <label>Sub-Division code</label>
-                     <br />
-                     <input
-                       name="building_code"
-                       value={buildingData.building_code || ""}
-                       onChange={handleBuildingChange}
-                     />
-                   </div>
-                   <div>
-                     <label>Sub-Division Title</label>
-                     <br />
-                     <input
-                       name="building_title"
-                       value={buildingData.building_title || ""}
-                       onChange={handleBuildingChange}
-                     />
-                   </div>
-                 </div>
-                 <div className="bottom-elements">
-                   <div>
-                     <label>Sub-Division Description</label>
-                     <br />
-                     <textarea
-                       name="building_description"
-                       value={buildingData.building_description || ""}
-                       onChange={handleBuildingChange}
-                       rows={4}
-                       className="textarea"
-                     />
-                   </div>
-                   <div>
-                     <label>Sub-Division Hours</label>
-                     <br />
-                     <input
-                       name="building_hours"
-                       value={buildingData.building_hours || ""}
-                       onChange={handleBuildingChange}
-                     />
-                   </div>
-                 </div>
-               </div>
-               <div className="form-buttons">
-                 <button type="submit" className="btn-green">
-                   Create
-                 </button>
-                 <button
-                   type="button"
-                   className="btn-red"
-                   onClick={handleBuildingCancel}
-                 >
-                   Cancel
-                 </button>
-               </div>
-             </form>
-           </div>
-         </div>
-       )}
-         
-         {showAreaPopup && (
-           <div className="popup">
-             <h4>Select Area of Work</h4>
-             {areas.map((a) => (
-               <div key={a.id}>
-                 <input
-                   type="checkbox"
-                   value={a.area_name}
-                   checked={formData.area_of_work.includes(a.area_name)}
-                   onChange={(e) => {
-                     const checked = e.target.checked;
-                     if (checked) {
-                       setFormData((prev) => ({
-                         ...prev,
-                         area_of_work: [...prev.area_of_work, a.area_name],
-                       }));
-                     } else {
-                       setFormData((prev) => ({
-                         ...prev,
-                         area_of_work: prev.area_of_work.filter(
-                           (area) => area !== a.area_name
-                         ),
-                       }));
-                     }
-                   }}
-                 />
-                 {a.name}
-               </div>
-             ))}
-             <button
-               onClick={() => {
-                 setShowAreaPopup(false);
-               }}
-               className="btn-save"
-             >
-               Done
-             </button>
-             <button
-               onClick={() => {
-                 setShowAreaPopup(false);
-               }}
-               className="btn-cancel"
-             >
-               Cancel
-             </button>
-           </div>
-         )}
-       </div>
-     </div>
-   );
- };
+                              const value = e.target.value;
+                              if (Number(value) >= 0 || value === "") {
+                                handleVariationChange(index, "hours", value);
+                              }
+                            }}                            />
+                          ) : (
+                            variation.hours
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {editMode && (
+                  <button
+                        type="button"
+                        onClick={handleAddVariation}
+                        className="plus-button"
+                        >
+                        +
+                      </button>
+                        )}
+              </div>
+            </div>
+
+              <div className="project-form-group">
+                <label className="attaches">Attachments</label>
+               {editMode ? (
+                  <div className="plus-upload-wrappers">
+                    <label
+                      htmlFor="file-upload-input"
+                      className="plus-upload-button"
+                    >
+                      +
+                    </label>
+                    <input
+                      type="file"
+                      id="file-upload-input"
+                      name="attachments"
+                      multiple
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      style={{ display: "none" }}
+                      onChange={handleFileChange}
+                      className="real-file-input"
+                    />
+
+                  {attachments.length > 0 && (
+      <div className="selected-files">
+        {attachments.map((file, index) => (
+          <div key={index} className="file-chip">
+            <a
+              href={URL.createObjectURL(file)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="file-name"
+            >
+              {file.name}
+            </a>
+            <button
+              type="button"
+              className="remove-file"
+              onClick={() => handleRemoveFile(index)}
+            >
+              ×
+            </button>
+          </div>
+        ))}
+      </div>
+    )}
+                  </div>
+                ) : attachments.length > 0 ? (
+                  <>
+                    {/* 📎 View Attachments Toggle */}
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowAttachments((prev) => !prev);
+                      }}
+                      className="view-attachment-link"
+                      style={{
+                        display: "inline-block",
+                        marginBottom: "10px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <img
+                        src="/src/assets/pin svg.svg"
+                        alt="Attachment"
+                        style={{
+                          width: "16px",
+                          height: "16px",
+                          marginRight: "5px",
+                          verticalAlign: "middle",
+                        }}
+                      />{" "}
+                      {showAttachments
+                        ? "Hide Attachments"
+                        : "View Attachments"}
+                    </a>
+
+                    {/* Attachments List Toggle */}
+                    {showAttachments && (
+                      <ul className="attachment-list">
+                        {attachments.map((file, index) => (
+                          <li key={index}>
+                            <a
+                              href={URL.createObjectURL(file)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="view-attachment-link"
+                            >
+                              <img
+                                src="/src/assets/pin svg.svg"
+                                alt="Attachment"
+                                style={{
+                                  width: "16px",
+                                  height: "16px",
+                                  marginRight: "5px",
+                                  verticalAlign: "middle",
+                                }}
+                              />
+                              {file.name}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </>
+                ) : (
+                  <p style={{ color: "#666" }}>
+                    No attachments added.
+                  </p>
+                )}
+              </div>
+
+            </div>
+              {/* <div className="area-group">
+                <label>Area of Work</label>
+                {editMode ? (
+                  <div className="area-row">
+                    <div className="tags">
+                      {areas
+                        .filter((a) =>
+                          formData.area_of_work.includes(a.area_name)
+                        )
+                        .map((a) => (
+                          <span className="tag" key={a.area_name}>
+                            {a.name}
+                            <button className="tag-button">×</button>
+                          </span>
+                        ))}
+                    </div>
+
+                    <button
+                      type="button"
+                      className="plus-button"
+                      onClick={() => setShowAreaPopup(true)}
+                    >
+                      +
+                    </button>
+                  </div>
+                ) : (
+                  <div className="tags">
+                    {areas
+                      .filter((a) =>
+                        formData.area_of_work.includes(a.area_name)
+                      )
+                      .map((a) => (
+                        <span className="tag" key={a.area_name}>
+                          {a.name}
+                        </span>
+                      ))}
+                  </div>
+                )}
+              </div>
+
+
+              <div className="project-form-group">
+                <label>Sub Division</label>
+                {editMode ? (
+                  <input
+                    name="subdivision"
+                    value={formData.subdivision}
+                    onChange={handleChange}
+                  />
+                ) : (
+                  <p>{projectData.subdivision}</p>
+                )}
+              </div> */}
+            </div>
+          </div>
+          <div className="right-form">
+            <div className="right-form-first">
+              <div className="project-form-group-small">
+                <label>Start Date</label>
+                {editMode ? (
+                    <div className="date-input-container">
+                      <DatePicker
+                        selected={formData.start_date ? new Date(formData.start_date) : null}
+                        onChange={(date) => handleChange({ target: { name: 'start_date', value: date } })}
+                        dateFormat="dd-MMM-yyyy"
+                        placeholderText="dd-mm-yyyy"
+                      />
+                        <i className="fas fa-calendar-alt calendar-icon"></i>
+
+                    </div>
+                  ) : (
+                    <p className="view-date">
+                      {formData.start_date &&
+                        format(new Date(formData.start_date), "dd-MMM-yyyy")}
+                    </p>                  
+                  )}
+              </div>
+              <div className="project-form-group-small">
+                <label>Estd. Hours</label>
+                {editMode ? (
+                  <input
+                    name="estimated_hours"
+                    value={formData.estimated_hours}
+                    onChange={handleChange}
+                  />
+                ) : (
+                  <p className="view-data">{projectData.estimated_hours}</p>
+                )}
+              </div>
+            </div>
+            <div className="right-form-second">
+              <div className="form-group-full-width">
+                <label>Project Description</label>
+                {editMode ? (
+                  <textarea
+                    name="project_description"
+                    value={formData.project_description}
+                    onChange={handleChange}
+                  />
+                ) : (
+                  <p className="view-description">{projectData.project_description}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="form-buttons">
+          {editMode ? (
+            <>
+              <button
+                type="submit"
+                onClick={handleUpdate}
+                className="btn-green"
+              >
+                Save
+              </button>
+              <button
+                type="reset"
+                onClick={() => setEditMode(false)}
+                className="btn-red"
+              >
+                Cancel
+              </button>
+            </>
+          ) : (
+            <div></div>
+          )}
+        </div>
+      </div>
+        {showBuildingPopup && (
+        <div className="popup" ref={buildingPopupRef}>
+          <div className="create-building-container">
+            <h2>Create Sub-Division</h2>
+            <form onSubmit={handleBuildingSubmit}>
+              <div className="building-elements">
+                <div className="bottom-element">
+                  <div>
+                    <label>Sub-Division code</label>
+                    <br />
+                    <input
+                      name="building_code"
+                      value={buildingData.building_code || ""}
+                      onChange={handleBuildingChange}
+                      className="bottom-inputs"
+                    />
+                  </div>
+                  <div>
+                    <label>Sub-Division Title</label>
+                    <br />
+                    <input
+                      name="building_title"
+                      value={buildingData.building_title || ""}
+                      onChange={handleBuildingChange}
+                      className="bottom-inputs"
+                    />
+                  </div>
+                </div>
+                <div className="bottom-element">
+                  <div>
+                    <label>Sub-Division Description</label>
+                    <br />
+                    <textarea
+                      name="building_description"
+                      value={buildingData.building_description || ""}
+                      onChange={handleBuildingChange}
+                      rows={4}
+                      className="textarea"
+                    />
+                  </div>
+                  <div>
+                    <label>Sub-Division Hours</label>
+                    <br />
+                    <input
+                      name="building_hours"
+                      value={buildingData.building_hours || ""}
+                      onChange={handleBuildingChange}
+                      className="bottom-inputs"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="form-buttons">
+                <button type="submit" className="btn-green">
+                  Create
+                </button>
+                <button
+                  type="button"
+                  className="btn-red"
+                  onClick={handleBuildingCancel}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        )}
+      {showAreaPopup && (
+        <div className="popup">
+          <h4>Select Area of Work</h4>
+          {areas.map((a) => (
+            <div key={a.id}>
+              <input
+                type="checkbox"
+                value={a.area_name}
+                checked={formData.area_of_work.includes(a.area_name)}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  if (checked) {
+                    setFormData((prev) => ({
+                      ...prev,
+                      area_of_work: [...prev.area_of_work, a.area_name],
+                    }));
+                  } else {
+                    setFormData((prev) => ({
+                      ...prev,
+                      area_of_work: prev.area_of_work.filter(
+                        (area) => area !== a.area_name
+                      ),
+                    }));
+                  }
+                }}
+              />
+              {a.name}
+            </div>
+          ))}
+          <button
+            onClick={() => {
+              setShowAreaPopup(false);
+            }}
+            className="btn-save"
+          >
+            Done
+          </button>
+          <button
+            onClick={() => {
+              setShowAreaPopup(false);
+            }}
+            className="btn-cancel"
+          >
+            Cancel
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default TeamLeadProjectView;
 
