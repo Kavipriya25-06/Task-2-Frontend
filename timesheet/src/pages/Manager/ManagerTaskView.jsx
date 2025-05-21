@@ -258,25 +258,24 @@ const ManagerTaskView = () => {
                 {taskData.attachments && taskData.attachments.length > 0 ? (
                   taskData.attachments.map((file, index) => (
                     <div key={index} style={{ marginBottom: "5px" }}>
-                    <a
-                     href={config.apiBaseURL + file.file}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="view-attachment-link"
-                  >
-                    <img
-                      src="/src/assets/pin svg.svg" // replace this with your actual image path
-                      alt="Attachment"
-                      style={{
-                        width: "16px",
-                        height: "16px",
-                        marginRight: "5px",
-                        verticalAlign: "middle",
-                      }}
-                    />
-                    {file.file.split("/").pop()}
-                  </a>
-                      
+                      <a
+                        href={config.apiBaseURL + file.file}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="view-attachment-link"
+                      >
+                        <img
+                          src="/src/assets/pin svg.svg" // replace this with your actual image path
+                          alt="Attachment"
+                          style={{
+                            width: "16px",
+                            height: "16px",
+                            marginRight: "5px",
+                            verticalAlign: "middle",
+                          }}
+                        />
+                        {file.file.split("/").pop()}
+                      </a>
                     </div>
                   ))
                 ) : (
@@ -312,11 +311,12 @@ const ManagerTaskView = () => {
                     <i className="fas fa-calendar-alt calendar-icon"></i>
                   </div>
                 ) : (
-                <p className="view-date">
-                  {taskData?.start_date
-                    ? format(new Date(taskData.start_date), "dd-MMM-yyyy")
-                    : ""}
-                </p>                 )}
+                  <p className="view-date">
+                    {taskData?.start_date
+                      ? format(new Date(taskData.start_date), "dd-MMM-yyyy")
+                      : ""}
+                  </p>
+                )}
               </div>
 
               <div className="project-form-group-small">
@@ -343,11 +343,12 @@ const ManagerTaskView = () => {
                     <i className="fas fa-calendar-alt calendar-icon"></i>
                   </div>
                 ) : (
-                <p className="view-date">
-                  {taskData?.end_date
-                    ? format(new Date(taskData.end_date), "dd-MMM-yyyy")
-                    : ""}
-                </p>                 )}
+                  <p className="view-date">
+                    {taskData?.end_date
+                      ? format(new Date(taskData.end_date), "dd-MMM-yyyy")
+                      : ""}
+                  </p>
+                )}
               </div>
               <div className="project-form-group-small">
                 <label>Project Hours</label>

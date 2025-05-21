@@ -1,10 +1,10 @@
 // src\pages\Manager\ManagerProjectView.jsx
 
-import React, { useEffect, useState,useRef  } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
-import { useNavigate, useParams} from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
@@ -87,31 +87,30 @@ const ManagerProjectView = () => {
     }
   };
 
- const [variations, setVariations] = useState([
-  { date: "2025-05-01", title: "Project Planning", hours: "4" },
-  { date: "2025-05-03", title: "Team Meeting", hours: "2" },
-  { date: "2025-05-07", title: "Code Review", hours: "3" }
-]);
+  const [variations, setVariations] = useState([
+    { date: "2025-05-01", title: "Project Planning", hours: "4" },
+    { date: "2025-05-03", title: "Team Meeting", hours: "2" },
+    { date: "2025-05-07", title: "Code Review", hours: "3" },
+  ]);
 
+  const handleVariationChange = (index, field, value) => {
+    const newVariations = [...variations];
+    newVariations[index][field] = value;
+    setVariations(newVariations);
+  };
 
-const handleVariationChange = (index, field, value) => {
-  const newVariations = [...variations];
-  newVariations[index][field] = value;
-  setVariations(newVariations);
-};
+  const handleAddVariation = () => {
+    const last = variations[variations.length - 1];
 
-const handleAddVariation = () => {
-  const last = variations[variations.length - 1];
-
-  if (!last || (last.date && last.title && last.hours)) {
-    setVariations([
-      ...variations,
-      { date: "", title: "", hours: "" } // new empty row
-    ]);
-  } else {
-    alert("Please fill the previous variation before adding a new one.");
-  }
-};
+    if (!last || (last.date && last.title && last.hours)) {
+      setVariations([
+        ...variations,
+        { date: "", title: "", hours: "" }, // new empty row
+      ]);
+    } else {
+      alert("Please fill the previous variation before adding a new one.");
+    }
+  };
 
   const handleUpdate = async () => {
     // 1️ Update Project
@@ -211,8 +210,7 @@ const handleAddVariation = () => {
     setEditMode(false);
     fetchProjectData(); // refresh UI
   };
-
-
+  
   const handleBuildingChange = (e) => {
     const { name, value } = e.target;
     setBuildingData((prev) => ({ ...prev, [name]: value }));
@@ -221,47 +219,45 @@ const handleAddVariation = () => {
   // console.log("The Project Assign Id isssss ",projectData.assign[0].project_assign_id);
 
   const handleBuildingSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  
+    const payload = {
+      building: {
+        building_code: buildingData.building_code,
+        building_title: buildingData.building_title,
+        building_description: buildingData.building_description,
+      },
+      assign: {
+        building_hours: buildingData.building_hours,
+        project_assign: projectData.assigns[0].project_assign_id,
+        // Optionally omit these if not available
+        // employee: [],
+        // project_assign: null
+      },
+    };
 
-  const payload = {
-    building: {
-      building_code: buildingData.building_code,
-      building_title: buildingData.building_title,
-      building_description: buildingData.building_description,
-    },
-    assign: {
-      building_hours: buildingData.building_hours,
-      project_assign:projectData.assigns[0].project_assign_id,
-      // Optionally omit these if not available
-      // employee: [],
-      // project_assign: null
-    },
-  };
+    try {
+      const res = await fetch(`${config.apiBaseURL}/buildings-create/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-  try {
-    const res = await fetch(`${config.apiBaseURL}/buildings-create/`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+      const data = await res.json();
 
-    const data = await res.json();
-
-    if (res.ok) {
-      alert("Building created successfully!");
-      setBuildingData({});
-      setShowBuildingPopup(false);
-      fetchProjectData(); // Refresh UI
-    } else {
-      console.error(data);
-      alert("Failed to create Building.");
+      if (res.ok) {
+        alert("Building created successfully!");
+        setBuildingData({});
+        setShowBuildingPopup(false);
+        fetchProjectData(); // Refresh UI
+      } else {
+        console.error(data);
+        alert("Failed to create Building.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
     }
-  } catch (error) {
-    console.error("Error:", error);
-  }
-};
+  };
 
   const handleBuildingCancel = () => {
     setShowBuildingPopup(false);
@@ -276,19 +272,22 @@ const handleAddVariation = () => {
     fetchDiscipline();
   }, [project_id]);
 
-    useEffect(() => {
-        function handleClickOutside(event) {
-          if (buildingPopupRef.current && !buildingPopupRef.current.contains(event.target)) {
-            setShowBuildingPopup(false);
-          }
-        }
-        if (showBuildingPopup) {
-          document.addEventListener("mousedown", handleClickOutside);
-        }
-        return () => {
-          document.removeEventListener("mousedown", handleClickOutside);
-        };
-      }, [showBuildingPopup]);
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        buildingPopupRef.current &&
+        !buildingPopupRef.current.contains(event.target)
+      ) {
+        setShowBuildingPopup(false);
+      }
+    }
+    if (showBuildingPopup) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showBuildingPopup]);
 
   const fetchAreas = async () => {
     try {
@@ -500,7 +499,7 @@ const handleAddVariation = () => {
                 ) : (
                   <div className="select-container">
                     {availableTeamleadManager.map((emp) => (
-                      <p key={emp.employee_id} className="view-roles" >
+                      <p key={emp.employee_id} className="view-roles">
                         {emp.employee_name} - {emp.designation}
                       </p>
                     ))}
@@ -554,125 +553,142 @@ const handleAddVariation = () => {
                 )}
               </div>
 
-            <div className="project-form-group">
+              <div className="project-form-group">
                 <div className="variation-table-wrapper">
-              <label className="attaches">Variation Entries</label>
-              <div className="variation-table-container">
-                <table className="variation-table">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Title</th>
-                      <th>Hours</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {variations.map((variation, index) => (
-                      <tr key={index}>
-                        <td>   
-                          {editMode ? (
-                            <div className="date-wrapper">
-                              <DatePicker
-                                selected={variation.date ? new Date(variation.date) : null}
-                                onChange={(date) =>
-                                  handleVariationChange(
-                                    index,
-                                    "date",
-                                    date ? date.toISOString().slice(0, 10) : ""
-                                  )
-                                }
-                                dateFormat="dd-MMM-yyyy"
-                                placeholderText="dd-mm-yyyy"
-                                className="input1"
-                                calendarClassName="custom-datepicker"
-                                popperPlacement="bottom-start"
-                                popperModifiers={[
-                                  {
-                                    name: "preventOverflow",
-                                    options: {
-                                      boundary: "viewport",
-                                    },
-                                  },
-                                ]}
-                                popperContainer={({ children }) => (
-                                  <div className="datepicker-portal">{children}</div>
-                                )}
-                              />
-                                                <i className="fas fa-calendar-alt calendar-icon"></i>
-
-                                            </div>
-                          ) : (
-                            variation.date ? format(new Date(variation.date), "dd-MMM-yyyy") : ""
-                          )}
-                        </td>
-                        <td>
-                          {editMode ? (
-                            <input
-                              type="text"
-                              placeholder="Enter title"
-                              value={variation.title}
-                              onChange={(e) => handleVariationChange(index, "title", e.target.value)}
-                            />
-                          ) : (
-                            variation.title
-                          )}
-                        </td>
-                        <td>
-                          {editMode ? (
-                            <input
-                              type="number"
-                              placeholder="Hours"
-                              value={variation.hours}
-                             onChange={(e) => {
-                              const value = e.target.value;
-                              if (Number(value) >= 0 || value === "") {
-                                handleVariationChange(index, "hours", value);
-                              }
-                            }}
-                            />
-                          ) : (
-                            variation.hours
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                {editMode && (
-                  <button
-                                  type="button"
-                                  onClick={handleAddVariation}
-                                  className="plus-button"
-                                >
-                                  +
-                                </button>
+                  <label className="attaches">Variation Entries</label>
+                  <div className="variation-table-container">
+                    <table className="variation-table">
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>Title</th>
+                          <th>Hours</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {variations.map((variation, index) => (
+                          <tr key={index}>
+                            <td>
+                              {editMode ? (
+                                <div className="date-wrapper">
+                                  <DatePicker
+                                    selected={
+                                      variation.date
+                                        ? new Date(variation.date)
+                                        : null
+                                    }
+                                    onChange={(date) =>
+                                      handleVariationChange(
+                                        index,
+                                        "date",
+                                        date
+                                          ? date.toISOString().slice(0, 10)
+                                          : ""
+                                      )
+                                    }
+                                    dateFormat="dd-MMM-yyyy"
+                                    placeholderText="dd-mm-yyyy"
+                                    className="input1"
+                                    calendarClassName="custom-datepicker"
+                                    popperPlacement="bottom-start"
+                                    popperModifiers={[
+                                      {
+                                        name: "preventOverflow",
+                                        options: {
+                                          boundary: "viewport",
+                                        },
+                                      },
+                                    ]}
+                                    popperContainer={({ children }) => (
+                                      <div className="datepicker-portal">
+                                        {children}
+                                      </div>
+                                    )}
+                                  />
+                                  <i className="fas fa-calendar-alt calendar-icon"></i>
+                                </div>
+                              ) : variation.date ? (
+                                format(new Date(variation.date), "dd-MMM-yyyy")
+                              ) : (
+                                ""
                               )}
+                            </td>
+                            <td>
+                              {editMode ? (
+                                <input
+                                  type="text"
+                                  placeholder="Enter title"
+                                  value={variation.title}
+                                  onChange={(e) =>
+                                    handleVariationChange(
+                                      index,
+                                      "title",
+                                      e.target.value
+                                    )
+                                  }
+                                />
+                              ) : (
+                                variation.title
+                              )}
+                            </td>
+                            <td>
+                              {editMode ? (
+                                <input
+                                  type="number"
+                                  placeholder="Hours"
+                                  value={variation.hours}
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (Number(value) >= 0 || value === "") {
+                                      handleVariationChange(
+                                        index,
+                                        "hours",
+                                        value
+                                      );
+                                    }
+                                  }}
+                                />
+                              ) : (
+                                variation.hours
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {editMode && (
+                      <button
+                        type="button"
+                        onClick={handleAddVariation}
+                        className="plus-button"
+                      >
+                        +
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
 
-            </div>
-
-
-               <div className="project-form-group">
+              <div className="project-form-group">
                 <label className="attaches">Attachments</label>
-                  <a
-                    href="#"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="view-attachment-link"
-                  >
-                    <img
-                      src="/src/assets/pin svg.svg" // replace this with your actual image path
-                      alt="Attachment"
-                      style={{
-                        width: "16px",
-                        height: "16px",
-                        marginRight: "5px",
-                        verticalAlign: "middle",
-                      }}
-                    />
-                    View Attachment
-                  </a>
+                <a
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="view-attachment-link"
+                >
+                  <img
+                    src="/src/assets/pin svg.svg" // replace this with your actual image path
+                    alt="Attachment"
+                    style={{
+                      width: "16px",
+                      height: "16px",
+                      marginRight: "5px",
+                      verticalAlign: "middle",
+                    }}
+                  />
+                  View Attachment
+                </a>
               </div>
               {/* <div className="project-form-group">
                 <label className="area">Area of Work</label>
@@ -734,23 +750,30 @@ const handleAddVariation = () => {
             <div className="right-form-first">
               <div className="project-form-group-small">
                 <label>Start Date</label>
-                  {editMode ? (
-                    <div className="date-input-container">
-                      <DatePicker
-                        selected={formData.start_date ? new Date(formData.start_date) : null}
-                        onChange={(date) => handleChange({ target: { name: 'start_date', value: date } })}
-                        dateFormat="dd-MMM-yyyy"
-                        placeholderText="Select a date"
-                      />
-                        <i className="fas fa-calendar-alt calendar-icon"></i>
-
-                    </div>
-                  ) : (
-                    <p className="view-date">
-                      {formData.start_date &&
-                        format(new Date(formData.start_date), "dd-MMM-yyyy")}
-                    </p>                  
-                  )}
+                {editMode ? (
+                  <div className="date-input-container">
+                    <DatePicker
+                      selected={
+                        formData.start_date
+                          ? new Date(formData.start_date)
+                          : null
+                      }
+                      onChange={(date) =>
+                        handleChange({
+                          target: { name: "start_date", value: date },
+                        })
+                      }
+                      dateFormat="dd-MMM-yyyy"
+                      placeholderText="Select a date"
+                    />
+                    <i className="fas fa-calendar-alt calendar-icon"></i>
+                  </div>
+                ) : (
+                  <p className="view-date">
+                    {formData.start_date &&
+                      format(new Date(formData.start_date), "dd-MMM-yyyy")}
+                  </p>
+                )}
               </div>
               <div className="project-form-group-small">
                 <label>Estd. Hours</label>
@@ -776,7 +799,9 @@ const handleAddVariation = () => {
                     onChange={handleChange}
                   />
                 ) : (
-                  <p className="view-description">{projectData.project_description}</p>
+                  <p className="view-description">
+                    {projectData.project_description}
+                  </p>
                 )}
               </div>
             </div>
@@ -808,71 +833,71 @@ const handleAddVariation = () => {
           )}
         </div>
         {showBuildingPopup && (
-        <div className="popup" ref={buildingPopupRef}>
-          <div className="create-building-container">
-            <h2>Create Sub-Division</h2>
-            <form onSubmit={handleBuildingSubmit}>
-              <div className="building-elements">
-                <div className="top-elements">
-                  <div>
-                    <label>Sub-Division code</label>
-                    <br />
-                    <input
-                      name="building_code"
-                      value={buildingData.building_code || ""}
-                      onChange={handleBuildingChange}
-                    />
+          <div className="popup" ref={buildingPopupRef}>
+            <div className="create-building-container">
+              <h2>Create Sub-Division</h2>
+              <form onSubmit={handleBuildingSubmit}>
+                <div className="building-elements">
+                  <div className="top-elements">
+                    <div>
+                      <label>Sub-Division code</label>
+                      <br />
+                      <input
+                        name="building_code"
+                        value={buildingData.building_code || ""}
+                        onChange={handleBuildingChange}
+                      />
+                    </div>
+                    <div>
+                      <label>Sub-Division Title</label>
+                      <br />
+                      <input
+                        name="building_title"
+                        value={buildingData.building_title || ""}
+                        onChange={handleBuildingChange}
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label>Sub-Division Title</label>
-                    <br />
-                    <input
-                      name="building_title"
-                      value={buildingData.building_title || ""}
-                      onChange={handleBuildingChange}
-                    />
+                  <div className="bottom-elements">
+                    <div>
+                      <label>Sub-Division Description</label>
+                      <br />
+                      <textarea
+                        name="building_description"
+                        value={buildingData.building_description || ""}
+                        onChange={handleBuildingChange}
+                        rows={4}
+                        className="textarea"
+                      />
+                    </div>
+                    <div>
+                      <label>Sub-Division Hours</label>
+                      <br />
+                      <input
+                        name="building_hours"
+                        value={buildingData.building_hours || ""}
+                        onChange={handleBuildingChange}
+                      />
+                    </div>
                   </div>
                 </div>
-                <div className="bottom-elements">
-                  <div>
-                    <label>Sub-Division Description</label>
-                    <br />
-                    <textarea
-                      name="building_description"
-                      value={buildingData.building_description || ""}
-                      onChange={handleBuildingChange}
-                      rows={4}
-                      className="textarea"
-                    />
-                  </div>
-                  <div>
-                    <label>Sub-Division Hours</label>
-                    <br />
-                    <input
-                      name="building_hours"
-                      value={buildingData.building_hours || ""}
-                      onChange={handleBuildingChange}
-                    />
-                  </div>
+                <div className="form-buttons">
+                  <button type="submit" className="btn-green">
+                    Create
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-red"
+                    onClick={handleBuildingCancel}
+                  >
+                    Cancel
+                  </button>
                 </div>
-              </div>
-              <div className="form-buttons">
-                <button type="submit" className="btn-green">
-                  Create
-                </button>
-                <button
-                  type="button"
-                  className="btn-red"
-                  onClick={handleBuildingCancel}
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
-        
+        )}
+
         {showAreaPopup && (
           <div className="popup">
             <h4>Select Area of Work</h4>
