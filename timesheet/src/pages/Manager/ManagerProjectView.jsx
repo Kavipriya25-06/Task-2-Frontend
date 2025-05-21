@@ -45,12 +45,14 @@ const ManagerProjectView = () => {
 
   const [showBuildingPopup, setShowBuildingPopup] = useState(false);
   const [buildingData, setBuildingData] = useState({});
-  const [showAttachments, setShowAttachments] = useState(false);
   const [showAreaPopup, setShowAreaPopup] = useState(false);
   const [selectedBuildings, setSelectedBuildings] = useState([]);
   const [availableBuildings, setAvailableBuildings] = useState([]);
   const [selectedAreas, setSelectedAreas] = useState([]);
+<<<<<<< HEAD
 
+=======
+>>>>>>> bb556be17e25b7bfbf4557297666448c0d5cde92
   const [availableAreas, setAvailableAreas] = useState([]);
   const { project_id } = useParams();
   const [editMode, setEditMode] = useState(false); //  Add this at the top
@@ -64,15 +66,6 @@ const ManagerProjectView = () => {
 
   const buildingClick = (building_assign_id) => {
     navigate(`/manager/detail/buildings/${building_assign_id}`);
-  };
-
-  const handleFileChange = (e) => {
-    const files = Array.from(e.target.files);
-    setAttachments((prev) => [...prev, ...files]);
-  };
-
-  const handleRemoveFile = (index) => {
-    setAttachments((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleRemoveBuilding = async (building) => {
@@ -115,7 +108,10 @@ const ManagerProjectView = () => {
     { date: "2025-05-03", title: "Team Meeting", hours: "2" },
     { date: "2025-05-07", title: "Code Review", hours: "3" },
   ]);
+<<<<<<< HEAD
   
+=======
+>>>>>>> bb556be17e25b7bfbf4557297666448c0d5cde92
 
   const handleVariationChange = (index, field, value) => {
     const newVariations = [...variations];
@@ -265,6 +261,7 @@ const ManagerProjectView = () => {
     const { name, value } = e.target;
     setBuildingData((prev) => ({ ...prev, [name]: value }));
   };
+
   // console.log("The Project Assign Id isssss ",projectData.assign[0].project_assign_id);
 
   const handleBuildingSubmit = async (e) => {
@@ -724,8 +721,10 @@ const ManagerProjectView = () => {
                   </div>
                 </div>
               </div>
+
               <div className="project-form-group">
                 <label className="attaches">Attachments</label>
+<<<<<<< HEAD
 
                 {editMode ? (
                   <div className="plus-upload-wrappers">
@@ -900,8 +899,27 @@ const ManagerProjectView = () => {
                 ) : (
                   <p style={{ color: "#666" }}>No attachments added.</p>
                 )}
+=======
+                <a
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="view-attachment-link"
+                >
+                  <img
+                    src="/src/assets/pin svg.svg" // replace this with your actual image path
+                    alt="Attachment"
+                    style={{
+                      width: "16px",
+                      height: "16px",
+                      marginRight: "5px",
+                      verticalAlign: "middle",
+                    }}
+                  />
+                  View Attachment
+                </a>
+>>>>>>> bb556be17e25b7bfbf4557297666448c0d5cde92
               </div>
-
               {/* <div className="project-form-group">
                 <label className="area">Area of Work</label>
                 <div className="area-row">
@@ -971,9 +989,8 @@ const ManagerProjectView = () => {
                           : null
                       }
                       onChange={(date) =>
-                        setFormData({
-                          ...formData,
-                          start_date: format(date, "yyyy-MM-dd"),
+                        handleChange({
+                          target: { name: "start_date", value: date },
                         })
                       }
                       dateFormat="dd-MMM-yyyy"
@@ -1051,7 +1068,7 @@ const ManagerProjectView = () => {
               <h2>Create Sub-Division</h2>
               <form onSubmit={handleBuildingSubmit}>
                 <div className="building-elements">
-                  <div className="bottom-element">
+                  <div className="top-elements">
                     <div>
                       <label>Sub-Division code</label>
                       <br />
@@ -1059,7 +1076,6 @@ const ManagerProjectView = () => {
                         name="building_code"
                         value={buildingData.building_code || ""}
                         onChange={handleBuildingChange}
-                        className="bottom-inputs"
                       />
                     </div>
                     <div>
@@ -1069,11 +1085,10 @@ const ManagerProjectView = () => {
                         name="building_title"
                         value={buildingData.building_title || ""}
                         onChange={handleBuildingChange}
-                        className="bottom-inputs"
                       />
                     </div>
                   </div>
-                  <div className="bottom-element">
+                  <div className="bottom-elements">
                     <div>
                       <label>Sub-Division Description</label>
                       <br />
@@ -1092,7 +1107,6 @@ const ManagerProjectView = () => {
                         name="building_hours"
                         value={buildingData.building_hours || ""}
                         onChange={handleBuildingChange}
-                        className="bottom-inputs"
                       />
                     </div>
                   </div>
