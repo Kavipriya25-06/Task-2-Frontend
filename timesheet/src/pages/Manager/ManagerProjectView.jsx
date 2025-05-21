@@ -49,10 +49,9 @@ const ManagerProjectView = () => {
   const [selectedBuildings, setSelectedBuildings] = useState([]);
   const [availableBuildings, setAvailableBuildings] = useState([]);
   const [selectedAreas, setSelectedAreas] = useState([]);
-<<<<<<< HEAD
 
-=======
->>>>>>> bb556be17e25b7bfbf4557297666448c0d5cde92
+
+
   const [availableAreas, setAvailableAreas] = useState([]);
   const { project_id } = useParams();
   const [editMode, setEditMode] = useState(false); //  Add this at the top
@@ -108,10 +107,7 @@ const ManagerProjectView = () => {
     { date: "2025-05-03", title: "Team Meeting", hours: "2" },
     { date: "2025-05-07", title: "Code Review", hours: "3" },
   ]);
-<<<<<<< HEAD
-  
-=======
->>>>>>> bb556be17e25b7bfbf4557297666448c0d5cde92
+
 
   const handleVariationChange = (index, field, value) => {
     const newVariations = [...variations];
@@ -724,7 +720,7 @@ const ManagerProjectView = () => {
 
               <div className="project-form-group">
                 <label className="attaches">Attachments</label>
-<<<<<<< HEAD
+                    
 
                 {editMode ? (
                   <div className="plus-upload-wrappers">
@@ -899,26 +895,11 @@ const ManagerProjectView = () => {
                 ) : (
                   <p style={{ color: "#666" }}>No attachments added.</p>
                 )}
-=======
-                <a
-                  href="#"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="view-attachment-link"
-                >
-                  <img
-                    src="/src/assets/pin svg.svg" // replace this with your actual image path
-                    alt="Attachment"
-                    style={{
-                      width: "16px",
-                      height: "16px",
-                      marginRight: "5px",
-                      verticalAlign: "middle",
-                    }}
-                  />
-                  View Attachment
-                </a>
->>>>>>> bb556be17e25b7bfbf4557297666448c0d5cde92
+
+                
+          
+
+
               </div>
               {/* <div className="project-form-group">
                 <label className="area">Area of Work</label>
