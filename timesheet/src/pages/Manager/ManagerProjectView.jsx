@@ -15,6 +15,7 @@ const ManagerProjectView = () => {
   const buildingPopupRef = useRef();
   const [teamleadManager, setTeamleadManager] = useState([]);
   const [availableTeamleadManager, setAvailableTeamleadManager] = useState([]);
+  const [showAttachments, setShowAttachments] = useState([]);
   const [projectData, setProjectData] = useState(null);
   const [buildings, setBuildings] = useState([]);
   const [discipline, setDiscipline] = useState([]);
@@ -49,8 +50,6 @@ const ManagerProjectView = () => {
   const [selectedBuildings, setSelectedBuildings] = useState([]);
   const [availableBuildings, setAvailableBuildings] = useState([]);
   const [selectedAreas, setSelectedAreas] = useState([]);
-
-
 
   const [availableAreas, setAvailableAreas] = useState([]);
   const { project_id } = useParams();
@@ -107,7 +106,6 @@ const ManagerProjectView = () => {
     { date: "2025-05-03", title: "Team Meeting", hours: "2" },
     { date: "2025-05-07", title: "Code Review", hours: "3" },
   ]);
-
 
   const handleVariationChange = (index, field, value) => {
     const newVariations = [...variations];
@@ -720,7 +718,6 @@ const ManagerProjectView = () => {
 
               <div className="project-form-group">
                 <label className="attaches">Attachments</label>
-                    
 
                 {editMode ? (
                   <div className="plus-upload-wrappers">
@@ -895,11 +892,6 @@ const ManagerProjectView = () => {
                 ) : (
                   <p style={{ color: "#666" }}>No attachments added.</p>
                 )}
-
-                
-          
-
-
               </div>
               {/* <div className="project-form-group">
                 <label className="area">Area of Work</label>
