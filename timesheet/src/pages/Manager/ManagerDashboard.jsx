@@ -22,7 +22,7 @@ const ManagerDashboard = () => {
     { label: "Employees", path: "detail/employees" },
     { label: "Leave requests", path: "detail/leave-requests" },
     { label: "Attendance", path: "detail/attendance" },
-    {label:"Comp-off", path: "detail/compoff"},
+    {label:"Comp-off", path: "detail/Compoff"},
   ];
 
   // Current tab from path name

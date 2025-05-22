@@ -3,7 +3,7 @@ import config from "../../config";
 import { format } from "date-fns";
 import { useAuth } from "../../AuthContext"; //  Added for employee_id
 
-const EmployeeCompoffRequest = () => {
+const TeamLeadCompoffRequest = () => {
   const { user } = useAuth(); //  Get employee_id
   const [compOffData, setCompOffData] = useState([]);
 
@@ -102,4 +102,4 @@ const EmployeeCompoffRequest = () => {
   );
 };
 
-export default EmployeeCompoffRequest;
+export default TeamLeadCompoffRequest;

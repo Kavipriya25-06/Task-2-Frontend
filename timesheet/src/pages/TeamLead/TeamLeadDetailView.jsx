@@ -36,6 +36,7 @@ const TeamLeadDetailView = () => {
       tabname: ["leave-requests"],
     },
     { label: "Attendance", path: "attendance", tabname: ["attendance"] },
+    { label: "Comp-off Request", path: "compoffrequest" },
   ];
   return (
     <div className="admin-page">

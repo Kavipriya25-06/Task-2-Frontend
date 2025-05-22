@@ -99,6 +99,7 @@ import TeamLeadLeaveRequestForm from "./pages/TeamLead/TeamLeadLeaveRequestForm.
 import TeamLeadDailyTimeSheetEntry from "./pages/TeamLead/TeamLeadDailyTimeSheetEntry.jsx";
 import TeamLeadWeeklyTimeSheetEntry from "./pages/TeamLead/TeamLeadWeeklyTimeSheet.jsx";
 import TeamLeadApprovalScreen from "./pages/TeamLead/TeamLeadApprovalScreen.jsx";
+import TeamLeadCompoffRequest from "./pages/TeamLead/TeamLeadCompoffRequest.jsx";
 
 // Employee pages
 import EmployeeDashboard from "./pages/Employee/EmployeeDashboard.jsx";
@@ -220,6 +221,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<HeroSlider />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/403" element={<Dashboard />} />
             <Route
               path="/home/*"
               element={
@@ -509,6 +511,10 @@ const App = () => {
                 <Route
                   path="attendance/timesheetapproval/:employee_id/:date"
                   element={<TeamLeadApprovalScreen />}
+                />
+                <Route
+                  path="compoffrequest"
+                  element={<TeamLeadCompoffRequest />}
                 />
               </Route>
             </Route>

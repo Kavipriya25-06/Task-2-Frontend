@@ -147,6 +147,7 @@ const labelMap = {
   approvalscreen: "Approval Screen",
   createdaily: "Daily Timesheet",
   createweekly: "Weekly Timesheet",
+  compoff: "Comp Off"
 };
 
 const Breadcrumbs = ({ showBack = false, backPath = null, onBack }) => {
