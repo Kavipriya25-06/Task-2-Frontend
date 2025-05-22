@@ -1,13 +1,15 @@
+/// src\pages\HR\HRSettings.jsx
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import config from "../../config";
+import EditableTimeField from "../../constants/EditableTimeField";
 
 const HRSettings = () => {
   const [compOffData, setCompOffData] = useState({
     half_day: { min_hours: "", max_hours: "" },
     full_day: { min_hours: "", max_hours: "" },
   });
-
   const [loading, setLoading] = useState(true);
 
   const fetchCompOffSettings = async () => {
@@ -15,18 +17,28 @@ const HRSettings = () => {
       const response = await fetch(`${config.apiBaseURL}/comp-off/`);
       const data = await response.json();
 
+      const formatDecimalToTime = (dec) => {
+        if (!dec) return "";
+        const hours = Math.floor(dec);
+        const minutes = Math.round((dec - hours) * 60);
+        return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+          2,
+          "0"
+        )}`;
+      };
+
       let half_day = data.find((d) => d.leave_type === "half_day");
       let full_day = data.find((d) => d.leave_type === "full_day");
 
       setCompOffData({
         half_day: {
-          min_hours: half_day?.min_hours === 0 || half_day?.min_hours === "0.00" ? "" : half_day?.min_hours || "",
-          max_hours: half_day?.max_hours === 0 || half_day?.max_hours === "0.00" ? "" : half_day?.max_hours || "",
+          min_hours: formatDecimalToTime(half_day?.min_hours) || "",
+          max_hours: formatDecimalToTime(half_day?.max_hours) || "",
           id: half_day?.id,
         },
         full_day: {
-          min_hours: full_day?.min_hours === 0 || full_day?.min_hours === "0.00" ? "" : full_day?.min_hours || "",
-          max_hours: full_day?.max_hours === 0 || full_day?.max_hours === "0.00" ? "" : full_day?.max_hours || "",
+          min_hours: formatDecimalToTime(full_day?.min_hours) || "",
+          max_hours: formatDecimalToTime(full_day?.max_hours) || "",
           id: full_day?.id,
         },
       });
@@ -42,32 +54,37 @@ const HRSettings = () => {
   }, []);
 
   const handleInputChange = (type, field, value) => {
-    // Allow only numbers, limit to 2 digits, and max value of 12
-    const sanitized = value.replace(/[^0-9]/g, "").slice(0, 2);
-    const numeric = sanitized ? Math.min(parseInt(sanitized, 10), 12) : "";
     setCompOffData((prev) => ({
       ...prev,
       [type]: {
         ...prev[type],
-        [field]: numeric,
+        [field]: value,
       },
     }));
   };
 
+  const timeToDecimal = (timeStr) => {
+    if (!timeStr || !timeStr.includes(":")) return 0;
+    const [hh, mm] = timeStr.split(":").map(Number);
+    return parseFloat((hh + mm / 60).toFixed(2));
+  };
+
   const handleSubmit = async () => {
     try {
+      // For Half Day
       const halfDayPayload = {
         leave_type: "half_day",
-        min_hours: compOffData.half_day.min_hours,
-        max_hours: compOffData.half_day.max_hours,
+        min_hours: timeToDecimal(compOffData.half_day.min_hours),
+        max_hours: timeToDecimal(compOffData.half_day.max_hours),
       };
 
       const fullDayPayload = {
         leave_type: "full_day",
-        min_hours: compOffData.full_day.min_hours,
-        max_hours: compOffData.full_day.max_hours,
+        min_hours: timeToDecimal(compOffData.full_day.min_hours),
+        max_hours: timeToDecimal(compOffData.full_day.max_hours),
       };
 
+      // Update or create Half Day
       const halfDayMethod = compOffData.half_day.id ? "PATCH" : "POST";
       const halfDayURL = compOffData.half_day.id
         ? `${config.apiBaseURL}/comp-off/${compOffData.half_day.id}/`
@@ -79,6 +96,7 @@ const HRSettings = () => {
         body: JSON.stringify(halfDayPayload),
       });
 
+      // Update or create Full Day
       const fullDayMethod = compOffData.full_day.id ? "PATCH" : "POST";
       const fullDayURL = compOffData.full_day.id
         ? `${config.apiBaseURL}/comp-off/${compOffData.full_day.id}/`
@@ -100,7 +118,6 @@ const HRSettings = () => {
   return (
     <div className="settings-container">
       <h2>Settings</h2>
-      <div className="tab-container"></div>
 
       {loading ? (
         <p>Loading...</p>
@@ -117,50 +134,38 @@ const HRSettings = () => {
             <tr>
               <td>Half Day</td>
               <td>
-                <input
-                  type="text"
-                  inputMode="numeric"
+                <EditableTimeField
                   value={compOffData.half_day.min_hours}
-                  onChange={(e) =>
-                    handleInputChange("half_day", "min_hours", e.target.value)
+                  onChange={(val) =>
+                    handleInputChange("half_day", "min_hours", val)
                   }
-                  placeholder="00"
                 />
               </td>
               <td>
-                <input
-                  type="text"
-                  inputMode="numeric"
+                <EditableTimeField
                   value={compOffData.half_day.max_hours}
-                  onChange={(e) =>
-                    handleInputChange("half_day", "max_hours", e.target.value)
+                  onChange={(val) =>
+                    handleInputChange("half_day", "max_hours", val)
                   }
-                  placeholder="00"
                 />
               </td>
             </tr>
             <tr>
               <td>Full Day</td>
               <td>
-                <input
-                  type="text"
-                  inputMode="numeric"
+                <EditableTimeField
                   value={compOffData.full_day.min_hours}
-                  onChange={(e) =>
-                    handleInputChange("full_day", "min_hours", e.target.value)
+                  onChange={(val) =>
+                    handleInputChange("full_day", "min_hours", val)
                   }
-                  placeholder="00"
                 />
               </td>
               <td>
-                <input
-                  type="text"
-                  inputMode="timedelta"
+                <EditableTimeField
                   value={compOffData.full_day.max_hours}
-                  onChange={(e) =>
-                    handleInputChange("full_day", "max_hours", e.target.value)
+                  onChange={(val) =>
+                    handleInputChange("full_day", "max_hours", val)
                   }
-                  placeholder="00"
                 />
               </td>
             </tr>
