@@ -235,6 +235,21 @@ const TeamLeadProjects = () => {
   const [projects, setProjects] = useState([]);
   const [buildings, setBuildings] = useState([]);
   const [tasks, setTasks] = useState([]);
+  const [filteredProjects, setFilteredProjects] = useState([]);
+  const [filteredBuildings, setFilteredBuildings] = useState([]);
+  const [filteredTask, setFilteredTask] = useState([]);
+  const [searchText, setSearchText] = useState("");
+  const [searchBuild, setSearchBuild] = useState("");
+  const [searchTask, setSearchTask] = useState("");
+  const [visibleProjects, setVisibleProjects] = useState(10);
+  const [isLoadingMoreProjects, setIsLoadingMoreProjects] = useState(false);
+  const [hasMoreProjects, setHasMoreProjects] = useState(true);
+  const [visibleBuildings, setVisibleBuildings] = useState(10);
+  const [isLoadingMoreBuildings, setIsLoadingMoreBuildings] = useState(false);
+  const [hasMoreBuildings, setHasMoreBuildings] = useState(true);
+  const [visibleTasks, setVisibleTasks] = useState(10);
+  const [isLoadingMoreTasks, setIsLoadingMoreTasks] = useState(false);
+  const [hasMoreTasks, setHasMoreTasks] = useState(true);
 
   const tabLabels = ["Projects", "Buildings", "Tasks"];
 
@@ -290,6 +305,52 @@ const TeamLeadProjects = () => {
     fetchTasks();
   }, []);
 
+    useEffect(() => {
+    const lowerSearch = searchText.toLowerCase();
+    const filtered = projects.filter((u) => {
+      const code = u.project_code?.toLowerCase() || "";
+      const name = u.project_title?.toLowerCase() || "";
+      const discipline = u.discipline?.toLowerCase() || "";
+      return (
+        code.includes(lowerSearch) ||
+        name.includes(lowerSearch) ||
+        discipline.includes(lowerSearch)
+      );
+    });
+    setFilteredProjects(filtered);
+    setVisibleProjects(10);
+    setHasMoreProjects(filtered.length > 10);
+  }, [searchText, projects]);
+
+    useEffect(() => {
+    const lowerSearch = searchBuild.toLowerCase();
+    const filtered = buildings.filter((u) => {
+      const bcode = u.building_code?.toLowerCase() || "";
+      const bname = u.building_title?.toLowerCase() || "";
+      return bcode.includes(lowerSearch) || bname.includes(lowerSearch);
+    });
+    setFilteredBuildings(filtered);
+    setVisibleBuildings(10);
+    setHasMoreBuildings(filtered.length > 10);
+  }, [searchBuild, buildings]);
+
+  useEffect(() => {
+    const lowerSearch = searchTask.toLowerCase();
+    const filtered = tasks.filter((u) => {
+      const tcode = u.task_code?.toLowerCase() || "";
+      const tname = u.task_title?.toLowerCase() || "";
+      const priority = u.priority?.toLowerCase() || "";
+      return (
+        tcode.includes(lowerSearch) ||
+        tname.includes(lowerSearch) ||
+        priority.includes(lowerSearch)
+      );
+    });
+    setFilteredTask(filtered);
+    setVisibleTasks(10);
+    setHasMoreTasks(filtered.length > 10);
+  }, [searchTask, tasks]);
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 0:
@@ -297,12 +358,46 @@ const TeamLeadProjects = () => {
           <div>
             <div className="user-header">
               <h2 className="employee-title">Projects</h2>
+              <div className="search-bar-container">
+                <input
+                  type="text"
+                  placeholder="Search by code, title, or discipline"
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  className="search-bar"
+                />
+              </div>
               <div>
                 <button className="add-user-btn" onClick={handleAddClick}>
                   Create Project
                 </button>
               </div>
             </div>
+             <div
+              className="table-wrapper"
+              style={{ maxHeight: "400px" }}
+              onScroll={(e) => {
+                const { scrollTop, scrollHeight, clientHeight } =
+                  e.currentTarget;
+                if (
+                  scrollTop + clientHeight >= scrollHeight - 10 &&
+                  !isLoadingMoreProjects &&
+                  hasMoreProjects
+                ) {
+                  setIsLoadingMoreProjects(true);
+                  setTimeout(() => {
+                    const nextVisible = visibleProjects + 10;
+                    if (nextVisible >= filteredProjects.length) {
+                      setVisibleProjects(filteredProjects.length);
+                      setHasMoreProjects(false);
+                    } else {
+                      setVisibleProjects(nextVisible);
+                    }
+                    setIsLoadingMoreProjects(false);
+                  }, 1000); // Simulate 2 seconds loading
+                }
+              }}
+            >
             <table className="holiday-table">
               <thead>
                 <tr>
@@ -319,7 +414,7 @@ const TeamLeadProjects = () => {
                 </tr>
               </thead>
               <tbody>
-                {projects.map((project) => (
+                {filteredProjects.slice(0, visibleProjects).map((project) => (
                   <tr key={project.project_id}>
                     <td
                       onClick={() => handleProjectClick(project.project_id)}
@@ -342,6 +437,13 @@ const TeamLeadProjects = () => {
                 ))}
               </tbody>
             </table>
+            {isLoadingMoreProjects && (
+                <div className="loading-message">Loading...</div>
+              )}
+              {!hasMoreProjects && (
+                <div className="no-message">No more data</div>
+              )}
+            </div>
           </div>
         );
       case 1:
@@ -349,6 +451,15 @@ const TeamLeadProjects = () => {
           <div>
             <div className="user-header">
               <h2 className="employee-title">Sub-Division</h2>
+              <div className="search-bar-container">
+                <input
+                  type="text"
+                  placeholder="Search by code, name"
+                  value={searchBuild}
+                  onChange={(e) => setSearchBuild(e.target.value)}
+                  className="search-bar"
+                />
+              </div>
               <div>
                 <button
                   className="add-user-btn"
@@ -358,6 +469,31 @@ const TeamLeadProjects = () => {
                 </button>
               </div>
             </div>
+            <div
+              className="table-wrapper"
+              style={{ maxHeight: "400px" }}
+              onScroll={(e) => {
+                const { scrollTop, scrollHeight, clientHeight } =
+                  e.currentTarget;
+                if (
+                  scrollTop + clientHeight >= scrollHeight - 10 &&
+                  !isLoadingMoreBuildings &&
+                  hasMoreBuildings
+                ) {
+                  setIsLoadingMoreBuildings(true);
+                  setTimeout(() => {
+                    const nextVisible = visibleBuildings + 10;
+                    if (nextVisible >= filteredBuildings.length) {
+                      setVisibleBuildings(filteredBuildings.length);
+                      setHasMoreBuildings(false);
+                    } else {
+                      setVisibleBuildings(nextVisible);
+                    }
+                    setIsLoadingMoreBuildings(false);
+                  }, 1000); // Simulate 2 seconds loading
+                }
+              }}
+            >
             <table className="holiday-table">
               <thead>
                 <tr>
@@ -371,7 +507,9 @@ const TeamLeadProjects = () => {
                 </tr>
               </thead>
               <tbody>
-                {buildings.map((building) => (
+                {filteredBuildings
+                    .slice(0, visibleBuildings)
+                    .map((building) => (
                   <tr key={building.building_id}>
                     <td
                     // onClick={() => handleProjectClick(building.building_id)}
@@ -392,6 +530,13 @@ const TeamLeadProjects = () => {
                 ))}
               </tbody>
             </table>
+            {isLoadingMoreBuildings && (
+                <div className="loading-message">Loading...</div>
+              )}
+              {!hasMoreBuildings && (
+                <div className="no-message">No more data</div>
+              )}
+            </div>
           </div>
         );
       case 2:
@@ -399,12 +544,46 @@ const TeamLeadProjects = () => {
           <div>
             <div className="user-header">
               <h2 className="employee-title">Tasks</h2>
+              <div className="search-bar-container">
+                <input
+                  type="text"
+                  placeholder="Search by code, name"
+                  value={searchTask}
+                  onChange={(e) => setSearchTask(e.target.value)}
+                  className="search-bar"
+                />
+              </div>
               <div>
                 <button className="add-user-btn" onClick={handleAddTaskClick}>
                   Create Task
                 </button>
               </div>
             </div>
+             <div
+              className="table-wrapper"
+              style={{ maxHeight: "400px" }}
+              onScroll={(e) => {
+                const { scrollTop, scrollHeight, clientHeight } =
+                  e.currentTarget;
+                if (
+                  scrollTop + clientHeight >= scrollHeight - 10 &&
+                  !isLoadingMoreTasks &&
+                  hasMoreTasks
+                ) {
+                  setIsLoadingMoreTasks(true);
+                  setTimeout(() => {
+                    const nextVisible = visibleTasks + 10;
+                    if (nextVisible >= filteredTask.length) {
+                      setVisibleTasks(filteredTask.length);
+                      setHasMoreTasks(false);
+                    } else {
+                      setVisibleTasks(nextVisible);
+                    }
+                    setIsLoadingMoreTasks(false);
+                  }, 1000); // Simulate 2 seconds loading
+                }
+              }}
+            >
             <table className="holiday-table">
               <thead>
                 <tr>
@@ -418,7 +597,7 @@ const TeamLeadProjects = () => {
                 </tr>
               </thead>
               <tbody>
-                {tasks.map((task) => (
+                {filteredTask.slice(0, visibleTasks).map((task) => (
                   <tr key={task.task_id}>
                     <td
                     // onClick={() => handleProjectClick(task.task_id)}
@@ -439,6 +618,11 @@ const TeamLeadProjects = () => {
                 ))}
               </tbody>
             </table>
+             {isLoadingMoreTasks && (
+                <div className="loading-message">Loading...</div>
+              )}
+              {!hasMoreTasks && <div className="no-message">No more data</div>}
+            </div>
           </div>
         );
     }

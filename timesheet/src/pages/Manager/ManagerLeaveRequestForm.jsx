@@ -101,11 +101,14 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
       // setNewAttachments([]);
     }
     data.append("leave_type", mappedLeaveType);
-    data.append("start_date",format(formData.startDate, "yyyy-MM-dd"));
+    data.append("start_date", format(formData.startDate, "yyyy-MM-dd"));
     data.append("end_date", format(formData.endDate, "yyyy-MM-dd"));
     data.append("duration", formData.duration);
     data.append("reason", formData.reason);
-    data.append("resumption_date", format(formData.resumptionDate, "yyyy-MM-dd"));
+    data.append(
+      "resumption_date",
+      format(formData.resumptionDate, "yyyy-MM-dd")
+    );
     if (formData.attachment) {
       data.append("attachment", formData.attachment);
     }
@@ -208,6 +211,9 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
                 dateFormat="dd-MMM-yyyy"
                 placeholderText="dd-mm-yyyy"
                 className="date1"
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
               />
               <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
               {/* Font Awesome Calendar Icon */}
@@ -224,6 +230,9 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
                 dateFormat="dd-MMM-yyyy"
                 placeholderText="dd-mm-yyyy"
                 className="date1"
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
                 minDate={formData.startDate || null}
               />
               <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
@@ -257,6 +266,9 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
                 dateFormat="dd-MMM-yyyy"
                 placeholderText="dd-mm-yyyy"
                 className="date1"
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
                 minDate={
                   formData.endDate
                     ? new Date(formData.endDate.getTime() + 86400000)

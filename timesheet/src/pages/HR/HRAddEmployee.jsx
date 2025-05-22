@@ -1,7 +1,7 @@
 // src\pages\HR\HRAddEmployee.jsx
 
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import config from "../../config";
 import { cleanFormData } from "../../utils/cleanFormData";
 import usePlaceholder from "../../assets/profile icon.svg";
@@ -27,6 +27,7 @@ const tabLabels = [
 ];
 
 const AddEmployee = () => {
+  const { employee_id } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(0);
   const [managers, setManagers] = useState([]);
@@ -49,6 +50,8 @@ const AddEmployee = () => {
     getAttachmentName,
     profilePicture,
     setProfilePicture,
+    profilePictureUrl,
+    setProfilePictureUrl,
   } = useAttachmentManager([]);
 
   useEffect(() => {
@@ -117,23 +120,16 @@ const AddEmployee = () => {
     ];
 
     const cleanedData = cleanFormData(formData, fieldsToNullify);
-    // Initialize FormData
     const formPayload = new FormData();
 
-    // Append cleaned text fields
     Object.entries(cleanedData).forEach(([key, value]) => {
       if (value !== null && value !== undefined) {
         formPayload.append(key, value);
       }
     });
 
-    // Append profile picture if available
-    if (profilePicture) {
-      formPayload.append("profile_picture", profilePicture);
-    }
-
     try {
-      //  Step 1: Post Employee data
+      // Step 1: Create employee
       const response = await fetch(`${config.apiBaseURL}/employees/`, {
         method: "POST",
         body: formPayload,
@@ -142,17 +138,44 @@ const AddEmployee = () => {
       if (!response.ok) throw new Error("Failed to add employee");
 
       const responseData = await response.json();
-      const newEmployeeId = responseData.data.employee_id; //  Get employee_id from response
+      const newEmployeeId = responseData.data.employee_id;
 
       console.log("Employee created with ID:", newEmployeeId);
 
-      //  Step 2: Post Attachments if available
+      // Step 2: Upload profile picture if available
+      if (profilePictureBlob) {
+        const picturePayload = new FormData();
+        picturePayload.append(
+          "profile_picture",
+          profilePictureBlob,
+          "profile.jpg"
+        );
 
+        const imageUploadResponse = await fetch(
+          `${config.apiBaseURL}/employees/${newEmployeeId}/`,
+          {
+            method: "PATCH",
+            body: picturePayload,
+          }
+        );
+
+        if (!imageUploadResponse.ok) {
+          throw new Error("Failed to upload profile picture");
+        }
+
+        const refreshed = await fetch(
+          `${config.apiBaseURL}/employees/${newEmployeeId}/`
+        );
+        const updatedData = await refreshed.json();
+        setProfilePictureUrl(config.apiBaseURL + updatedData.profile_picture);
+      }
+
+      // Step 3: Upload attachments
       if (newAttachments && newAttachments.length > 0) {
         for (let file of newAttachments) {
           const attachmentPayload = new FormData();
-          attachmentPayload.append("file", file); // correct field
-          attachmentPayload.append("employee", newEmployeeId); //  append employee_id for each file
+          attachmentPayload.append("file", file);
+          attachmentPayload.append("employee", newEmployeeId);
 
           const res = await fetch(`${config.apiBaseURL}/attachments/`, {
             method: "POST",
@@ -163,10 +186,10 @@ const AddEmployee = () => {
             throw new Error("One of the attachments failed to upload");
         }
 
-        console.log(" All attachments uploaded");
+        console.log("All attachments uploaded");
       }
 
-      // After everything success
+      // Step 4: Navigate after success
       navigate("/hr/detail/employee-details");
     } catch (error) {
       console.error(
@@ -181,6 +204,7 @@ const AddEmployee = () => {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [imageSrc, setImageSrc] = useState(null);
+  const [profilePictureBlob, setProfilePictureBlob] = useState(null);
   const [originalImageSrc, setOriginalImageSrc] = useState(null); // full original image for cropping
 
   const handleFileChange = (e) => {
@@ -196,11 +220,15 @@ const AddEmployee = () => {
   };
 
   const handleCropSave = async () => {
-    const croppedImage = await getCroppedImg(
-      originalImageSrc,
-      croppedAreaPixels
-    );
-    setProfilePicture(croppedImage); // cropped preview shown
+    const blob = await getCroppedImg(originalImageSrc, croppedAreaPixels);
+
+    // Preview
+    const previewUrl = URL.createObjectURL(blob);
+    setProfilePicture(previewUrl); // For preview
+
+    // Store Blob for upload
+    setProfilePictureBlob(blob); // New state to hold actual blob for uploading
+
     setShowCropper(false);
   };
 
@@ -232,8 +260,10 @@ const AddEmployee = () => {
                   src={profilePicture || usePlaceholder}
                   alt="Profile Preview"
                   className="profile-picture"
-                  onClick={handleEditClick} // open cropper modal only
-                  style={{ cursor: originalImageSrc ? "pointer" : "default" }}
+                  onClick={handleEditClick}
+                  style={{
+                    cursor: originalImageSrc ? "pointer" : "default",
+                  }}
                 />
 
                 {/* Camera icon to open file selector */}
@@ -249,7 +279,6 @@ const AddEmployee = () => {
                   />
                 </label>
               </div>
-
               {showCropper && (
                 <Modal open={showCropper} onClose={() => setShowCropper(false)}>
                   <div className="crop-container">
@@ -383,6 +412,9 @@ const AddEmployee = () => {
                   dateFormat="dd-MMM-yyyy"
                   placeholderText="dd-mm-yyyy"
                   className="input1"
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select" // ensures dropdown shows on click, not scroll
                 />
                 <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
                 {/* Font Awesome Calendar Icon */}
@@ -402,6 +434,9 @@ const AddEmployee = () => {
                   dateFormat="dd-MMM-yyyy"
                   placeholderText="dd-mm-yyyy"
                   className="input1"
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
                 />
                 <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
                 {/* Font Awesome Calendar Icon */}
@@ -525,6 +560,9 @@ const AddEmployee = () => {
                   dateFormat="dd-MMM-yyyy"
                   placeholderText="dd-mm-yyyy"
                   className="input1"
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
                 />
                 <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
                 {/* Font Awesome Calendar Icon */}
@@ -749,6 +787,9 @@ const AddEmployee = () => {
                   dateFormat="dd-MMM-yyyy"
                   placeholderText="Select confirmation date"
                   className="input1"
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
                 />
                 <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
                 {/* Font Awesome Calendar Icon */}

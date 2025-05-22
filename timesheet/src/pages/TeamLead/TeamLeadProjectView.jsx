@@ -137,6 +137,7 @@ const TeamLeadProjectView = () => {
     // 1️ Update Project
     const payload = {
       ...formData,
+      start_date: formData.start_date ? format(new Date(formData.start_date), "yyyy-MM-dd") : null,
       area_of_work: formData.area_of_work,
       created_by: user.employee_id,
     };
@@ -642,6 +643,9 @@ const TeamLeadProjectView = () => {
                                     dateFormat="dd-MMM-yyyy"
                                     placeholderText="dd-mm-yyyy"
                                     className="input1"
+                                    showMonthDropdown
+                                    showYearDropdown
+                                    dropdownMode="select"
                                     calendarClassName="custom-datepicker"
                                     popperPlacement="bottom-start"
                                     popperModifiers={[
@@ -973,6 +977,9 @@ const TeamLeadProjectView = () => {
                       }
                       dateFormat="dd-MMM-yyyy"
                       placeholderText="dd-mm-yyyy"
+                      showMonthDropdown
+                      showYearDropdown
+                      dropdownMode="select"
                     />
                     <i className="fas fa-calendar-alt calendar-icon"></i>
                   </div>

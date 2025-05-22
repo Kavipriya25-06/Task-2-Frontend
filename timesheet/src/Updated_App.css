@@ -3,8 +3,9 @@
 .custom-toast {
   border-radius: 12px !important;
   padding: 12px 16px !important;
-  background-color: #ffffff !important;
-  color: #333 !important;
+  border-width: 3px;
+  background-color: #f1f1f1 !important;
+  color: #000 !important;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   font-family: "Inter", sans-serif;
 }
@@ -14,23 +15,23 @@
 }
 
 .custom-toast-progress {
-  background: linear-gradient(90deg, #ff9312, #ff9312) !important;
+  background: linear-gradient(90deg, #000, #000) !important;
 }
 
 .Toastify__toast--success {
-  border-left: 6px solid #28a745;
+  border: 6px solid #F1890D;
 }
 
 .Toastify__toast--error {
-  border-left: 6px solid #ff9312;
+  border: 6px solid #333;
 }
 
 .Toastify__toast--info {
-  border-left: 6px solid #007bff;
+  border: 6px solid #CCC;
 }
 
 .Toastify__toast--warning {
-  border-left: 6px solid #ffc107;
+  border: 6px solid #DDD;
 }
 
 .Dashboard {

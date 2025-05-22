@@ -10,6 +10,9 @@ const EmployeeList = () => {
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [searchText, setSearchText] = useState("");
   const navigate = useNavigate();
+  const [visibleEmployees, setVisibleEmployees] = useState(10);
+  const [isLoadingMoreEmployees, setIsLoadingMoreEmployees] = useState(false);
+  const [hasMoreEmployees, setHasMoreEmployees] = useState(true);
 
   const fetchEmployees = async () => {
     try {
@@ -48,6 +51,8 @@ const EmployeeList = () => {
       );
     });
     setFilteredEmployees(filtered);
+    setVisibleEmployees(10);
+    setHasMoreEmployees(filtered.length > 10);
   }, [searchText, employees]);
 
   return (
@@ -67,36 +72,65 @@ const EmployeeList = () => {
           Add Employee
         </button>
       </div>
-      <table className="employee-table">
-        <thead>
-          <tr>
-            <th>Employee Code</th>
-            <th>Employee Name</th>
-            <th>Department</th>
-            <th>Role</th>
-            <th>Reporting Manager</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredEmployees.map((emp) => (
-            <tr key={emp.employee_id}>
-              <td
-                onClick={() => handleEditClick(emp.employee_id)}
-                style={{
-                  cursor: "pointer",
-                  textDecoration: "underline",
-                }}
-              >
-                {emp.employee_code}
-              </td>
-              <td>{emp.employee_name}</td>
-              <td>{emp.department}</td>
-              <td>{emp.designation}</td>
-              <td>{emp.reporting_manager || "-"}</td>
+      <div
+        className="table-wrapper"
+        style={{ maxHeight: "400px" }}
+        onScroll={(e) => {
+          const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+          if (
+            scrollTop + clientHeight >= scrollHeight - 10 &&
+            !isLoadingMoreEmployees &&
+            hasMoreEmployees
+          ) {
+            setIsLoadingMoreEmployees(true);
+            setTimeout(() => {
+              const nextVisible = visibleEmployees + 10;
+              if (nextVisible >= filteredEmployees.length) {
+                setVisibleEmployees(filteredEmployees.length);
+                setHasMoreEmployees(false);
+              } else {
+                setVisibleEmployees(nextVisible);
+              }
+              setIsLoadingMoreEmployees(false);
+            }, 1000); // Simulate 2 seconds loading
+          }
+        }}
+      >
+        <table className="employee-table">
+          <thead>
+            <tr>
+              <th>Employee Code</th>
+              <th>Employee Name</th>
+              <th>Department</th>
+              <th>Role</th>
+              <th>Reporting Manager</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredEmployees.slice(0, visibleEmployees).map((emp) => (
+              <tr key={emp.employee_id}>
+                <td
+                  onClick={() => handleEditClick(emp.employee_id)}
+                  style={{
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                  }}
+                >
+                  {emp.employee_code}
+                </td>
+                <td>{emp.employee_name}</td>
+                <td>{emp.department}</td>
+                <td>{emp.designation}</td>
+                <td>{emp.reporting_manager || "-"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {isLoadingMoreEmployees && (
+          <div className="loading-message">Loading...</div>
+        )}
+        {!hasMoreEmployees && <div className="no-message">No more data</div>}
+      </div>
     </div>
   );
 };

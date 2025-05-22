@@ -8,7 +8,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 import { useAttachmentManager } from "../../constants/useAttachmentManager";
 
-
 const TeamLeadProjectCreate = () => {
   const [teamleadManager, setTeamleadManager] = useState([]);
   const buildingPopupRef = useRef();
@@ -30,15 +29,15 @@ const TeamLeadProjectCreate = () => {
     discipline: "",
     area_of_work: [],
   });
-    const {
-      attachments,
-      setAttachments,
-      newAttachments,
-      setNewAttachments,
-      handleAttachmentChange,
-      removeExistingAttachment,
-      removeNewAttachment
-     } = useAttachmentManager([]);
+  const {
+    attachments,
+    setAttachments,
+    newAttachments,
+    setNewAttachments,
+    handleAttachmentChange,
+    removeExistingAttachment,
+    removeNewAttachment,
+  } = useAttachmentManager([]);
   const [showBuildingPopup, setShowBuildingPopup] = useState(false);
   const [buildingData, setBuildingData] = useState({});
   const [showAreaPopup, setShowAreaPopup] = useState(false);
@@ -103,7 +102,7 @@ const TeamLeadProjectCreate = () => {
       });
 
       const data = await response.json();
-            if (newAttachments.length > 0) {
+      if (newAttachments.length > 0) {
         for (const file of newAttachments) {
           const formData = new FormData();
           formData.append("file", file);
@@ -175,7 +174,6 @@ const TeamLeadProjectCreate = () => {
     } catch (error) {
       console.error("Error:", error);
     }
-
   };
 
   const handleBuildingCancel = () => {
@@ -266,7 +264,7 @@ const TeamLeadProjectCreate = () => {
                 />
               </div>
 
-<div className="project-form-group">
+              <div className="project-form-group">
                 <label>Discipline Code</label>
                 <select
                   name="discipline_code"
@@ -407,7 +405,7 @@ const TeamLeadProjectCreate = () => {
                             </button>
                           </div>
                         ))}
-                         {newAttachments.map((file, index) => (
+                        {newAttachments.map((file, index) => (
                           <div key={`new-${index}`} className="file-chip">
                             <a
                               href={URL.createObjectURL(file)}
@@ -501,6 +499,9 @@ const TeamLeadProjectCreate = () => {
                     }
                     dateFormat="dd-MMM-yyyy"
                     placeholderText="dd-mm-yyyy"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
                   />
                   <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
                   {/* Font Awesome Calendar Icon */}

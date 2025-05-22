@@ -505,6 +505,9 @@ const ManagerProjectCreate = () => {
                     }
                     dateFormat="dd-MMM-yyyy"
                     placeholderText="dd-mm-yyyy"
+                    showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
                   />
                   <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
                   {/* Font Awesome Calendar Icon */}
