@@ -14,8 +14,8 @@ export default function LogoutPopup({ onClose }) {
     }
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate("/login"); // Redirect to login page
   };
 
@@ -63,4 +63,3 @@ export default function LogoutPopup({ onClose }) {
     </div>
   );
 }
-

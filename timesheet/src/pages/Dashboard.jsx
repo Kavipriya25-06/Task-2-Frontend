@@ -19,22 +19,23 @@ const Dashboard = () => {
     <div className="Dashboard">
       <img src="src\assets\Close_circle.png" alt="Denied" className="denied" />
       <h2>Access Denied</h2>
+      {/* <img
+        src="src\assets\illegal_entry.jpg"
+        alt="Denied"
+        width={360}
+        height={202}
+      /> */}
+      {/* <h2>Illegal Entry</h2> */}
       <p>You do not have permission to view this page</p>
       <p>Please check your credentials and try again</p>
       <h4>Error code: 403 </h4>
       {!user && (
-        <button
-          onClick={() => navigate("/login")}
-          style={{ padding: "10px 20px", fontSize: "16px" }}
-        >
+        <button onClick={() => navigate("/login")} className="btn-cancel">
           Login
         </button>
       )}
       {user && (
-        <button
-          onClick={() => navigate("/home")}
-          style={{ padding: "10px 20px", fontSize: "16px" }}
-        >
+        <button onClick={() => navigate("/home")} className="btn-cancel">
           Return Home
         </button>
       )}
