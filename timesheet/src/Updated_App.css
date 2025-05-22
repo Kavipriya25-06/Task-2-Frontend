@@ -6,7 +6,7 @@
   background-color: #ffffff !important;
   color: #333 !important;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 .custom-toast-body {
@@ -31,4 +31,18 @@
 
 .Toastify__toast--warning {
   border-left: 6px solid #ffc107;
+}
+
+.Dashboard {
+  padding: auto;
+  justify-content: center;
+  align-items: center;
+  vertical-align: middle;
+  display: flex;
+  flex-direction: column;
+}
+
+.denied {
+  width: 128px;
+  height: 128px;
 }

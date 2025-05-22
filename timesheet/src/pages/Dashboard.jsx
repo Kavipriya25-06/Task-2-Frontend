@@ -16,8 +16,12 @@ const Dashboard = () => {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Welcome to Timesheet Management system</h2>
+    <div className="Dashboard">
+      <img src="src\assets\Close_circle.png" alt="Denied" className="denied" />
+      <h2>Access Denied</h2>
+      <p>You do not have permission to view this page</p>
+      <p>Please check your credentials and try again</p>
+      <h4>Error code: 403 </h4>
       {!user && (
         <button
           onClick={() => navigate("/login")}
@@ -28,10 +32,10 @@ const Dashboard = () => {
       )}
       {user && (
         <button
-          onClick={handleLogout}
+          onClick={() => navigate("/home")}
           style={{ padding: "10px 20px", fontSize: "16px" }}
         >
-          Logout
+          Return Home
         </button>
       )}
     </div>

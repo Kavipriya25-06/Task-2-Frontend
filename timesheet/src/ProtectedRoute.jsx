@@ -14,7 +14,7 @@ const ProtectedRoute = ({ allowedRoles, children }) => {
   }
 
   if (!allowedRoles.includes(user.role)) {
-    return <Navigate to="/" replace />; // Redirect to home if role not allowed
+    return <Navigate to="/403" replace />; // Redirect to home if role not allowed
   }
 
   return children; // Render the protected component

@@ -60,6 +60,10 @@
   animation: fadeInUp 1.5s ease-in-out;
 }
 
+.hero-content button {
+  animation: fadeInUp 1.5s ease-in-out;
+}
+
 .hero-button {
   display: inline-block;
   background-color: #0073e6;
