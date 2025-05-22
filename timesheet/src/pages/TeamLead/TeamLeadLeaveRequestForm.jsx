@@ -220,6 +220,9 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
                 dateFormat="dd-MMM-yyyy"
                 placeholderText="dd-mm-yyyy"
                 className="date1"
+                 showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
               />
               <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
               {/* Font Awesome Calendar Icon */}
@@ -236,6 +239,9 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
                 dateFormat="dd-MMM-yyyy"
                 placeholderText="dd-mm-yyyy"
                 className="date1"
+                 showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
                 minDate={formData.startDate || null}
               />
               <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
@@ -269,6 +275,9 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
                 dateFormat="dd-MMM-yyyy"
                 placeholderText="dd-mm-yyyy "
                 className="date1"
+                 showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
                 minDate={
                   formData.endDate
                     ? new Date(formData.endDate.getTime() + 86400000)

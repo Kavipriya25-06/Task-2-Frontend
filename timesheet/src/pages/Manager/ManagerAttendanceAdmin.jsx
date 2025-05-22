@@ -312,15 +312,21 @@ const ManagerAttendanceAdmin = () => {
                 <DatePicker
                   selected={newAttendance.date}
                   onChange={(date) =>
-                    setNewAttendance({ ...newAttendance, date: format(date, "yyyy-MM-dd") })
+                    setNewAttendance({
+                      ...newAttendance,
+                      date: format(date, "yyyy-MM-dd"),
+                    })
                   }
                   dateFormat="dd-MMM-yyyy"
                   placeholderText="dd-mm-yyyy"
                   className="input1"
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
                 />
                 <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
                 {/* Font Awesome Calendar Icon */}
-              </div>              
+              </div>
               {/* <input
                 type="date"
                 value={newAttendance.date}

@@ -12,11 +12,42 @@ const TeamLeadEmployees = () => {
 
   const [teamleadData, setTeamleadData] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
+  const [visibleEmployees, setVisibleEmployees] = useState(10);
+  const [isLoadingMoreEmployees, setIsLoadingMoreEmployees] = useState(false);
+  const [hasMoreEmployees, setHasMoreEmployees] = useState(true);
+
   console.log("User", user);
 
   useEffect(() => {
     fetchEmployee();
   }, []);
+
+  useEffect(() => {
+    if (visibleEmployees >= teamleadData.length) {
+      setHasMoreEmployees(false);
+    }
+  }, [visibleEmployees, teamleadData.length]);
+
+  const handleScroll = (e) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    if (
+      scrollTop + clientHeight >= scrollHeight - 10 &&
+      !isLoadingMoreEmployees &&
+      hasMoreEmployees
+    ) {
+      setIsLoadingMoreEmployees(true);
+      setTimeout(() => {
+        const nextVisible = visibleEmployees + 10;
+        if (nextVisible >= teamleadData.length) {
+          setVisibleEmployees(teamleadData.length);
+          setHasMoreEmployees(false);
+        } else {
+          setVisibleEmployees(nextVisible);
+        }
+        setIsLoadingMoreEmployees(false);
+      }, 1000); // 1 second loading simulation
+    }
+  };
 
   const fetchEmployee = async () => {
     try {
@@ -26,6 +57,8 @@ const TeamLeadEmployees = () => {
       const data = await response.json();
       setEmployeeData(data);
       setTeamleadData(data.teamleads);
+      setVisibleEmployees(10); // Reset visible count
+      setHasMoreEmployees((data.teamleads || []).length > 10);
       console.log("Org data", data);
       console.log("Manager data", data.teamleads);
     } catch (err) {
@@ -40,26 +73,52 @@ const TeamLeadEmployees = () => {
     <div className="manager-employees">
       <div className="employee-list">
         <h3>Employees: {totalEmployees}</h3>
-        <table className="employee-table">
-          <thead>
-            <tr>
-              <th>Employee Code</th>
-              <th>Employee Name</th>
-              <th>Role</th>
-              <th>Team Leader</th>
-            </tr>
-          </thead>
-          <tbody>
-            {teamleadData.map((teamlead) => (
-              <tr key={teamlead.teamlead_id}>
-                <td>{teamlead.employee_code}</td>
-                <td>{teamlead.teamlead_name}</td>
-                <td>{teamlead.teamlead_role}</td>
-                <td>{teamlead.reporting_to || "-"}</td>
+        <div
+          className="table-wrapper"
+          onScroll={handleScroll}
+          style={{
+            maxHeight: "400px",
+            overflowY: "auto",
+          }}
+        >
+          <table className="employee-table">
+            <thead>
+              <tr>
+                <th>Employee Code</th>
+                <th>Employee Name</th>
+                <th>Role</th>
+                <th>Team Leader</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {teamleadData.slice(0, visibleEmployees).map((teamlead) => (
+                <tr key={teamlead.teamlead_id}>
+                  <td>{teamlead.employee_code}</td>
+                  <td>{teamlead.teamlead_name}</td>
+                  <td>{teamlead.teamlead_role}</td>
+                  <td>{teamlead.reporting_to || "-"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {isLoadingMoreEmployees && (
+            <div
+              className="loading-message"
+              style={{ textAlign: "center", padding: "10px" }}
+            >
+              Loading...
+              {/* <div className="spinner"></div> */}
+            </div>
+          )}
+          {!hasMoreEmployees && (
+            <div
+              className="no-message"
+              style={{ textAlign: "center", padding: "10px", color: "#999" }}
+            >
+              No more data
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

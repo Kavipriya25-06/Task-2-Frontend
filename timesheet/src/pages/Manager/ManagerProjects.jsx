@@ -19,7 +19,16 @@ const ManagerProjects = () => {
   const [searchText, setSearchText] = useState("");
   const [searchBuild, setSearchBuild] = useState("");
   const [searchTask, setSearchTask] = useState("");
-  
+  const [visibleProjects, setVisibleProjects] = useState(10);
+  const [isLoadingMoreProjects, setIsLoadingMoreProjects] = useState(false);
+  const [hasMoreProjects, setHasMoreProjects] = useState(true);
+  const [visibleBuildings, setVisibleBuildings] = useState(10);
+  const [isLoadingMoreBuildings, setIsLoadingMoreBuildings] = useState(false);
+  const [hasMoreBuildings, setHasMoreBuildings] = useState(true);
+  const [visibleTasks, setVisibleTasks] = useState(10);
+  const [isLoadingMoreTasks, setIsLoadingMoreTasks] = useState(false);
+  const [hasMoreTasks, setHasMoreTasks] = useState(true);
+
   const tabLabels = ["Projects", "Sub-Division", "Tasks"];
 
   const fetchProjects = async () => {
@@ -91,6 +100,8 @@ const ManagerProjects = () => {
       );
     });
     setFilteredProjects(filtered);
+    setVisibleProjects(10);
+    setHasMoreProjects(filtered.length > 10);
   }, [searchText, projects]);
 
   useEffect(() => {
@@ -101,6 +112,8 @@ const ManagerProjects = () => {
       return bcode.includes(lowerSearch) || bname.includes(lowerSearch);
     });
     setFilteredBuildings(filtered);
+    setVisibleBuildings(10);
+    setHasMoreBuildings(filtered.length > 10);
   }, [searchBuild, buildings]);
 
   useEffect(() => {
@@ -116,6 +129,8 @@ const ManagerProjects = () => {
       );
     });
     setFilteredTask(filtered);
+    setVisibleTasks(10);
+    setHasMoreTasks(filtered.length > 10);
   }, [searchTask, tasks]);
 
   const renderTabContent = () => {
@@ -140,45 +155,74 @@ const ManagerProjects = () => {
                 </button>
               </div>
             </div>
-            <div className="table-wrapper">
-  <table className="holiday-table">
-    <thead>
-      <tr>
-        <th>Project code</th>
-        <th>Project name</th>
-        <th>Estd. hours</th>
-        <th>Variation hours</th>
-        <th>Total hours</th>
-        <th>Consumed hours</th>
-        <th>Discipline</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      {filteredProjects.map((project) => (
-        <tr key={project.project_id}>
-          <td
-            onClick={() => handleProjectClick(project.project_id)}
-            style={{
-              cursor: "pointer",
-              textDecoration: "underline",
-            }}
-          >
-            {project.project_code}
-          </td>
-          <td>{project.project_title}</td>
-          <td>{project.estimated_hours}</td>
-          <td>{project.variation_hours}</td>
-          <td>{project.total_hours}</td>
-          <td>{project.consumed_hours}</td>
-          <td>{project.discipline}</td>
-          <td>{project.status ? "In progress" : "Completed"}</td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
-
+            <div
+              className="table-wrapper"
+              style={{ maxHeight: "400px" }}
+              onScroll={(e) => {
+                const { scrollTop, scrollHeight, clientHeight } =
+                  e.currentTarget;
+                if (
+                  scrollTop + clientHeight >= scrollHeight - 10 &&
+                  !isLoadingMoreProjects &&
+                  hasMoreProjects
+                ) {
+                  setIsLoadingMoreProjects(true);
+                  setTimeout(() => {
+                    const nextVisible = visibleProjects + 10;
+                    if (nextVisible >= filteredProjects.length) {
+                      setVisibleProjects(filteredProjects.length);
+                      setHasMoreProjects(false);
+                    } else {
+                      setVisibleProjects(nextVisible);
+                    }
+                    setIsLoadingMoreProjects(false);
+                  }, 1000); // Simulate 2 seconds loading
+                }
+              }}
+            >
+              <table className="holiday-table">
+                <thead>
+                  <tr>
+                    <th>Project code</th>
+                    <th>Project name</th>
+                    <th>Estd. hours</th>
+                    <th>Variation hours</th>
+                    <th>Total hours</th>
+                    <th>Consumed hours</th>
+                    <th>Discipline</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredProjects.slice(0, visibleProjects).map((project) => (
+                    <tr key={project.project_id}>
+                      <td
+                        onClick={() => handleProjectClick(project.project_id)}
+                        style={{
+                          cursor: "pointer",
+                          textDecoration: "underline",
+                        }}
+                      >
+                        {project.project_code}
+                      </td>
+                      <td>{project.project_title}</td>
+                      <td>{project.estimated_hours}</td>
+                      <td>{project.variation_hours}</td>
+                      <td>{project.total_hours}</td>
+                      <td>{project.consumed_hours}</td>
+                      <td>{project.discipline}</td>
+                      <td>{project.status ? "In progress" : "Completed"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {isLoadingMoreProjects && (
+                <div className="loading-message">Loading...</div>
+              )}
+              {!hasMoreProjects && (
+                <div className="no-message">No more data</div>
+              )}
+            </div>
           </div>
         );
       case 1:
@@ -204,40 +248,75 @@ const ManagerProjects = () => {
                 </button>
               </div>
             </div>
-            <table className="holiday-table">
-              <thead>
-                <tr>
-                  <th>Sub-Division code</th>
-                  <th>Sub-Division name</th>
-                  <th>Sub-Division Description</th>
-                  {/* <th>Total hours</th>
+
+            <div
+              className="table-wrapper"
+              style={{ maxHeight: "400px" }}
+              onScroll={(e) => {
+                const { scrollTop, scrollHeight, clientHeight } =
+                  e.currentTarget;
+                if (
+                  scrollTop + clientHeight >= scrollHeight - 10 &&
+                  !isLoadingMoreBuildings &&
+                  hasMoreBuildings
+                ) {
+                  setIsLoadingMoreBuildings(true);
+                  setTimeout(() => {
+                    const nextVisible = visibleBuildings + 10;
+                    if (nextVisible >= filteredBuildings.length) {
+                      setVisibleBuildings(filteredBuildings.length);
+                      setHasMoreBuildings(false);
+                    } else {
+                      setVisibleBuildings(nextVisible);
+                    }
+                    setIsLoadingMoreBuildings(false);
+                  }, 1000); // Simulate 2 seconds loading
+                }
+              }}
+            >
+              <table className="holiday-table">
+                <thead>
+                  <tr>
+                    <th>Sub-Division code</th>
+                    <th>Sub-Division name</th>
+                    <th>Sub-Division Description</th>
+                    {/* <th>Total hours</th>
                   <th>Estimated hours</th>
                   <th>Discipline</th>
                   <th>Status</th> */}
-                </tr>
-              </thead>
-              <tbody>
-                {filteredBuildings.map((building) => (
-                  <tr key={building.building_id}>
-                    <td
-                    // onClick={() => handleProjectClick(building.building_id)}
-                    // style={{
-                    //   cursor: "pointer",
-                    //   textDecoration: "underline",
-                    // }}
-                    >
-                      {building.building_code}
-                    </td>
-                    <td>{building.building_title}</td>
-                    <td>{building.building_description}</td>
-                    {/* <td>-</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredBuildings
+                    .slice(0, visibleBuildings)
+                    .map((building) => (
+                      <tr key={building.building_id}>
+                        <td
+                        // onClick={() => handleProjectClick(building.building_id)}
+                        // style={{
+                        //   cursor: "pointer",
+                        //   textDecoration: "underline",
+                        // }}
+                        >
+                          {building.building_code}
+                        </td>
+                        <td>{building.building_title}</td>
+                        <td>{building.building_description}</td>
+                        {/* <td>-</td>
                     <td>{building.estimated_hours?.estimated_hours || "-"}</td>
                     <td>{building.discipline?.discipline || "-"}</td>
                     <td>{building.status ? "Completed" : "In progress"}</td> */}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+              {isLoadingMoreBuildings && (
+                <div className="loading-message">Loading...</div>
+              )}
+              {!hasMoreBuildings && (
+                <div className="no-message">No more data</div>
+              )}
+            </div>
           </div>
         );
       case 2:
@@ -260,37 +339,67 @@ const ManagerProjects = () => {
                 </button>
               </div>
             </div>
-            <table className="holiday-table">
-              <thead>
-                <tr>
-                  <th>Task code</th>
-                  <th>Task name</th>
-                  <th>Task Description</th>
-                  {/* <th>Estimated hours</th> */}
-                  <th>Priority</th>
-                  {/* <th>Status</th> */}
-                </tr>
-              </thead>
-              <tbody>
-                {filteredTask.map((task) => (
-                  <tr key={task.task_id}>
-                    <td
-                    // onClick={() => handleProjectClick(task.task_id)}
-                    // style={{
-                    //   cursor: "pointer",
-                    //   textDecoration: "underline",
-                    // }}
-                    >
-                      {task.task_code}
-                    </td>
-                    <td>{task.task_title}</td>
-                    <td>{task.task_description}</td>
-                    <td>{task.priority}</td>
-                    {/* <td>{task.status ? "Completed" : "In progress"}</td> */}
+            <div
+              className="table-wrapper"
+              style={{ maxHeight: "400px" }}
+              onScroll={(e) => {
+                const { scrollTop, scrollHeight, clientHeight } =
+                  e.currentTarget;
+                if (
+                  scrollTop + clientHeight >= scrollHeight - 10 &&
+                  !isLoadingMoreTasks &&
+                  hasMoreTasks
+                ) {
+                  setIsLoadingMoreTasks(true);
+                  setTimeout(() => {
+                    const nextVisible = visibleTasks + 10;
+                    if (nextVisible >= filteredTask.length) {
+                      setVisibleTasks(filteredTask.length);
+                      setHasMoreTasks(false);
+                    } else {
+                      setVisibleTasks(nextVisible);
+                    }
+                    setIsLoadingMoreTasks(false);
+                  }, 1000); // Simulate 2 seconds loading
+                }
+              }}
+            >
+              <table className="holiday-table">
+                <thead>
+                  <tr>
+                    <th>Task code</th>
+                    <th>Task name</th>
+                    <th>Task Description</th>
+                    {/* <th>Estimated hours</th> */}
+                    <th>Priority</th>
+                    {/* <th>Status</th> */}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredTask.slice(0, visibleTasks).map((task) => (
+                    <tr key={task.task_id}>
+                      <td
+                      // onClick={() => handleProjectClick(task.task_id)}
+                      // style={{
+                      //   cursor: "pointer",
+                      //   textDecoration: "underline",
+                      // }}
+                      >
+                        {task.task_code}
+                      </td>
+                      <td>{task.task_title}</td>
+                      <td>{task.task_description}</td>
+                      <td>{task.priority}</td>
+                      {/* <td>{task.status ? "Completed" : "In progress"}</td> */}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {isLoadingMoreTasks && (
+                <div className="loading-message">Loading...</div>
+              )}
+              {!hasMoreTasks && <div className="no-message">No more data</div>}
+            </div>
           </div>
         );
     }

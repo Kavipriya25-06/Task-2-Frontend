@@ -7,6 +7,7 @@ import { useLocation } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
+import { useAttachmentManager } from "../../constants/useAttachmentManager";
 
 const ManagerTaskView = () => {
   const { user } = useAuth();
@@ -14,6 +15,7 @@ const ManagerTaskView = () => {
   const [editMode, setEditMode] = useState(false); //  Add this at the top
   const [teamleadManager, setTeamleadManager] = useState([]);
   const [taskData, setTaskData] = useState({});
+  const [showAttachments, setShowAttachments] = useState(false);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [availableEmployees, setAvailableEmployees] = useState([]);
   const [formData, setFormData] = useState({
@@ -27,11 +29,22 @@ const ManagerTaskView = () => {
     end_date: "",
   });
 
+  const {
+    attachments,
+    setAttachments,
+    newAttachments,
+    setNewAttachments,
+    handleAttachmentChange,
+    removeExistingAttachment,
+    removeNewAttachment,
+  } = useAttachmentManager([]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     console.log("Form data", formData);
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -62,9 +75,33 @@ const ManagerTaskView = () => {
     } catch (err) {
       console.error("Request error:", err);
     }
-    if (formData.attachments.length > 0) {
-      await uploadAttachments();
+
+    if (newAttachments.length > 0) {
+      for (const file of newAttachments) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("task_assign", taskData.task_assign_id);
+
+        const uploadRes = await fetch(`${config.apiBaseURL}/attachments/`, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!uploadRes.ok) {
+          console.error("Failed to upload file:", file.name);
+        }
+      }
+      setNewAttachments([]);
+
+      // Refresh the list after all uploads
+      const attachResponse = await fetch(
+        `${config.apiBaseURL}/attachments/project/${task_assign_id}`
+      );
+      const attachData = await attachResponse.json();
+      setAttachments(attachData);
+      setNewAttachments([]);
     }
+
     setEditMode(false);
     fetchTaskAssignment(); // Re-fetch to reset form
   };
@@ -76,28 +113,6 @@ const ManagerTaskView = () => {
     fetchTeamleadManager();
     fetchTaskAssignment();
   }, []);
-
-  const uploadAttachments = async () => {
-    for (let file of formData.attachments) {
-      const form = new FormData();
-      form.append("file", file);
-      form.append("task_assign", task_assign_id); // attach to correct task
-
-      try {
-        const res = await fetch(`${config.apiBaseURL}/attachments/`, {
-          method: "POST",
-          body: form,
-        });
-
-        if (!res.ok) {
-          const err = await res.json();
-          console.error("Upload failed:", err);
-        }
-      } catch (err) {
-        console.error("Attachment upload error:", err);
-      }
-    }
-  };
 
   const fetchTeamleadManager = async () => {
     try {
@@ -123,7 +138,7 @@ const ManagerTaskView = () => {
 
       setFormData({
         employee: data.employee?.map((emp) => emp.employee_id) || [],
-        attachments: data.attachments,
+        attachments: data.attachments || [],
         task_hours: data.task_hours || "",
         status: data.status || "",
         priority: data.priority || "",
@@ -131,6 +146,10 @@ const ManagerTaskView = () => {
         start_date: data.start_date || "",
         end_date: data.end_date || "",
       });
+
+      setAttachments(data.attachments || []); // Set attachments here directly from task data
+
+      setNewAttachments([]); // Reset new attachments
       console.log("Task Assignment:", data);
     } catch (error) {
       console.error("Error fetching task assignment:", error);
@@ -243,43 +262,179 @@ const ManagerTaskView = () => {
               </div>
               <div className="project-form-group">
                 <label className="attaches">Attachments</label>
-                {editMode && (
-                  <input
-                    type="file"
-                    multiple
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        attachments: Array.from(e.target.files),
-                      }))
-                    }
-                  />
-                )}
-                {taskData.attachments && taskData.attachments.length > 0 ? (
-                  taskData.attachments.map((file, index) => (
-                    <div key={index} style={{ marginBottom: "5px" }}>
-                      <a
-                        href={config.apiBaseURL + file.file}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="view-attachment-link"
-                      >
-                        <img
-                          src="/src/assets/pin svg.svg" // replace this with your actual image path
-                          alt="Attachment"
-                          style={{
-                            width: "16px",
-                            height: "16px",
-                            marginRight: "5px",
-                            verticalAlign: "middle",
-                          }}
-                        />
-                        {file.file.split("/").pop()}
-                      </a>
-                    </div>
-                  ))
+
+                {editMode ? (
+                  <div className="plus-upload-wrappers">
+                    {/* Upload button */}
+                    <label
+                      htmlFor="file-upload-input"
+                      className="plus-upload-button"
+                    >
+                      +
+                    </label>
+                    <input
+                      type="file"
+                      id="file-upload-input"
+                      name="attachments"
+                      multiple
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      style={{ display: "none" }}
+                      onChange={handleAttachmentChange}
+                      className="real-file-input"
+                    />
+
+                    {/* Show existing and new attachments */}
+                    {attachments.length > 0 || newAttachments.length > 0 ? (
+                      <div className="selected-files">
+                        {/* Existing backend attachments */}
+                        {attachments.map((file, index) => {
+                          if (!file?.file) return null;
+                          const fullFilename = file.file.split("/").pop();
+                          const match = fullFilename.match(
+                            /^(.+?)_[a-zA-Z0-9]+\.(\w+)$/
+                          );
+                          const filename = match
+                            ? `${match[1]}.${match[2]}`
+                            : fullFilename;
+
+                          return (
+                            <div
+                              key={`existing-${index}`}
+                              className="file-chip"
+                            >
+                              <a
+                                href={`${config.apiBaseURL}${file.file}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="file-name"
+                              >
+                                {filename}
+                              </a>
+                              <button
+                                type="button"
+                                className="remove-file"
+                                onClick={async () => {
+                                  try {
+                                    await fetch(
+                                      `${config.apiBaseURL}/attachments/${file.id}/`,
+                                      {
+                                        method: "DELETE",
+                                      }
+                                    );
+                                    setAttachments((prev) =>
+                                      prev.filter((att) => att.id !== file.id)
+                                    );
+                                  } catch (error) {
+                                    console.error(
+                                      "Failed to delete attachment:",
+                                      error
+                                    );
+                                  }
+                                }}
+                              >
+                                ×
+                              </button>
+                            </div>
+                          );
+                        })}
+
+                        {/* New file attachments */}
+                        {newAttachments.map((file, index) => (
+                          <div key={`new-${index}`} className="file-chip">
+                            <a
+                              href={URL.createObjectURL(file)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="file-name"
+                            >
+                              {file.name}
+                            </a>
+                            <button
+                              type="button"
+                              className="remove-file"
+                              onClick={() => removeNewAttachment(index)}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p style={{ color: "#666" }}>No attachments added.</p>
+                    )}
+                  </div>
+                ) : attachments.length > 0 ? (
+                  <>
+                    {/* 📎 Toggle View */}
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowAttachments((prev) => !prev);
+                      }}
+                      className="view-attachment-link"
+                      style={{
+                        display: "inline-block",
+                        marginBottom: "10px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <img
+                        src="/src/assets/pin svg.svg"
+                        alt="Attachment"
+                        style={{
+                          width: "16px",
+                          height: "16px",
+                          marginRight: "5px",
+                          verticalAlign: "middle",
+                        }}
+                      />
+                      {showAttachments
+                        ? "Hide Attachments"
+                        : "View Attachments"}
+                    </a>
+
+                    {/* Render attachments from backend */}
+                    {showAttachments && (
+                      <ul className="attachment-list">
+                        {attachments.map((file, index) => {
+                          if (!file?.file) return null;
+                          const fullFilename = file.file.split("/").pop();
+                          const match = fullFilename.match(
+                            /^(.+?)_[a-zA-Z0-9]+\.(\w+)$/
+                          );
+                          const filename = match
+                            ? `${match[1]}.${match[2]}`
+                            : fullFilename;
+
+                          return (
+                            <li key={index}>
+                              <a
+                                href={`${config.apiBaseURL}${file.file}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="view-attachment-link"
+                              >
+                                <img
+                                  src="/src/assets/pin svg.svg"
+                                  alt="Attachment"
+                                  style={{
+                                    width: "16px",
+                                    height: "16px",
+                                    marginRight: "5px",
+                                    verticalAlign: "middle",
+                                  }}
+                                />
+                                {filename}
+                              </a>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </>
                 ) : (
-                  <p>No attachments</p>
+                  <p style={{ color: "#666" }}>No attachments added.</p>
                 )}
               </div>
             </div>
@@ -307,6 +462,9 @@ const ManagerTaskView = () => {
                       dateFormat="dd-MMM-yyyy"
                       placeholderText="dd-mm-yyyy"
                       className="input1"
+                      showMonthDropdown
+                      showYearDropdown
+                      dropdownMode="select"
                     />
                     <i className="fas fa-calendar-alt calendar-icon"></i>
                   </div>
@@ -339,6 +497,9 @@ const ManagerTaskView = () => {
                       placeholderText="dd-mm-yyyy"
                       className="input1"
                       popperPlacement="bottom-start"
+                      showMonthDropdown
+                      showYearDropdown
+                      dropdownMode="select"
                     />
                     <i className="fas fa-calendar-alt calendar-icon"></i>
                   </div>

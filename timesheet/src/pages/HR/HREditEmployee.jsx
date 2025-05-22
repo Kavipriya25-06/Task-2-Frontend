@@ -382,9 +382,7 @@ const EditEmployee = () => {
                         className="plus-upload-button"
                       >
                         +
-              
                       </label>
-                      
                     </>
                   )}
                 </div>
@@ -411,7 +409,7 @@ const EditEmployee = () => {
                         </a>
                         {editMode && (
                           <button
-                          type="button"
+                            type="button"
                             className="remove-attachment"
                             onClick={async () => {
                               try {
@@ -531,6 +529,9 @@ const EditEmployee = () => {
                     dateFormat="dd-MMM-yyyy"
                     placeholderText="dd-mm-yyyy"
                     className="input1"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
                   />
                   <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
                 </div>
@@ -557,6 +558,9 @@ const EditEmployee = () => {
                     dateFormat="dd-MMM-yyyy"
                     placeholderText="dd-mm-yyyy"
                     className="input1"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
                   />
                   <i className="fas fa-calendar-alt calendar-icon"></i>
                 </div>
@@ -733,7 +737,10 @@ const EditEmployee = () => {
                       })
                     }
                     dateFormat="dd-MMM-yyy"
-                    className="date-input"
+                    className="input1"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
                   />
                   <i className="fas fa-calendar-alt calendar-icon"></i>
                 </div>
@@ -1056,7 +1063,10 @@ const EditEmployee = () => {
                       })
                     }
                     dateFormat="dd-MMM-yyy"
-                    className="date-input"
+                    className="input1"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
                   />
                   <i className="fas fa-calendar-alt calendar-icon"></i>
                 </div>
@@ -1090,7 +1100,10 @@ const EditEmployee = () => {
                       })
                     }
                     dateFormat="dd-MMM-yyy"
-                    className="date-input"
+                    className="input1"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
                   />
                   <i className="fas fa-calendar-alt calendar-icon"></i>
                 </div>
