@@ -1,10 +1,12 @@
 // src\pages\Admin\UsersPage.jsx
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 // import Breadcrumbs from "../../components/Breadcrumbs";
 // import editIcon from "src/assets/edit.png";
 
@@ -13,7 +15,11 @@ const UsersPage = () => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchText, setSearchText] = useState("");
+  const [visibleUsers, setVisibleUsers] = useState(10);
+  const [isLoadingMoreUsers, setIsLoadingMoreUsers] = useState(false);
+  const [hasMoreUsers, setHasMoreUsers] = useState(true);
   const navigate = useNavigate();
+  const searchTimeout = useRef(null);
 
   const fetchUser = async () => {
     try {
@@ -38,20 +44,42 @@ const UsersPage = () => {
     fetchUser();
   }, []);
 
-  // Search filter logic
+
   useEffect(() => {
-    const lowerSearch = searchText.toLowerCase();
-    const filtered = users.filter((u) => {
-      const code = u.employee_id?.employee_code?.toLowerCase() || "";
-      const name = u.employee_id?.employee_name?.toLowerCase() || "";
-      const email = u.email?.toLowerCase() || "";
-      return (
-        code.includes(lowerSearch) ||
-        name.includes(lowerSearch) ||
-        email.includes(lowerSearch)
-      );
-    });
-    setFilteredUsers(filtered);
+    if (searchTimeout.current) {
+      clearTimeout(searchTimeout.current);
+    }
+
+    searchTimeout.current = setTimeout(() => {
+      const lowerSearch = searchText.toLowerCase();
+      const filtered = users.filter((u) => {
+        const code = u.employee_id?.employee_code?.toLowerCase() || "";
+        const name = u.employee_id?.employee_name?.toLowerCase() || "";
+        const email = u.email?.toLowerCase() || "";
+        return (
+          code.includes(lowerSearch) ||
+          name.includes(lowerSearch) ||
+          email.includes(lowerSearch)
+        );
+      });
+
+      setFilteredUsers(filtered);
+      setVisibleUsers(10);
+      setHasMoreUsers(filtered.length > 10);
+
+      if (searchText && filtered.length === 0) {
+        toast.info("No users found", {
+          className: "custom-toast",
+          bodyClassName: "custom-toast-body",
+          progressClassName: "custom-toast-progress",
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+        });
+      }
+    }, 500);
+
+    return () => clearTimeout(searchTimeout.current);
   }, [searchText, users]);
 
   return (
@@ -76,44 +104,74 @@ const UsersPage = () => {
         </button>
       </div>
 
-      <table className="user-table">
-        <thead>
-          <tr>
-            <th>Employee Code</th>
-            <th>Name</th>
-            <th>Access Role</th>
-            <th>Email</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredUsers.map((u) => (
-            <tr key={u.user_id}>
-              <td
-                onClick={() => handleEditClick(u.user_id)}
-                style={{
-                  cursor: "pointer",
-                  textDecoration: "underline",
-                }}
-              >
-                {u.employee_id?.employee_code}
-              </td>
-              <td>{u.employee_id?.employee_name}</td>
-              <td>{u.role}</td>
-              <td>{u.email}</td>
-              <td>
-                {u.status === "active"
-                  ? "Active"
-                  : u.status === "inactive"
-                  ? "Inactive"
-                  : u.status === "resigned"
-                  ? "Resigned"
-                  : "-"}
-              </td>
+      <div
+        className="table-wrapper"
+        style={{ maxHeight: "400px" }}
+        onScroll={(e) => {
+          const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+          if (
+            scrollTop + clientHeight >= scrollHeight - 10 &&
+            !isLoadingMoreUsers &&
+            hasMoreUsers
+          ) {
+            setIsLoadingMoreUsers(true);
+            setTimeout(() => {
+              const nextVisible = visibleUsers + 10;
+              if (nextVisible >= filteredUsers.length) {
+                setVisibleUsers(filteredUsers.length);
+                setHasMoreUsers(false);
+              } else {
+                setVisibleUsers(nextVisible);
+              }
+              setIsLoadingMoreUsers(false);
+            }, 1000); // Simulate 2 seconds loading
+          }
+        }}
+      >
+        <table className="user-table">
+          <thead>
+            <tr>
+              <th>Employee Code</th>
+              <th>Name</th>
+              <th>Access Role</th>
+              <th>Email</th>
+              <th>Status</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredUsers.slice(0, visibleUsers).map((u) => (
+              <tr key={u.user_id}>
+                <td
+                  onClick={() => handleEditClick(u.user_id)}
+                  style={{
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                  }}
+                >
+                  {u.employee_id?.employee_code}
+                </td>
+                <td>{u.employee_id?.employee_name}</td>
+                <td>{u.role}</td>
+                <td>{u.email}</td>
+                <td>
+                  {u.status === "active"
+                    ? "Active"
+                    : u.status === "inactive"
+                    ? "Inactive"
+                    : u.status === "resigned"
+                    ? "Resigned"
+                    : "-"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {isLoadingMoreUsers && (
+          <div className="loading-message">Loading...</div>
+        )}
+        {!hasMoreUsers && <div className="no-message">No more data</div>}
+      </div>
+      <ToastContainer />
     </div>
   );
 };

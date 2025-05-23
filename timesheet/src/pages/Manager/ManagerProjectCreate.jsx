@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useAttachmentManager } from "../../constants/useAttachmentManager";
 
 const ManagerProjectCreate = () => {
@@ -84,7 +86,14 @@ const ManagerProjectCreate = () => {
         (value) => value === "" || value.length === 0
       )
     ) {
-      alert("Empty form");
+      toast.info("Empty Form", {
+        className: "custom-toast",
+        bodyClassName: "custom-toast-body",
+        progressClassName: "custom-toast-progress",
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: true,
+      });
       return;
     }
 
@@ -143,10 +152,17 @@ const ManagerProjectCreate = () => {
       }
 
       if (response.ok) {
-        alert("All steps completed!");
+        toast.success("Project Created Successfully", {
+          className: "custom-toast",
+          bodyClassName: "custom-toast-body",
+          progressClassName: "custom-toast-progress",
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+        });
         navigate("/manager/detail/projects/");
       } else {
-        alert("Error: " + data.error);
+        toast.error("Failed to Create project" + data.error);
       }
     } catch (err) {
       console.error("Request error:", err);
@@ -169,13 +185,20 @@ const ManagerProjectCreate = () => {
       });
       const data = await res.json();
       if (res.ok) {
-        alert("Building created successfully!");
+        toast.success("Building Created Successfully", {
+          className: "custom-toast",
+          bodyClassName: "custom-toast-body",
+          progressClassName: "custom-toast-progress",
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+        });
         setBuildingData({});
         setShowBuildingPopup(false);
         fetchBuilding();
       } else {
         console.error(data);
-        alert("Failed to create Building.");
+        toast.error("Failed to Create Buildings" + data.error);
       }
     } catch (error) {
       console.error("Error:", error);
@@ -506,8 +529,8 @@ const ManagerProjectCreate = () => {
                     dateFormat="dd-MMM-yyyy"
                     placeholderText="dd-mm-yyyy"
                     showMonthDropdown
-                  showYearDropdown
-                  dropdownMode="select"
+                    showYearDropdown
+                    dropdownMode="select"
                   />
                   <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
                   {/* Font Awesome Calendar Icon */}

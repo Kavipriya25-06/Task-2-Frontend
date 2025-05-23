@@ -16,6 +16,8 @@ import Cropper from "react-easy-crop";
 import getCroppedImg from "../../constants/cropimage"; // Path to the helper
 import Slider from "@mui/material/Slider";
 import Modal from "@mui/material/Modal";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import { FaEdit } from "react-icons/fa";
 
@@ -279,9 +281,18 @@ const EditEmployee = () => {
       }
 
       if (!response.ok) throw new Error("Failed to update employee");
+      toast.success("Details Updated Successfully", {
+        className: "custom-toast",
+        bodyClassName: "custom-toast-body",
+        progressClassName: "custom-toast-progress",
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: true,
+      });
       setEditMode(false);
       // navigate("/hr/detail/employee-details");
     } catch (error) {
+      toast.error(`Failed to Update Details: ${error.message}`);
       console.error("Error submitting employee data:", error);
     }
   };
@@ -1359,6 +1370,7 @@ const EditEmployee = () => {
           </div>
         )}
       </form>
+      <ToastContainer />
     </div>
   );
 };

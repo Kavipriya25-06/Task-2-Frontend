@@ -1,10 +1,12 @@
 // src\pages\Manager\ManagerProjects.jsx
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ManagerProjects = () => {
   const { user } = useAuth();
@@ -28,6 +30,7 @@ const ManagerProjects = () => {
   const [visibleTasks, setVisibleTasks] = useState(10);
   const [isLoadingMoreTasks, setIsLoadingMoreTasks] = useState(false);
   const [hasMoreTasks, setHasMoreTasks] = useState(true);
+  const searchTimeout = useRef(null);
 
   const tabLabels = ["Projects", "Sub-Division", "Tasks"];
 
@@ -88,49 +91,105 @@ const ManagerProjects = () => {
   }, []);
 
   useEffect(() => {
-    const lowerSearch = searchText.toLowerCase();
-    const filtered = projects.filter((u) => {
-      const code = u.project_code?.toLowerCase() || "";
-      const name = u.project_title?.toLowerCase() || "";
-      const discipline = u.discipline?.toLowerCase() || "";
-      return (
-        code.includes(lowerSearch) ||
-        name.includes(lowerSearch) ||
-        discipline.includes(lowerSearch)
-      );
-    });
-    setFilteredProjects(filtered);
-    setVisibleProjects(10);
-    setHasMoreProjects(filtered.length > 10);
+    if (searchTimeout.current) {
+      clearTimeout(searchTimeout.current);
+    }
+
+    searchTimeout.current = setTimeout(() => {
+      const lowerSearch = searchText.toLowerCase();
+      const filtered = projects.filter((u) => {
+        const code = u.project_code?.toLowerCase() || "";
+        const name = u.project_title?.toLowerCase() || "";
+        const discipline = u.discipline?.toLowerCase() || "";
+        return (
+          code.includes(lowerSearch) ||
+          name.includes(lowerSearch) ||
+          discipline.includes(lowerSearch)
+        );
+      });
+      setFilteredProjects(filtered);
+      setVisibleProjects(10);
+      setHasMoreProjects(filtered.length > 10);
+      if (searchText && filtered.length === 0) {
+        toast.info("No users found", {
+          className: "custom-toast",
+          bodyClassName: "custom-toast-body",
+          progressClassName: "custom-toast-progress",
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+        });
+      }
+    }, 500);
+
+    return () => clearTimeout(searchTimeout.current);
   }, [searchText, projects]);
 
   useEffect(() => {
-    const lowerSearch = searchBuild.toLowerCase();
-    const filtered = buildings.filter((u) => {
-      const bcode = u.building_code?.toLowerCase() || "";
-      const bname = u.building_title?.toLowerCase() || "";
-      return bcode.includes(lowerSearch) || bname.includes(lowerSearch);
-    });
-    setFilteredBuildings(filtered);
-    setVisibleBuildings(10);
-    setHasMoreBuildings(filtered.length > 10);
+    if (searchTimeout.current) {
+      clearTimeout(searchTimeout.current);
+    }
+
+    searchTimeout.current = setTimeout(() => {
+      const lowerSearch = searchBuild.toLowerCase();
+      const filtered = buildings.filter((u) => {
+        const bcode = u.building_code?.toLowerCase() || "";
+        const bname = u.building_title?.toLowerCase() || "";
+        return bcode.includes(lowerSearch) || bname.includes(lowerSearch);
+      });
+      setFilteredBuildings(filtered);
+      setVisibleBuildings(10);
+      setHasMoreBuildings(filtered.length > 10);
+
+      if (searchText && filtered.length === 0) {
+        toast.info("No users found", {
+          className: "custom-toast",
+          bodyClassName: "custom-toast-body",
+          progressClassName: "custom-toast-progress",
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+        });
+      }
+    }, 500);
+
+    return () => clearTimeout(searchTimeout.current);
   }, [searchBuild, buildings]);
 
   useEffect(() => {
-    const lowerSearch = searchTask.toLowerCase();
-    const filtered = tasks.filter((u) => {
-      const tcode = u.task_code?.toLowerCase() || "";
-      const tname = u.task_title?.toLowerCase() || "";
-      const priority = u.priority?.toLowerCase() || "";
-      return (
-        tcode.includes(lowerSearch) ||
-        tname.includes(lowerSearch) ||
-        priority.includes(lowerSearch)
-      );
-    });
-    setFilteredTask(filtered);
-    setVisibleTasks(10);
-    setHasMoreTasks(filtered.length > 10);
+    if (searchTimeout.current) {
+      clearTimeout(searchTimeout.current);
+    }
+
+    searchTimeout.current = setTimeout(() => {
+      const lowerSearch = searchTask.toLowerCase();
+      const filtered = tasks.filter((u) => {
+        const tcode = u.task_code?.toLowerCase() || "";
+        const tname = u.task_title?.toLowerCase() || "";
+        const priority = u.priority?.toLowerCase() || "";
+        return (
+          tcode.includes(lowerSearch) ||
+          tname.includes(lowerSearch) ||
+          priority.includes(lowerSearch)
+        );
+      });
+      setFilteredTask(filtered);
+      setVisibleTasks(10);
+      setHasMoreTasks(filtered.length > 10);
+
+      if (searchText && filtered.length === 0) {
+        toast.info("No users found", {
+          className: "custom-toast",
+          bodyClassName: "custom-toast-body",
+          progressClassName: "custom-toast-progress",
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+        });
+      }
+    }, 500);
+
+    return () => clearTimeout(searchTimeout.current);
   }, [searchTask, tasks]);
 
   const renderTabContent = () => {
@@ -223,6 +282,7 @@ const ManagerProjects = () => {
                 <div className="no-message">No more data</div>
               )}
             </div>
+            <ToastContainer />
           </div>
         );
       case 1:
@@ -317,6 +377,7 @@ const ManagerProjects = () => {
                 <div className="no-message">No more data</div>
               )}
             </div>
+            <ToastContainer />
           </div>
         );
       case 2:
@@ -400,6 +461,7 @@ const ManagerProjects = () => {
               )}
               {!hasMoreTasks && <div className="no-message">No more data</div>}
             </div>
+            <ToastContainer />
           </div>
         );
     }

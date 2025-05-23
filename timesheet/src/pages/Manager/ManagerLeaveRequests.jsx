@@ -15,7 +15,7 @@ const ManagerLeaveRequests = () => {
   const [activeTab, setActiveTab] = useState(0);
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 2;
+  const rowsPerPage = 10;
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = filteredLeaveRequests.slice(
@@ -194,7 +194,11 @@ const ManagerLeaveRequests = () => {
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
         >
-          Previous
+          <img
+            src="/src/assets/left.png"
+            alt="Previous"
+            style={{ width: 10, height: 12 }}
+          />
         </button>
         <span>
           {currentPage} of {totalPages}
@@ -205,7 +209,11 @@ const ManagerLeaveRequests = () => {
           }
           disabled={currentPage === totalPages}
         >
-          Next
+          <img
+            src="/src/assets/right.png"
+            alt="Previous"
+            style={{ width: 10, height: 12 }}
+          />
         </button>
       </div>
     </div>

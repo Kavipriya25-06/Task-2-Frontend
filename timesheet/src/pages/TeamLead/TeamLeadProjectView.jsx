@@ -137,7 +137,9 @@ const TeamLeadProjectView = () => {
     // 1️ Update Project
     const payload = {
       ...formData,
-      start_date: formData.start_date ? format(new Date(formData.start_date), "yyyy-MM-dd") : null,
+      start_date: formData.start_date
+        ? format(new Date(formData.start_date), "yyyy-MM-dd")
+        : null,
       area_of_work: formData.area_of_work,
       created_by: user.employee_id,
     };
@@ -446,40 +448,40 @@ const TeamLeadProjectView = () => {
           <div className="left-form">
             <div className="left-form-first">
               <div className="project-form-group">
-                <label>Project Title</label>
+                <label>Project Code</label>
                 {editMode ? (
                   <input
                     name="project_title"
-                    value={formData.project_title || ""}
+                    value={formData.project_code || ""}
+                    onChange={handleChange}
+                  />
+                ) : (
+                  <p className="view-data">{projectData.project_code}</p>
+                )}
+              </div>
+              <div className="project-form-group">
+                <label>Project Title</label>
+                {editMode ? (
+                  <input
+                    name="project_type"
+                    value={formData.project_title}
                     onChange={handleChange}
                   />
                 ) : (
                   <p className="view-data">{projectData.project_title}</p>
                 )}
               </div>
+
               <div className="project-form-group">
                 <label>Project Type</label>
                 {editMode ? (
                   <input
-                    name="project_type"
+                    name="project_code"
                     value={formData.project_type}
                     onChange={handleChange}
                   />
                 ) : (
                   <p className="view-data">{projectData.project_type}</p>
-                )}
-              </div>
-
-              <div className="project-form-group">
-                <label>Project Code</label>
-                {editMode ? (
-                  <input
-                    name="project_code"
-                    value={formData.project_code}
-                    onChange={handleChange}
-                  />
-                ) : (
-                  <p className="view-data">{projectData.project_code}</p>
                 )}
               </div>
               <div className="project-form-group">

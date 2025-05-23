@@ -130,7 +130,9 @@ const ManagerProjectView = () => {
     // 1️ Update Project
     const payload = {
       ...formData,
-      start_date: formData.start_date ? format(new Date(formData.start_date), "yyyy-MM-dd") : null,
+      start_date: formData.start_date
+        ? format(new Date(formData.start_date), "yyyy-MM-dd")
+        : null,
       area_of_work: formData.area_of_work,
       created_by: user.employee_id,
     };
@@ -440,40 +442,40 @@ const ManagerProjectView = () => {
           <div className="left-form">
             <div className="left-form-first">
               <div className="project-form-group">
-                <label>Project Title</label>
+                <label>Project Code</label>
                 {editMode ? (
                   <input
                     name="project_title"
-                    value={formData.project_title || ""}
+                    value={formData.project_code || ""}
+                    onChange={handleChange}
+                  />
+                ) : (
+                  <p className="view-data">{projectData.project_code}</p>
+                )}
+              </div>
+              <div className="project-form-group">
+                <label>Project Title</label>
+                {editMode ? (
+                  <input
+                    name="project_type"
+                    value={formData.project_title}
                     onChange={handleChange}
                   />
                 ) : (
                   <p className="view-data">{projectData.project_title}</p>
                 )}
               </div>
+
               <div className="project-form-group">
                 <label>Project Type</label>
                 {editMode ? (
                   <input
-                    name="project_type"
+                    name="project_code"
                     value={formData.project_type}
                     onChange={handleChange}
                   />
                 ) : (
                   <p className="view-data">{projectData.project_type}</p>
-                )}
-              </div>
-
-              <div className="project-form-group">
-                <label>Project Code</label>
-                {editMode ? (
-                  <input
-                    name="project_code"
-                    value={formData.project_code}
-                    onChange={handleChange}
-                  />
-                ) : (
-                  <p className="view-data">{projectData.project_code}</p>
                 )}
               </div>
               <div className="project-form-group">
@@ -1048,7 +1050,7 @@ const ManagerProjectView = () => {
               <h2>Create Sub-Division</h2>
               <form onSubmit={handleBuildingSubmit}>
                 <div className="building-elements">
-                  <div className="top-elements">
+                  <div className="bottom-element">
                     <div>
                       <label>Sub-Division code</label>
                       <br />
@@ -1056,6 +1058,7 @@ const ManagerProjectView = () => {
                         name="building_code"
                         value={buildingData.building_code || ""}
                         onChange={handleBuildingChange}
+                        className="bottom-inputs"
                       />
                     </div>
                     <div>
@@ -1065,10 +1068,11 @@ const ManagerProjectView = () => {
                         name="building_title"
                         value={buildingData.building_title || ""}
                         onChange={handleBuildingChange}
+                        className="bottom-inputs"
                       />
                     </div>
                   </div>
-                  <div className="bottom-elements">
+                  <div className="bottom-element">
                     <div>
                       <label>Sub-Division Description</label>
                       <br />
@@ -1087,6 +1091,7 @@ const ManagerProjectView = () => {
                         name="building_hours"
                         value={buildingData.building_hours || ""}
                         onChange={handleBuildingChange}
+                        className="bottom-inputs"
                       />
                     </div>
                   </div>
