@@ -304,38 +304,34 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
             </select>
           </div>
 
-          <div
-            className="form-group1"
-            style={{
-              visibility:
-                formData.leaveType === "Comp off" ? "visible" : "hidden",
-            }}
-          >
-            <label className="label1">Select Date (for Comp off)</label>
-            <select
-              name="compOffDate"
-              value={formData.compOffDate || ""}
-              onChange={(e) => {
-                const selected = new Date(e.target.value);
-                setFormData((prev) => ({
-                  ...prev,
-                  compOffDate: e.target.value,
-                  startDate: selected,
-                  endDate: selected,
-                  leaveDayType: "full",
-                  duration: "1",
-                }));
-              }}
-              className="select1"
-            >
-              <option value="">Select Approved Date</option>
-              {approvedCompOffDates.map((date, index) => (
-                <option key={index} value={date}>
-                  {format(new Date(date), "dd-MMM-yyyy")}
-                </option>
-              ))}
-            </select>
-          </div>
+          {formData.leaveType === "Comp off" && (
+            <div className="form-group1">
+              <label className="label1">Select Date (for Comp off)</label>
+              <select
+                name="compOffDate"
+                value={formData.compOffDate || ""}
+                onChange={(e) => {
+                  const selected = new Date(e.target.value);
+                  setFormData((prev) => ({
+                    ...prev,
+                    compOffDate: e.target.value,
+                    startDate: selected,
+                    endDate: selected,
+                    leaveDayType: "full",
+                    duration: "1",
+                  }));
+                }}
+                className="select1"
+              >
+                <option value="">Select Approved Date</option>
+                {approvedCompOffDates.map((date, index) => (
+                  <option key={index} value={date}>
+                    {format(new Date(date), "dd-MMM-yyyy")}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
 
         <div className="row1">
@@ -353,7 +349,9 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
                 showMonthDropdown
                 showYearDropdown
                 dropdownMode="select"
+                
               />
+
               <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
               {/* Font Awesome Calendar Icon */}
             </div>
@@ -393,39 +391,30 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
                 className="radio-group"
                 style={{ display: "flex", gap: "20px" }}
               >
-                <div className="radio-group">
-                  <label className="radio-option">
-                    <input
-                      type="radio"
-                      name="leaveDayType"
-                      value="half"
-                      checked={formData.leaveDayType === "half"}
-                      onChange={() =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          leaveDayType: "half",
-                        }))
-                      }
-                    />
-                    <span>Half-Day</span>
-                  </label>
-
-                  <label className="radio-option">
-                    <input
-                      type="radio"
-                      name="leaveDayType"
-                      value="full"
-                      checked={formData.leaveDayType === "full"}
-                      onChange={() =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          leaveDayType: "full",
-                        }))
-                      }
-                    />
-                    <span>Full-Day</span>
-                  </label>
-                </div>
+                <label>
+                  <input
+                    type="radio"
+                    name="leaveDayType"
+                    value="half"
+                    checked={formData.leaveDayType === "half"}
+                    onChange={() =>
+                      setFormData((prev) => ({ ...prev, leaveDayType: "half" }))
+                    }
+                  />{" "}
+                  Half-Day
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="leaveDayType"
+                    value="full"
+                    checked={formData.leaveDayType === "full"}
+                    onChange={() =>
+                      setFormData((prev) => ({ ...prev, leaveDayType: "full" }))
+                    }
+                  />{" "}
+                  Full-Day
+                </label>
               </div>
             ) : (
               <input
