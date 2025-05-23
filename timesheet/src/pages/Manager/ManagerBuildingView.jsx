@@ -63,7 +63,7 @@ const ManagerBuildingView = () => {
         // comments: "",
         start_date: task.start_date || null,
         end_date: task.end_date || null,
-        // employee: task.employee || [],
+        // employee: [],
       };
 
       const method = task.task_assign_id ? "PATCH" : "POST";
@@ -71,11 +71,17 @@ const ManagerBuildingView = () => {
         ? `${config.apiBaseURL}/tasks-assigned/${task.task_assign_id}/`
         : `${config.apiBaseURL}/tasks-assigned/`;
 
+      const finalPayload = task.task_assign_id
+        ? taskPayload
+        : { ...taskPayload, employee: [] };
+
+      console.log("Final payload", finalPayload);
+
       try {
         const response = await fetch(url, {
           method,
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(taskPayload),
+          body: JSON.stringify(finalPayload),
         });
         if (response.ok) {
           console.log("Building updated!");
@@ -128,7 +134,7 @@ const ManagerBuildingView = () => {
         task_hours: t.task_hours,
         start_date: t.start_date,
         end_date: t.end_date,
-        employee: t.employee,
+        // employee: t.employee,
         isNew: false, // mark as pre-existing
       }));
       setTaskSelections(mappedExistingTasks);
@@ -306,7 +312,7 @@ const ManagerBuildingView = () => {
                   {project?.start_date
                     ? format(new Date(project.start_date), "dd-MMM-yyyy")
                     : ""}
-                </p>           
+                </p>
               </div>
               <div className="project-form-group-small">
                 <label>Project Hours</label>
@@ -321,7 +327,9 @@ const ManagerBuildingView = () => {
                     onChange={handleChange}
                   />
                 ) : (
-                  <p className="view-data">{buildingsAssign.building_hours || ""}</p>
+                  <p className="view-data">
+                    {buildingsAssign.building_hours || ""}
+                  </p>
                 )}
               </div>
             </div>

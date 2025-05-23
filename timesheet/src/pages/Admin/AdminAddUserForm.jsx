@@ -11,6 +11,7 @@ const AddUserForm = ({ onCancel, onSave }) => {
   const [role, setRole] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [status, setStatus] = useState("");
   const [employeeOptions, setEmployeeOptions] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -33,7 +34,13 @@ const AddUserForm = ({ onCancel, onSave }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newUser = { employee_id: employeeID, role, email, password };
+    const newUser = {
+      employee_id: employeeID,
+      role,
+      email,
+      password,
+      status: status,
+    };
 
     try {
       const response = await fetch(`${config.apiBaseURL}/users/`, {
@@ -89,6 +96,7 @@ const AddUserForm = ({ onCancel, onSave }) => {
               );
               if (selectedEmployee) {
                 setEmail(selectedEmployee.employee_email || "");
+                setStatus(selectedEmployee.status || "active");
               }
             }}
             required
