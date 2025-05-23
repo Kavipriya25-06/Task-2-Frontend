@@ -287,11 +287,8 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
         Fill the required fields below to apply for annual leave.
       </p>
       <form onSubmit={handleSubmit} className="form1">
-        <div
-          className="row1"
-          style={{ display: "flex", gap: "20px", alignItems: "flex-end" }}
-        >
-          <div className="form-group1" style={{ flex: 1 }}>
+        <div className="row1">
+          <div className="form-group1">
             <label className="label1">Leave Type</label>
             <select
               name="leaveType"
@@ -307,34 +304,38 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
             </select>
           </div>
 
-          {formData.leaveType === "Comp off" && (
-            <div className="form-group1" style={{ flex: 1.03 }}>
-              <label className="label1">Select Date (for Comp off)</label>
-              <select
-                name="compOffDate"
-                value={formData.compOffDate || ""}
-                onChange={(e) => {
-                  const selected = new Date(e.target.value);
-                  setFormData((prev) => ({
-                    ...prev,
-                    compOffDate: e.target.value,
-                    // startDate: selected,
-                    // endDate: selected,
-                    // leaveDayType: "full", // optionally default to full-day
-                    // duration: "1", // or "0.5" based on requirement
-                  }));
-                }}
-                className="select1"
-              >
-                <option value="">Select Approved Date</option>
-                {approvedCompOffDates.map((date, index) => (
-                  <option key={index} value={date}>
-                    {format(new Date(date), "dd-MMM-yyyy")}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+          <div
+            className="form-group1"
+            style={{
+              visibility:
+                formData.leaveType === "Comp off" ? "visible" : "hidden",
+            }}
+          >
+            <label className="label1">Select Date (for Comp off)</label>
+            <select
+              name="compOffDate"
+              value={formData.compOffDate || ""}
+              onChange={(e) => {
+                const selected = new Date(e.target.value);
+                setFormData((prev) => ({
+                  ...prev,
+                  compOffDate: e.target.value,
+                  startDate: selected,
+                  endDate: selected,
+                  leaveDayType: "full",
+                  duration: "1",
+                }));
+              }}
+              className="select1"
+            >
+              <option value="">Select Approved Date</option>
+              {approvedCompOffDates.map((date, index) => (
+                <option key={index} value={date}>
+                  {format(new Date(date), "dd-MMM-yyyy")}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <div className="row1">
@@ -389,11 +390,8 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
             formData.endDate &&
             format(formData.startDate, "yyyy-MM-dd") ===
               format(formData.endDate, "yyyy-MM-dd") ? (
-              <div
-                className="radio-group"
-                style={{ display: "flex", gap: "20px" }}
-              >
-                <label>
+              <div className="radio-group">
+                <label className="radio-option">
                   <input
                     type="radio"
                     name="leaveDayType"
@@ -402,10 +400,11 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
                     onChange={() =>
                       setFormData((prev) => ({ ...prev, leaveDayType: "half" }))
                     }
-                  />{" "}
-                  Half-Day
+                  />
+                  <span>Half-Day</span>
                 </label>
-                <label>
+
+                <label className="radio-option">
                   <input
                     type="radio"
                     name="leaveDayType"
@@ -414,8 +413,8 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
                     onChange={() =>
                       setFormData((prev) => ({ ...prev, leaveDayType: "full" }))
                     }
-                  />{" "}
-                  Full-Day
+                  />
+                  <span>Full-Day</span>
                 </label>
               </div>
             ) : (
