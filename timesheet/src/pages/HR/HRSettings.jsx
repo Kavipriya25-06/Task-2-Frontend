@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import config from "../../config";
 import EditableTimeField from "../../constants/EditableTimeField";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const HRSettings = () => {
   const [compOffData, setCompOffData] = useState({
@@ -71,20 +73,70 @@ const HRSettings = () => {
 
   const handleSubmit = async () => {
     try {
-      // For Half Day
+      const halfMin = timeToDecimal(compOffData.half_day.min_hours);
+      const halfMax = timeToDecimal(compOffData.half_day.max_hours);
+      const fullMin = timeToDecimal(compOffData.full_day.min_hours);
+      const fullMax = timeToDecimal(compOffData.full_day.max_hours);
+
+      if (halfMin >= halfMax) {
+        toast.error(
+          "For Half Day, Minimum hours should be less than Maximum hours.",
+          {
+            className: "custom-toast",
+            bodyClassName: "custom-toast-body",
+            progressClassName: "custom-toast-progress",
+            position: "top-center",
+            autoClose: 2000,
+            hideProgressBar: true,
+          }
+        );
+        return;
+      }
+
+      if (fullMin <= halfMax) {
+        toast.error(
+          "Full Day Minimum hours should be greater than Half Day Maximum hours.",
+          {
+            className: "custom-toast",
+            bodyClassName: "custom-toast-body",
+            progressClassName: "custom-toast-progress",
+            position: "top-center",
+            autoClose: 2000,
+            hideProgressBar: true,
+          }
+        );
+        return;
+      }
+
+      if (fullMin >= fullMax) {
+        toast.error(
+          "For Full Day, Minimum hours should be less than Maximum hours.",
+          {
+            className: "custom-toast",
+            bodyClassName: "custom-toast-body",
+            progressClassName: "custom-toast-progress",
+            position: "top-center",
+            autoClose: 2000,
+            hideProgressBar: true,
+          }
+        );
+        return;
+      }
+
+      // Payloads
       const halfDayPayload = {
         leave_type: "half_day",
-        min_hours: timeToDecimal(compOffData.half_day.min_hours),
-        max_hours: timeToDecimal(compOffData.half_day.max_hours),
+        min_hours: halfMin,
+        max_hours: halfMax,
       };
 
       const fullDayPayload = {
         leave_type: "full_day",
-        min_hours: timeToDecimal(compOffData.full_day.min_hours),
-        max_hours: timeToDecimal(compOffData.full_day.max_hours),
+        min_hours: fullMin,
+        max_hours: fullMax,
       };
 
-      // Update or create Half Day
+      // Half Day
       const halfDayMethod = compOffData.half_day.id ? "PATCH" : "POST";
       const halfDayURL = compOffData.half_day.id
         ? `${config.apiBaseURL}/comp-off/${compOffData.half_day.id}/`
@@ -96,7 +148,7 @@ const HRSettings = () => {
         body: JSON.stringify(halfDayPayload),
       });
 
-      // Update or create Full Day
+      // Full Day
       const fullDayMethod = compOffData.full_day.id ? "PATCH" : "POST";
       const fullDayURL = compOffData.full_day.id
         ? `${config.apiBaseURL}/comp-off/${compOffData.full_day.id}/`
@@ -108,7 +160,14 @@ const HRSettings = () => {
         body: JSON.stringify(fullDayPayload),
       });
 
-      alert("Comp Off timings updated successfully!");
+      toast.success("Comp Off timings updated successfully!", {
+        className: "custom-toast",
+        bodyClassName: "custom-toast-body",
+        progressClassName: "custom-toast-progress",
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: true,
+      });
     } catch (err) {
       console.error("Error saving comp-off timings", err);
       alert("Failed to update comp-off timings.");
@@ -176,6 +235,7 @@ const HRSettings = () => {
       <button className="delete-btn" onClick={handleSubmit}>
         Save Timings
       </button>
+      <ToastContainer />
     </div>
   );
 };

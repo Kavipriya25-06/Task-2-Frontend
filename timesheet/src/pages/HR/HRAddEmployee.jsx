@@ -18,6 +18,8 @@ import Cropper from "react-easy-crop";
 import getCroppedImg from "../../constants/cropimage"; // Path to the helper
 import Slider from "@mui/material/Slider";
 import Modal from "@mui/material/Modal";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const tabLabels = [
   "Employee details",
@@ -39,6 +41,9 @@ const AddEmployee = () => {
     previous_years: "",
     previous_months: "",
   });
+
+  const eighteenYearsAgo = new Date();
+  eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
 
   const { formData, setFormData, errors, setErrors, handleChange } =
     useEmployeeFormHandler(defaultEmployeeFormData);
@@ -187,11 +192,20 @@ const AddEmployee = () => {
         }
 
         console.log("All attachments uploaded");
+        toast.success("User Updated Successfully", {
+          className: "custom-toast",
+          bodyClassName: "custom-toast-body",
+          progressClassName: "custom-toast-progress",
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+        });
       }
 
       // Step 4: Navigate after success
       navigate("/hr/detail/employee-details");
     } catch (error) {
+      toast.error(`Failed to create user: ${error.message}`);
       console.error(
         "Error during employee creation or attachment upload:",
         error
@@ -415,6 +429,7 @@ const AddEmployee = () => {
                   showMonthDropdown
                   showYearDropdown
                   dropdownMode="select" // ensures dropdown shows on click, not scroll
+                  maxDate={eighteenYearsAgo}
                 />
                 <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
                 {/* Font Awesome Calendar Icon */}
@@ -961,6 +976,7 @@ const AddEmployee = () => {
           </button>
         </div>
       </form>
+      <ToastContainer />
     </div>
   );
 };

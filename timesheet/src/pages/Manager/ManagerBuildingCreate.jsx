@@ -3,6 +3,8 @@ import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ManagerBuildingCreate = () => {
   const [buildingData, setBuildingData] = useState({});
@@ -14,7 +16,7 @@ const ManagerBuildingCreate = () => {
   };
 
   const handleCancel = () => {
-    navigate("/manager/detail/projects/"); 
+    navigate("/manager/detail/projects/");
   };
 
   const handleSubmit = async (e) => {
@@ -31,10 +33,17 @@ const ManagerBuildingCreate = () => {
 
       const data = await res.json();
       if (res.ok) {
-        alert("Building created successfully!");
+        toast.success("Building created successfully", {
+          className: "custom-toast",
+          bodyClassName: "custom-toast-body",
+          progressClassName: "custom-toast-progress",
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+        });
       } else {
         console.error(data);
-        alert("Failed to create Building.");
+        toast.error("Failed to create Building." + data.error);
       }
       setTimeout(() => navigate(`/manager/detail/projects/`), 1000);
     } catch (error) {
@@ -94,6 +103,7 @@ const ManagerBuildingCreate = () => {
           </button>
         </div>
       </form>
+      <ToastContainer />
     </div>
   );
 };

@@ -3,6 +3,8 @@ import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ManagerTaskCreate = () => {
   const [taskData, setTaskData] = useState({});
@@ -31,10 +33,17 @@ const ManagerTaskCreate = () => {
 
       const data = await res.json();
       if (res.ok) {
-        alert("Task created successfully!");
+        toast.success("Task created successfully", {
+          className: "custom-toast",
+          bodyClassName: "custom-toast-body",
+          progressClassName: "custom-toast-progress",
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+        });
       } else {
         console.error(data);
-        alert("Failed to create Task.");
+        toast.error("Failed to create Task." + data.error);
       }
       setTimeout(() => navigate(`/manager/detail/projects/`), 1000);
     } catch (error) {
@@ -93,7 +102,6 @@ const ManagerTaskCreate = () => {
               </select>
             </div>
           </div>
-          
         </div>
         <div className="form-buttons">
           <button type="submit" className="btn-green">
@@ -108,6 +116,7 @@ const ManagerTaskCreate = () => {
           </button>
         </div>
       </form>
+      <ToastContainer />
     </div>
   );
 };

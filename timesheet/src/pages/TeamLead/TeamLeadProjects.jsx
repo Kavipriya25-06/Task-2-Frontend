@@ -222,11 +222,13 @@
 
 // src\pages\TeamLead\TeamLeadProjects.jsx
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const TeamLeadProjects = () => {
   const { user } = useAuth();
@@ -250,12 +252,15 @@ const TeamLeadProjects = () => {
   const [visibleTasks, setVisibleTasks] = useState(10);
   const [isLoadingMoreTasks, setIsLoadingMoreTasks] = useState(false);
   const [hasMoreTasks, setHasMoreTasks] = useState(true);
+  const searchTimeout = useRef(null);
 
-  const tabLabels = ["Projects", "Buildings", "Tasks"];
+  const tabLabels = ["Projects", "Sub-Division", "Tasks"];
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch(`${config.apiBaseURL}/project-creator/${user.employee_id}/`);
+      const response = await fetch(
+        `${config.apiBaseURL}/project-creator/${user.employee_id}/`
+      );
       const data = await response.json();
       setProjects(data);
     } catch (err) {
@@ -305,7 +310,12 @@ const TeamLeadProjects = () => {
     fetchTasks();
   }, []);
 
-    useEffect(() => {
+  useEffect(() => {
+     if (searchTimeout.current) {
+      clearTimeout(searchTimeout.current);
+    }
+
+    searchTimeout.current = setTimeout(() => {
     const lowerSearch = searchText.toLowerCase();
     const filtered = projects.filter((u) => {
       const code = u.project_code?.toLowerCase() || "";
@@ -320,9 +330,28 @@ const TeamLeadProjects = () => {
     setFilteredProjects(filtered);
     setVisibleProjects(10);
     setHasMoreProjects(filtered.length > 10);
+
+      if (searchText && filtered.length === 0) {
+        toast.info("No users found", {
+          className: "custom-toast",
+          bodyClassName: "custom-toast-body",
+          progressClassName: "custom-toast-progress",
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+        });
+      }
+    }, 500);
+
+    return () => clearTimeout(searchTimeout.current);
   }, [searchText, projects]);
 
-    useEffect(() => {
+  useEffect(() => {
+     if (searchTimeout.current) {
+      clearTimeout(searchTimeout.current);
+    }
+
+    searchTimeout.current = setTimeout(() => {
     const lowerSearch = searchBuild.toLowerCase();
     const filtered = buildings.filter((u) => {
       const bcode = u.building_code?.toLowerCase() || "";
@@ -332,9 +361,28 @@ const TeamLeadProjects = () => {
     setFilteredBuildings(filtered);
     setVisibleBuildings(10);
     setHasMoreBuildings(filtered.length > 10);
+
+      if (searchText && filtered.length === 0) {
+        toast.info("No users found", {
+          className: "custom-toast",
+          bodyClassName: "custom-toast-body",
+          progressClassName: "custom-toast-progress",
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+        });
+      }
+    }, 500);
+
+    return () => clearTimeout(searchTimeout.current);
   }, [searchBuild, buildings]);
 
   useEffect(() => {
+     if (searchTimeout.current) {
+      clearTimeout(searchTimeout.current);
+    }
+
+    searchTimeout.current = setTimeout(() => {
     const lowerSearch = searchTask.toLowerCase();
     const filtered = tasks.filter((u) => {
       const tcode = u.task_code?.toLowerCase() || "";
@@ -349,6 +397,20 @@ const TeamLeadProjects = () => {
     setFilteredTask(filtered);
     setVisibleTasks(10);
     setHasMoreTasks(filtered.length > 10);
+
+      if (searchText && filtered.length === 0) {
+        toast.info("No users found", {
+          className: "custom-toast",
+          bodyClassName: "custom-toast-body",
+          progressClassName: "custom-toast-progress",
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+        });
+      }
+    }, 500);
+
+    return () => clearTimeout(searchTimeout.current);
   }, [searchTask, tasks]);
 
   const renderTabContent = () => {
@@ -373,7 +435,7 @@ const TeamLeadProjects = () => {
                 </button>
               </div>
             </div>
-             <div
+            <div
               className="table-wrapper"
               style={{ maxHeight: "400px" }}
               onScroll={(e) => {
@@ -398,52 +460,53 @@ const TeamLeadProjects = () => {
                 }
               }}
             >
-            <table className="holiday-table">
-              <thead>
-                <tr>
-                  <th>Project code</th>
-                  <th>Project name</th>
-                  {/* <th>Building</th> */}
+              <table className="holiday-table">
+                <thead>
+                  <tr>
+                    <th>Project code</th>
+                    <th>Project name</th>
+                    {/* <th>Building</th> */}
 
-                  <th>Estimated hours</th>
-                  <th>Variation hours</th>
-                  <th>Total hours</th>
-                  <th>Consumed hours</th>
-                  <th>Discipline</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredProjects.slice(0, visibleProjects).map((project) => (
-                  <tr key={project.project_id}>
-                    <td
-                      onClick={() => handleProjectClick(project.project_id)}
-                      style={{
-                        cursor: "pointer",
-                        textDecoration: "underline",
-                      }}
-                    >
-                      {project.project_code}
-                    </td>
-                    <td>{project.project_title}</td>
-                    {/* <td></td> */}
-                    <td>{project.estimated_hours}</td>
-                    <td>{project.variation_hours}</td>
-                    <td>{project.total_hours}</td>
-                    <td>{project.consumed_hours}</td>
-                    <td>{project.discipline}</td>
-                    <td>{project.status ? "Completed" : "In progress"}</td>
+                    <th>Estimated hours</th>
+                    <th>Variation hours</th>
+                    <th>Total hours</th>
+                    <th>Consumed hours</th>
+                    <th>Discipline</th>
+                    <th>Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-            {isLoadingMoreProjects && (
+                </thead>
+                <tbody>
+                  {filteredProjects.slice(0, visibleProjects).map((project) => (
+                    <tr key={project.project_id}>
+                      <td
+                        onClick={() => handleProjectClick(project.project_id)}
+                        style={{
+                          cursor: "pointer",
+                          textDecoration: "underline",
+                        }}
+                      >
+                        {project.project_code}
+                      </td>
+                      <td>{project.project_title}</td>
+                      {/* <td></td> */}
+                      <td>{project.estimated_hours}</td>
+                      <td>{project.variation_hours}</td>
+                      <td>{project.total_hours}</td>
+                      <td>{project.consumed_hours}</td>
+                      <td>{project.discipline}</td>
+                      <td>{project.status ? "Completed" : "In progress"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {isLoadingMoreProjects && (
                 <div className="loading-message">Loading...</div>
               )}
               {!hasMoreProjects && (
                 <div className="no-message">No more data</div>
               )}
             </div>
+             <ToastContainer />
           </div>
         );
       case 1:
@@ -494,49 +557,50 @@ const TeamLeadProjects = () => {
                 }
               }}
             >
-            <table className="holiday-table">
-              <thead>
-                <tr>
-                  <th>Sub-Division code</th>
-                  <th>Sub-Division name</th>
-                  <th>Sub-Division Description</th>
-                  {/* <th>Total hours</th>
+              <table className="holiday-table">
+                <thead>
+                  <tr>
+                    <th>Sub-Division code</th>
+                    <th>Sub-Division name</th>
+                    <th>Sub-Division Description</th>
+                    {/* <th>Total hours</th>
                   <th>Estimated hours</th>
                   <th>Discipline</th>
                   <th>Status</th> */}
-                </tr>
-              </thead>
-              <tbody>
-                {filteredBuildings
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredBuildings
                     .slice(0, visibleBuildings)
                     .map((building) => (
-                  <tr key={building.building_id}>
-                    <td
-                    // onClick={() => handleProjectClick(building.building_id)}
-                    // style={{
-                    //   cursor: "pointer",
-                    //   textDecoration: "underline",
-                    // }}
-                    >
-                      {building.building_code}
-                    </td>
-                    <td>{building.building_title}</td>
-                    <td>{building.building_description}</td>
-                    {/* <td></td>
+                      <tr key={building.building_id}>
+                        <td
+                        // onClick={() => handleProjectClick(building.building_id)}
+                        // style={{
+                        //   cursor: "pointer",
+                        //   textDecoration: "underline",
+                        // }}
+                        >
+                          {building.building_code}
+                        </td>
+                        <td>{building.building_title}</td>
+                        <td>{building.building_description}</td>
+                        {/* <td></td>
                     <td>{building.estimated_hours}</td>
                     <td>{building.discipline}</td>
                     <td>{building.status ? "Completed" : "In progress"}</td> */}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {isLoadingMoreBuildings && (
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+              {isLoadingMoreBuildings && (
                 <div className="loading-message">Loading...</div>
               )}
               {!hasMoreBuildings && (
                 <div className="no-message">No more data</div>
               )}
             </div>
+             <ToastContainer />
           </div>
         );
       case 2:
@@ -559,7 +623,7 @@ const TeamLeadProjects = () => {
                 </button>
               </div>
             </div>
-             <div
+            <div
               className="table-wrapper"
               style={{ maxHeight: "400px" }}
               onScroll={(e) => {
@@ -584,45 +648,46 @@ const TeamLeadProjects = () => {
                 }
               }}
             >
-            <table className="holiday-table">
-              <thead>
-                <tr>
-                  <th>Task code</th>
-                  <th>Task name</th>
-                  <th>Task Description</th>
-                  {/* <th>Total hours</th>
+              <table className="holiday-table">
+                <thead>
+                  <tr>
+                    <th>Task code</th>
+                    <th>Task name</th>
+                    <th>Task Description</th>
+                    {/* <th>Total hours</th>
                   <th>Estimated hours</th> */}
-                  <th>Priority</th>
-                  {/* <th>Status</th> */}
-                </tr>
-              </thead>
-              <tbody>
-                {filteredTask.slice(0, visibleTasks).map((task) => (
-                  <tr key={task.task_id}>
-                    <td
-                    // onClick={() => handleProjectClick(task.task_id)}
-                    // style={{
-                    //   cursor: "pointer",
-                    //   textDecoration: "underline",
-                    // }}
-                    >
-                      {task.task_code}
-                    </td>
-                    <td>{task.task_title}</td>
-                    <td>{task.task_description}</td>
-                    {/* <td></td>
-                    <td>{task.estimated_hours}</td> */}
-                    <td>{task.priority}</td>
-                    {/* <td>{task.status ? "Completed" : "In progress"}</td> */}
+                    <th>Priority</th>
+                    {/* <th>Status</th> */}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-             {isLoadingMoreTasks && (
+                </thead>
+                <tbody>
+                  {filteredTask.slice(0, visibleTasks).map((task) => (
+                    <tr key={task.task_id}>
+                      <td
+                      // onClick={() => handleProjectClick(task.task_id)}
+                      // style={{
+                      //   cursor: "pointer",
+                      //   textDecoration: "underline",
+                      // }}
+                      >
+                        {task.task_code}
+                      </td>
+                      <td>{task.task_title}</td>
+                      <td>{task.task_description}</td>
+                      {/* <td></td>
+                    <td>{task.estimated_hours}</td> */}
+                      <td>{task.priority}</td>
+                      {/* <td>{task.status ? "Completed" : "In progress"}</td> */}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {isLoadingMoreTasks && (
                 <div className="loading-message">Loading...</div>
               )}
               {!hasMoreTasks && <div className="no-message">No more data</div>}
             </div>
+             <ToastContainer />
           </div>
         );
     }

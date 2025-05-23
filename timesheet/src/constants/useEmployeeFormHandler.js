@@ -13,6 +13,7 @@ export const useEmployeeFormHandler = (initialFormData) => {
     passport_number: "",
     employee_email: "",
     emergency_contact_number: "",
+    ifsc_code: "",
   });
 
   const handleChange = (e) => {
@@ -149,6 +150,17 @@ export const useEmployeeFormHandler = (initialFormData) => {
           numericValue.length > 0 && numericValue.length !== 10
             ? "Emergency contact number must be exactly 10 digits."
             : "",
+      }));
+      return;
+    }
+
+    if (name === "ifsc_code") {
+      const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/i; // Standard IFSC pattern
+      setFormData((prev) => ({ ...prev, [name]: value }));
+      setErrors((prev) => ({
+        ...prev,
+        ifsc_code:
+          value && !ifscRegex.test(value) ? "Invalid IFSC code format." : "",
       }));
       return;
     }

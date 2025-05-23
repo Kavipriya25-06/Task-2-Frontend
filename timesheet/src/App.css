@@ -132,7 +132,7 @@ input:focus {
   border: 2px solid #333; /* your desired border color */
   background-color: #f1f1f1 !important; /* override autofill */
 }
- 
+
 /* Chrome autofill override */
 input:-webkit-autofill {
   -webkit-box-shadow: 0 0 0px 1000px #f1f1f1 inset !important;
@@ -162,8 +162,7 @@ textarea {
 }
 
 .date-wrapper .input1 {
-    width: 125% !important;
-
+  width: 125% !important;
 }
 
 /* Controls the calendar popup's styling */
@@ -173,7 +172,7 @@ textarea {
 }
 
 .custom-datepicker h2 {
-  font-size: 16px !important;  
+  font-size: 16px !important;
 }
 
 .button-group {
@@ -315,8 +314,6 @@ textarea {
   z-index: 9999 !important;
   position: absolute;
 }
-
-
 
 .react-datepicker__month-container {
   top: 20px;
@@ -530,13 +527,36 @@ h2.react-datepicker__current-month {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-container {
   text-align: center;
   padding: 10px;
+}
+
+
+
+.radio-group {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap; /* Optional, prevents overflow */
+  margin-top: 7px;
+}
+
+.radio-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap; /* Prevent line break between words */
+  font-size: 16px;
+  cursor: pointer;
 }
 
 /* .holiday-table th, .user-table td {
@@ -684,7 +704,6 @@ h2.react-datepicker__current-month {
   border-radius: 5px;
 }
 
-
 .leaves-table {
   border-radius: 10px;
   overflow: hidden;
@@ -762,7 +781,6 @@ table input[type="time"]:focus {
 table input[type="number"]:focus {
   border-color: #a2a5a7; /* Blue border on focus */
 }
-
 
 .timesheet-info p span {
   display: inline-block;
@@ -925,7 +943,7 @@ table input[type="number"]:focus {
 /* Crop Image */
 .pagination-controls {
   display: flex;
-  justify-content:end;
+  justify-content: end;
   align-items: center;
   gap: 10px;
   margin-top: 10px;
@@ -937,7 +955,6 @@ table input[type="number"]:focus {
   z-index: 9999; /* Ensure it's above everything else */
   background: white;
   padding: 40px;
-
 }
 
 /* Optional: for safety */
@@ -963,7 +980,7 @@ table input[type="number"]:focus {
   align-items: center;
 }
 
-.controls .btn-crop{
+.controls .btn-crop {
   padding: 7px;
   border-radius: 10px;
   border: none;
@@ -982,13 +999,31 @@ table input[type="number"]:focus {
   font-weight: 600;
 }
 
+.form-group1 {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+}
 
-.form-group1 .select1 {
-  padding: 8px;
+.label1 {
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.select1 {
+  padding: 10px;
   border-radius: 5px;
-  width: 39%;
+  font-size: 14px;
+  width: 78%;
+  box-sizing: border-box;
   background-color: #f1f0f0;
-  border: 1px solid #a9a9a9;
+  border: 1px solid #ccc;
+  color: gray;
+}
+
+.select1:focus {
+  color: black;
 }
 
 .form-group1 .custom-file-container {
@@ -1023,11 +1058,7 @@ table input[type="number"]:focus {
 
 .attendance-container .table-scroll-container {
   overflow-x: auto;
-
-} 
-
-
-
+}
 
 .custom-file-label .choose-btn {
   font-weight: 500;
@@ -1471,7 +1502,7 @@ main {
 /* General DatePicker Style */
 /* ------------------------ */
 .react-datepicker {
-  font-family: 'Segoe UI', sans-serif;
+  font-family: "Segoe UI", sans-serif;
   border: 1px solid #ccc;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -1595,8 +1626,8 @@ main {
   font-weight: bold;
 }
 
-
-.loading-message, .no-message {
+.loading-message,
+.no-message {
   text-align: center;
   padding: 10px 0;
   font-size: 14px;
@@ -1606,7 +1637,6 @@ main {
   border-top: 1px solid #ddd;
   user-select: none;
 }
-
 
 /* HolidayCalendar.css */
 .calendar-wrapper {
@@ -1935,7 +1965,7 @@ h3 {
 
 .pagination-controls {
   display: flex;
-  justify-content:end;
+  justify-content: end;
   align-items: center;
   gap: 10px;
   margin-top: 10px;
@@ -1947,7 +1977,6 @@ h3 {
   z-index: 9999; /* Ensure it's above everything else */
   background: white;
   padding: 40px;
-
 }
 
 /* Optional: for safety */
@@ -1973,7 +2002,7 @@ h3 {
   align-items: center;
 }
 
-.controls .btn-crop{
+.controls .btn-crop {
   padding: 7px;
   border-radius: 10px;
   border: none;
@@ -1996,7 +2025,7 @@ h3 {
   cursor: not-allowed;
 }
 
-.react-datepicker__day--keyboard-selected{
+.react-datepicker__day--keyboard-selected {
   background: none !important;
 }
 
@@ -2043,7 +2072,7 @@ h3 {
 }
 
 .row1 .calendar-icon {
-  position:absolute;
+  position: absolute;
   top: 30%;
   right: 22%;
   font-size: 15px; /* Icon size */
@@ -2053,7 +2082,7 @@ h3 {
 }
 
 .date-wrapper .calendar-icon {
-  position:relative;
+  position: relative;
   top: 25%;
   left: 8%;
   font-size: 15px; /* Icon size */
@@ -2103,7 +2132,7 @@ h3 {
 }
 
 .individual-tabs .calendar-icon {
-  position:absolute;
+  position: absolute;
   top: 15%;
   right: 3%;
   font-size: 15px; /* Icon size */
@@ -2111,8 +2140,6 @@ h3 {
   cursor: pointer; /* Make icon clickable */
   pointer-events: none; /* Allow click on the input, not the icon */
 }
-
-
 
 .custom-modal .calendar-icon {
   position: absolute;
@@ -2507,8 +2534,6 @@ h3 {
   overflow-y: auto;
 }
 
-
-
 /* Profile Preview */
 .profile-preview {
   width: 100px;
@@ -2531,7 +2556,6 @@ h3 {
   margin-bottom: 0%;
   background-color: rgb(234, 234, 234);
   border: none !important;
-  
 }
 
 /* Button Group */
@@ -2863,7 +2887,6 @@ h3 {
   gap: 10px; /* space between files */
   margin-top: 10px;
 }
-
 
 .file-chip span {
   margin-right: 8px;
@@ -3347,10 +3370,6 @@ button.delete-building:hover {
   border-radius: 6px;
 }
 
-
-
-
-
 .attachment-list-inside {
   display: flex;
   flex-wrap: wrap;
@@ -3379,8 +3398,6 @@ button.delete-building:hover {
   font-size: 16px;
   cursor: pointer;
 }
-
-
 
 /* These above are the styles you add for create projects */
 
@@ -3612,29 +3629,29 @@ button.delete-building:hover {
   /* padding: 20px; */
 }
 
-.plus-upload-wrapper{
+.plus-upload-wrapper {
   background-color: #ebebeb;
   border: 1px solid rgb(202, 202, 202);
   height: 100px;
   width: 90%;
   border-radius: 8px;
-    display: flex;
+  display: flex;
   flex-direction: column;
   align-items: flex-start;
-    gap: 10px;
-    overflow-y: auto;
+  gap: 10px;
+  overflow-y: auto;
 }
- .plus-upload-wrappers{
+.plus-upload-wrappers {
   background-color: #ebebeb;
   border: 1px solid rgb(202, 202, 202);
   height: 100px;
   width: 100%;
   border-radius: 8px;
-    display: flex;
+  display: flex;
   flex-direction: column;
   align-items: flex-start;
-    gap: 10px;
-    overflow-y: auto !important;
+  gap: 10px;
+  overflow-y: auto !important;
 }
 
 .real-file-input {
@@ -3653,7 +3670,7 @@ button.delete-building:hover {
   border-radius: 50%;
   cursor: pointer;
   font-weight: 200;
-  margin-top:7px;
+  margin-top: 7px;
   margin-left: 5px;
   position: sticky;
 }
@@ -3673,7 +3690,6 @@ button.delete-building:hover {
   margin: 6px;
   margin-top: -0.5%;
 }
-
 
 .file-chip {
   background-color: white;
@@ -3747,10 +3763,9 @@ button.delete-building:hover {
 
 .attachment-list li {
   display: flex;
-  align-items: center;  /* 🔥 this keeps icon and text vertically aligned */
+  align-items: center; /* 🔥 this keeps icon and text vertically aligned */
   white-space: nowrap;
 }
-
 
 .attachment-link {
   display: flex;
@@ -3777,10 +3792,9 @@ button.delete-building:hover {
   font-style: italic;
 }
 
-
 .pagination-controls {
   display: flex;
-  justify-content:end;
+  justify-content: end;
   align-items: center;
   gap: 10px;
   margin-top: 10px;
@@ -3792,7 +3806,6 @@ button.delete-building:hover {
   z-index: 9999; /* Ensure it's above everything else */
   background: white;
   padding: 40px;
-
 }
 
 /* Optional: for safety */
@@ -3818,7 +3831,7 @@ button.delete-building:hover {
   align-items: center;
 }
 
-.controls .btn-crop{
+.controls .btn-crop {
   padding: 7px;
   border-radius: 10px;
   border: none;
@@ -3828,8 +3841,8 @@ button.delete-building:hover {
 
 .view-data {
   font-size: 14px !important;
-  color: gray;            /* Dark gray-blue */
-  font-weight: 500;          /* Medium weight */
+  color: gray; /* Dark gray-blue */
+  font-weight: 500; /* Medium weight */
   padding: 8px 12px;
   background-color: #e5e6e6; /* Light background for contrast */
   border-radius: 6px;
@@ -3839,18 +3852,18 @@ button.delete-building:hover {
   word-wrap: break-word;
 }
 
-.project-form-group .plus-upload-button{
+.project-form-group .plus-upload-button {
   font-weight: 100 !important;
 }
 
-.view-text{
+.view-text {
   color: gray;
 }
 
 .view-date {
   font-size: 14px !important;
-  color: gray;            /* Dark gray-blue */
-  font-weight: 500;          /* Medium weight */
+  color: gray; /* Dark gray-blue */
+  font-weight: 500; /* Medium weight */
   padding: 8px 12px;
   background-color: #e5e6e6; /* Light background for contrast */
   border-radius: 6px;
@@ -3862,8 +3875,8 @@ button.delete-building:hover {
 
 .view-description {
   font-size: 14px !important;
-  color: gray;            /* Dark gray-blue */
-  font-weight: 500;          /* Medium weight */
+  color: gray; /* Dark gray-blue */
+  font-weight: 500; /* Medium weight */
   padding: 8px 12px;
   background-color: #e5e6e6; /* Light background for contrast */
   border-radius: 6px;
@@ -3872,19 +3885,18 @@ button.delete-building:hover {
   min-width: 80%;
   max-width: 80%;
   word-wrap: break-word;
-  height:80px;
+  height: 80px;
 }
 
 .view-roles {
   font-size: 14px !important;
-  color: gray;            /* Dark gray-blue */
-  font-weight: 500;          /* Medium weight */
+  color: gray; /* Dark gray-blue */
+  font-weight: 500; /* Medium weight */
   padding: 8px 12px;
   border-radius: 6px;
   margin: 0px;
   max-width: 50%;
 }
-
 
 .project-form-group .building-row {
   display: flex;
@@ -3904,8 +3916,6 @@ button.delete-building:hover {
   padding: 0;
   background-color: #f0f0f0;
 }
-
-
 
 .file-upload-section {
   display: flex;
@@ -3932,8 +3942,6 @@ button.delete-building:hover {
   position: sticky;
 }
 
-
-
 .uploads-button {
   display: inline-flex;
   justify-content: center;
@@ -3941,7 +3949,7 @@ button.delete-building:hover {
   background-color: white;
   border-radius: 50px;
   font-size: 16px;
-  font-weight:200 !important;
+  font-weight: 200 !important;
   width: 26px;
   height: 26px;
   cursor: pointer;
@@ -3949,14 +3957,11 @@ button.delete-building:hover {
   right: 100%;
 }
 
-
 /* Optional: File display styles */
 .uploaded-file-list {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-
-  
 }
 
 .uploaded-file-item {
@@ -3983,7 +3988,6 @@ button.delete-building:hover {
   font-weight: bold;
 }
 
-
 .readonly-tags .tag {
   background-color: #f0f0f0;
   color: #555;
@@ -3991,19 +3995,18 @@ button.delete-building:hover {
 }
 
 .tab-content .attachments-box {
-background-color: #ebebeb;
-    border: 1px solid rgb(202, 202, 202);
-    height: 100px;
-    width: 100%;
-    border-radius: 8px;
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    overflow-y: auto;
-    padding: 0%;
-    padding-bottom: 10px;
+  background-color: #ebebeb;
+  border: 1px solid rgb(202, 202, 202);
+  height: 100px;
+  width: 100%;
+  border-radius: 8px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  overflow-y: auto;
+  padding: 0%;
+  padding-bottom: 10px;
 }
-
 
 .tab-content .attachments-box .add-attachment-button {
   padding: 0%;
@@ -4035,14 +4038,13 @@ background-color: #ebebeb;
   gap: 10px;
 }
 
-
 .attachment-item {
-background-color: white;
-    padding: 4px 8px !important;
-    border-radius: 16px !important;
-    display: flex;
-    align-items: center;
-    border: none !important;
+  background-color: white;
+  padding: 4px 8px !important;
+  border-radius: 16px !important;
+  display: flex;
+  align-items: center;
+  border: none !important;
 }
 
 .attachment-item a {
@@ -4071,7 +4073,6 @@ background-color: white;
 .remove-attachment:hover {
   color: #d9363e;
 }
-
 
 .remove-attachment {
   background: none;

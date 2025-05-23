@@ -4,6 +4,10 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import config from "../../config";
 import roleOptions from "../../constants/roleOptions";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 // import Breadcrumbs from "../../components/Breadcrumbs";
 
 const AddUserForm = ({ onCancel, onSave }) => {
@@ -43,17 +47,16 @@ const AddUserForm = ({ onCancel, onSave }) => {
       });
 
       if (!response.ok) {
-        // throw new Error(`Error adding user: ${response.statusText}`);
         const errorData = await response.json();
         throw new Error(
           `Error adding user: ${errorData.detail || response.statusText}`
         );
       }
 
-      console.log("User added successfully");
+      toast.success("User is created successfully!");
       navigate("/admin/detail/users");
-      // onSave();
     } catch (error) {
+      toast.error(`Failed to create user: ${error.message}`);
       console.error("Error adding user:", error);
     }
   };
@@ -144,16 +147,16 @@ const AddUserForm = ({ onCancel, onSave }) => {
             onClick={() => setShowPassword((prev) => !prev)}
             style={{
               position: "absolute",
-              right: "12px",
-              top: "55%",
-              transform: "translateX(-50%)",
+              right: "25px",
+              top: "63%",
+              transform: "translateY(-50%)",
               cursor: "pointer",
-              fontSize: "14px",
-              color: "#007bff",
+              fontSize: "18px",
+              color: "black",
               userSelect: "none",
             }}
           >
-            {showPassword ? "Hide" : "Show"}
+            {showPassword ? <FaEye /> : <FaEyeSlash />}
           </span>
         </div>
 
@@ -171,6 +174,12 @@ const AddUserForm = ({ onCancel, onSave }) => {
           </button>
         </div>
       </form>
+      <ToastContainer
+        position="top-center"
+        autoClose={500}
+        toastClassName="custom-toast"
+        hideProgressBar={true}
+      />
     </div>
   );
 };

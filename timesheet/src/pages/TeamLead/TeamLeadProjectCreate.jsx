@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useAttachmentManager } from "../../constants/useAttachmentManager";
 
 const TeamLeadProjectCreate = () => {
@@ -72,7 +74,14 @@ const TeamLeadProjectCreate = () => {
         (value) => value === "" || value.length === 0
       )
     ) {
-      alert("Empty form");
+      toast.info("Empty Form", {
+        className: "custom-toast",
+        bodyClassName: "custom-toast-body",
+        progressClassName: "custom-toast-progress",
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: true,
+      });
       return;
     }
 
@@ -128,10 +137,29 @@ const TeamLeadProjectCreate = () => {
         // setNewAttachments([]);
       }
       if (response.ok) {
-        alert("All steps completed!");
+        toast.success("All Steps are Completed", {
+          className: "custom-toast",
+          bodyClassName: "custom-toast-body",
+          progressClassName: "custom-toast-progress",
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+        });
         navigate("/teamlead/detail/projects/");
       } else {
-        alert("Error: " + data.error);
+        toast.error(
+          "Failed to Create Project",
+          {
+            className: "custom-toast",
+            bodyClassName: "custom-toast-body",
+            progressClassName: "custom-toast-progress",
+            position: "top-center",
+            autoClose: 2000,
+            hideProgressBar: true,
+          },
+          data.error
+        );
+        // alert("Error: " + data.error);
       }
     } catch (err) {
       console.error("Request error:", err);
@@ -163,13 +191,28 @@ const TeamLeadProjectCreate = () => {
       });
       const data = await res.json();
       if (res.ok) {
-        alert("Building created successfully!");
+        toast.success("Buildings Created Successfully", {
+          className: "custom-toast",
+          bodyClassName: "custom-toast-body",
+          progressClassName: "custom-toast-progress",
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+        });
         setBuildingData({});
         setShowBuildingPopup(false);
         fetchBuilding();
       } else {
         console.error(data);
-        alert("Failed to create Building.");
+        // alert("Failed to create Building.");
+        toast.error("Failed to Create Building.", {
+          className: "custom-toast",
+          bodyClassName: "custom-toast-body",
+          progressClassName: "custom-toast-progress",
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+        },data.error);
       }
     } catch (error) {
       console.error("Error:", error);

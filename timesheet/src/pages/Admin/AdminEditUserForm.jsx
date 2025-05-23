@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import config from "../../config";
 import roleOptions from "../../constants/roleOptions";
-
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { FaEdit } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 // import Breadcrumbs from "../../components/Breadcrumbs";
 
 const EditUserForm = () => {
@@ -80,9 +82,20 @@ const EditUserForm = () => {
       }
 
       console.log("User updated successfully");
+       toast.success("User Updated Successfully", {
+          className: "custom-toast",
+          bodyClassName: "custom-toast-body",
+          progressClassName: "custom-toast-progress",
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+        });
+
       setEditMode(false);
       // navigate("/admin/detail/users");
     } catch (error) {
+      toast.error(`Failed to edit user: ${error.message}`);
+
       console.error("Error updating user", error);
     }
   };
@@ -178,16 +191,16 @@ const EditUserForm = () => {
                 onClick={() => setShowPassword((prev) => !prev)}
                 style={{
                   position: "absolute",
-                  right: "12px",
-                  top: "55%",
-                  transform: "translateX(-50%)",
+                  right: "25px",
+                  top: "63%",
+                  transform: "translateY(-50%)",
                   cursor: "pointer",
-                  fontSize: "14px",
-                  color: "#007bff",
+                  fontSize: "18px",
+                  color: "black",
                   userSelect: "none",
                 }}
               >
-                {showPassword ? "Hide" : "Show"}
+                {showPassword ? <FaEye /> : <FaEyeSlash />}
               </span>
             </div>
           ) : (
@@ -197,52 +210,53 @@ const EditUserForm = () => {
           )}
         </div>
 
-<div className="form-group">
-  <label>Status</label>
-  {editMode ? (
-    <div className="status-toggle">
-      <div
-        className={`toggle-button ${
-          status === "resigned"
-            ? "inactive resigned"
-            : status === "inactive"
-            ? "inactive"
-            : "active"
-        }`}
-        // Disable toggle if status is "resigned"
-        onClick={() => {
-          if (status !== "resigned") {
-            setStatus((prev) => (prev === "active" ? "inactive" : "active"));
-          }
-        }}
-      >
-        <div
-          className={`toggle-circle ${
-            status === "resigned" ? "resigned-circle" : ""
-          }`}
-        />
-        <div className="toggle-text">
-          {status === "resigned"
-            ? "Resigned"
-            : status === "active"
-            ? "Active"
-            : "Inactive"}
+        <div className="form-group">
+          <label>Status</label>
+          {editMode ? (
+            <div className="status-toggle">
+              <div
+                className={`toggle-button ${
+                  status === "resigned"
+                    ? "inactive resigned"
+                    : status === "inactive"
+                    ? "inactive"
+                    : "active"
+                }`}
+                // Disable toggle if status is "resigned"
+                onClick={() => {
+                  if (status !== "resigned") {
+                    setStatus((prev) =>
+                      prev === "active" ? "inactive" : "active"
+                    );
+                  }
+                }}
+              >
+                <div
+                  className={`toggle-circle ${
+                    status === "resigned" ? "resigned-circle" : ""
+                  }`}
+                />
+                <div className="toggle-text">
+                  {status === "resigned"
+                    ? "Resigned"
+                    : status === "active"
+                    ? "Active"
+                    : "Inactive"}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="uneditable">
+              {status === "active"
+                ? "Active"
+                : status === "inactive"
+                ? "Inactive"
+                : status === "resigned"
+                ? "Resigned"
+                : "-"}
+            </div>
+          )}
         </div>
-      </div>
-    </div>
-  ) : (
-    <div className="uneditable">
-      {status === "active"
-        ? "Active"
-        : status === "inactive"
-        ? "Inactive"
-        : status === "resigned"
-        ? "Resigned"
-        : "-"}
-    </div>
-  )}
-</div>
-
       </form>
       {editMode && (
         <div className="form-buttons">
@@ -264,6 +278,9 @@ const EditUserForm = () => {
           </button>
         </div>
       )}
+      <ToastContainer
+
+      />
     </div>
   );
 };
