@@ -33,6 +33,14 @@ const TeamLeadDailyTimeSheetEntry = () => {
     total_duration: "0.00",
   });
 
+  const formatHoursMinutes = (decimalHours) => {
+    if (!decimalHours || isNaN(decimalHours)) return "";
+    const totalMinutes = Math.round(decimalHours * 60);
+    const hrs = Math.floor(totalMinutes / 60);
+    const mins = totalMinutes % 60;
+    return `${hrs} hrs ${mins} mins`;
+  };
+
   //  Fetch biometric-daily-task data
   useEffect(() => {
     const fetchBiometricTaskData = async () => {
@@ -169,7 +177,10 @@ const TeamLeadDailyTimeSheetEntry = () => {
         const endSeconds = parseTime(end);
         let diffSeconds = endSeconds - startSeconds;
         if (diffSeconds < 0) diffSeconds = 0;
-        updated[index].hours = (diffSeconds / 3600).toFixed(2);
+
+        const decimalHours = diffSeconds / 3600;
+        updated[index].hours = decimalHours.toFixed(2);
+        updated[index].formattedHours = formatHoursMinutes(decimalHours);
       }
     }
 
@@ -209,7 +220,9 @@ const TeamLeadDailyTimeSheetEntry = () => {
         const endSeconds = parseTime(end);
         let diffSeconds = endSeconds - startSeconds;
         if (diffSeconds < 0) diffSeconds = 0;
-        updated[index].hours = (diffSeconds / 3600).toFixed(2);
+        const decimalHours = diffSeconds / 3600;
+        updated[index].hours = decimalHours.toFixed(2);
+        updated[index].formattedHours = formatHoursMinutes(decimalHours);
       }
     }
 
@@ -254,7 +267,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
     setRows(updatedRows);
   };
 
-const handleAddRow = () => {
+  const handleAddRow = () => {
     if (newRows.length > 0) {
       const lastRow = newRows[newRows.length - 1];
       if (
@@ -555,14 +568,22 @@ const handleAddRow = () => {
                 />
               </td>
               <td>
-                <input
-                  type="number"
-                  placeholder="Hours"
-                  value={row.hours}
-                  onChange={(e) =>
-                    handleDisplayRowChange(index, "hours", e.target.value)
-                  }
-                />
+                {row.formattedHours ? (
+                  <input
+                    type="text"
+                    readOnly
+                    value={row.formattedHours}
+                    style={{ backgroundColor: "#f9f9f9", border: "none" }}
+                  />
+                ) : (
+                  <input
+                    type="number"
+                    placeholder="Hours"
+                    value={row.hours}
+                    readOnly
+                    style={{ backgroundColor: "#f9f9f9", border: "none" }}
+                  />
+                )}
               </td>
             </tr>
           ))}
@@ -625,25 +646,29 @@ const handleAddRow = () => {
                 />
               </td>
               <td>
-                <input
-                  type="number"
-                  placeholder="Hours"
-                  value={row.hours}
-                  onChange={(e) =>
-                    handleNewRowChange(index, "hours", e.target.value)
-                  }
-                />
+                {row.formattedHours ? (
+                  <input
+                    type="text"
+                    readOnly
+                    value={row.formattedHours}
+                    style={{ backgroundColor: "#f9f9f9", border: "none" }}
+                  />
+                ) : (
+                  <input
+                    type="number"
+                    placeholder="Hours"
+                    value={row.hours}
+                    readOnly
+                    style={{ backgroundColor: "#f9f9f9", border: "none" }}
+                  />
+                )}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <button  onClick={handleAddRow} style={{cursor: "pointer"}}>
-        <div
-          style={{ fontSize: "24px"}}
-        >
-          +
-        </div>
+      <button onClick={handleAddRow} style={{ cursor: "pointer" }}>
+        <div style={{ fontSize: "24px" }}>+</div>
       </button>
 
       <div className="button-container">

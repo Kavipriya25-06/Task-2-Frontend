@@ -521,3 +521,16 @@
 .leave-application-button:hover {
   background-color: #218838;
 }
+
+/* Color border only, keep background same */
+.attendance-tile.status-approved {
+  border: 2px solid #28a745; /* Green */
+}
+
+.attendance-tile.status-rejected {
+  border: 2px solid #dc3545; /* Red */
+}
+
+.attendance-tile.status-pending {
+  border: 2px solid #ffc107; /* Yellow */
+}

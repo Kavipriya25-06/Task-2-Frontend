@@ -141,7 +141,6 @@ const ManagerAttendance = () => {
           <button className="btn-save" onClick={() => handleAttendanceClick()}>
             Attendance Admin
           </button>
-
         </div>
       </div>
 
@@ -192,7 +191,6 @@ const ManagerAttendance = () => {
                     //         hrs
                     //       </div>
 
-                    
                     <td
                       key={day.key}
                       onClick={() => {
@@ -202,10 +200,28 @@ const ManagerAttendance = () => {
                           );
                         }
                       }}
-                      style={{ cursor: attendance ? "pointer" : "default" }}
+                      style={{
+                        cursor: attendance ? "pointer" : "default",
+                      }}
                     >
                       {attendance ? (
-                        <div className="attendance-tile">
+                        <div
+                          className={`attendance-tile ${(() => {
+                            if (
+                              !attendance.timesheets ||
+                              attendance.timesheets.length === 0
+                            )
+                              return "";
+                            const ts = attendance.timesheets[0];
+                            if (ts.submitted && ts.approved && !ts.rejected)
+                              return "status-approved";
+                            if (ts.submitted && !ts.approved && ts.rejected)
+                              return "status-rejected";
+                            if (ts.submitted && !ts.approved && !ts.rejected)
+                              return "status-pending";
+                            return "";
+                          })()}`}
+                        >
                           <div>
                             {attendance.in_time.slice(0, 5)} -{" "}
                             {attendance.out_time.slice(0, 5)}

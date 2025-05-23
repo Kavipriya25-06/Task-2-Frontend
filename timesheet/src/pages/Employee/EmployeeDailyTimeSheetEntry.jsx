@@ -35,6 +35,14 @@ const EmployeeDailyTimeSheetEntry = () => {
     total_duration: "0.00",
   });
 
+  const formatHoursMinutes = (decimalHours) => {
+    if (!decimalHours || isNaN(decimalHours)) return "";
+    const totalMinutes = Math.round(decimalHours * 60);
+    const hrs = Math.floor(totalMinutes / 60);
+    const mins = totalMinutes % 60;
+    return `${hrs} hrs ${mins} mins`;
+  };
+
   //  Fetch biometric-daily-task data
   useEffect(() => {
     const fetchBiometricTaskData = async () => {
@@ -171,7 +179,10 @@ const EmployeeDailyTimeSheetEntry = () => {
         const endSeconds = parseTime(end);
         let diffSeconds = endSeconds - startSeconds;
         if (diffSeconds < 0) diffSeconds = 0;
-        updated[index].hours = (diffSeconds / 3600).toFixed(2);
+
+        const decimalHours = diffSeconds / 3600;
+        updated[index].hours = decimalHours.toFixed(2);
+        updated[index].formattedHours = formatHoursMinutes(decimalHours);
       }
     }
 
@@ -211,7 +222,9 @@ const EmployeeDailyTimeSheetEntry = () => {
         const endSeconds = parseTime(end);
         let diffSeconds = endSeconds - startSeconds;
         if (diffSeconds < 0) diffSeconds = 0;
-        updated[index].hours = (diffSeconds / 3600).toFixed(2);
+        const decimalHours = diffSeconds / 3600;
+        updated[index].hours = decimalHours.toFixed(2);
+        updated[index].formattedHours = formatHoursMinutes(decimalHours);
       }
     }
 
@@ -287,7 +300,6 @@ const EmployeeDailyTimeSheetEntry = () => {
     ]);
   };
 
-  
   //  console.log("Task assign id",row.task_assign_id);
 
   const handleSubmit = async () => {
@@ -336,6 +348,76 @@ const EmployeeDailyTimeSheetEntry = () => {
           start_time,
           end_time,
           submitted: true,
+        };
+
+        const response = await fetch(`${config.apiBaseURL}/timesheet/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error("Failed to POST new row:", errorData);
+          alert(`Failed to submit new task "${row.task}".`);
+          return;
+        }
+      }
+
+      alert("All timesheet rows saved successfully!");
+      // Optionally refresh data here
+    } catch (error) {
+      console.error("Submission failed:", error);
+      alert(error);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      // ---------------- PATCH updated existing rows ----------------
+      for (let row of updatedRows) {
+        const { start_time, end_time } = validateTimes(row);
+        const payload = {
+          employee: employee_id,
+          date: date,
+          project: row.project,
+          building: row.building,
+          task_assign: row.task_assign_id,
+          task_hours: parseFloat(row.hours || 0),
+          start_time,
+          end_time,
+        };
+
+        const response = await fetch(
+          `${config.apiBaseURL}/timesheet/${row.timesheet_id}/`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error("Failed to PATCH row:", errorData);
+          alert(`Failed to update task "${row.task}".`);
+          return;
+        }
+      }
+
+      // ---------------- POST new rows ----------------
+      for (let row of newRows) {
+        const { start_time, end_time } = validateTimes(row);
+        const payload = {
+          employee: employee_id,
+          date: date,
+          project: row.project,
+          building: row.building,
+          task_assign: row.task_assign_id,
+          task_hours: parseFloat(row.hours || 0),
+          start_time,
+          end_time,
+          submitted: false,
         };
 
         const response = await fetch(`${config.apiBaseURL}/timesheet/`, {
@@ -488,14 +570,22 @@ const EmployeeDailyTimeSheetEntry = () => {
                 />
               </td>
               <td>
-                <input
-                  type="number"
-                  placeholder="Hours"
-                  value={row.hours}
-                  onChange={(e) =>
-                    handleDisplayRowChange(index, "hours", e.target.value)
-                  }
-                />
+                {row.formattedHours ? (
+                  <input
+                    type="text"
+                    readOnly
+                    value={row.formattedHours}
+                    style={{ backgroundColor: "#f9f9f9", border: "none" }}
+                  />
+                ) : (
+                  <input
+                    type="number"
+                    placeholder="Hours"
+                    value={row.hours}
+                    readOnly
+                    style={{ backgroundColor: "#f9f9f9", border: "none" }}
+                  />
+                )}
               </td>
             </tr>
           ))}
@@ -557,33 +647,44 @@ const EmployeeDailyTimeSheetEntry = () => {
                   }
                 />
               </td>
-              
+
               <td>
-                <input
-                  type="number"
-                  placeholder="Hours"
-                  value={row.hours}
-                  onChange={(e) =>
-                    handleNewRowChange(index, "hours", e.target.value)
-                  }
-                />
+                {row.formattedHours ? (
+                  <input
+                    type="text"
+                    readOnly
+                    value={row.formattedHours}
+                    style={{ backgroundColor: "#f9f9f9", border: "none" }}
+                  />
+                ) : (
+                  <input
+                    type="number"
+                    placeholder="Hours"
+                    value={row.hours}
+                    readOnly
+                    style={{ backgroundColor: "#f9f9f9", border: "none" }}
+                  />
+                )}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <button   onClick={handleAddRow} style={{ cursor: "pointer"}}>
-        <div
-          style={{ fontSize: "24px" }}
-        >
-          +
-        </div>
+      <button onClick={handleAddRow} style={{ cursor: "pointer" }}>
+        <div style={{ fontSize: "24px" }}>+</div>
       </button>
 
       <div className="button-container">
-        {/* <button onClick={() => navigate(-1)} className="cancel-button1">Back</button> */}
-        <button className="btn-cancel">Save</button>
-        <button className="btn-save">Submit</button>
+        <button
+          className="btn-cancel"
+          onClick={handleSave}
+          disabled={totalAssignedHours > maxAllowedHours}
+        >
+          Save
+        </button>
+        <button className="btn-save" onClick={handleSubmit}>
+          Submit
+        </button>
       </div>
     </div>
   );
