@@ -318,10 +318,10 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
                   setFormData((prev) => ({
                     ...prev,
                     compOffDate: e.target.value,
-                    startDate: selected,
-                    endDate: selected,
-                    leaveDayType: "full", // optionally default to full-day
-                    duration: "1", // or "0.5" based on requirement
+                    // startDate: selected,
+                    // endDate: selected,
+                    // leaveDayType: "full", // optionally default to full-day
+                    // duration: "1", // or "0.5" based on requirement
                   }));
                 }}
                 className="select1"
@@ -352,6 +352,7 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
                 showMonthDropdown
                 showYearDropdown
                 dropdownMode="select"
+                excludeDates={nonWorkingDates}
               />
               <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
               {/* Font Awesome Calendar Icon */}

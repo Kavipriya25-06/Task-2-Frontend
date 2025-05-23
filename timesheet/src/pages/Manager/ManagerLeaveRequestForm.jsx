@@ -5,9 +5,17 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format, differenceInCalendarDays } from "date-fns";
 import { useAttachmentManager } from "../../constants/useAttachmentManager";
+import useWorkingDays from "../../constants/useWorkingDays";
 
 const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
   const { user } = useAuth();
+  const [approvedCompOffDates, setApprovedCompOffDates] = useState([]);
+  // const { duration, loading, error } = useWorkingDays(
+  //   formData.startDate,
+  //   formData.endDate
+  // );
+  const [calendarData, setCalendarData] = useState([]);
+  const [nonWorkingDates, setNonWorkingDates] = useState([]);
 
   const [formData, setFormData] = useState({
     leaveType: leaveType,
@@ -17,7 +25,12 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
     resumptionDate: "",
     reason: "",
     attachment: [],
+    leaveDayType: "",
   });
+  const { duration, loading, error } = useWorkingDays(
+    formData.startDate,
+    formData.endDate
+  );
   const {
     attachments,
     setAttachments,
@@ -29,17 +42,123 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
   } = useAttachmentManager([]);
 
   useEffect(() => {
+    const fetchCalendar = async () => {
+      const year = new Date().getFullYear();
+      try {
+        const res = await fetch(`${config.apiBaseURL}/calendar/?year=${year}`);
+        const data = await res.json();
+        setCalendarData(data);
+
+        const nonWorking = data
+          .filter((d) => d.is_weekend || d.is_holiday)
+          .map((d) => new Date(d.date));
+        setNonWorkingDates(nonWorking);
+      } catch (err) {
+        console.error("Failed to fetch calendar", err);
+      }
+    };
+
+    fetchCalendar();
+  }, []);
+
+  useEffect(() => {
     if (formData.startDate && formData.endDate) {
-      const duration =
+      const daysDiff =
         differenceInCalendarDays(
           new Date(formData.endDate),
           new Date(formData.startDate)
-        ) + 1; // +1 to include both start and end dates
-      setFormData((prev) => ({ ...prev, duration: duration.toString() }));
+        ) + 1;
+
+      if (daysDiff === 1) {
+        if (formData.leaveDayType === "half") {
+          setFormData((prev) => ({ ...prev, duration: "0.5" }));
+        } else if (formData.leaveDayType === "full") {
+          setFormData((prev) => ({ ...prev, duration: "1" }));
+        } else {
+          setFormData((prev) => ({ ...prev, duration: "" }));
+        }
+      } else {
+        if (!loading && !error) {
+          setFormData((prev) => ({
+            ...prev,
+            duration: duration.toString(),
+            leaveDayType: "",
+          }));
+        }
+      }
     } else {
-      setFormData((prev) => ({ ...prev, duration: "" }));
+      setFormData((prev) => ({ ...prev, duration: "", leaveDayType: "" }));
     }
-  }, [formData.startDate, formData.endDate]);
+  }, [
+    formData.startDate,
+    formData.endDate,
+    formData.leaveDayType,
+    duration,
+    loading,
+    error,
+  ]);
+
+  useEffect(() => {
+    const fetchApprovedCompOffDates = async () => {
+      if (formData.leaveType === "Comp off" && user?.employee_id) {
+        try {
+          const response = await fetch(
+            `${config.apiBaseURL}/comp-off-view/employee/${user.employee_id}/`
+          );
+          const data = await response.json();
+          const approvedDates = data
+            .filter((entry) => entry.status.toLowerCase() === "approved")
+            .map((entry) => entry.date);
+          setApprovedCompOffDates(approvedDates);
+        } catch (err) {
+          console.error("Failed to fetch comp-off dates:", err);
+        }
+      }
+    };
+
+    fetchApprovedCompOffDates();
+  }, [formData.leaveType, user]);
+
+  useEffect(() => {
+    if (
+      formData.startDate &&
+      formData.endDate &&
+      format(formData.startDate, "yyyy-MM-dd") !==
+        format(formData.endDate, "yyyy-MM-dd")
+    ) {
+      setFormData((prev) => ({
+        ...prev,
+        duration: duration.toString(),
+      }));
+    }
+  }, [duration]);
+
+  const [selectedFiles, setSelectedFiles] = useState([]);
+
+  const handleFileChange = (e) => {
+    const newFiles = Array.from(e.target.files);
+
+    const nonDuplicateFiles = newFiles.filter(
+      (newFile) =>
+        !selectedFiles.some(
+          (existingFile) =>
+            existingFile.name === newFile.name &&
+            existingFile.size === newFile.size
+        )
+    );
+
+    if (nonDuplicateFiles.length < newFiles.length) {
+      alert("This file has already been added. Please choose a different one.");
+    }
+
+    setSelectedFiles((prevFiles) => [...prevFiles, ...nonDuplicateFiles]);
+    e.target.value = "";
+  };
+
+  const removeFile = (index) => {
+    const updatedFiles = selectedFiles.filter((_, i) => i !== index);
+    setSelectedFiles(updatedFiles);
+  };
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -126,6 +245,7 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
         console.log("Leave submitted successfully:", result);
         alert("Leave Request Submitted Successfully!");
         await patchLeaveAvailability(mappedLeaveType, formData.duration);
+
         onClose(); // Close form after successful submission
       } else {
         const errorData = await response.json();
@@ -139,40 +259,25 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
   };
 
   const patchLeaveAvailability = async (leaveTypeKey, duration) => {
-    const employeeId = user.employee_id;
-    const fetchURL = `${config.apiBaseURL}/leaves-available/by_employee/${employeeId}/`;
+    const patchURL = `${config.apiBaseURL}/leaves-available/by_employee/${user.employee_id}/`;
+
+    const payload = {
+      [leaveTypeKey]: -parseFloat(duration), // Deduct the requested duration
+    };
 
     try {
-      // 1. Fetch current leave availability
-      const getRes = await fetch(fetchURL);
-      if (!getRes.ok) {
-        const err = await getRes.json();
-        console.error("Failed to fetch current leave balance:", err);
-        return;
-      }
-
-      const currentData = await getRes.json();
-      const currentLeaveBalance = currentData[leaveTypeKey];
-
-      // 2. Subtract duration manually
-      const updatedLeave = currentLeaveBalance - parseFloat(duration);
-
-      // 3. Send PATCH request with updated value
-      const patchRes = await fetch(fetchURL, {
+      const res = await fetch(patchURL, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ [leaveTypeKey]: updatedLeave }),
+        body: JSON.stringify(payload),
       });
 
-      if (!patchRes.ok) {
-        const err = await patchRes.json();
-        console.error("Leave balance update failed:", err);
-      } else {
-        const result = await patchRes.json();
-        console.log("Leave balance updated:", result);
+      if (!res.ok) {
+        const err = await res.json();
+        console.error("Leave availability update failed:", err);
       }
     } catch (err) {
-      console.error("Error in patchLeaveAvailability:", err);
+      console.error("Error patching leave availability:", err);
     }
   };
 
@@ -182,21 +287,54 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
         Fill the required fields below to apply for annual leave.
       </p>
       <form onSubmit={handleSubmit} className="form1">
-        <div className="form-group1">
-          <label className="label1">Leave Type</label>
-          <select
-            name="leaveType"
-            value={formData.leaveType}
-            onChange={handleChange}
-            className="select1"
-          >
-            {/* <option value="">Select Leave Type</option> */}
-            <option value="Sick">Sick</option>
-            <option value="Casual">Casual</option>
-            <option value="Comp off">Comp off</option>
-            <option value="Earned">Earned</option>
-            <option value="">Others</option>
-          </select>
+        <div
+          className="row1"
+          style={{ display: "flex", gap: "20px", alignItems: "flex-end" }}
+        >
+          <div className="form-group1" style={{ flex: 1 }}>
+            <label className="label1">Leave Type</label>
+            <select
+              name="leaveType"
+              value={formData.leaveType}
+              onChange={handleChange}
+              className="select1"
+            >
+              <option value="Sick">Sick</option>
+              <option value="Casual">Casual</option>
+              <option value="Comp off">Comp off</option>
+              <option value="Earned">Earned</option>
+              <option value="">Others</option>
+            </select>
+          </div>
+
+          {formData.leaveType === "Comp off" && (
+            <div className="form-group1" style={{ flex: 1.03 }}>
+              <label className="label1">Select Date (for Comp off)</label>
+              <select
+                name="compOffDate"
+                value={formData.compOffDate || ""}
+                onChange={(e) => {
+                  const selected = new Date(e.target.value);
+                  setFormData((prev) => ({
+                    ...prev,
+                    compOffDate: e.target.value,
+                    // startDate: selected,
+                    // endDate: selected,
+                    // leaveDayType: "full", // optionally default to full-day
+                    // duration: "1", // or "0.5" based on requirement
+                  }));
+                }}
+                className="select1"
+              >
+                <option value="">Select Approved Date</option>
+                {approvedCompOffDates.map((date, index) => (
+                  <option key={index} value={date}>
+                    {format(new Date(date), "dd-MMM-yyyy")}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
 
         <div className="row1">
@@ -214,6 +352,7 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
                 showMonthDropdown
                 showYearDropdown
                 dropdownMode="select"
+                excludeDates={nonWorkingDates}
               />
               <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
               {/* Font Awesome Calendar Icon */}
@@ -234,6 +373,7 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
                 showYearDropdown
                 dropdownMode="select"
                 minDate={formData.startDate || null}
+                excludeDates={nonWorkingDates}
               />
               <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
               {/* Font Awesome Calendar Icon */}
@@ -244,15 +384,52 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
         <div className="row1">
           <div className="form-group-half1">
             <label className="label1">Duration</label>
-            <input
-              type="text"
-              name="duration"
-              value={formData.duration}
-              onChange={handleChange}
-              className="input1"
-              readOnly
-            />
+
+            {formData.startDate &&
+            formData.endDate &&
+            format(formData.startDate, "yyyy-MM-dd") ===
+              format(formData.endDate, "yyyy-MM-dd") ? (
+              <div
+                className="radio-group"
+                style={{ display: "flex", gap: "20px" }}
+              >
+                <label>
+                  <input
+                    type="radio"
+                    name="leaveDayType"
+                    value="half"
+                    checked={formData.leaveDayType === "half"}
+                    onChange={() =>
+                      setFormData((prev) => ({ ...prev, leaveDayType: "half" }))
+                    }
+                  />{" "}
+                  Half-Day
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="leaveDayType"
+                    value="full"
+                    checked={formData.leaveDayType === "full"}
+                    onChange={() =>
+                      setFormData((prev) => ({ ...prev, leaveDayType: "full" }))
+                    }
+                  />{" "}
+                  Full-Day
+                </label>
+              </div>
+            ) : (
+              <input
+                type="text"
+                name="duration"
+                value={formData.duration}
+                onChange={handleChange}
+                className="input1"
+                readOnly
+              />
+            )}
           </div>
+
           <div className="form-group-half1">
             <label className="label1">Resumption Date</label>
             <div className="date-input-container">
@@ -356,7 +533,7 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
           </div>
         </div>
 
-        <div className="btn-container">
+        <div className="button-groups">
           <button type="submit" className="btn-save">
             Submit
           </button>
