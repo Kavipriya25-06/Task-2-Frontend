@@ -65,16 +65,13 @@ const TeamLeadTaskView = () => {
 
       const data = await response.json();
       if (response.ok) {
-        alert("Project created successfully!");
+        alert("Task created successfully!");
       } else {
         console.error(data);
-        alert(" Failed to create project");
+        alert(" Failed to create Task");
       }
     } catch (err) {
       console.error("Request error:", err);
-    }
-    if (formData.attachments.length > 0) {
-      await uploadAttachments();
     }
 
     if (newAttachments.length > 0) {
@@ -107,6 +104,8 @@ const TeamLeadTaskView = () => {
     fetchTaskAssignment(); // Re-fetch to reset form
   };
 
+
+
   useEffect(() => {
     fetchTeamleadManager();
     fetchTaskAssignment();
@@ -136,7 +135,7 @@ const TeamLeadTaskView = () => {
 
       setFormData({
         employee: data.employee?.map((emp) => emp.employee_id) || [],
-        attachments: data.attachments,
+        attachments: data.attachments || [],
         task_hours: data.task_hours || "",
         status: data.status || "",
         priority: data.priority || "",
@@ -145,36 +144,38 @@ const TeamLeadTaskView = () => {
         end_date: data.end_date || "",
       });
 
-      setAttachments(data.attachments || []);
-      setNewAttachments([]);
+      setAttachments(data.attachments || []); // Set attachments here directly from task data
 
+      setNewAttachments([]); // Reset new attachments
       console.log("Task Assignment:", data);
     } catch (error) {
       console.error("Error fetching task assignment:", error);
     }
   };
 
-  if (
-    !taskData ||
-    !taskData.building_assign ||
-    !taskData.building_assign.project_assign
-  ) {
-    return <p>Loading...</p>;
-  }
+  // if (
+  //   !taskData ||
+  //   !taskData.building_assign ||
+  //   !taskData.building_assign.project_assign
+  // ) {
+  //   return <p>Loading...</p>;
+  // }
 
-  const project = taskData.building_assign?.project_assign?.project;
-  const building = taskData.building_assign?.building;
-  const task = taskData.task;
+  const project = taskData?.building_assign?.project_assign?.project;
+  const building = taskData?.building_assign?.building;
+  const task = taskData?.task;
 
   return (
     <div className="create-project-container">
       <div className="project-header">
         <h2>Task details </h2>
-        {!editMode && (
+        {editMode ? (
+          <div></div>
+        ) : (
           <button
             type="edit"
             onClick={() => setEditMode(true)}
-            className="btn-orange"
+            className="btn-btn-orange edit-btn"
           >
             <FaEdit className="edit-icon" />
           </button>
@@ -211,14 +212,14 @@ const TeamLeadTaskView = () => {
             </div>
             <div className="left-form-second">
               <div className="project-form-group">
-                <label>Task Desciption</label>
+                <label className="taskdescription">Task Description</label>
                 <p>{task?.task_description || "N/A"}</p>
               </div>
               <div className="roles-box">
-                <label>Task Roles</label>
+                <label className="taskroles">Task Roles</label>
                 {editMode ? (
                   <div className="select-container">
-                    {teamleadManager.map((emp) => (
+                    {teamleadManager?.map((emp) => (
                       <div key={emp.employee_id}>
                         <input
                           type="checkbox"
@@ -248,7 +249,7 @@ const TeamLeadTaskView = () => {
                   </div>
                 ) : (
                   <div className="select-container">
-                    {availableEmployees.map((emp) => (
+                    {availableEmployees?.map((emp) => (
                       <p key={emp.employee_id} className="view-roles">
                         {emp.employee_name} - {emp.designation}
                       </p>
@@ -435,7 +436,6 @@ const TeamLeadTaskView = () => {
               </div>
             </div>
           </div>
-
           <div className="right-form">
             <div className="right-form-building-first">
               <div className="project-form-group-small">
@@ -459,6 +459,9 @@ const TeamLeadTaskView = () => {
                       dateFormat="dd-MMM-yyyy"
                       placeholderText="dd-mm-yyyy"
                       className="input1"
+                      showMonthDropdown
+                      showYearDropdown
+                      dropdownMode="select"
                     />
                     <i className="fas fa-calendar-alt calendar-icon"></i>
                   </div>
@@ -491,6 +494,9 @@ const TeamLeadTaskView = () => {
                       placeholderText="dd-mm-yyyy"
                       className="input1"
                       popperPlacement="bottom-start"
+                      showMonthDropdown
+                      showYearDropdown
+                      dropdownMode="select"
                     />
                     <i className="fas fa-calendar-alt calendar-icon"></i>
                   </div>
@@ -562,7 +568,7 @@ const TeamLeadTaskView = () => {
 
         {editMode && (
           <div className="form-buttons">
-            <button type="submit" className="btn-green">
+            <button type="submit" className="btn-save">
               Save
             </button>
             <button
@@ -571,7 +577,7 @@ const TeamLeadTaskView = () => {
                 setEditMode(false);
                 fetchTaskAssignment(); // Re-fetch to reset form
               }}
-              className="btn-red"
+              className="btn-cancel"
             >
               Cancel
             </button>

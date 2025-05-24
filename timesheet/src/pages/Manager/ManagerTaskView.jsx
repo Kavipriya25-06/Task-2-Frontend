@@ -66,10 +66,10 @@ const ManagerTaskView = () => {
 
       const data = await response.json();
       if (response.ok) {
-        alert("Project created successfully!");
+        alert("Task created successfully!");
       } else {
         console.error(data);
-        alert(" Failed to create project");
+        alert(" Failed to create Task");
       }
     } catch (err) {
       console.error("Request error:", err);
@@ -105,8 +105,7 @@ const ManagerTaskView = () => {
     fetchTaskAssignment(); // Re-fetch to reset form
   };
 
-  const location = useLocation();
-  const isManagerPage = location.pathname.startsWith("/manager");
+
 
   useEffect(() => {
     fetchTeamleadManager();

@@ -63,7 +63,7 @@ const TeamLeadBuildingView = () => {
         // comments: "",
         start_date: task.start_date || null,
         end_date: task.end_date || null,
-        // employee: task.employee || [],
+        // employee: [],
       };
 
       const method = task.task_assign_id ? "PATCH" : "POST";
@@ -71,11 +71,17 @@ const TeamLeadBuildingView = () => {
         ? `${config.apiBaseURL}/tasks-assigned/${task.task_assign_id}/`
         : `${config.apiBaseURL}/tasks-assigned/`;
 
+      const finalPayload = task.task_assign_id
+        ? taskPayload
+        : { ...taskPayload, employee: [] };
+
+      console.log("Final payload", finalPayload);
+
       try {
         const response = await fetch(url, {
           method,
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(taskPayload),
+          body: JSON.stringify(finalPayload),
         });
         if (response.ok) {
           console.log("Building updated!");
@@ -128,7 +134,7 @@ const TeamLeadBuildingView = () => {
         task_hours: t.task_hours,
         start_date: t.start_date,
         end_date: t.end_date,
-        employee: t.employee,
+        // employee: t.employee,
         isNew: false, // mark as pre-existing
       }));
       setTaskSelections(mappedExistingTasks);
@@ -250,7 +256,7 @@ const TeamLeadBuildingView = () => {
             </div>
             <div className="left-form-second">
               <div className="project-form-group">
-                <label>Sub-Division Desciption</label>
+                <label className="description">Sub-Division Description</label>
                 <p>{buildingsAssign.building?.building_description}</p>
               </div>
               <div className="project-form-group">
@@ -273,7 +279,7 @@ const TeamLeadBuildingView = () => {
                     <button
                       type="button"
                       onClick={() => setTaskPopupVisible(true)}
-                      className="btn-green"
+                      // className="btn-green"
                     >
                       +
                     </button>
@@ -288,7 +294,7 @@ const TeamLeadBuildingView = () => {
                         >
                           {t.task.task_title}
                         </div>
-                        <div className="building-tile-small">
+                        <div className="building-tile-smalls">
                           {t.task_hours} hours
                         </div>
                       </div>
@@ -299,7 +305,7 @@ const TeamLeadBuildingView = () => {
             </div>
           </div>
           <div className="right-form">
-            <div className="right-form-building-first">
+            <div className="right-form-first">
               <div className="project-form-group-small">
                 <label>Start Date</label>
                 <p>
@@ -340,6 +346,7 @@ const TeamLeadBuildingView = () => {
                         {employee.employee_name} - {employee.designation}
                         <input
                           type="checkbox"
+                          className="larger-checkbox"
                           value={employee.employee_id}
                           checked={availableTeamleadManager.some(
                             (e) => e.employee_id === employee.employee_id
@@ -381,10 +388,10 @@ const TeamLeadBuildingView = () => {
         <div className="form-buttons">
           {editMode && (
             <>
-              <button onClick={handleUpdate} className="btn-green">
+              <button type="submit" onClick={handleUpdate} className="btn-save">
                 Save
               </button>
-              <button onClick={() => setEditMode(false)} className="btn-red">
+              <button onClick={() => setEditMode(false)} className="btn-cancel">
                 Cancel
               </button>
             </>
@@ -416,39 +423,67 @@ const TeamLeadBuildingView = () => {
                           updateTaskHours(task.task_id, e.target.value)
                         }
                       />
-                      <input
-                        type="date"
-                        value={selected.start_date || ""}
-                        onChange={(e) =>
-                          updateTaskDates(
-                            task.task_id,
-                            "start_date",
-                            e.target.value
-                          )
-                        }
-                      />
-                      <input
-                        type="date"
-                        value={selected.end_date || ""}
-                        onChange={(e) =>
-                          updateTaskDates(
-                            task.task_id,
-                            "end_date",
-                            e.target.value
-                          )
-                        }
-                      />
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "16px",
+                          alignItems: "center",
+                        }}
+                      >
+                        <div className="date-input-container">
+                          <DatePicker
+                            selected={
+                              selected.start_date
+                                ? new Date(selected.start_date)
+                                : null
+                            }
+                            onChange={(date) =>
+                              updateTaskDates(
+                                task.task_id,
+                                "start_date",
+                                format(date, "yyyy-MM-dd")
+                              )
+                            }
+                            dateFormat="dd-MMM-yyyy"
+                            placeholderText="dd-mm-yyyy"
+                            className="custom-datepicker"
+                          />
+                          <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+                          {/* Font Awesome Calendar Icon */}
+                        </div>
+                        <div className="date-input-container">
+                          <DatePicker
+                            selected={
+                              selected.end_date
+                                ? new Date(selected.end_date)
+                                : null
+                            }
+                            onChange={(date) =>
+                              updateTaskDates(
+                                task.task_id,
+                                "end_date",
+                                format(date, "yyyy-MM-dd")
+                              )
+                            }
+                            dateFormat="dd-MMM-yyyy"
+                            placeholderText="dd-mm-yyyy"
+                            className="custom-datepicker"
+                          />
+                          <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+                          {/* Font Awesome Calendar Icon */}
+                        </div>
+                      </div>
                     </>
                   )}
                 </div>
               );
             })}
-            <button onClick={saveTaskPopup} className="btn-green">
+            <button onClick={saveTaskPopup} className="btn-save">
               Done
             </button>
             <button
               onClick={() => setTaskPopupVisible(false)}
-              className="btn-red"
+              className="btn-cancel"
             >
               Cancel
             </button>

@@ -15,7 +15,7 @@ const ManagerProjectView = () => {
   const buildingPopupRef = useRef();
   const [teamleadManager, setTeamleadManager] = useState([]);
   const [availableTeamleadManager, setAvailableTeamleadManager] = useState([]);
-  const [showAttachments, setShowAttachments] = useState([]);
+  const [showAttachments, setShowAttachments] = useState(false);
   const [projectData, setProjectData] = useState(null);
   const [buildings, setBuildings] = useState([]);
   const [discipline, setDiscipline] = useState([]);
@@ -50,7 +50,9 @@ const ManagerProjectView = () => {
   const [selectedBuildings, setSelectedBuildings] = useState([]);
   const [availableBuildings, setAvailableBuildings] = useState([]);
   const [selectedAreas, setSelectedAreas] = useState([]);
-
+  const [variations, setVariations] = useState([
+    { date: "", title: "", hours: "", project: "" },
+  ]);
   const [availableAreas, setAvailableAreas] = useState([]);
   const { project_id } = useParams();
   const [editMode, setEditMode] = useState(false); //  Add this at the top
@@ -101,25 +103,22 @@ const ManagerProjectView = () => {
     }
   };
 
-  const [variations, setVariations] = useState([
-    { date: "2025-05-01", title: "Project Planning", hours: "4" },
-    { date: "2025-05-03", title: "Team Meeting", hours: "2" },
-    { date: "2025-05-07", title: "Code Review", hours: "3" },
-  ]);
-
   const handleVariationChange = (index, field, value) => {
     const newVariations = [...variations];
     newVariations[index][field] = value;
     setVariations(newVariations);
   };
 
+  const handleRemoveVariation = (index) => {
+    setVariations(variations.filter((_, i) => i !== index));
+  };
+
   const handleAddVariation = () => {
     const last = variations[variations.length - 1];
-
     if (!last || (last.date && last.title && last.hours)) {
       setVariations([
         ...variations,
-        { date: "", title: "", hours: "" }, // new empty row
+        { date: "", title: "", hours: "", project: "" },
       ]);
     } else {
       alert("Please fill the previous variation before adding a new one.");
@@ -385,6 +384,7 @@ const ManagerProjectView = () => {
       setProjectData(data);
       setAvailableBuildings(data.assigns[0].buildings);
       setAvailableTeamleadManager(data.assigns[0].employee);
+      setVariations(data.variation);
       // setAvailableAreas(data.area_of_work);
 
       const attachResponse = await fetch(
@@ -447,7 +447,7 @@ const ManagerProjectView = () => {
                 </label>
                 {editMode ? (
                   <input
-                    name="project_title"
+                    name="project_code"
                     value={formData.project_code || ""}
                     onChange={handleChange}
                     required
@@ -462,7 +462,7 @@ const ManagerProjectView = () => {
                 </label>
                 {editMode ? (
                   <input
-                    name="project_type"
+                    name="project_title"
                     value={formData.project_title}
                     onChange={handleChange}
                     required
@@ -476,7 +476,7 @@ const ManagerProjectView = () => {
                 <label>Project Type</label>
                 {editMode ? (
                   <input
-                    name="project_code"
+                    name="project_type"
                     value={formData.project_type}
                     onChange={handleChange}
                   />
@@ -1027,28 +1027,23 @@ const ManagerProjectView = () => {
           </div>
         </div>
         <div className="form-buttons">
-          {editMode ? (
+          {editMode && (
             <>
-              <button type="submit" onClick={handleUpdate} className="btn-save">
+              <button
+                type="submit"
+                onClick={handleUpdate}
+                className="btn-green"
+              >
                 Save
               </button>
               <button
                 type="reset"
                 onClick={() => setEditMode(false)}
-                className="btn-cancel"
+                className="btn-red"
               >
                 Cancel
               </button>
             </>
-          ) : (
-            // <button
-            //   type="edit"
-            //   onClick={() => setEditMode(true)}
-            //   className="btn-orange"
-            // >
-            //   Edit
-            // </button>
-            <div></div>
           )}
         </div>
         {showBuildingPopup && (

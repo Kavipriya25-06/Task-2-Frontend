@@ -15,8 +15,6 @@ const ManagerProjectCreate = () => {
   const buildingPopupRef = useRef();
   // const { employee_id } = useParams();
   const [selectedTeamleadManager, setSelectedTeamleadManager] = useState([]);
-  const [buildings, setBuildings] = useState([]);
-  const [areas, setAreas] = useState([]);
   const [discipline, setDiscipline] = useState([]);
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -30,14 +28,10 @@ const ManagerProjectCreate = () => {
     subdivision: "",
     discipline_code: "",
     discipline: "",
-    area_of_work: [],
   });
   const [showBuildingPopup, setShowBuildingPopup] = useState(false);
   const [buildingData, setBuildingData] = useState({});
-  const [showAreaPopup, setShowAreaPopup] = useState(false);
   const [selectedBuildings, setSelectedBuildings] = useState([]);
-  const [selectedAreas, setSelectedAreas] = useState([]);
-  // const [attachments, setAttachments] = useState([]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -49,21 +43,6 @@ const ManagerProjectCreate = () => {
     navigate("/manager/detail/projects/");
   };
 
-  const handleFileChange = (e) => {
-    const files = Array.from(e.target.files);
-    setAttachments((prev) => [...prev, ...files]);
-    e.target.value = ""; // Allow re-selecting same files
-  };
-
-  // const handleAttachmentChange = (e) => {
-  //   const files = Array.from(e.target.files);
-  //   setNewAttachments((prev) => [...prev, ...files]);
-  //   e.target.value = ""; // Allow re-selecting same files
-  // };
-
-  const handleRemoveFile = (index) => {
-    setAttachments((prev) => prev.filter((_, i) => i !== index));
-  };
   const {
     attachments,
     setAttachments,
@@ -77,7 +56,6 @@ const ManagerProjectCreate = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Form data", formData);
-    console.log("Area of work data", selectedAreas);
     console.log("buildings data", selectedBuildings);
     console.log("teamleads data", selectedTeamleadManager);
 
@@ -100,7 +78,7 @@ const ManagerProjectCreate = () => {
     const payload = {
       project: {
         ...formData,
-        area_of_work: formData.area_of_work,
+
         created_by: user.employee_id,
       },
       assign: {
@@ -108,9 +86,12 @@ const ManagerProjectCreate = () => {
         status: "pending",
       },
       buildings: selectedBuildings.map((b) => ({
-        building_id: b.building_id,
-        building_hours: b.hours,
-        status: "pending",
+        building_title: b.building_title,
+        building_description: b.building_description,
+        building_code: b.building_code,
+        employee: [],
+        building_hours: b.building_hours,
+        // status: "pending",
       })),
     };
     console.log("Final payload to send:", payload);
@@ -141,14 +122,6 @@ const ManagerProjectCreate = () => {
           }
         }
         setNewAttachments([]);
-
-        // Refresh the list after all uploads
-        // const attachResponse = await fetch(
-        //   `${config.apiBaseURL}/attachments/project/${project_id}`
-        // );
-        // const attachData = await attachResponse.json();
-        // setAttachments(attachData);
-        // setNewAttachments([]);
       }
 
       if (response.ok) {
@@ -174,35 +147,22 @@ const ManagerProjectCreate = () => {
     setBuildingData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleBuildingSubmit = async (e) => {
+  const handleBuildingSubmit = (e) => {
     e.preventDefault();
-    const payload = buildingData;
-    try {
-      const res = await fetch(`${config.apiBaseURL}/buildings/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        toast.success("Building Created Successfully", {
-          className: "custom-toast",
-          bodyClassName: "custom-toast-body",
-          progressClassName: "custom-toast-progress",
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: true,
-        });
-        setBuildingData({});
-        setShowBuildingPopup(false);
-        fetchBuilding();
-      } else {
-        console.error(data);
-        toast.error("Failed to Create Buildings" + data.error);
-      }
-    } catch (error) {
-      console.error("Error:", error);
+
+    if (
+      !buildingData.building_code ||
+      !buildingData.building_title ||
+      !buildingData.building_hours
+    ) {
+      toast.warning("Please fill all Sub-Division fields");
+      return;
     }
+
+    setSelectedBuildings((prev) => [...prev, buildingData]);
+
+    setBuildingData({});
+    setShowBuildingPopup(false);
   };
 
   const handleBuildingCancel = () => {
@@ -212,20 +172,8 @@ const ManagerProjectCreate = () => {
 
   useEffect(() => {
     fetchTeamleadManager();
-    fetchAreas();
-    fetchBuilding();
     fetchDiscipline();
   }, []);
-
-  const fetchAreas = async () => {
-    try {
-      const res = await fetch(`${config.apiBaseURL}/area-of-work/`);
-      const data = await res.json();
-      setAreas(data);
-    } catch (error) {
-      console.error("Error fetching Area of work:", error);
-    }
-  };
 
   const fetchDiscipline = async () => {
     try {
@@ -247,17 +195,6 @@ const ManagerProjectCreate = () => {
       console.log("Team leads and managers", data);
     } catch (error) {
       console.error("Error fetching employee data:", error);
-    }
-  };
-
-  const fetchBuilding = async () => {
-    try {
-      const response = await fetch(`${config.apiBaseURL}/buildings/`);
-      const data = await response.json();
-      setBuildings(data);
-      console.log("Buildings", data);
-    } catch (error) {
-      console.error("Error fetching Buildings:", error);
     }
   };
 
@@ -342,7 +279,7 @@ const ManagerProjectCreate = () => {
                       key={employee.employee_id}
                       className="employee-checkbox"
                     >
-                      {employee.employee_name} - {employee.user_details[0].role}
+                      {employee.employee_name} - {employee.designation}
                       <input
                         type="checkbox"
                         className="create-checkbox"
@@ -366,7 +303,7 @@ const ManagerProjectCreate = () => {
                 </div>
               </div>
               <div className="project-form-group">
-                <label>Building(s)</label>
+                <label>Sub-Division(s)</label>
 
                 <div className="building-row">
                   {selectedBuildings.map((b, i) => (
@@ -374,7 +311,9 @@ const ManagerProjectCreate = () => {
                       <div className="building-tile-small">
                         {b.building_title}
                       </div>
-                      <div className="building-tile-small">{b.hours} hrs</div>
+                      <div className="building-tile-small">
+                        {b.building_hours} hrs
+                      </div>
                       <button
                         type="button"
                         className="tag-button"
@@ -466,57 +405,6 @@ const ManagerProjectCreate = () => {
                   </div>
                 </div>
               </div>
-
-              {/* <div className="project-form-group">
-                <label>Area of Work</label>
-                <div className="area-row">
-                  <div className="tags">
-                    {areas
-                      .filter((a) =>
-                        formData.area_of_work.includes(a.area_name)
-                      )
-                      .map((a) => (
-                        <div>
-                          <span className="tag" key={a.area_name}>
-                            {a.name}
-                            <button
-                              className="tags-button"
-                              type="button"
-                              onClick={() =>
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  area_of_work: prev.area_of_work.filter(
-                                    (area) => area !== a.area_name
-                                  ),
-                                }))
-                              }
-                            >
-                              ×
-                            </button>
-                          </span>
-                        </div>
-                      ))}
-                  </div>
-
-                  <button
-                    className="plus-button"
-                    type="button"
-                    onClick={() => setShowAreaPopup(true)}
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-
-              <div className="project-form-group">
-                <label>Sub Division</label>
-
-                <input
-                  name="subdivision"
-                  value={formData.subdivision}
-                  onChange={handleChange}
-                />
-              </div> */}
             </div>
           </div>
           <div className="right-form">
@@ -576,7 +464,7 @@ const ManagerProjectCreate = () => {
         </div>
       </form>
       {showBuildingPopup && (
-        <div className="popup" ref={buildingPopupRef}>
+        <div className="building-popup" ref={buildingPopupRef}>
           <div className="create-building-container">
             <h2>Create Sub-Division</h2>
             <form onSubmit={handleBuildingSubmit}>
@@ -619,10 +507,11 @@ const ManagerProjectCreate = () => {
                     <label>Sub-Division Hours</label>
                     <br />
                     <input
+                      type="number"
                       name="building_hours"
                       value={buildingData.building_hours || ""}
                       onChange={handleBuildingChange}
-                      className="bottom-inputs"
+                      className="sub-division-hours"
                     />
                   </div>
                 </div>
@@ -641,48 +530,6 @@ const ManagerProjectCreate = () => {
               </div>
             </form>
           </div>
-        </div>
-      )}
-      {showAreaPopup && (
-        <div className="popup">
-          <h4>Select Area of Work</h4>
-          {areas.map((a) => (
-            <div key={a.area_name}>
-              <input
-                type="checkbox"
-                value={a.area_name}
-                checked={selectedAreas.includes(a.area_name)}
-                onChange={(e) => {
-                  const checked = e.target.checked;
-                  if (checked) {
-                    setSelectedAreas((prev) => [...prev, a.area_name]);
-                  } else {
-                    setSelectedAreas((prev) =>
-                      prev.filter((area_name) => area_name !== a.area_name)
-                    );
-                  }
-                }}
-              />
-              {a.name}
-            </div>
-          ))}
-          <button
-            onClick={() => {
-              setFormData((prev) => ({ ...prev, area_of_work: selectedAreas }));
-              setShowAreaPopup(false);
-            }}
-            className="btn-save"
-          >
-            Done
-          </button>
-          <button
-            onClick={() => {
-              setShowAreaPopup(false);
-            }}
-            className="btn-cancel"
-          >
-            Cancel
-          </button>
         </div>
       )}
     </div>

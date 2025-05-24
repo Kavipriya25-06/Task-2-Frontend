@@ -58,7 +58,6 @@
 .leavebutton {
   height: 20px;
   padding-right: 10px;
-  cursor: pointer;
 }
 
 .logo-c {
@@ -3475,6 +3474,99 @@ button.delete-building:hover {
   resize: vertical;
   background-color: #f0eeee;
   margin-top: 5px;
+}
+
+/* Below are the building popup CSS*/
+
+.building-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #ffffff;
+  width: 50%; /* Adjust width as needed */
+  max-height: 70%; /* Limit the height to 90% of the viewport */
+  overflow-y: auto; /* Enable vertical scrolling if content exceeds height */
+  background: #fff; /* Background color */
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  z-index: 1000; /* Ensure the popup is above other elements */
+  padding: 20px; /* Spacing inside the popup */
+  box-sizing: border-box; /* Include padding in width and height calculations */
+}
+
+.building-popup h3,
+h4 {
+  margin-top: 0; /* Remove default margin at the top */
+  margin-bottom: 15px; /* Add space below the heading */
+  font-size: 18px;
+  color: #444;
+}
+
+/* Table styles inside the popup */
+.building-popup table {
+  width: 100%; /* Full width inside the popup */
+  border-collapse: collapse; /* Remove gaps between table cells */
+  margin-top: 10px;
+  font-size: 14px; /* Slightly smaller font for better readability */
+}
+
+.building-popup table th,
+.building-popup table td {
+  text-align: left; /* Align text to the left */
+  padding: 10px; /* Add padding to table cells */
+  border: 1px solid #ddd; /* Light border for table cells */
+  word-break: break-word; /* Prevent text from overflowing */
+}
+
+.building-popup input[type="checkbox"] {
+  transform: scale(1.2);
+  cursor: pointer;
+  width: 5%;
+  margin-left: -1%;
+  margin-bottom: 3%;
+}
+
+.building-popup input[type="number"] {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  width: 100%;
+}
+
+.building-popup .btn-save {
+  color: black;
+  padding: 5px 10px;
+  border: 1px solid #f1890d; /* Added border color */
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 80%;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.building-popup .btn-save:hover {
+  background-color: #f4a13e;
+  color: black;
+  font-weight: 500;
+}
+
+.building-popup .btn-cancel {
+  color: black;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 80%;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-left: 2%;
+}
+
+.building-popup .btn-cancel:hover {
+  background-color: #afafaf;
+  color: black;
+  font-weight: 500;
 }
 
 .table-bottom-elements {

@@ -36,7 +36,11 @@ const TeamLeadDetailView = () => {
       tabname: ["leave-requests"],
     },
     { label: "Attendance", path: "attendance", tabname: ["attendance"] },
-    { label: "Comp-off Request", path: "compoffrequest" },
+    {
+      label: "Comp-off Request",
+      path: "compoffrequest",
+      tabname: ["compoffrequest"],
+    },
   ];
   return (
     <div className="admin-page">
@@ -47,7 +51,7 @@ const TeamLeadDetailView = () => {
             <button
               key={idx}
               onClick={() => navigate(tab.path)}
-              className={currentTab === tab.path ? "active" : ""}
+              className={tab.tabname.includes(currentTab) ? "active" : ""}
             >
               {tab.label}
             </button>
