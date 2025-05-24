@@ -144,9 +144,9 @@ const EmployeeDailyTimeSheetEntry = () => {
 
         const formatted = data.map((item) => ({
           task_assign_id: item.task_assign_id,
-          task_title: item.task.task_title,
+          task_title: item.task?.task_title || "",
           project_title:
-            item.building_assign.project_assign.project.project_title,
+            item.building_assign?.project_assign?.project?.project_title || "",
           building_title: item.building_assign.building?.building_title || "",
         }));
 
