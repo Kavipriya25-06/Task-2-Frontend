@@ -93,7 +93,6 @@ const TeamLeadTaskCreate = () => {
               </select>
             </div>
           </div>
-          
         </div>
         <div className="form-buttons">
           <button type="submit" className="btn-green">

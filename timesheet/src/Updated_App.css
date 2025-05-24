@@ -4,12 +4,12 @@
   border-radius: 12px !important;
   padding: 12px 16px !important;
   border-width: 3px;
-  background-color: #F1890D !important;
+  background-color: #f1890d !important;
   color: #000 !important;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-   font-family: "Archivo", sans-serif;
-  min-width: 180px !important;   /* 👈 Makes the container small but not too tight */
-  max-width: 530px !important; 
+  font-family: "Archivo", sans-serif;
+  min-width: 180px !important; /* 👈 Makes the container small but not too tight */
+  max-width: 530px !important;
   justify-content: center;
 }
 
@@ -21,27 +21,23 @@
   background: linear-gradient(90deg, #000, #000) !important;
 }
 
-
 .Toastify__toast--success {
-  border: 1px solid #CCC !important;
+  border: 1px solid #ccc !important;
 }
 
 .Toastify__toast--error {
-  border: 1px solid #CCC;
+  border: 1px solid #ccc;
   color: rgb(194, 19, 19) !important;
   font-weight: bold;
-   font-family: "Archivo", sans-serif;
+  font-family: "Archivo", sans-serif;
 }
 
-
-
-
 .Toastify__toast--info {
-  border: 1px solid #CCC;
+  border: 1px solid #ccc;
 }
 
 .Toastify__toast--warning {
-  border: 1px solid #CCC;
+  border: 1px solid #ccc;
 }
 
 .custom-toast .Toastify__toast-icon {

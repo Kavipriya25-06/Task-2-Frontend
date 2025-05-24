@@ -44,7 +44,6 @@ const UsersPage = () => {
     fetchUser();
   }, []);
 
-
   useEffect(() => {
     if (searchTimeout.current) {
       clearTimeout(searchTimeout.current);

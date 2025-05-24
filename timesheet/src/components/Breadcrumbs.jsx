@@ -124,11 +124,11 @@ const labelMap = {
   detail: "Detail",
   users: "Users",
   "add-user": "Add User",
-  "edit-user": "Edit User",
+  "edit-user": "View User",
   reports: "Reports",
   "employee-details": "Employee Details",
   "add-employee": "Add Employee",
-  "edit-employee": "Edit Employee",
+  "edit-employee": "View Employee",
   holidays: "Holiday Calendar",
   "holiday-list": "Holiday List",
   settings: "Settings",
@@ -147,7 +147,7 @@ const labelMap = {
   approvalscreen: "Approval Screen",
   createdaily: "Daily Timesheet",
   createweekly: "Weekly Timesheet",
-  compoff: "Comp Off"
+  compoff: "Comp Off",
 };
 
 const Breadcrumbs = ({ showBack = false, backPath = null, onBack }) => {

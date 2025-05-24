@@ -540,8 +540,6 @@ h2.react-datepicker__current-month {
   padding: 10px;
 }
 
-
-
 .radio-group {
   display: flex;
   gap: 20px;
@@ -1015,12 +1013,11 @@ table input[type="number"]:focus {
   padding: 10px;
   font-size: 14px;
   border-radius: 6px;
- background-color: #f1f0f0;
+  background-color: #f1f0f0;
   border: 1px solid #ccc;
   width: 78%;
   box-sizing: border-box;
 }
-
 
 .select1:focus {
   color: black;

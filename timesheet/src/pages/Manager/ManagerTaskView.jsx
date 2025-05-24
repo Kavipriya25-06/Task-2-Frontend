@@ -45,7 +45,6 @@ const ManagerTaskView = () => {
     console.log("Form data", formData);
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 

@@ -1,4 +1,3 @@
-
 // src\utils\breadcrumbMap.js
 const breadcrumbMap = {
   "/admin": "Admin Dashboard",

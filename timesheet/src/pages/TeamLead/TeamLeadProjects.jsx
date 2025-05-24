@@ -311,25 +311,25 @@ const TeamLeadProjects = () => {
   }, []);
 
   useEffect(() => {
-     if (searchTimeout.current) {
+    if (searchTimeout.current) {
       clearTimeout(searchTimeout.current);
     }
 
     searchTimeout.current = setTimeout(() => {
-    const lowerSearch = searchText.toLowerCase();
-    const filtered = projects.filter((u) => {
-      const code = u.project_code?.toLowerCase() || "";
-      const name = u.project_title?.toLowerCase() || "";
-      const discipline = u.discipline?.toLowerCase() || "";
-      return (
-        code.includes(lowerSearch) ||
-        name.includes(lowerSearch) ||
-        discipline.includes(lowerSearch)
-      );
-    });
-    setFilteredProjects(filtered);
-    setVisibleProjects(10);
-    setHasMoreProjects(filtered.length > 10);
+      const lowerSearch = searchText.toLowerCase();
+      const filtered = projects.filter((u) => {
+        const code = u.project_code?.toLowerCase() || "";
+        const name = u.project_title?.toLowerCase() || "";
+        const discipline = u.discipline?.toLowerCase() || "";
+        return (
+          code.includes(lowerSearch) ||
+          name.includes(lowerSearch) ||
+          discipline.includes(lowerSearch)
+        );
+      });
+      setFilteredProjects(filtered);
+      setVisibleProjects(10);
+      setHasMoreProjects(filtered.length > 10);
 
       if (searchText && filtered.length === 0) {
         toast.info("No users found", {
@@ -347,20 +347,20 @@ const TeamLeadProjects = () => {
   }, [searchText, projects]);
 
   useEffect(() => {
-     if (searchTimeout.current) {
+    if (searchTimeout.current) {
       clearTimeout(searchTimeout.current);
     }
 
     searchTimeout.current = setTimeout(() => {
-    const lowerSearch = searchBuild.toLowerCase();
-    const filtered = buildings.filter((u) => {
-      const bcode = u.building_code?.toLowerCase() || "";
-      const bname = u.building_title?.toLowerCase() || "";
-      return bcode.includes(lowerSearch) || bname.includes(lowerSearch);
-    });
-    setFilteredBuildings(filtered);
-    setVisibleBuildings(10);
-    setHasMoreBuildings(filtered.length > 10);
+      const lowerSearch = searchBuild.toLowerCase();
+      const filtered = buildings.filter((u) => {
+        const bcode = u.building_code?.toLowerCase() || "";
+        const bname = u.building_title?.toLowerCase() || "";
+        return bcode.includes(lowerSearch) || bname.includes(lowerSearch);
+      });
+      setFilteredBuildings(filtered);
+      setVisibleBuildings(10);
+      setHasMoreBuildings(filtered.length > 10);
 
       if (searchText && filtered.length === 0) {
         toast.info("No users found", {
@@ -378,25 +378,25 @@ const TeamLeadProjects = () => {
   }, [searchBuild, buildings]);
 
   useEffect(() => {
-     if (searchTimeout.current) {
+    if (searchTimeout.current) {
       clearTimeout(searchTimeout.current);
     }
 
     searchTimeout.current = setTimeout(() => {
-    const lowerSearch = searchTask.toLowerCase();
-    const filtered = tasks.filter((u) => {
-      const tcode = u.task_code?.toLowerCase() || "";
-      const tname = u.task_title?.toLowerCase() || "";
-      const priority = u.priority?.toLowerCase() || "";
-      return (
-        tcode.includes(lowerSearch) ||
-        tname.includes(lowerSearch) ||
-        priority.includes(lowerSearch)
-      );
-    });
-    setFilteredTask(filtered);
-    setVisibleTasks(10);
-    setHasMoreTasks(filtered.length > 10);
+      const lowerSearch = searchTask.toLowerCase();
+      const filtered = tasks.filter((u) => {
+        const tcode = u.task_code?.toLowerCase() || "";
+        const tname = u.task_title?.toLowerCase() || "";
+        const priority = u.priority?.toLowerCase() || "";
+        return (
+          tcode.includes(lowerSearch) ||
+          tname.includes(lowerSearch) ||
+          priority.includes(lowerSearch)
+        );
+      });
+      setFilteredTask(filtered);
+      setVisibleTasks(10);
+      setHasMoreTasks(filtered.length > 10);
 
       if (searchText && filtered.length === 0) {
         toast.info("No users found", {
@@ -506,7 +506,7 @@ const TeamLeadProjects = () => {
                 <div className="no-message">No more data</div>
               )}
             </div>
-             <ToastContainer />
+            <ToastContainer />
           </div>
         );
       case 1:
@@ -600,7 +600,7 @@ const TeamLeadProjects = () => {
                 <div className="no-message">No more data</div>
               )}
             </div>
-             <ToastContainer />
+            <ToastContainer />
           </div>
         );
       case 2:
@@ -687,7 +687,7 @@ const TeamLeadProjects = () => {
               )}
               {!hasMoreTasks && <div className="no-message">No more data</div>}
             </div>
-             <ToastContainer />
+            <ToastContainer />
           </div>
         );
     }

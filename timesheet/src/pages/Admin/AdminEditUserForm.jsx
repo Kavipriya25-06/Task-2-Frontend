@@ -82,14 +82,14 @@ const EditUserForm = () => {
       }
 
       console.log("User updated successfully");
-       toast.success("User Updated Successfully", {
-          className: "custom-toast",
-          bodyClassName: "custom-toast-body",
-          progressClassName: "custom-toast-progress",
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: true,
-        });
+      toast.success("User Updated Successfully", {
+        className: "custom-toast",
+        bodyClassName: "custom-toast-body",
+        progressClassName: "custom-toast-progress",
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: true,
+      });
 
       setEditMode(false);
       // navigate("/admin/detail/users");
@@ -278,9 +278,7 @@ const EditUserForm = () => {
           </button>
         </div>
       )}
-      <ToastContainer
-
-      />
+      <ToastContainer />
     </div>
   );
 };

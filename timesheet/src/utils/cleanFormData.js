@@ -1,4 +1,3 @@
-
 // src\utils\cleanFormData.js
 
 export const cleanFormData = (formData, fieldsToNullify = []) => {

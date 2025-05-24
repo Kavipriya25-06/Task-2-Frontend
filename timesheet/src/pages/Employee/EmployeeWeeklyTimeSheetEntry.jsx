@@ -21,7 +21,7 @@ const EmployeeWeeklyTimeSheetEntry = () => {
 
   const [taskRows, setTaskRows] = useState([
     {
-      date:"",
+      date: "",
       project: "",
       building: "",
       task: "",
@@ -152,13 +152,14 @@ const EmployeeWeeklyTimeSheetEntry = () => {
             if (record.timesheets && record.timesheets.length > 0) {
               record.timesheets.forEach((ts) => {
                 allTimesheets.push({
-                  date:ts.date,
+                  date: ts.date,
                   timesheet_id: ts.timesheet_id,
                   project:
                     ts.task_assign?.building_assign?.project_assign?.project
                       ?.project_title || "",
                   building:
-                    ts.task_assign?.building_assign?.building?.building_title || "",
+                    ts.task_assign?.building_assign?.building?.building_title ||
+                    "",
                   task: ts.task_assign?.task?.task_title || "",
                   hours: parseFloat(ts.task_hours || "0").toString(),
                   start_time: ts.start_time || "",
@@ -173,7 +174,7 @@ const EmployeeWeeklyTimeSheetEntry = () => {
           console.warn("No biometric data found for this date.");
           setRows([
             {
-              date:"",
+              date: "",
               project: "",
               building: "",
               task: "",
@@ -192,7 +193,7 @@ const EmployeeWeeklyTimeSheetEntry = () => {
         console.error("Failed to fetch biometric task data:", error);
         setRows([
           {
-            date:"",
+            date: "",
             project: "",
             building: "",
             task: "",

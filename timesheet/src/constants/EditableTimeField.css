@@ -1,53 +1,53 @@
 .editable-time-field .time-display {
-    cursor: pointer;
-    padding: 6px 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    background: #f8f8f8;
-    display: inline-block;
-  }
-  
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0,0,0,0.2);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .picker-modal {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    min-width: 260px;
-  }
-  
-  .picker-title {
-    font-weight: 600;
-    font-size: 18px;
-    margin-bottom: 16px;
-    text-align: center;
-  }
-  
-  .picker-content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .column {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0 10px;
-  }
-  
-  /* .column input {
+  cursor: pointer;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #f8f8f8;
+  display: inline-block;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.picker-modal {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  min-width: 260px;
+}
+
+.picker-title {
+  font-weight: 600;
+  font-size: 18px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.picker-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 10px;
+}
+
+/* .column input {
     font-size: 20px;
     width: 60px;
     text-align: center;
@@ -57,45 +57,43 @@
     outline: none;
     background: transparent;
   } */
-  .column input {
-    font-size: 20px;
-    width: 60px;
-    text-align: center;
-    border: none;
-    border-bottom: 2.5px solid #000; /* Flat line */
-    margin: 4px 0;
-    outline: none;
-    background: transparent;
-    border-radius: 0; /* Remove round corners */
-    box-shadow: none; /* Remove any 3D look */
-  }
-  
-  
-  .column button {
-    background: none;
-    border: none;
-    font-size: 16px;
-    color: #333;
-    cursor: pointer;
-  }
-  
-  .colon {
-    font-size: 24px;
-    margin: 0 5px;
-  }
-  
-  .picker-actions {
-    margin-top: 16px;
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .picker-actions button {
-    background: none;
-    border: none;
-    color: #F1890D;
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-  }
-  
+.column input {
+  font-size: 20px;
+  width: 60px;
+  text-align: center;
+  border: none;
+  border-bottom: 2.5px solid #000; /* Flat line */
+  margin: 4px 0;
+  outline: none;
+  background: transparent;
+  border-radius: 0; /* Remove round corners */
+  box-shadow: none; /* Remove any 3D look */
+}
+
+.column button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #333;
+  cursor: pointer;
+}
+
+.colon {
+  font-size: 24px;
+  margin: 0 5px;
+}
+
+.picker-actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.picker-actions button {
+  background: none;
+  border: none;
+  color: #f1890d;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}

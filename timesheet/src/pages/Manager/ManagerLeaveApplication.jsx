@@ -4,7 +4,6 @@ import config from "../../config";
 import ManagerLeaveRequestForm from "./ManagerLeaveRequestForm";
 import { format } from "date-fns";
 
-
 const ManagerLeaveApplication = () => {
   const { user } = useAuth();
   const [leaveSummary, setLeaveSummary] = useState({
@@ -106,7 +105,7 @@ const ManagerLeaveApplication = () => {
                 <tr key={idx}>
                   <td>{request.leave_type}</td>
                   <td>{request.duration}</td>
-                 <td>
+                  <td>
                     {request.start_date
                       ? format(new Date(request.start_date), "dd-MMM-yyyy")
                       : ""}
@@ -129,8 +128,6 @@ const ManagerLeaveApplication = () => {
           onClose={() => setSelectedLeaveType(null)}
         />
       )}
-
-      
     </div>
   );
 };

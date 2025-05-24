@@ -205,14 +205,18 @@ const TeamLeadProjectCreate = () => {
       } else {
         console.error(data);
         // alert("Failed to create Building.");
-        toast.error("Failed to Create Building.", {
-          className: "custom-toast",
-          bodyClassName: "custom-toast-body",
-          progressClassName: "custom-toast-progress",
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: true,
-        },data.error);
+        toast.error(
+          "Failed to Create Building.",
+          {
+            className: "custom-toast",
+            bodyClassName: "custom-toast-body",
+            progressClassName: "custom-toast-progress",
+            position: "top-center",
+            autoClose: 2000,
+            hideProgressBar: true,
+          },
+          data.error
+        );
       }
     } catch (error) {
       console.error("Error:", error);

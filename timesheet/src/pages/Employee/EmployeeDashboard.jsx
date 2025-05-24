@@ -14,7 +14,7 @@ import {
 const EmployeeDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation(); 
+  const location = useLocation();
 
   const tiles = [
     { label: "Time Sheet Entry", path: "detail/time-sheet-entry" },

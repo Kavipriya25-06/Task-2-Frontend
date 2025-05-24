@@ -17,7 +17,6 @@ const TeamLeadApprovalScreen = () => {
     rejected: false,
   });
 
-
   // useEffect(() => {
   //   const fetchTimesheetData = async () => {
   //     try {
@@ -37,13 +36,11 @@ const TeamLeadApprovalScreen = () => {
   //         let inTime = records[0].start_time || "--:--";
   //         let outTime = records[0].end_time || "--:--";
 
-
   //         setStatus({
   //           approved: records[0].approved,
   //           rejected: records[0].rejected
   //         });
 
-  
   //         const timesheetRows = records.map((entry) => {
   //           const project =
   //             entry.task_assign?.building_assign?.project_assign?.project
@@ -84,12 +81,14 @@ const TeamLeadApprovalScreen = () => {
                 entry.task_assign?.building_assign?.project_assign?.project
                   ?.project_title || "";
 
-              const building = entry.task_assign?.building_assign?.building?.building_title || "";
+              const building =
+                entry.task_assign?.building_assign?.building?.building_title ||
+                "";
 
               const task = entry.task_assign?.task?.task_title || "";
 
-              const start_time = (entry.start_time || "0");
-              const end_time = (entry.end_time || "0");
+              const start_time = entry.start_time || "0";
+              const end_time = entry.end_time || "0";
 
               const hours = parseFloat(entry.task_hours || "0");
 
@@ -98,8 +97,8 @@ const TeamLeadApprovalScreen = () => {
                 project,
                 building,
                 task,
-                start_time:start_time.toString(),
-                end_time:end_time.toString(),
+                start_time: start_time.toString(),
+                end_time: end_time.toString(),
                 hours: hours.toString(),
               });
             });
@@ -111,7 +110,16 @@ const TeamLeadApprovalScreen = () => {
             });
           } else {
             // No timesheets found
-            timesheetRows = [{ project: "",building:"", task: "", start_time:"", end_time:"", hours: "" }];
+            timesheetRows = [
+              {
+                project: "",
+                building: "",
+                task: "",
+                start_time: "",
+                end_time: "",
+                hours: "",
+              },
+            ];
             setStatus({
               approved: false,
               rejected: false,
@@ -126,7 +134,16 @@ const TeamLeadApprovalScreen = () => {
             out_time: "--:--",
             total_duration: "0.00",
           });
-          setRows([{ project: "",building:"", task: "", start_time:"",end_time:"", hours: "" }]);
+          setRows([
+            {
+              project: "",
+              building: "",
+              task: "",
+              start_time: "",
+              end_time: "",
+              hours: "",
+            },
+          ]);
           setStatus({
             approved: false,
             rejected: false,
@@ -139,7 +156,16 @@ const TeamLeadApprovalScreen = () => {
           out_time: "--:--",
           total_duration: "0.00",
         });
-        setRows([{ project: "",building:"", task: "",start_time:"",end_time:"", hours: ""}]);
+        setRows([
+          {
+            project: "",
+            building: "",
+            task: "",
+            start_time: "",
+            end_time: "",
+            hours: "",
+          },
+        ]);
         setStatus({
           approved: false,
           rejected: false,
@@ -283,7 +309,6 @@ const TeamLeadApprovalScreen = () => {
       >
         +
       </div> */}
-
 
       <div className="button-container">
         {status.approved ? ( //  CHANGE: conditionally render approved button

@@ -4,7 +4,6 @@ import config from "../../config";
 import TeamLeadLeaveRequestForm from "./TeamLeadLeaveRequestForm";
 import { format } from "date-fns";
 
-
 const TeamLeadLeaveRequests = () => {
   const { user } = useAuth();
   const [leaveAttachments, setLeaveAttachments] = useState({});
@@ -21,9 +20,11 @@ const TeamLeadLeaveRequests = () => {
   const rowsPerPage = 2;
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-  const currentLeaveRequests = leaveRequests.slice(indexOfFirstRow, indexOfLastRow);
+  const currentLeaveRequests = leaveRequests.slice(
+    indexOfFirstRow,
+    indexOfLastRow
+  );
   const totalPages = Math.ceil(leaveRequests.length / rowsPerPage);
-
 
   useEffect(() => {
     fetchLeaveSummary();
@@ -103,86 +104,88 @@ const TeamLeadLeaveRequests = () => {
 
       {/* Conditionally Render Form or Summary + Table */}
       <div>
-      {!selectedLeaveType ? (
-        <>
-          {/* Leave Summary Boxes */}
-          <div className="leave-summary-container">
-            {["Sick", "Casual", "Comp off", "Earned"].map((type, idx) => {
-              const key = keyMap[type];
-              return (
-                <div
-                  key={idx}
-                  className="leave-summary-box"
-                  onClick={() => setSelectedLeaveType(type)} // Set clicked leave type
-                  style={{ cursor: "pointer" }}
-                >
-                  <div>{type}</div>
-                  <div className="leave-summary-count">
-                    {leaveSummary[key] ?? 0}
+        {!selectedLeaveType ? (
+          <>
+            {/* Leave Summary Boxes */}
+            <div className="leave-summary-container">
+              {["Sick", "Casual", "Comp off", "Earned"].map((type, idx) => {
+                const key = keyMap[type];
+                return (
+                  <div
+                    key={idx}
+                    className="leave-summary-box"
+                    onClick={() => setSelectedLeaveType(type)} // Set clicked leave type
+                    style={{ cursor: "pointer" }}
+                  >
+                    <div>{type}</div>
+                    <div className="leave-summary-count">
+                      {leaveSummary[key] ?? 0}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
 
-          {/* Leave Requests Table */}
-          <table className="leave-requests-table">
-            <thead>
-              <tr>
-                <th>Type</th>
-                <th>Duration(s)</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Reason(s)</th>
-                <th>Status</th>
-                <th>Attachment</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentLeaveRequests.map((request, idx) => (
-                <tr key={idx}>
-                  <td>{request.leave_type}</td>
-                  <td>{request.duration}</td>
-                 <td>
-                    {request.start_date
-                      ? format(new Date(request.start_date), "dd-MMM-yyyy")
-                      : ""}
-                  </td>
-                  <td>
-                    {request.end_date
-                      ? format(new Date(request.end_date), "dd-MMM-yyyy")
-                      : ""}
-                  </td>
-                  <td>{request.reason}</td>
-                  <td>{request.status}</td>
-                  <td>
-                    {leaveAttachments[request.leave_taken_id]?.length > 0 ? (
-                      leaveAttachments[request.leave_taken_id].map((fileObj, i) => (
-                        <a
-                          key={i}
-                          href={`${config.apiBaseURL}${fileObj.file}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ display: "block" }}
-                        >
-                          View
-                        </a>
-                      ))
-                    ) : (
-                      <span>No File</span>
-                    )}
-                  </td>
+            {/* Leave Requests Table */}
+            <table className="leave-requests-table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Duration(s)</th>
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                  <th>Reason(s)</th>
+                  <th>Status</th>
+                  <th>Attachment</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
-      ) : (
-        <TeamLeadLeaveRequestForm
-          leaveType={selectedLeaveType}
-          onClose={() => setSelectedLeaveType(null)} // Go back to boxes + table when closed
-        />
-      )}
+              </thead>
+              <tbody>
+                {currentLeaveRequests.map((request, idx) => (
+                  <tr key={idx}>
+                    <td>{request.leave_type}</td>
+                    <td>{request.duration}</td>
+                    <td>
+                      {request.start_date
+                        ? format(new Date(request.start_date), "dd-MMM-yyyy")
+                        : ""}
+                    </td>
+                    <td>
+                      {request.end_date
+                        ? format(new Date(request.end_date), "dd-MMM-yyyy")
+                        : ""}
+                    </td>
+                    <td>{request.reason}</td>
+                    <td>{request.status}</td>
+                    <td>
+                      {leaveAttachments[request.leave_taken_id]?.length > 0 ? (
+                        leaveAttachments[request.leave_taken_id].map(
+                          (fileObj, i) => (
+                            <a
+                              key={i}
+                              href={`${config.apiBaseURL}${fileObj.file}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ display: "block" }}
+                            >
+                              View
+                            </a>
+                          )
+                        )
+                      ) : (
+                        <span>No File</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        ) : (
+          <TeamLeadLeaveRequestForm
+            leaveType={selectedLeaveType}
+            onClose={() => setSelectedLeaveType(null)} // Go back to boxes + table when closed
+          />
+        )}
       </div>
       {/* <div className="pagination-controls">
         <button
@@ -201,7 +204,6 @@ const TeamLeadLeaveRequests = () => {
           Next
         </button>
       </div> */}
-
     </div>
   );
 };

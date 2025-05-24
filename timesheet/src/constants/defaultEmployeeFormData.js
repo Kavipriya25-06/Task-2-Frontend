@@ -36,10 +36,10 @@ export const defaultEmployeeFormData = {
   account_number: "",
   ifsc_code: "",
   bank_name: "",
-  bank_branch_name:"",
-  bank_address:"",
+  bank_branch_name: "",
+  bank_address: "",
   emergency_contact_name: "",
   emergency_contact_number: "",
-  emergency_contact_relationship:"",
+  emergency_contact_relationship: "",
   blood_group: "",
 };

@@ -211,39 +211,35 @@ const HolidayList = () => {
             </button>
             <h3>Add Holiday</h3>
 
-            <label>
-              Date:
-            </label>
+            <label>Date:</label>
             <div className="date-input-container">
-                <DatePicker
-                  selected={formData.date ? new Date(formData.date) : null}
-                  onChange={(date) =>
-                    setFormData({
-                      ...formData,
-                      date: format(date, "yyyy-MM-dd"),
-                    })
-                  }
-                  dateFormat="dd-MMM-yyyy"
-                  placeholderText="dd-mm-yyyy"
-                  className="input1"
-                  showMonthDropdown
-                  showYearDropdown
-                  dropdownMode="select"
-                />
-
-                <i className="fas fa-calendar-alt calendar-icon"></i>
-              </div>
-
-            <label>
-              Holidays:
-            </label>
-             <input
-                type="text"
-                value={formData.notes}
-                onChange={(e) =>
-                  setFormData({ ...formData, notes: e.target.value })
+              <DatePicker
+                selected={formData.date ? new Date(formData.date) : null}
+                onChange={(date) =>
+                  setFormData({
+                    ...formData,
+                    date: format(date, "yyyy-MM-dd"),
+                  })
                 }
+                dateFormat="dd-MMM-yyyy"
+                placeholderText="dd-mm-yyyy"
+                className="input1"
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
               />
+
+              <i className="fas fa-calendar-alt calendar-icon"></i>
+            </div>
+
+            <label>Holidays:</label>
+            <input
+              type="text"
+              value={formData.notes}
+              onChange={(e) =>
+                setFormData({ ...formData, notes: e.target.value })
+              }
+            />
 
             <div className="modal-buttons">
               <button onClick={handlePatchHoliday}>Submit</button>

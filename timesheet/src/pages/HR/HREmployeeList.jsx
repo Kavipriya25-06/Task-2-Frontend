@@ -1,6 +1,6 @@
 // src/pages/HR/EmployeeList.jsx
 
-import React, { useEffect, useState,useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import config from "../../config";
 import { FaEdit } from "react-icons/fa";
@@ -16,7 +16,6 @@ const EmployeeList = () => {
   const [isLoadingMoreEmployees, setIsLoadingMoreEmployees] = useState(false);
   const [hasMoreEmployees, setHasMoreEmployees] = useState(true);
   const searchTimeout = useRef(null);
-
 
   const fetchEmployees = async () => {
     try {
@@ -43,39 +42,39 @@ const EmployeeList = () => {
 
   // Search filter logic
   useEffect(() => {
-        if (searchTimeout.current) {
+    if (searchTimeout.current) {
       clearTimeout(searchTimeout.current);
     }
 
-       searchTimeout.current = setTimeout(() => {
-    const lowerSearch = searchText.toLowerCase();
-    const filtered = employees.filter((u) => {
-      const code = u.employee_code?.toLowerCase() || "";
-      const name = u.employee_name?.toLowerCase() || "";
-      const email = u.reporting_manager?.toLowerCase() || "";
-      return (
-        code.includes(lowerSearch) ||
-        name.includes(lowerSearch) ||
-        email.includes(lowerSearch)
-      );
-    });
-    setFilteredEmployees(filtered);
-    setVisibleEmployees(10);
-    setHasMoreEmployees(filtered.length > 10);
+    searchTimeout.current = setTimeout(() => {
+      const lowerSearch = searchText.toLowerCase();
+      const filtered = employees.filter((u) => {
+        const code = u.employee_code?.toLowerCase() || "";
+        const name = u.employee_name?.toLowerCase() || "";
+        const email = u.reporting_manager?.toLowerCase() || "";
+        return (
+          code.includes(lowerSearch) ||
+          name.includes(lowerSearch) ||
+          email.includes(lowerSearch)
+        );
+      });
+      setFilteredEmployees(filtered);
+      setVisibleEmployees(10);
+      setHasMoreEmployees(filtered.length > 10);
 
-     if (searchText && filtered.length === 0) {
-            toast.info("No users found", {
-              className: "custom-toast",
-              bodyClassName: "custom-toast-body",
-              progressClassName: "custom-toast-progress",
-              position: "top-center",
-              autoClose: 2000,
-              hideProgressBar: true,
-            });
-          }
-        }, 500);
-    
-        return () => clearTimeout(searchTimeout.current);
+      if (searchText && filtered.length === 0) {
+        toast.info("No users found", {
+          className: "custom-toast",
+          bodyClassName: "custom-toast-body",
+          progressClassName: "custom-toast-progress",
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+        });
+      }
+    }, 500);
+
+    return () => clearTimeout(searchTimeout.current);
   }, [searchText, employees]);
 
   return (
@@ -154,7 +153,7 @@ const EmployeeList = () => {
         )}
         {!hasMoreEmployees && <div className="no-message">No more data</div>}
       </div>
-        <ToastContainer />
+      <ToastContainer />
     </div>
   );
 };
