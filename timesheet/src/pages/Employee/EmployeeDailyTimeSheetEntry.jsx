@@ -75,7 +75,7 @@ const EmployeeDailyTimeSheetEntry = () => {
           let timesheetRows = [];
           if (latestRecord.timesheets && latestRecord.timesheets.length > 0) {
             let fetchedRows = latestRecord.timesheets.map((ts) => ({
-              timesheet_id: ts.id, // VERY IMPORTANT: keep the ID for PATCHing
+              timesheet_id: ts.timesheet_id, // VERY IMPORTANT: keep the ID for PATCHing
               project:
                 ts.task_assign?.building_assign?.project_assign?.project
                   ?.project_title || "",
@@ -372,6 +372,66 @@ const EmployeeDailyTimeSheetEntry = () => {
     }
   };
 
+  const handleDeleteRow = async (timesheet_id) => {
+    const response = await fetch(
+      `${config.apiBaseURL}/timesheet/${timesheet_id}/`,
+      {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        // body: JSON.stringify(payload),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Failed to PATCH row:", errorData);
+      // alert(`Failed to update task "${timesheet_id}".`);
+      return;
+    }
+    fetchBiometricTaskData();
+    // if (type === "existing") {
+    //   const rowToDelete = displayRows[index];
+    //   if (!rowToDelete.timesheet_id) {
+    //     // No timesheet_id - treat as unsaved row, just remove locally
+    //     setDisplayRows((prev) => prev.filter((_, i) => i !== index));
+    //     setUpdatedRows((prev) =>
+    //       prev.filter((row) => row.timesheet_id !== rowToDelete.timesheet_id)
+    //     );
+    //     return;
+    //   }
+
+    //   // Confirm deletion
+    //   if (!window.confirm(`Delete task "${rowToDelete.task}"?`)) return;
+
+    //   try {
+    //     const response = await fetch(
+    //       `${config.apiBaseURL}/timesheet/${rowToDelete.timesheet_id}/`,
+    //       {
+    //         method: "DELETE",
+    //       }
+    //     );
+
+    //     if (response.ok) {
+    //       // Remove from displayRows and updatedRows
+    //       setDisplayRows((prev) => prev.filter((_, i) => i !== index));
+    //       setUpdatedRows((prev) =>
+    //         prev.filter((row) => row.timesheet_id !== rowToDelete.timesheet_id)
+    //       );
+    //     } else {
+    //       const errorData = await response.json();
+    //       console.error("Failed to delete row:", errorData);
+    //       alert(`Failed to delete task "${rowToDelete.task}".`);
+    //     }
+    //   } catch (error) {
+    //     console.error("Error deleting row:", error);
+    //     alert("An error occurred while deleting the task.");
+    //   }
+    // } else if (type === "new") {
+    //   // Just remove from newRows state (no API call)
+    //   setNewRows((prev) => prev.filter((_, i) => i !== index));
+    // }
+  };
+
   const handleSave = async () => {
     try {
       // ---------------- PATCH updated existing rows ----------------
@@ -515,6 +575,7 @@ const EmployeeDailyTimeSheetEntry = () => {
             <th>Start Time</th>
             <th>End Time</th>
             <th>Hours</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -524,31 +585,34 @@ const EmployeeDailyTimeSheetEntry = () => {
               <td>
                 <input
                   type="text"
-                  placeholder="Enter project"
+                  // placeholder="Enter project"
                   value={row.project}
-                  onChange={(e) =>
-                    handleDisplayRowChange(index, "project", e.target.value)
-                  }
+                  readOnly
+                  // onChange={(e) =>
+                  //   handleDisplayRowChange(index, "project", e.target.value)
+                  // }
                 />
               </td>
               <td>
                 <input
                   type="text"
-                  placeholder="Enter building"
+                  // placeholder="Enter building"
                   value={row.building}
-                  onChange={(e) =>
-                    handleDisplayRowChange(index, "building", e.target.value)
-                  }
+                  readOnly
+                  // onChange={(e) =>
+                  //   handleDisplayRowChange(index, "building", e.target.value)
+                  // }
                 />
               </td>
               <td>
                 <input
                   type="text"
-                  placeholder="Enter task"
+                  // placeholder="Enter task"
                   value={row.task}
-                  onChange={(e) =>
-                    handleDisplayRowChange(index, "task", e.target.value)
-                  }
+                  readOnly
+                  // onChange={(e) =>
+                  //   handleDisplayRowChange(index, "task", e.target.value)
+                  // }
                 />
               </td>
               <td>
@@ -587,6 +651,16 @@ const EmployeeDailyTimeSheetEntry = () => {
                   />
                 )}
               </td>
+
+              <td>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteRow(row.timesheet_id)}
+                  style={{ color: "red", cursor: "pointer" }}
+                >
+                  Delete
+                </button>
+              </td>
             </tr>
           ))}
 
@@ -596,21 +670,23 @@ const EmployeeDailyTimeSheetEntry = () => {
               <td>
                 <input
                   type="text"
-                  placeholder="Enter project"
+                  // placeholder="Enter project"
                   value={row.project}
-                  onChange={(e) =>
-                    handleNewRowChange(index, "project", e.target.value)
-                  }
+                  readOnly
+                  // onChange={(e) =>
+                  //   handleNewRowChange(index, "project", e.target.value)
+                  // }
                 />
               </td>
               <td>
                 <input
                   type="text"
-                  placeholder="Enter building"
+                  // placeholder="Enter building"
                   value={row.building}
-                  onChange={(e) =>
-                    handleNewRowChange(index, "building", e.target.value)
-                  }
+                  readOnly
+                  // onChange={(e) =>
+                  //   handleNewRowChange(index, "building", e.target.value)
+                  // }
                 />
               </td>
               <td>
@@ -665,6 +741,16 @@ const EmployeeDailyTimeSheetEntry = () => {
                     style={{ backgroundColor: "#f9f9f9", border: "none" }}
                   />
                 )}
+              </td>
+
+              <td>
+                <button
+                  type="button"
+                  // onClick={() => handleDeleteRow(index, "new")}
+                  style={{ color: "red", cursor: "pointer" }}
+                >
+                  Delete
+                </button>
               </td>
             </tr>
           ))}

@@ -61,13 +61,26 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
     fetchCalendar();
   }, []);
 
+  const calculateWorkingDays = (startDate, endDate, nonWorkingDates) => {
+    let count = 0;
+    const current = new Date(startDate);
+
+    while (current <= endDate) {
+      const isHoliday = nonWorkingDates.some(
+        (d) => d.toDateString() === current.toDateString()
+      );
+      if (!isHoliday) count++;
+      current.setDate(current.getDate() + 1);
+    }
+
+    return count;
+  };
+
   useEffect(() => {
     if (formData.startDate && formData.endDate) {
-      const daysDiff =
-        differenceInCalendarDays(
-          new Date(formData.endDate),
-          new Date(formData.startDate)
-        ) + 1;
+      const start = new Date(formData.startDate);
+      const end = new Date(formData.endDate);
+      const daysDiff = differenceInCalendarDays(end, start) + 1;
 
       if (daysDiff === 1) {
         if (formData.leaveDayType === "half") {
@@ -78,13 +91,13 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
           setFormData((prev) => ({ ...prev, duration: "" }));
         }
       } else {
-        if (!loading && !error) {
-          setFormData((prev) => ({
-            ...prev,
-            duration: duration.toString(),
-            leaveDayType: "",
-          }));
-        }
+        const workingDays = calculateWorkingDays(start, end, nonWorkingDates);
+
+        setFormData((prev) => ({
+          ...prev,
+          duration: workingDays.toString(),
+          leaveDayType: "",
+        }));
       }
     } else {
       setFormData((prev) => ({ ...prev, duration: "", leaveDayType: "" }));
@@ -93,9 +106,7 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
     formData.startDate,
     formData.endDate,
     formData.leaveDayType,
-    duration,
-    loading,
-    error,
+    nonWorkingDates,
   ]);
 
   useEffect(() => {
@@ -119,19 +130,19 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
     fetchApprovedCompOffDates();
   }, [formData.leaveType, user]);
 
-  useEffect(() => {
-    if (
-      formData.startDate &&
-      formData.endDate &&
-      format(formData.startDate, "yyyy-MM-dd") !==
-        format(formData.endDate, "yyyy-MM-dd")
-    ) {
-      setFormData((prev) => ({
-        ...prev,
-        duration: duration.toString(),
-      }));
-    }
-  }, [duration]);
+  // useEffect(() => {
+  //   if (
+  //     formData.startDate &&
+  //     formData.endDate &&
+  //     format(formData.startDate, "yyyy-MM-dd") !==
+  //       format(formData.endDate, "yyyy-MM-dd")
+  //   ) {
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       duration: duration.toString(),
+  //     }));
+  //   }
+  // }, [duration]);
 
   const [selectedFiles, setSelectedFiles] = useState([]);
 
@@ -194,22 +205,25 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
     const mappedLeaveType = leaveTypeMap[formData.leaveType] || "others";
 
     const data = new FormData();
-    if (newAttachments.length > 0) {
-      for (const file of newAttachments) {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("employee", user.employee_id);
 
-        const uploadRes = await fetch(`${config.apiBaseURL}/attachments/`, {
-          method: "POST",
-          body: formData,
-        });
+    const addAttachment = async (leave_taken_id) => {
+      if (newAttachments.length > 0) {
+        for (const file of newAttachments) {
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("leavestaken", leave_taken_id);
 
-        if (!uploadRes.ok) {
-          console.error("Failed to upload file:", file.name);
+          const uploadRes = await fetch(`${config.apiBaseURL}/attachments/`, {
+            method: "POST",
+            body: formData,
+          });
+
+          if (!uploadRes.ok) {
+            console.error("Failed to upload file:", file.name);
+          }
         }
+        setNewAttachments([]);
       }
-      setNewAttachments([]);
 
       // Refresh the list after all uploads
       // const attachResponse = await fetch(
@@ -218,7 +232,7 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
       // const attachData = await attachResponse.json();
       // setAttachments(attachData);
       // setNewAttachments([]);
-    }
+    };
     data.append("leave_type", mappedLeaveType);
     data.append("start_date", format(formData.startDate, "yyyy-MM-dd"));
     data.append("end_date", format(formData.endDate, "yyyy-MM-dd"));
@@ -248,8 +262,10 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
       if (response.ok) {
         const result = await response.json();
         console.log("Leave submitted successfully:", result);
+        console.log("Leave taken id:", result.data.leave_taken_id);
         alert("Leave Request Submitted Successfully!");
         await patchLeaveAvailability(mappedLeaveType, formData.duration);
+        await addAttachment(result.data.leave_taken_id);
 
         onClose(); // Close form after successful submission
       } else {
@@ -266,19 +282,23 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
   const patchLeaveAvailability = async (leaveTypeKey, duration) => {
     const patchURL = `${config.apiBaseURL}/leaves-available/by_employee/${user.employee_id}/`;
 
-    const payload = {
-      [leaveTypeKey]: -parseFloat(duration), // Deduct the requested duration
-    };
-
     try {
-      const res = await fetch(patchURL, {
+      // Step 1: Fetch current available leave
+      const res = await fetch(patchURL);
+      const currentData = await res.json();
+
+      const currentLeave = parseFloat(currentData[leaveTypeKey] || 0);
+      const newLeaveBalance = currentLeave - parseFloat(duration);
+
+      // Step 2: Patch with updated value
+      const patchRes = await fetch(patchURL, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ [leaveTypeKey]: newLeaveBalance }),
       });
 
-      if (!res.ok) {
-        const err = await res.json();
+      if (!patchRes.ok) {
+        const err = await patchRes.json();
         console.error("Leave availability update failed:", err);
       }
     } catch (err) {
