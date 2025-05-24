@@ -29,6 +29,15 @@ const useWorkingDays = (startDate, endDate) => {
     fetchCalendar();
   }, []);
 
+  function* dateRange(start, end) {
+    let curr = new Date(start);
+    while (curr <= end) {
+      yield new Date(curr); // yield a copy to avoid mutation issues
+      console.log(curr);
+      curr.setDate(curr.getDate() + 1);
+    }
+  }
+
   useEffect(() => {
     if (!startDate || !endDate || !calendarData.length) return;
 
@@ -36,8 +45,9 @@ const useWorkingDays = (startDate, endDate) => {
     const end = new Date(endDate);
     let count = 0;
 
-    for (let dt = new Date(start); dt <= end; dt.setDate(dt.getDate() + 1)) {
+    for (const dt of dateRange(start, end)) {
       const dateStr = dt.toISOString().split("T")[0];
+      console.log("date string", dateStr);
       const cal = calendarData.find((c) => c.date === dateStr);
       if (cal && !cal.is_weekend && !cal.is_holiday) {
         count++;

@@ -64,6 +64,9 @@ const EditEmployee = () => {
     previous_months: "",
   });
 
+  const eighteenYearsAgo = new Date();
+  eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
+
   const { formData, setFormData, errors, setErrors, handleChange } =
     useEmployeeFormHandler(defaultEmployeeFormData);
 
@@ -215,6 +218,21 @@ const EditEmployee = () => {
     ];
 
     const cleanedData = cleanFormData(formData, fieldsToNullify);
+
+    if (!cleanedData.employee_email) {
+      alert("Please enter employee email");
+      return;
+    }
+
+    if (!cleanedData.employee_code) {
+      alert("Please enter employee code");
+      return;
+    }
+
+    if (!cleanedData.employee_name) {
+      alert("Please enter employee name");
+      return;
+    }
 
     try {
       const response = await fetch(
@@ -543,6 +561,7 @@ const EditEmployee = () => {
                     showMonthDropdown
                     showYearDropdown
                     dropdownMode="select"
+                    maxDate={eighteenYearsAgo}
                   />
                   <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
                 </div>
@@ -915,13 +934,19 @@ const EditEmployee = () => {
             <div className="individual-tabs">
               <label>Year of Passing</label>
               {editMode ? (
-                <input
-                  type="number"
+                <select
                   name="year_of_passing"
                   value={formData.year_of_passing}
                   onChange={handleChange}
                   placeholder="Year of Passing"
-                />
+                >
+                  <option value="">Year of Passing</option>
+                  {[...Array(150).keys()].map((year) => (
+                    <option key={year + 1940} value={year + 1940}>
+                      {year + 1940}
+                    </option>
+                  ))}
+                </select>
               ) : (
                 <div className="uneditable">
                   {formData.year_of_passing || "-"}

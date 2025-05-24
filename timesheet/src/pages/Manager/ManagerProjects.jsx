@@ -299,14 +299,14 @@ const ManagerProjects = () => {
                   className="search-bar"
                 />
               </div>
-              <div>
+              {/* <div>
                 <button
                   className="add-user-btn"
                   onClick={handleAddBuildingClick}
                 >
                   Create Sub-Division
                 </button>
-              </div>
+              </div> */}
             </div>
 
             <div

@@ -263,6 +263,7 @@ const TeamLeadProjects = () => {
       );
       const data = await response.json();
       setProjects(data);
+      setFilteredProjects(data);
     } catch (err) {
       console.log("Unable to fetch projects", err);
     }
@@ -273,6 +274,7 @@ const TeamLeadProjects = () => {
       const response = await fetch(`${config.apiBaseURL}/buildings/`);
       const data = await response.json();
       setBuildings(data);
+      setFilteredBuildings(data);
     } catch (err) {
       console.log("Unable to fetch buildings", err);
     }
@@ -523,14 +525,14 @@ const TeamLeadProjects = () => {
                   className="search-bar"
                 />
               </div>
-              <div>
+              {/* <div>
                 <button
                   className="add-user-btn"
                   onClick={handleAddBuildingClick}
                 >
                   Create Sub-Division
                 </button>
-              </div>
+              </div> */}
             </div>
             <div
               className="table-wrapper"

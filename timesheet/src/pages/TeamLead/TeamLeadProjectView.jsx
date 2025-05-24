@@ -448,24 +448,30 @@ const TeamLeadProjectView = () => {
           <div className="left-form">
             <div className="left-form-first">
               <div className="project-form-group">
-                <label>Project Code</label>
+                <label>
+                  Project Code <span className="required-star">*</span>
+                </label>
                 {editMode ? (
                   <input
                     name="project_title"
                     value={formData.project_code || ""}
                     onChange={handleChange}
+                    required
                   />
                 ) : (
                   <p className="view-data">{projectData.project_code}</p>
                 )}
               </div>
               <div className="project-form-group">
-                <label>Project Title</label>
+                <label>
+                  Project Title <span className="required-star">*</span>
+                </label>
                 {editMode ? (
                   <input
                     name="project_type"
                     value={formData.project_title}
                     onChange={handleChange}
+                    required
                   />
                 ) : (
                   <p className="view-data">{projectData.project_title}</p>
@@ -996,6 +1002,7 @@ const TeamLeadProjectView = () => {
                 <label>Estd. Hours</label>
                 {editMode ? (
                   <input
+                    type="number"
                     name="estimated_hours"
                     value={formData.estimated_hours}
                     onChange={handleChange}

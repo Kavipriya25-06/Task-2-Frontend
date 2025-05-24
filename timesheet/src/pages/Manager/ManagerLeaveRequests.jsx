@@ -6,6 +6,7 @@ import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
+import { useAttachmentManager } from "../../constants/useAttachmentManager";
 
 const ManagerLeaveRequests = () => {
   const { user } = useAuth();
@@ -23,6 +24,7 @@ const ManagerLeaveRequests = () => {
     indexOfLastRow
   );
   const totalPages = Math.ceil(filteredLeaveRequests.length / rowsPerPage);
+  const { attachments, setAttachments } = useAttachmentManager([]);
 
   useEffect(() => {
     fetchLeaveRequests();
@@ -39,6 +41,7 @@ const ManagerLeaveRequests = () => {
       );
       const data = await response.json();
       setLeaveRequests(data);
+      console.log("Leave requests", data);
     } catch (err) {
       console.log("Unable to fetch leave requests", err);
     }
@@ -164,7 +167,17 @@ const ManagerLeaveRequests = () => {
                       ? format(new Date(leave.end_date), "dd-MMM-yyyy")
                       : ""}
                   </td>
-                  <td>{leave.leave_type}</td>
+                  <td>
+                    {leave.leave_type === "earned_leave"
+                      ? "Earned Leave"
+                      : leave.leave_type === "comp_off"
+                      ? "Comp Off"
+                      : leave.leave_type === "casual_leave"
+                      ? "Casual Leave"
+                      : leave.leave_type === "sick_leave"
+                      ? "Sick Leave"
+                      : ""}
+                  </td>
                   <td>{leave.reason}</td>
                   {activeTab === 0 && (
                     <td>
@@ -182,7 +195,36 @@ const ManagerLeaveRequests = () => {
                       />
                     </td>
                   )}
-                  <td>No attachments</td>
+                  <td>
+                    <ul className="attachments-list">
+                      {/* Existing attachments */}
+                      {leave.attachments && leave.attachments.length > 0 ? (
+                        leave.attachments?.map((file) => {
+                          const fullFilename = file.file.split("/").pop();
+                          const match = fullFilename.match(
+                            /^(.+?)_[a-zA-Z0-9]+\.(\w+)$/
+                          );
+                          const filename = match
+                            ? `${match[1]}.${match[2]}`
+                            : fullFilename;
+
+                          return (
+                            <li key={file.id} className="attachment-item">
+                              <a
+                                href={config.apiBaseURL + file.file}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {filename}
+                              </a>
+                            </li>
+                          );
+                        })
+                      ) : (
+                        <li className="no-attachment">No attachments</li>
+                      )}
+                    </ul>
+                  </td>
                 </tr>
               ))}
             </tbody>

@@ -58,6 +58,7 @@
 .leavebutton {
   height: 20px;
   padding-right: 10px;
+  cursor: pointer;
 }
 
 .logo-c {

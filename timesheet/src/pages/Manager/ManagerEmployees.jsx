@@ -87,7 +87,7 @@ const ManagerEmployees = () => {
               <tr>
                 <th>Employee Code</th>
                 <th>Employee Name</th>
-                <th>Role</th>
+                <th>Designation</th>
                 <th>Reporting To</th>
               </tr>
             </thead>

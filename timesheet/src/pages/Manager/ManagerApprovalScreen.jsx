@@ -4,7 +4,7 @@ import config from "../../config";
 
 const ManagerApprovalScreen = () => {
   const { date, employee_id } = useParams();
-  const [assignCompOff, setAssignCompOff] = useState(false);
+  // const [assignCompOff, setAssignCompOff] = useState(false);
   const [rows, setRows] = useState([]);
   const [attendanceDetails, setAttendanceDetails] = useState({
     in_time: "--:--",
@@ -188,22 +188,22 @@ const ManagerApprovalScreen = () => {
       }
 
       // Update comp-off if approved
-      if (assignCompOff && newApproved) {
-        const compOffValue = attendanceDetails.leave_deduction || 0;
-        const leaveResponse = await fetch(
-          `${config.apiBaseURL}/leaves-available/by_employee/${employee_id}/`
-        );
-        const leaveData = await leaveResponse.json();
-        const leave_id = leaveData.leave_avail_id;
+      // if (assignCompOff && newApproved) {
+      //   const compOffValue = attendanceDetails.leave_deduction || 0;
+      //   const leaveResponse = await fetch(
+      //     `${config.apiBaseURL}/leaves-available/by_employee/${employee_id}/`
+      //   );
+      //   const leaveData = await leaveResponse.json();
+      //   const leave_id = leaveData.leave_avail_id;
 
-        await fetch(`${config.apiBaseURL}/leaves-available/${leave_id}/`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            comp_off: parseFloat(leaveData.comp_off || 0) + compOffValue,
-          }),
-        });
-      }
+      //   await fetch(`${config.apiBaseURL}/leaves-available/${leave_id}/`, {
+      //     method: "PATCH",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify({
+      //       comp_off: parseFloat(leaveData.comp_off || 0) + compOffValue,
+      //     }),
+      //   });
+      // }
 
       setStatus({
         approved: newApproved,
@@ -271,7 +271,7 @@ const ManagerApprovalScreen = () => {
           <br />
           {attendanceDetails.total_duration || "0.00"} hrs
         </p>
-        {attendanceDetails.comp_off && (
+        {/* {attendanceDetails.comp_off && (
           <div>
             <button
               onClick={() => setAssignCompOff(!assignCompOff)}
@@ -282,7 +282,7 @@ const ManagerApprovalScreen = () => {
               {assignCompOff ? "Comp-Off Granted" : "Grant Comp-Off"}
             </button>
           </div>
-        )}
+        )} */}
       </div>
 
       {/* {attendanceDetails.comp_off && (

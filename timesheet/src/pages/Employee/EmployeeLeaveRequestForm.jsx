@@ -234,6 +234,11 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
     data.append("employee", user.employee_id); // Assuming employee_id like "EMP_00068"
     data.append("status", "pending"); // Default status when submitted
 
+    if (mappedLeaveType === "comp_off" && !formData.compOffDate) {
+      alert("Enter a Date for Comp off");
+      return;
+    }
+
     try {
       const response = await fetch(apiURL, {
         method: "POST",
@@ -352,6 +357,7 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
                 className="date1"
                 showMonthDropdown
                 showYearDropdown
+                excludeDates={nonWorkingDates}
                 dropdownMode="select"
               />
               <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
@@ -444,6 +450,7 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
                 showMonthDropdown
                 showYearDropdown
                 dropdownMode="select"
+                excludeDates={nonWorkingDates}
                 minDate={
                   formData.endDate
                     ? new Date(formData.endDate.getTime() + 86400000)

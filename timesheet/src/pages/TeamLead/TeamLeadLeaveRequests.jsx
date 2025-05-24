@@ -142,7 +142,17 @@ const TeamLeadLeaveRequests = () => {
               <tbody>
                 {currentLeaveRequests.map((request, idx) => (
                   <tr key={idx}>
-                    <td>{request.leave_type}</td>
+                    <td>
+                      {request.leave_type === "earned_leave"
+                        ? "Earned Leave"
+                        : request.leave_type === "comp_off"
+                        ? "Comp Off"
+                        : request.leave_type === "casual_leave"
+                        ? "Casual Leave"
+                        : request.leave_type === "sick_leave"
+                        ? "Sick Leave"
+                        : ""}
+                    </td>
                     <td>{request.duration}</td>
                     <td>
                       {request.start_date

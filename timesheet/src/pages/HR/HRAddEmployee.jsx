@@ -133,6 +133,21 @@ const AddEmployee = () => {
       }
     });
 
+    if (!cleanedData.employee_email) {
+      alert("Please enter employee email");
+      return;
+    }
+
+    if (!cleanedData.employee_code) {
+      alert("Please enter employee code");
+      return;
+    }
+
+    if (!cleanedData.employee_name) {
+      alert("Please enter employee name");
+      return;
+    }
+
     try {
       // Step 1: Create employee
       const response = await fetch(`${config.apiBaseURL}/employees/`, {
@@ -683,13 +698,19 @@ const AddEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>Year of Passing</label>
-              <input
-                type="number"
+              <select
                 name="year_of_passing"
                 value={formData.year_of_passing}
                 onChange={handleChange}
                 placeholder="Year of Passing"
-              />
+              >
+                <option value="">Year of Passing</option>
+                {[...Array(150).keys()].map((year) => (
+                  <option key={year + 1940} value={year + 1940}>
+                    {year + 1940}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="individual-tabs">
               <label>Previous Company Name</label>
@@ -862,7 +883,11 @@ const AddEmployee = () => {
                 value={formData.ifsc_code}
                 onChange={handleChange}
                 placeholder="IFSC Code"
+                className={errors.ifsc_code ? "input-error" : ""}
               />
+              {errors.ifsc_code && (
+                <span className="error-message">{errors.ifsc_code}</span>
+              )}
             </div>
             <div className="individual-tabs">
               <label>Bank Name</label>

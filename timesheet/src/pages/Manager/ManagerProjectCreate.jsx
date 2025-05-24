@@ -269,19 +269,25 @@ const ManagerProjectCreate = () => {
           <div className="left-form">
             <div className="left-form-first">
               <div className="project-form-group">
-                <label>Project Code</label>
+                <label>
+                  Project Code <span className="required-star">*</span>
+                </label>
                 <input
                   name="project_code"
                   value={formData.project_code}
                   onChange={handleChange}
+                  required
                 />
               </div>
               <div className="project-form-group">
-                <label>Project Title</label>
+                <label>
+                  Project Title <span className="required-star">*</span>
+                </label>
                 <input
                   name="project_title"
                   value={formData.project_title}
                   onChange={handleChange}
+                  required
                 />
               </div>
               <div className="project-form-group">
@@ -336,7 +342,7 @@ const ManagerProjectCreate = () => {
                       key={employee.employee_id}
                       className="employee-checkbox"
                     >
-                      {employee.employee_name} - {employee.designation}
+                      {employee.employee_name} - {employee.user_details[0].role}
                       <input
                         type="checkbox"
                         className="create-checkbox"
@@ -539,6 +545,7 @@ const ManagerProjectCreate = () => {
               <div className="project-form-group-small">
                 <label>Estd. Hours</label>
                 <input
+                  type="number"
                   name="estimated_hours"
                   value={formData.estimated_hours}
                   onChange={handleChange}
