@@ -5,6 +5,8 @@ import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate, useParams } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 
 const TeamLeadBuildingView = () => {
@@ -478,15 +480,17 @@ const TeamLeadBuildingView = () => {
                 </div>
               );
             })}
-            <button onClick={saveTaskPopup} className="btn-save">
-              Done
-            </button>
-            <button
-              onClick={() => setTaskPopupVisible(false)}
-              className="btn-cancel"
-            >
-              Cancel
-            </button>
+            <div className="popup-footer">
+              <button onClick={saveTaskPopup} className="btn-save">
+                Done
+              </button>
+              <button
+                onClick={() => setTaskPopupVisible(false)}
+                className="btn-cancel"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         )}
       </div>

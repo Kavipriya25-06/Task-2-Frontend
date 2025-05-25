@@ -57,3 +57,17 @@
   width: 128px;
   height: 128px;
 }
+
+.popup-footer {
+  position: sticky;
+  bottom: 0;
+  border-radius: 12px;
+  /* background: white; */
+  background-color: rgba(209, 209, 209, 0.4);
+  padding: 10px 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  border-top: 1px solid #ddd;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+}

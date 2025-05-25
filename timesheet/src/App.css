@@ -61,6 +61,37 @@
   cursor: pointer;
 }
 
+.infoicon {
+  height: 20px;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  /* border-bottom: 1px dotted black; */ /* If you want dots under the hoverable text */
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  /* top: -5px;
+  right: 105%; */
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
 .logo-c {
   width: 200px;
   height: 100px;
@@ -2350,6 +2381,9 @@ h3 {
   line-height: 1.4;
   color: #333;
   box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .attendance-tile strong {

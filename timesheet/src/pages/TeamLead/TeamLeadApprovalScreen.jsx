@@ -344,6 +344,8 @@ const TeamLeadApprovalScreen = () => {
           <button className="save-button2" onClick={handleReject}>
             Rejected
           </button>
+        ) : rows.length === 0 ? (
+          <div></div>
         ) : (
           <>
             <button className="submit-button2" onClick={handleApprove}>

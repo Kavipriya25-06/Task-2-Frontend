@@ -478,15 +478,17 @@ const ManagerBuildingView = () => {
                 </div>
               );
             })}
-            <button onClick={saveTaskPopup} className="btn-save">
-              Done
-            </button>
-            <button
-              onClick={() => setTaskPopupVisible(false)}
-              className="btn-cancel"
-            >
-              Cancel
-            </button>
+            <div className="popup-footer">
+              <button onClick={saveTaskPopup} className="btn-save">
+                Done
+              </button>
+              <button
+                onClick={() => setTaskPopupVisible(false)}
+                className="btn-cancel"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         )}
       </div>

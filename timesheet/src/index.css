@@ -525,12 +525,21 @@
 /* Color border only, keep background same */
 .attendance-tile.status-approved {
   border: 2px solid #28a745; /* Green */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .attendance-tile.status-rejected {
   border: 2px solid #dc3545; /* Red */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .attendance-tile.status-pending {
   border: 2px solid #ffc107; /* Yellow */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }

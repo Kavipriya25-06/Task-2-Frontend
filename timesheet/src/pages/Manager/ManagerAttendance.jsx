@@ -223,13 +223,24 @@ const ManagerAttendance = () => {
                           })()}`}
                         >
                           <div>
-                            {attendance.in_time.slice(0, 5)} -{" "}
-                            {attendance.out_time.slice(0, 5)}
+                            <div>
+                              {attendance.in_time.slice(0, 5)} -{" "}
+                              {attendance.out_time.slice(0, 5)}
+                            </div>
+                            <div>
+                              <strong>Total:</strong>{" "}
+                              {attendance.total_duration} hrs
+                            </div>
                           </div>
-                          <div>
-                            <strong>Total:</strong> {attendance.total_duration}{" "}
-                            hrs
-                          </div>
+                          {attendance.modified_by && (
+                            <div>
+                              <img
+                                src="\src\assets\info.png"
+                                alt="info button"
+                                className="infoicon"
+                              />
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <div className="attendance-tile no-data">-</div>
