@@ -42,7 +42,7 @@ const EmployeeWeeklyTimeSheetEntry = () => {
   console.log("the date is ", date);
 
   const [rows, setRows] = useState([
-    { project: "", building: "", task: "", hours: "" },
+    { date: "", project: "", building: "", task: "", hours: "" },
   ]);
   const [totalLoggedHours, setTotalLoggedHours] = useState(0);
 

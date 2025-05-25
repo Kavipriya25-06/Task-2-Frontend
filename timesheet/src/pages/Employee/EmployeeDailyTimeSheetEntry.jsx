@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthContext";
 import { FaEdit } from "react-icons/fa";
 import config from "../../config";
-import Breadcrumbs from "../../components/Breadcrumbs";
 
 const EmployeeDailyTimeSheetEntry = () => {
   const { date } = useParams(); // Format: YYYY-MM-DD
@@ -43,76 +42,56 @@ const EmployeeDailyTimeSheetEntry = () => {
     return `${hrs} hrs ${mins} mins`;
   };
 
-  //  Fetch biometric-daily-task data
-  useEffect(() => {
-    const fetchBiometricTaskData = async () => {
-      try {
-        const response = await fetch(
-          `${config.apiBaseURL}/biometric-daily-task/${employee_id}/?today=${date}`
-        );
-        const data = await response.json();
-        console.log("Biometric task data:", data);
+  const fetchBiometricTaskData = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/biometric-daily-task/${employee_id}/?today=${date}`
+      );
+      const data = await response.json();
+      // console.log("Biometric task data:", data);
 
-        if (data && data.length > 0) {
-          // Step 1: Pick the latest modified_on record
-          let latestRecord = data[0];
-          data.forEach((record) => {
-            if (
-              new Date(record.modified_on) > new Date(latestRecord.modified_on)
-            ) {
-              latestRecord = record;
-            }
-          });
-
-          // Step 2: Set In-time, Out-time, Total Hours
-          setAttendanceDetails({
-            in_time: latestRecord.in_time || "--:--",
-            out_time: latestRecord.out_time || "--:--",
-            total_duration: latestRecord.total_duration || "0.00",
-          });
-
-          // Step 3: Build Timesheet Rows
-          let timesheetRows = [];
-          if (latestRecord.timesheets && latestRecord.timesheets.length > 0) {
-            let fetchedRows = latestRecord.timesheets.map((ts) => ({
-              timesheet_id: ts.timesheet_id, // VERY IMPORTANT: keep the ID for PATCHing
-              project:
-                ts.task_assign?.building_assign?.project_assign?.project
-                  ?.project_title || "",
-              building:
-                ts.task_assign?.building_assign?.building?.building_title || "",
-              task: ts.task_assign?.task?.task_title || "",
-              hours: parseFloat(ts.task_hours || "0").toString(),
-              start_time: ts.start_time || "",
-              end_time: ts.end_time || "",
-            }));
-
-            setDisplayRows(fetchedRows);
-          } else {
-            setDisplayRows([]); // No fetched rows
+      if (data && data.length > 0) {
+        // Step 1: Pick the latest modified_on record
+        let latestRecord = data[0];
+        data.forEach((record) => {
+          if (
+            new Date(record.modified_on) > new Date(latestRecord.modified_on)
+          ) {
+            latestRecord = record;
           }
+        });
 
-          setRows(timesheetRows);
+        // Step 2: Set In-time, Out-time, Total Hours
+        setAttendanceDetails({
+          in_time: latestRecord.in_time || "--:--",
+          out_time: latestRecord.out_time || "--:--",
+          total_duration: latestRecord.total_duration || "0.00",
+        });
+
+        // Step 3: Build Timesheet Rows
+        let timesheetRows = [];
+        if (latestRecord.timesheets && latestRecord.timesheets.length > 0) {
+          let fetchedRows = latestRecord.timesheets.map((ts) => ({
+            timesheet_id: ts.timesheet_id, // VERY IMPORTANT: keep the ID for PATCHing
+            project:
+              ts.task_assign?.building_assign?.project_assign?.project
+                ?.project_title || "",
+            building:
+              ts.task_assign?.building_assign?.building?.building_title || "",
+            task: ts.task_assign?.task?.task_title || "",
+            hours: parseFloat(ts.task_hours || "0").toString(),
+            start_time: ts.start_time || "",
+            end_time: ts.end_time || "",
+          }));
+
+          setDisplayRows(fetchedRows);
         } else {
-          console.warn("No biometric data found for this date.");
-          setRows([
-            {
-              project: "",
-              building: "",
-              task: "",
-              hours: "",
-              start_time: "",
-              end_time: "",
-            },
-          ]);
-          setAttendanceDetails({
-            in_time: "--:--",
-            out_time: "--:--",
-            total_duration: "0.00",
-          });
+          setDisplayRows([]); // No fetched rows
         }
-      } catch (error) {
-        console.error("Failed to fetch biometric task data:", error);
+
+        setRows(timesheetRows);
+      } else {
+        console.warn("No biometric data found for this date.");
         setRows([
           {
             project: "",
@@ -129,8 +108,27 @@ const EmployeeDailyTimeSheetEntry = () => {
           total_duration: "0.00",
         });
       }
-    };
-
+    } catch (error) {
+      console.error("Failed to fetch biometric task data:", error);
+      setRows([
+        {
+          project: "",
+          building: "",
+          task: "",
+          hours: "",
+          start_time: "",
+          end_time: "",
+        },
+      ]);
+      setAttendanceDetails({
+        in_time: "--:--",
+        out_time: "--:--",
+        total_duration: "0.00",
+      });
+    }
+  };
+  //  Fetch biometric-daily-task data
+  useEffect(() => {
     fetchBiometricTaskData();
   }, [employee_id, date]);
 
@@ -147,7 +145,7 @@ const EmployeeDailyTimeSheetEntry = () => {
           task_title: item.task?.task_title || "",
           project_title:
             item.building_assign?.project_assign?.project?.project_title || "",
-          building_title: item.building_assign.building?.building_title || "",
+          building_title: item.building_assign?.building?.building_title || "",
         }));
 
         setTaskOptions(formatted);
@@ -187,6 +185,7 @@ const EmployeeDailyTimeSheetEntry = () => {
     }
 
     setDisplayRows(updated);
+    // console.log("display rows", updated);
 
     // Track edited rows for PATCH
     if (!updatedRows.includes(updated[index])) {
@@ -229,6 +228,7 @@ const EmployeeDailyTimeSheetEntry = () => {
     }
 
     setNewRows(updated);
+    // console.log("new rows", updated);
   };
 
   // Row change handler
@@ -305,7 +305,8 @@ const EmployeeDailyTimeSheetEntry = () => {
   const handleSubmit = async () => {
     try {
       // ---------------- PATCH updated existing rows ----------------
-      for (let row of updatedRows) {
+      for (let row of displayRows) {
+        // console.log("Display rows", row);
         const { start_time, end_time } = validateTimes(row);
         const payload = {
           employee: employee_id,
@@ -316,6 +317,7 @@ const EmployeeDailyTimeSheetEntry = () => {
           task_hours: parseFloat(row.hours || 0),
           start_time,
           end_time,
+          submitted: true,
         };
 
         const response = await fetch(
@@ -337,6 +339,7 @@ const EmployeeDailyTimeSheetEntry = () => {
 
       // ---------------- POST new rows ----------------
       for (let row of newRows) {
+        // console.log("new rows", row);
         const { start_time, end_time } = validateTimes(row);
         const payload = {
           employee: employee_id,
@@ -366,6 +369,7 @@ const EmployeeDailyTimeSheetEntry = () => {
 
       alert("All timesheet rows saved successfully!");
       // Optionally refresh data here
+      fetchBiometricTaskData();
     } catch (error) {
       console.error("Submission failed:", error);
       alert(error);
@@ -389,53 +393,12 @@ const EmployeeDailyTimeSheetEntry = () => {
       return;
     }
     fetchBiometricTaskData();
-    // if (type === "existing") {
-    //   const rowToDelete = displayRows[index];
-    //   if (!rowToDelete.timesheet_id) {
-    //     // No timesheet_id - treat as unsaved row, just remove locally
-    //     setDisplayRows((prev) => prev.filter((_, i) => i !== index));
-    //     setUpdatedRows((prev) =>
-    //       prev.filter((row) => row.timesheet_id !== rowToDelete.timesheet_id)
-    //     );
-    //     return;
-    //   }
-
-    //   // Confirm deletion
-    //   if (!window.confirm(`Delete task "${rowToDelete.task}"?`)) return;
-
-    //   try {
-    //     const response = await fetch(
-    //       `${config.apiBaseURL}/timesheet/${rowToDelete.timesheet_id}/`,
-    //       {
-    //         method: "DELETE",
-    //       }
-    //     );
-
-    //     if (response.ok) {
-    //       // Remove from displayRows and updatedRows
-    //       setDisplayRows((prev) => prev.filter((_, i) => i !== index));
-    //       setUpdatedRows((prev) =>
-    //         prev.filter((row) => row.timesheet_id !== rowToDelete.timesheet_id)
-    //       );
-    //     } else {
-    //       const errorData = await response.json();
-    //       console.error("Failed to delete row:", errorData);
-    //       alert(`Failed to delete task "${rowToDelete.task}".`);
-    //     }
-    //   } catch (error) {
-    //     console.error("Error deleting row:", error);
-    //     alert("An error occurred while deleting the task.");
-    //   }
-    // } else if (type === "new") {
-    //   // Just remove from newRows state (no API call)
-    //   setNewRows((prev) => prev.filter((_, i) => i !== index));
-    // }
   };
 
   const handleSave = async () => {
     try {
       // ---------------- PATCH updated existing rows ----------------
-      for (let row of updatedRows) {
+      for (let row of displayRows) {
         const { start_time, end_time } = validateTimes(row);
         const payload = {
           employee: employee_id,
@@ -477,7 +440,6 @@ const EmployeeDailyTimeSheetEntry = () => {
           task_hours: parseFloat(row.hours || 0),
           start_time,
           end_time,
-          submitted: false,
         };
 
         const response = await fetch(`${config.apiBaseURL}/timesheet/`, {
@@ -496,6 +458,7 @@ const EmployeeDailyTimeSheetEntry = () => {
 
       alert("All timesheet rows saved successfully!");
       // Optionally refresh data here
+      fetchBiometricTaskData();
     } catch (error) {
       console.error("Submission failed:", error);
       alert(error);
@@ -768,7 +731,11 @@ const EmployeeDailyTimeSheetEntry = () => {
         >
           Save
         </button>
-        <button className="btn-save" onClick={handleSubmit}>
+        <button
+          className="btn-save"
+          onClick={handleSubmit}
+          disabled={totalAssignedHours > maxAllowedHours}
+        >
           Submit
         </button>
       </div>

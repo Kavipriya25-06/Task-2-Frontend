@@ -28,6 +28,7 @@ const Dashboard = () => {
       {/* <h2>Illegal Entry</h2> */}
       <p>You do not have permission to view this page</p>
       <p>Please check your credentials and try again</p>
+      <p></p>
       <h4>Error code: 403 </h4>
       {!user && (
         <button onClick={() => navigate("/login")} className="btn-cancel">

@@ -54,7 +54,11 @@ const ManagerApprovalScreen = () => {
 
           // Step 3: Prepare rows from timesheets
           let timesheetRows = [];
-          if (latestRecord.timesheets && latestRecord.timesheets.length > 0) {
+          if (
+            latestRecord.timesheets &&
+            latestRecord.timesheets.length > 0 &&
+            latestRecord.timesheets[0].submitted === true
+          ) {
             latestRecord.timesheets.forEach((entry) => {
               const project =
                 entry.task_assign?.building_assign?.project_assign?.project
@@ -90,14 +94,14 @@ const ManagerApprovalScreen = () => {
           } else {
             // No timesheets found
             timesheetRows = [
-              {
-                project: "",
-                building: "",
-                task: "",
-                start_time: "",
-                end_time: "",
-                hours: "",
-              },
+              // {
+              //   project: "",
+              //   building: "",
+              //   task: "",
+              //   start_time: "",
+              //   end_time: "",
+              //   hours: "",
+              // },
             ];
             setStatus({
               approved: false,
@@ -116,14 +120,14 @@ const ManagerApprovalScreen = () => {
             leave_deduction: 0,
           });
           setRows([
-            {
-              project: "",
-              building: "",
-              task: "",
-              start_time: "",
-              end_time: "",
-              hours: "",
-            },
+            // {
+            //   project: "",
+            //   building: "",
+            //   task: "",
+            //   start_time: "",
+            //   end_time: "",
+            //   hours: "",
+            // },
           ]);
           setStatus({
             approved: false,
@@ -140,14 +144,14 @@ const ManagerApprovalScreen = () => {
           leave_deduction: 0,
         });
         setRows([
-          {
-            project: "",
-            building: "",
-            task: "",
-            start_time: "",
-            end_time: "",
-            hours: "",
-          },
+          // {
+          //   project: "",
+          //   building: "",
+          //   task: "",
+          //   start_time: "",
+          //   end_time: "",
+          //   hours: "",
+          // },
         ]);
         setStatus({
           approved: false,
@@ -310,16 +314,24 @@ const ManagerApprovalScreen = () => {
           </tr>
         </thead>
         <tbody>
-          {rows.map((row, index) => (
-            <tr key={index}>
-              <td>{row.project}</td>
-              <td>{row.building}</td>
-              <td> {row.task}</td>
-              <td>{row.start_time}</td>
-              <td>{row.end_time}</td>
-              <td>{row.hours}</td>
+          {rows.length === 0 ? (
+            <tr>
+              <td colSpan="6" style={{ textAlign: "center" }}>
+                No Timesheet requests.
+              </td>
             </tr>
-          ))}
+          ) : (
+            rows.map((row, index) => (
+              <tr key={index}>
+                <td>{row.project}</td>
+                <td>{row.building}</td>
+                <td>{row.task}</td>
+                <td>{row.start_time}</td>
+                <td>{row.end_time}</td>
+                <td>{row.hours}</td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
 

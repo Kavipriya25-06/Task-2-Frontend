@@ -4,47 +4,20 @@ import config from "../../config"; // adjust path to your config
 
 const TeamLeadApprovalScreen = () => {
   const { date, employee_id } = useParams();
-
+  // const [assignCompOff, setAssignCompOff] = useState(false);
   const [rows, setRows] = useState([]);
   const [attendanceDetails, setAttendanceDetails] = useState({
     in_time: "--:--",
     out_time: "--:--",
     total_duration: "0.00",
+    comp_off: false,
+    leave_deduction: 0,
   });
 
   const [status, setStatus] = useState({
     approved: false,
     rejected: false,
   });
-
-  // useEffect(() => {
-  //   const fetchTimesheetData = async () => {
-  //     try {
-  //       const response = await fetch(`${config.apiBaseURL}/timesheet-employee-daily/${employee_id}/?today=${date}`);
-  //       const data = await response.json();
-
-  //       // Filter records matching employee_id and date
-  //       // const records = data.filter(
-  //       //   (entry) => entry.employee === employee_id && entry.date === date
-  //       // );
-  //       const records = data
-
-  //       if (records.length > 0) {
-  //         // Extract start_time, end_time, total_duration
-  //         // For total_duration, we'll sum up task_hours
-  //         let totalHours = 0;
-  //         let inTime = records[0].start_time || "--:--";
-  //         let outTime = records[0].end_time || "--:--";
-
-  //         setStatus({
-  //           approved: records[0].approved,
-  //           rejected: records[0].rejected
-  //         });
-
-  //         const timesheetRows = records.map((entry) => {
-  //           const project =
-  //             entry.task_assign?.building_assign?.project_assign?.project
-  //               ?.project_title || "";
 
   useEffect(() => {
     const fetchBiometricTaskData = async () => {
@@ -71,11 +44,21 @@ const TeamLeadApprovalScreen = () => {
             in_time: latestRecord.in_time || "--:--",
             out_time: latestRecord.out_time || "--:--",
             total_duration: latestRecord.total_duration || "0.00",
+            comp_off:
+              latestRecord.calendar?.is_weekend ||
+              latestRecord.calendar?.is_holiday
+                ? true
+                : false,
+            leave_deduction: latestRecord.leave_deduction || 0,
           });
 
           // Step 3: Prepare rows from timesheets
           let timesheetRows = [];
-          if (latestRecord.timesheets && latestRecord.timesheets.length > 0) {
+          if (
+            latestRecord.timesheets &&
+            latestRecord.timesheets.length > 0 &&
+            latestRecord.timesheets[0].submitted === true
+          ) {
             latestRecord.timesheets.forEach((entry) => {
               const project =
                 entry.task_assign?.building_assign?.project_assign?.project
@@ -111,14 +94,14 @@ const TeamLeadApprovalScreen = () => {
           } else {
             // No timesheets found
             timesheetRows = [
-              {
-                project: "",
-                building: "",
-                task: "",
-                start_time: "",
-                end_time: "",
-                hours: "",
-              },
+              // {
+              //   project: "",
+              //   building: "",
+              //   task: "",
+              //   start_time: "",
+              //   end_time: "",
+              //   hours: "",
+              // },
             ];
             setStatus({
               approved: false,
@@ -133,16 +116,18 @@ const TeamLeadApprovalScreen = () => {
             in_time: "--:--",
             out_time: "--:--",
             total_duration: "0.00",
+            comp_off: false,
+            leave_deduction: 0,
           });
           setRows([
-            {
-              project: "",
-              building: "",
-              task: "",
-              start_time: "",
-              end_time: "",
-              hours: "",
-            },
+            // {
+            //   project: "",
+            //   building: "",
+            //   task: "",
+            //   start_time: "",
+            //   end_time: "",
+            //   hours: "",
+            // },
           ]);
           setStatus({
             approved: false,
@@ -155,16 +140,18 @@ const TeamLeadApprovalScreen = () => {
           in_time: "--:--",
           out_time: "--:--",
           total_duration: "0.00",
+          comp_off: false,
+          leave_deduction: 0,
         });
         setRows([
-          {
-            project: "",
-            building: "",
-            task: "",
-            start_time: "",
-            end_time: "",
-            hours: "",
-          },
+          // {
+          //   project: "",
+          //   building: "",
+          //   task: "",
+          //   start_time: "",
+          //   end_time: "",
+          //   hours: "",
+          // },
         ]);
         setStatus({
           approved: false,
@@ -188,61 +175,73 @@ const TeamLeadApprovalScreen = () => {
 
   const handleApprove = async () => {
     try {
+      const newApproved = !status.approved;
+
       for (let row of rows) {
         const timesheetId = row.timesheet_id;
-        const patchData = { approved: true };
+        const patchData = {
+          approved: newApproved,
+          rejected: false, // reset rejected
+        };
 
-        const response = await fetch(
-          `${config.apiBaseURL}/timesheet/${timesheetId}/`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(patchData),
-          }
-        );
-
-        if (!response.ok) {
-          console.error(`Failed to approve timesheet ID ${timesheetId}`);
-        }
+        await fetch(`${config.apiBaseURL}/timesheet/${timesheetId}/`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(patchData),
+        });
       }
 
-      // alert("All rows approved successfully!");
-      setStatus({ approved: true, rejected: false });
+      // Update comp-off if approved
+      // if (assignCompOff && newApproved) {
+      //   const compOffValue = attendanceDetails.leave_deduction || 0;
+      //   const leaveResponse = await fetch(
+      //     `${config.apiBaseURL}/leaves-available/by_employee/${employee_id}/`
+      //   );
+      //   const leaveData = await leaveResponse.json();
+      //   const leave_id = leaveData.leave_avail_id;
+
+      //   await fetch(`${config.apiBaseURL}/leaves-available/${leave_id}/`, {
+      //     method: "PATCH",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify({
+      //       comp_off: parseFloat(leaveData.comp_off || 0) + compOffValue,
+      //     }),
+      //   });
+      // }
+
+      setStatus({
+        approved: newApproved,
+        rejected: false,
+      });
     } catch (err) {
-      console.error("Error approving timesheets", err);
-      alert("Error occurred while approving.");
+      console.error("Error toggling approve", err);
     }
   };
 
   const handleReject = async () => {
     try {
+      const newRejected = !status.rejected;
+
       for (let row of rows) {
         const timesheetId = row.timesheet_id;
-        const patchData = { rejected: true, approved: false }; // optional to reset approved
+        const patchData = {
+          rejected: newRejected,
+          approved: false, // reset approved
+        };
 
-        const response = await fetch(
-          `${config.apiBaseURL}/timesheet/${timesheetId}/`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(patchData),
-          }
-        );
-
-        if (!response.ok) {
-          console.error(`Failed to reject timesheet ID ${timesheetId}`);
-        }
+        await fetch(`${config.apiBaseURL}/timesheet/${timesheetId}/`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(patchData),
+        });
       }
 
-      // alert("All rows rejected successfully!");
-      setStatus({ approved: false, rejected: true });
+      setStatus({
+        approved: false,
+        rejected: newRejected,
+      });
     } catch (err) {
-      console.error("Error rejecting timesheets", err);
-      alert("Error occurred while rejecting.");
+      console.error("Error toggling reject", err);
     }
   };
 
@@ -260,14 +259,13 @@ const TeamLeadApprovalScreen = () => {
           <br />
           {date}
         </p>
-
         <p>
-          {" "}
           <strong>Intime:</strong>
           <br />
           {attendanceDetails.in_time || "--:--"}
         </p>
         <p>
+          {" "}
           <strong>Outtime:</strong>
           <br />
           {attendanceDetails.out_time || "--:--"}
@@ -277,7 +275,32 @@ const TeamLeadApprovalScreen = () => {
           <br />
           {attendanceDetails.total_duration || "0.00"} hrs
         </p>
+        {/* {attendanceDetails.comp_off && (
+          <div>
+            <button
+              onClick={() => setAssignCompOff(!assignCompOff)}
+              className={`comp-off-button ${
+                assignCompOff ? "assigned" : "not-assigned"
+              }`}
+            >
+              {assignCompOff ? "Comp-Off Granted" : "Grant Comp-Off"}
+            </button>
+          </div>
+        )} */}
       </div>
+
+      {/* {attendanceDetails.comp_off && (
+  <div className="comp-off-checkbox-wrapper">
+    <label>
+      <input
+        type="checkbox"
+        checked={assignCompOff}
+        onChange={(e) => setAssignCompOff(e.target.checked)}
+      />{" "}
+      Grant Comp-Off
+    </label>
+  </div>
+)} */}
 
       <table className="timesheet-table">
         <thead>
@@ -291,32 +314,34 @@ const TeamLeadApprovalScreen = () => {
           </tr>
         </thead>
         <tbody>
-          {rows.map((row, index) => (
-            <tr key={index}>
-              <td>{row.project}</td>
-              <td>{row.building}</td>
-              <td> {row.task}</td>
-              <td>{row.start_time}</td>
-              <td>{row.end_time}</td>
-              <td>{row.hours}</td>
+          {rows.length === 0 ? (
+            <tr>
+              <td colSpan="6" style={{ textAlign: "center" }}>
+                No Timesheet requests.
+              </td>
             </tr>
-          ))}
+          ) : (
+            rows.map((row, index) => (
+              <tr key={index}>
+                <td>{row.project}</td>
+                <td>{row.building}</td>
+                <td>{row.task}</td>
+                <td>{row.start_time}</td>
+                <td>{row.end_time}</td>
+                <td>{row.hours}</td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
-      {/* <div
-        style={{ fontSize: "24px", cursor: "pointer", marginTop: "10px" }}
-        onClick={handleAddRow}
-      >
-        +
-      </div> */}
 
       <div className="button-container">
-        {status.approved ? ( //  CHANGE: conditionally render approved button
-          <button className="submit-button2" disabled>
+        {status.approved ? (
+          <button className="submit-button2" onClick={handleApprove}>
             Approved
           </button>
-        ) : status.rejected ? ( //  CHANGE: conditionally render rejected button
-          <button className="save-button2" disabled>
+        ) : status.rejected ? (
+          <button className="save-button2" onClick={handleReject}>
             Rejected
           </button>
         ) : (

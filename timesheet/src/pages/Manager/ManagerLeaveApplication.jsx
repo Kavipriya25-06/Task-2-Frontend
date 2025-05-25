@@ -14,6 +14,15 @@ const ManagerLeaveApplication = () => {
   });
   const [leaveRequests, setLeaveRequests] = useState([]);
   const [selectedLeaveType, setSelectedLeaveType] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 10;
+  const indexOfLastRow = currentPage * rowsPerPage;
+  const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+  const currentLeaveRequests = leaveRequests.slice(
+    indexOfFirstRow,
+    indexOfLastRow
+  );
+  const totalPages = Math.ceil(leaveRequests.length / rowsPerPage);
 
   useEffect(() => {
     fetchLeaveSummary();
@@ -49,6 +58,7 @@ const ManagerLeaveApplication = () => {
         `${config.apiBaseURL}/leaves-taken/by_employee/${user.employee_id}/`
       );
       const data = await response.json();
+      data.sort((a, b) => new Date(b.end_date) - new Date(a.end_date));
       setLeaveRequests(data);
     } catch (err) {
       console.error("Error fetching leave requests", err);
@@ -65,79 +75,143 @@ const ManagerLeaveApplication = () => {
   return (
     <div className="team-lead-container">
       <h2 className="team-lead-title">Leave Application</h2>
-
-      {/* Conditionally Render Form or Summary + Table */}
-      {!selectedLeaveType ? (
-        <>
-          {/* Leave Summary Boxes */}
-          <div className="leave-summary-container">
-            {["Sick", "Casual", "Comp off", "Earned"].map((type, idx) => {
-              const key = keyMap[type];
-              return (
-                <div
-                  key={idx}
-                  className="leave-summary-box"
-                  onClick={() => setSelectedLeaveType(type)} // Set clicked leave type
-                  style={{ cursor: "pointer" }}
-                >
-                  <div>{type}</div>
-                  <div className="leave-summary-count">
-                    {leaveSummary[key] ?? 0}
+      <div>
+        {/* Conditionally Render Form or Summary + Table */}
+        {!selectedLeaveType ? (
+          <>
+            {/* Leave Summary Boxes */}
+            <div className="leave-summary-container">
+              {["Sick", "Casual", "Comp off", "Earned"].map((type, idx) => {
+                const key = keyMap[type];
+                return (
+                  <div
+                    key={idx}
+                    className="leave-summary-box"
+                    onClick={() => setSelectedLeaveType(type)} // Set clicked leave type
+                    style={{ cursor: "pointer" }}
+                  >
+                    <div>{type}</div>
+                    <div className="leave-summary-count">
+                      {leaveSummary[key] ?? 0}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
 
-          <table className="leave-requests-table">
-            <thead>
-              <tr>
-                <th>Type</th>
-                <th>Duration(s)</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Reason(s)</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {leaveRequests.map((request, idx) => (
-                <tr key={idx}>
-                  <td>
-                    {request.leave_type === "earned_leave"
-                      ? "Earned Leave"
-                      : request.leave_type === "comp_off"
-                      ? "Comp Off"
-                      : request.leave_type === "casual_leave"
-                      ? "Casual Leave"
-                      : request.leave_type === "sick_leave"
-                      ? "Sick Leave"
-                      : ""}
-                  </td>
-                  <td>{request.duration}</td>
-                  <td>
-                    {request.start_date
-                      ? format(new Date(request.start_date), "dd-MMM-yyyy")
-                      : ""}
-                  </td>
-                  <td>
-                    {request.end_date
-                      ? format(new Date(request.end_date), "dd-MMM-yyyy")
-                      : ""}
-                  </td>
-                  <td>{request.reason}</td>
-                  <td>{request.status}</td>
+            <table className="leave-requests-table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Duration(s)</th>
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                  <th>Reason(s)</th>
+                  <th>Status</th>
+                  <th>Attachment</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
-      ) : (
-        <ManagerLeaveRequestForm
-          leaveType={selectedLeaveType}
-          onClose={() => setSelectedLeaveType(null)}
-        />
-      )}
+              </thead>
+              <tbody>
+                {currentLeaveRequests.map((request, idx) => (
+                  <tr key={idx}>
+                    <td>
+                      {request.leave_type === "earned_leave"
+                        ? "Earned Leave"
+                        : request.leave_type === "comp_off"
+                        ? "Comp Off"
+                        : request.leave_type === "casual_leave"
+                        ? "Casual Leave"
+                        : request.leave_type === "sick_leave"
+                        ? "Sick Leave"
+                        : ""}
+                    </td>
+                    <td>{request.duration}</td>
+                    <td>
+                      {request.start_date
+                        ? format(new Date(request.start_date), "dd-MMM-yyyy")
+                        : ""}
+                    </td>
+                    <td>
+                      {request.end_date
+                        ? format(new Date(request.end_date), "dd-MMM-yyyy")
+                        : ""}
+                    </td>
+                    <td>{request.reason}</td>
+                    <td>{request.status}</td>
+                    <td>
+                      <ul className="attachments-list">
+                        {/* Existing attachments */}
+                        {request.attachments &&
+                        request.attachments.length > 0 ? (
+                          request.attachments?.map((file) => {
+                            const fullFilename = file.file.split("/").pop();
+                            const match = fullFilename.match(
+                              /^(.+?)_[a-zA-Z0-9]+\.(\w+)$/
+                            );
+                            const filename = match
+                              ? `${match[1]}.${match[2]}`
+                              : fullFilename;
+
+                            return (
+                              <li key={file.id} className="attachment-item">
+                                <a
+                                  href={config.apiBaseURL + file.file}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  {filename}
+                                </a>
+                              </li>
+                            );
+                          })
+                        ) : (
+                          <li className="no-attachment">No attachments</li>
+                        )}
+                      </ul>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        ) : (
+          <ManagerLeaveRequestForm
+            leaveType={selectedLeaveType}
+            onClose={() => {
+              setSelectedLeaveType(null);
+              fetchLeaveRequests();
+              fetchLeaveSummary();
+            }}
+          />
+        )}
+      </div>
+      <div className="pagination-controls">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          <img
+            src="/src/assets/left.png"
+            alt="Previous"
+            style={{ width: 10, height: 12 }}
+          />
+        </button>
+        <span>
+          {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
+          disabled={currentPage === totalPages}
+        >
+          <img
+            src="/src/assets/right.png"
+            alt="Previous"
+            style={{ width: 10, height: 12 }}
+          />
+        </button>
+      </div>
     </div>
   );
 };

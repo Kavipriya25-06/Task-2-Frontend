@@ -41,76 +41,56 @@ const TeamLeadDailyTimeSheetEntry = () => {
     return `${hrs} hrs ${mins} mins`;
   };
 
-  //  Fetch biometric-daily-task data
-  useEffect(() => {
-    const fetchBiometricTaskData = async () => {
-      try {
-        const response = await fetch(
-          `${config.apiBaseURL}/biometric-daily-task/${employee_id}/?today=${date}`
-        );
-        const data = await response.json();
-        console.log("Biometric task data:", data);
+  const fetchBiometricTaskData = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/biometric-daily-task/${employee_id}/?today=${date}`
+      );
+      const data = await response.json();
+      // console.log("Biometric task data:", data);
 
-        if (data && data.length > 0) {
-          // Step 1: Pick the latest modified_on record
-          let latestRecord = data[0];
-          data.forEach((record) => {
-            if (
-              new Date(record.modified_on) > new Date(latestRecord.modified_on)
-            ) {
-              latestRecord = record;
-            }
-          });
-
-          // Step 2: Set In-time, Out-time, Total Hours
-          setAttendanceDetails({
-            in_time: latestRecord.in_time || "--:--",
-            out_time: latestRecord.out_time || "--:--",
-            total_duration: latestRecord.total_duration || "0.00",
-          });
-
-          // Step 3: Build Timesheet Rows
-          let timesheetRows = [];
-          if (latestRecord.timesheets && latestRecord.timesheets.length > 0) {
-            let fetchedRows = latestRecord.timesheets.map((ts) => ({
-              timesheet_id: ts.timesheet_id, // VERY IMPORTANT: keep the ID for PATCHing
-              project:
-                ts.task_assign?.building_assign?.project_assign?.project
-                  ?.project_title || "",
-              building:
-                ts.task_assign?.building_assign?.building?.building_title || "",
-              task: ts.task_assign?.task?.task_title || "",
-              hours: parseFloat(ts.task_hours || "0").toString(),
-              start_time: ts.start_time || "",
-              end_time: ts.end_time || "",
-            }));
-
-            setDisplayRows(fetchedRows);
-          } else {
-            setDisplayRows([]); // No fetched rows
+      if (data && data.length > 0) {
+        // Step 1: Pick the latest modified_on record
+        let latestRecord = data[0];
+        data.forEach((record) => {
+          if (
+            new Date(record.modified_on) > new Date(latestRecord.modified_on)
+          ) {
+            latestRecord = record;
           }
+        });
 
-          setRows(timesheetRows);
+        // Step 2: Set In-time, Out-time, Total Hours
+        setAttendanceDetails({
+          in_time: latestRecord.in_time || "--:--",
+          out_time: latestRecord.out_time || "--:--",
+          total_duration: latestRecord.total_duration || "0.00",
+        });
+
+        // Step 3: Build Timesheet Rows
+        let timesheetRows = [];
+        if (latestRecord.timesheets && latestRecord.timesheets.length > 0) {
+          let fetchedRows = latestRecord.timesheets.map((ts) => ({
+            timesheet_id: ts.timesheet_id, // VERY IMPORTANT: keep the ID for PATCHing
+            project:
+              ts.task_assign?.building_assign?.project_assign?.project
+                ?.project_title || "",
+            building:
+              ts.task_assign?.building_assign?.building?.building_title || "",
+            task: ts.task_assign?.task?.task_title || "",
+            hours: parseFloat(ts.task_hours || "0").toString(),
+            start_time: ts.start_time || "",
+            end_time: ts.end_time || "",
+          }));
+
+          setDisplayRows(fetchedRows);
         } else {
-          console.warn("No biometric data found for this date.");
-          setRows([
-            {
-              project: "",
-              building: "",
-              task: "",
-              hours: "",
-              start_time: "",
-              end_time: "",
-            },
-          ]);
-          setAttendanceDetails({
-            in_time: "--:--",
-            out_time: "--:--",
-            total_duration: "0.00",
-          });
+          setDisplayRows([]); // No fetched rows
         }
-      } catch (error) {
-        console.error("Failed to fetch biometric task data:", error);
+
+        setRows(timesheetRows);
+      } else {
+        console.warn("No biometric data found for this date.");
         setRows([
           {
             project: "",
@@ -127,8 +107,27 @@ const TeamLeadDailyTimeSheetEntry = () => {
           total_duration: "0.00",
         });
       }
-    };
-
+    } catch (error) {
+      console.error("Failed to fetch biometric task data:", error);
+      setRows([
+        {
+          project: "",
+          building: "",
+          task: "",
+          hours: "",
+          start_time: "",
+          end_time: "",
+        },
+      ]);
+      setAttendanceDetails({
+        in_time: "--:--",
+        out_time: "--:--",
+        total_duration: "0.00",
+      });
+    }
+  };
+  //  Fetch biometric-daily-task data
+  useEffect(() => {
     fetchBiometricTaskData();
   }, [employee_id, date]);
 
@@ -145,7 +144,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
           task_title: item.task?.task_title || "",
           project_title:
             item.building_assign?.project_assign?.project?.project_title || "",
-          building_title: item.building_assign.building?.building_title || "",
+          building_title: item.building_assign?.building?.building_title || "",
         }));
 
         setTaskOptions(formatted);
@@ -185,6 +184,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
     }
 
     setDisplayRows(updated);
+    // console.log("display rows", updated);
 
     // Track edited rows for PATCH
     if (!updatedRows.includes(updated[index])) {
@@ -227,6 +227,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
     }
 
     setNewRows(updated);
+    // console.log("new rows", updated);
   };
 
   // Row change handler
@@ -303,7 +304,8 @@ const TeamLeadDailyTimeSheetEntry = () => {
   const handleSubmit = async () => {
     try {
       // ---------------- PATCH updated existing rows ----------------
-      for (let row of updatedRows) {
+      for (let row of displayRows) {
+        // console.log("Display rows", row);
         const { start_time, end_time } = validateTimes(row);
         const payload = {
           employee: employee_id,
@@ -314,6 +316,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
           task_hours: parseFloat(row.hours || 0),
           start_time,
           end_time,
+          submitted: true,
         };
 
         const response = await fetch(
@@ -335,6 +338,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
 
       // ---------------- POST new rows ----------------
       for (let row of newRows) {
+        // console.log("new rows", row);
         const { start_time, end_time } = validateTimes(row);
         const payload = {
           employee: employee_id,
@@ -364,16 +368,36 @@ const TeamLeadDailyTimeSheetEntry = () => {
 
       alert("All timesheet rows saved successfully!");
       // Optionally refresh data here
+      fetchBiometricTaskData();
     } catch (error) {
       console.error("Submission failed:", error);
       alert(error);
     }
   };
 
+  const handleDeleteRow = async (timesheet_id) => {
+    const response = await fetch(
+      `${config.apiBaseURL}/timesheet/${timesheet_id}/`,
+      {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        // body: JSON.stringify(payload),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Failed to PATCH row:", errorData);
+      // alert(`Failed to update task "${timesheet_id}".`);
+      return;
+    }
+    fetchBiometricTaskData();
+  };
+
   const handleSave = async () => {
     try {
       // ---------------- PATCH updated existing rows ----------------
-      for (let row of updatedRows) {
+      for (let row of displayRows) {
         const { start_time, end_time } = validateTimes(row);
         const payload = {
           employee: employee_id,
@@ -415,7 +439,6 @@ const TeamLeadDailyTimeSheetEntry = () => {
           task_hours: parseFloat(row.hours || 0),
           start_time,
           end_time,
-          submitted: false,
         };
 
         const response = await fetch(`${config.apiBaseURL}/timesheet/`, {
@@ -434,6 +457,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
 
       alert("All timesheet rows saved successfully!");
       // Optionally refresh data here
+      fetchBiometricTaskData();
     } catch (error) {
       console.error("Submission failed:", error);
       alert(error);
@@ -513,6 +537,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
             <th>Start Time</th>
             <th>End Time</th>
             <th>Hours</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -522,31 +547,34 @@ const TeamLeadDailyTimeSheetEntry = () => {
               <td>
                 <input
                   type="text"
-                  placeholder="Enter project"
+                  // placeholder="Enter project"
                   value={row.project}
-                  onChange={(e) =>
-                    handleDisplayRowChange(index, "project", e.target.value)
-                  }
+                  readOnly
+                  // onChange={(e) =>
+                  //   handleDisplayRowChange(index, "project", e.target.value)
+                  // }
                 />
               </td>
               <td>
                 <input
                   type="text"
-                  placeholder="Enter building"
+                  // placeholder="Enter building"
                   value={row.building}
-                  onChange={(e) =>
-                    handleDisplayRowChange(index, "building", e.target.value)
-                  }
+                  readOnly
+                  // onChange={(e) =>
+                  //   handleDisplayRowChange(index, "building", e.target.value)
+                  // }
                 />
               </td>
               <td>
                 <input
                   type="text"
-                  placeholder="Enter task"
+                  // placeholder="Enter task"
                   value={row.task}
-                  onChange={(e) =>
-                    handleDisplayRowChange(index, "task", e.target.value)
-                  }
+                  readOnly
+                  // onChange={(e) =>
+                  //   handleDisplayRowChange(index, "task", e.target.value)
+                  // }
                 />
               </td>
               <td>
@@ -585,6 +613,16 @@ const TeamLeadDailyTimeSheetEntry = () => {
                   />
                 )}
               </td>
+
+              <td>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteRow(row.timesheet_id)}
+                  style={{ color: "red", cursor: "pointer" }}
+                >
+                  Delete
+                </button>
+              </td>
             </tr>
           ))}
 
@@ -594,21 +632,23 @@ const TeamLeadDailyTimeSheetEntry = () => {
               <td>
                 <input
                   type="text"
-                  placeholder="Enter project"
+                  // placeholder="Enter project"
                   value={row.project}
-                  onChange={(e) =>
-                    handleNewRowChange(index, "project", e.target.value)
-                  }
+                  readOnly
+                  // onChange={(e) =>
+                  //   handleNewRowChange(index, "project", e.target.value)
+                  // }
                 />
               </td>
               <td>
                 <input
                   type="text"
-                  placeholder="Enter building"
+                  // placeholder="Enter building"
                   value={row.building}
-                  onChange={(e) =>
-                    handleNewRowChange(index, "building", e.target.value)
-                  }
+                  readOnly
+                  // onChange={(e) =>
+                  //   handleNewRowChange(index, "building", e.target.value)
+                  // }
                 />
               </td>
               <td>
@@ -645,6 +685,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
                   }
                 />
               </td>
+
               <td>
                 {row.formattedHours ? (
                   <input
@@ -663,6 +704,16 @@ const TeamLeadDailyTimeSheetEntry = () => {
                   />
                 )}
               </td>
+
+              <td>
+                <button
+                  type="button"
+                  // onClick={() => handleDeleteRow(index, "new")}
+                  style={{ color: "red", cursor: "pointer" }}
+                >
+                  Delete
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -679,7 +730,11 @@ const TeamLeadDailyTimeSheetEntry = () => {
         >
           Save
         </button>
-        <button className="btn-save" onClick={handleSubmit}>
+        <button
+          className="btn-save"
+          onClick={handleSubmit}
+          disabled={totalAssignedHours > maxAllowedHours}
+        >
           Submit
         </button>
       </div>
