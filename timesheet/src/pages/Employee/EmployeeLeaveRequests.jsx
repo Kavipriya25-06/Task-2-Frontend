@@ -10,7 +10,7 @@ import { format } from "date-fns";
 
 const EmployeeLeaveRequests = () => {
   const { user } = useAuth();
-  const [leaveAttachments, setLeaveAttachments] = useState({});
+  // const [leaveAttachments, setLeaveAttachments] = useState({});
 
   const [leaveSummary, setLeaveSummary] = useState({
     sick: 0,
@@ -21,7 +21,7 @@ const EmployeeLeaveRequests = () => {
   const [leaveRequests, setLeaveRequests] = useState([]);
   const [selectedLeaveType, setSelectedLeaveType] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 2;
+  const rowsPerPage = 10;
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentLeaveRequests = leaveRequests.slice(
@@ -68,28 +68,28 @@ const EmployeeLeaveRequests = () => {
       setLeaveRequests(data);
 
       // Fetch attachments per leave_taken_id
-      const attachmentsByLeave = {};
+      // const attachmentsByLeave = {};
 
-      await Promise.all(
-        data.map(async (request) => {
-          const leaveId = request.leave_taken_id; // or request.id if backend returns "id"
-          if (leaveId) {
-            try {
-              const res = await fetch(
-                `${config.apiBaseURL}/attachments/leavestaken/${leaveId}/`
-              );
-              if (res.ok) {
-                const files = await res.json();
-                attachmentsByLeave[leaveId] = files;
-              }
-            } catch (err) {
-              console.error(`Failed to fetch attachment for ${leaveId}`, err);
-            }
-          }
-        })
-      );
+      // await Promise.all(
+      //   data.map(async (request) => {
+      //     const leaveId = request.leave_taken_id; // or request.id if backend returns "id"
+      //     if (leaveId) {
+      //       try {
+      //         const res = await fetch(
+      //           `${config.apiBaseURL}/attachments/leavestaken/${leaveId}/`
+      //         );
+      //         if (res.ok) {
+      //           const files = await res.json();
+      //           attachmentsByLeave[leaveId] = files;
+      //         }
+      //       } catch (err) {
+      //         console.error(`Failed to fetch attachment for ${leaveId}`, err);
+      //       }
+      //     }
+      //   })
+      // );
 
-      setLeaveAttachments(attachmentsByLeave);
+      // setLeaveAttachments(attachmentsByLeave);
     } catch (err) {
       console.error("Error fetching leave requests", err);
     }
@@ -171,23 +171,35 @@ const EmployeeLeaveRequests = () => {
                     <td>{request.reason}</td>
                     <td>{request.status}</td>
                     <td>
-                      {leaveAttachments[request.leave_taken_id]?.length > 0 ? (
-                        leaveAttachments[request.leave_taken_id].map(
-                          (fileObj, i) => (
-                            <a
-                              key={i}
-                              href={`${config.apiBaseURL}${fileObj.file}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              style={{ display: "block" }}
-                            >
-                              View
-                            </a>
-                          )
-                        )
-                      ) : (
-                        <span>No File</span>
-                      )}
+                      <ul className="attachments-list">
+                        {/* Existing attachments */}
+                        {request.attachments &&
+                        request.attachments.length > 0 ? (
+                          request.attachments?.map((file) => {
+                            const fullFilename = file.file.split("/").pop();
+                            const match = fullFilename.match(
+                              /^(.+?)_[a-zA-Z0-9]+\.(\w+)$/
+                            );
+                            const filename = match
+                              ? `${match[1]}.${match[2]}`
+                              : fullFilename;
+
+                            return (
+                              <li key={file.id} className="attachment-item">
+                                <a
+                                  href={config.apiBaseURL + file.file}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  {filename}
+                                </a>
+                              </li>
+                            );
+                          })
+                        ) : (
+                          <li className="no-attachment">No attachments</li>
+                        )}
+                      </ul>
                     </td>
                   </tr>
                 ))}
@@ -197,27 +209,41 @@ const EmployeeLeaveRequests = () => {
         ) : (
           <EmployeeLeaveRequestForm
             leaveType={selectedLeaveType}
-            onClose={() => setSelectedLeaveType(null)} // Go back to boxes + table when closed
+            onClose={() => {
+              setSelectedLeaveType(null);
+              fetchLeaveRequests();
+              fetchLeaveSummary();
+            }} // Go back to boxes + table when closed
           />
         )}
       </div>
-      {/* <div className="pagination-controls">
+      <div className="pagination-controls">
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
         >
-          Previous
+          <img
+            src="/src/assets/left.png"
+            alt="Previous"
+            style={{ width: 10, height: 12 }}
+          />
         </button>
         <span>
           {currentPage} of {totalPages}
         </span>
         <button
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
           disabled={currentPage === totalPages}
         >
-          Next
+          <img
+            src="/src/assets/right.png"
+            alt="Previous"
+            style={{ width: 10, height: 12 }}
+          />
         </button>
-      </div> */}
+      </div>
     </div>
   );
 };
