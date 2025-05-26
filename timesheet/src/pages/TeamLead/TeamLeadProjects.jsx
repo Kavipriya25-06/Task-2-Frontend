@@ -334,14 +334,14 @@ const TeamLeadProjects = () => {
       setHasMoreProjects(filtered.length > 10);
 
       if (searchText && filtered.length === 0) {
-        toast.info("No users found", {
-          className: "custom-toast",
-          bodyClassName: "custom-toast-body",
-          progressClassName: "custom-toast-progress",
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: true,
-        });
+        // toast.info("No users found", {
+        //   className: "custom-toast",
+        //   bodyClassName: "custom-toast-body",
+        //   progressClassName: "custom-toast-progress",
+        //   position: "top-center",
+        //   autoClose: 2000,
+        //   hideProgressBar: true,
+        // });
       }
     }, 500);
 
@@ -365,14 +365,14 @@ const TeamLeadProjects = () => {
       setHasMoreBuildings(filtered.length > 10);
 
       if (searchText && filtered.length === 0) {
-        toast.info("No users found", {
-          className: "custom-toast",
-          bodyClassName: "custom-toast-body",
-          progressClassName: "custom-toast-progress",
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: true,
-        });
+        // toast.info("No users found", {
+        //   className: "custom-toast",
+        //   bodyClassName: "custom-toast-body",
+        //   progressClassName: "custom-toast-progress",
+        //   position: "top-center",
+        //   autoClose: 2000,
+        //   hideProgressBar: true,
+        // });
       }
     }, 500);
 
@@ -401,14 +401,14 @@ const TeamLeadProjects = () => {
       setHasMoreTasks(filtered.length > 10);
 
       if (searchText && filtered.length === 0) {
-        toast.info("No users found", {
-          className: "custom-toast",
-          bodyClassName: "custom-toast-body",
-          progressClassName: "custom-toast-progress",
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: true,
-        });
+        // toast.info("No users found", {
+        //   className: "custom-toast",
+        //   bodyClassName: "custom-toast-body",
+        //   progressClassName: "custom-toast-progress",
+        //   position: "top-center",
+        //   autoClose: 2000,
+        //   hideProgressBar: true,
+        // });
       }
     }, 500);
 

@@ -5,7 +5,14 @@ import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate } from "react-router-dom";
-//
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
+
 const TeamLeadAttendanceAdmin = () => {
   const { user } = useAuth();
   const [attendanceData, setAttendanceData] = useState([]);
@@ -106,12 +113,12 @@ const TeamLeadAttendanceAdmin = () => {
       });
 
       if (response.ok) {
-        alert("Attendance added!");
+        showSuccessToast("Attendance added!");
         setShowAddPopup(false);
         fetchAttendanceAdmin(); // Refresh the list
       } else {
         const data = await response.json();
-        alert("Failed to add attendance: " + data.error);
+        showErrorToast("Failed to add attendance: " + data.error);
       }
     } catch (err) {
       console.error("Error adding attendance:", err);
@@ -397,6 +404,7 @@ const TeamLeadAttendanceAdmin = () => {
           + Add Attendance
         </button>
       </div>
+      <ToastContainerComponent />
     </div>
   );
 };
