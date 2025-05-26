@@ -4,8 +4,15 @@ import config from "../../config";
 import roleOptions from "../../constants/roleOptions";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { FaEdit } from "react-icons/fa";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
+
 // import Breadcrumbs from "../../components/Breadcrumbs";
 
 const EditUserForm = () => {
@@ -82,19 +89,12 @@ const EditUserForm = () => {
       }
 
       console.log("User updated successfully");
-      toast.success("User Updated Successfully", {
-        className: "custom-toast",
-        bodyClassName: "custom-toast-body",
-        progressClassName: "custom-toast-progress",
-        position: "top-center",
-        autoClose: 2000,
-        hideProgressBar: true,
-      });
+      showSuccessToast(employeeID.employee_name+" Updated Successfully");
 
       setEditMode(false);
       // navigate("/admin/detail/users");
     } catch (error) {
-      toast.error(`Failed to edit user: ${error.message}`);
+      showErrorToast(`Failed to edit user: ${error.message}`);
 
       console.error("Error updating user", error);
     }
@@ -278,7 +278,7 @@ const EditUserForm = () => {
           </button>
         </div>
       )}
-      <ToastContainer />
+      <ToastContainerComponent />
     </div>
   );
 };

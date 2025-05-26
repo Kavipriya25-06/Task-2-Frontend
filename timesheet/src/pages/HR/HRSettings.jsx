@@ -4,8 +4,14 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import config from "../../config";
 import EditableTimeField from "../../constants/EditableTimeField";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
 
 const HRSettings = () => {
   const [compOffData, setCompOffData] = useState({
@@ -79,47 +85,19 @@ const HRSettings = () => {
       const fullMax = timeToDecimal(compOffData.full_day.max_hours);
 
       if (halfMin >= halfMax) {
-        toast.error(
-          "For Half Day, Minimum hours should be less than Maximum hours.",
-          {
-            className: "custom-toast",
-            bodyClassName: "custom-toast-body",
-            progressClassName: "custom-toast-progress",
-            position: "top-center",
-            autoClose: 2000,
-            hideProgressBar: true,
-          }
-        );
+        showErrorToast("For Half Day, Minimum hours should be less than Maximum hours.");
         return;
       }
 
       if (fullMin <= halfMax) {
-        toast.error(
-          "Full Day Minimum hours should be greater than Half Day Maximum hours.",
-          {
-            className: "custom-toast",
-            bodyClassName: "custom-toast-body",
-            progressClassName: "custom-toast-progress",
-            position: "top-center",
-            autoClose: 2000,
-            hideProgressBar: true,
-          }
-        );
+        showErrorToast(
+          "Full Day Minimum hours should be greater than Half Day Maximum hours.");
         return;
       }
 
       if (fullMin >= fullMax) {
-        toast.error(
-          "For Full Day, Minimum hours should be less than Maximum hours.",
-          {
-            className: "custom-toast",
-            bodyClassName: "custom-toast-body",
-            progressClassName: "custom-toast-progress",
-            position: "top-center",
-            autoClose: 2000,
-            hideProgressBar: true,
-          }
-        );
+        showErrorToast(
+          "For Full Day, Minimum hours should be less than Maximum hours.");
         return;
       }
 
@@ -160,17 +138,10 @@ const HRSettings = () => {
         body: JSON.stringify(fullDayPayload),
       });
 
-      toast.success("Comp Off timings updated successfully!", {
-        className: "custom-toast",
-        bodyClassName: "custom-toast-body",
-        progressClassName: "custom-toast-progress",
-        position: "top-center",
-        autoClose: 2000,
-        hideProgressBar: true,
-      });
+      showSuccessToast("Comp Off timings updated successfully!");
     } catch (err) {
       console.error("Error saving comp-off timings", err);
-      alert("Failed to update comp-off timings.");
+      showSuccessToast("Failed to update comp-off timings.");
     }
   };
 
@@ -235,7 +206,7 @@ const HRSettings = () => {
       <button className="delete-btn" onClick={handleSubmit}>
         Save Timings
       </button>
-      <ToastContainer />
+      <ToastContainerComponent />
     </div>
   );
 };

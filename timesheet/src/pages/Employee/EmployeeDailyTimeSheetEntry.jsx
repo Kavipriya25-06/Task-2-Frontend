@@ -4,6 +4,14 @@ import { useAuth } from "../../AuthContext";
 import { FaEdit } from "react-icons/fa";
 import config from "../../config";
 
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
+
 const EmployeeDailyTimeSheetEntry = () => {
   const { date } = useParams(); // Format: YYYY-MM-DD
   const navigate = useNavigate();
@@ -280,7 +288,7 @@ const EmployeeDailyTimeSheetEntry = () => {
         !lastRow.end_time?.trim() ||
         !lastRow.hours
       ) {
-        alert(
+        showInfoToast(
           "Please fill out all fields in the current row before adding a new one."
         );
         return;
@@ -332,7 +340,7 @@ const EmployeeDailyTimeSheetEntry = () => {
         if (!response.ok) {
           const errorData = await response.json();
           console.error("Failed to PATCH row:", errorData);
-          alert(`Failed to update task "${row.task}".`);
+          showErrorToast(`Failed to update task "${row.task}".`);
           return;
         }
       }
@@ -362,38 +370,49 @@ const EmployeeDailyTimeSheetEntry = () => {
         if (!response.ok) {
           const errorData = await response.json();
           console.error("Failed to POST new row:", errorData);
-          alert(`Failed to submit new task "${row.task}".`);
+          showErrorToast(`Failed to submit new task "${row.task}".`);
           return;
         }
       }
 
       setNewRows([]);
-      alert("All timesheet rows saved successfully!");
+      if (newRows.length === 0) {
+        showWarningToast("Please enter some fields before saving.");
+        return;
+      }
+      showSuccessToast("All timesheet rows submitted successfully!");
       // Optionally refresh data here
       fetchBiometricTaskData();
     } catch (error) {
       console.error("Submission failed:", error);
-      alert(error);
+      showErrorToast(error);
     }
   };
 
-  const handleDeleteRow = async (timesheet_id) => {
-    const response = await fetch(
-      `${config.apiBaseURL}/timesheet/${timesheet_id}/`,
-      {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        // body: JSON.stringify(payload),
-      }
-    );
+  const handleDeleteRow = async (idOrIndex, type = "existing") => {
+    if (type === "existing") {
+      // Delete from backend
+      const response = await fetch(
+        `${config.apiBaseURL}/timesheet/${idOrIndex}/`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Failed to PATCH row:", errorData);
-      // alert(`Failed to update task "${timesheet_id}".`);
-      return;
+      if (!response.ok) {
+        const errorData = await response.json();
+        showErrorToast("Failed to delete row.");
+        console.error("Failed to delete row:", errorData);
+        return;
+      }
+
+      showSuccessToast("Row deleted successfully");
+      fetchBiometricTaskData();
+    } else if (type === "new") {
+      // Delete from local newRows state
+      setNewRows((prevRows) => prevRows.filter((_, i) => i !== idOrIndex));
     }
-    fetchBiometricTaskData();
   };
 
   const handleSave = async () => {
@@ -424,7 +443,7 @@ const EmployeeDailyTimeSheetEntry = () => {
         if (!response.ok) {
           const errorData = await response.json();
           console.error("Failed to PATCH row:", errorData);
-          alert(`Failed to update task "${row.task}".`);
+          showErrorToast(`Failed to update task "${row.task}".`);
           return;
         }
       }
@@ -452,17 +471,21 @@ const EmployeeDailyTimeSheetEntry = () => {
         if (!response.ok) {
           const errorData = await response.json();
           console.error("Failed to POST new row:", errorData);
-          alert(`Failed to submit new task "${row.task}".`);
+          showErrorToast(`Failed to submit new task "${row.task}".`);
           return;
         }
       }
       setNewRows([]);
-      alert("All timesheet rows saved successfully!");
+      if (newRows.length === 0) {
+        showWarningToast("Please enter some fields before saving.");
+        return;
+      }
+      showSuccessToast("All timesheet rows saved successfully!");
       // Optionally refresh data here
       fetchBiometricTaskData();
     } catch (error) {
       console.error("Submission failed:", error);
-      alert(error);
+      showErrorToast(error);
     }
   };
 
@@ -617,13 +640,19 @@ const EmployeeDailyTimeSheetEntry = () => {
               </td>
 
               <td>
-                <button
+                {/* <button
                   type="button"
                   onClick={() => handleDeleteRow(row.timesheet_id)}
                   style={{ color: "red", cursor: "pointer" }}
                 >
                   Delete
-                </button>
+                </button> */}
+                <img
+                  src="\src\assets\reject.png"
+                  alt="reject button"
+                  className="leavebuttons"
+                  onClick={() => handleDeleteRow(row.timesheet_id, "existing")}
+                />
               </td>
             </tr>
           ))}
@@ -694,7 +723,7 @@ const EmployeeDailyTimeSheetEntry = () => {
                     type="text"
                     readOnly
                     value={row.formattedHours}
-                    style={{ backgroundColor: "#f9f9f9", border: "none" }}
+                    style={{ width: `${row.formattedHours.length + 0.4}ch` }}
                   />
                 ) : (
                   <input
@@ -708,13 +737,19 @@ const EmployeeDailyTimeSheetEntry = () => {
               </td>
 
               <td>
-                <button
+                {/* <button
                   type="button"
                   // onClick={() => handleDeleteRow(index, "new")}
                   style={{ color: "red", cursor: "pointer" }}
                 >
                   Delete
-                </button>
+                </button> */}
+                <img
+                  src="\src\assets\reject.png"
+                  alt="reject button"
+                  className="leavebuttons"
+                  onClick={() => handleDeleteRow(index, "new")}
+                />
               </td>
             </tr>
           ))}
@@ -740,6 +775,7 @@ const EmployeeDailyTimeSheetEntry = () => {
           Submit
         </button>
       </div>
+      <ToastContainerComponent />
     </div>
   );
 };

@@ -43,6 +43,7 @@ export const showInfoToast = (message) => {
     draggable: true,
     progress: undefined,
     theme: "colored",
+    style: { backgroundColor: "white", color: "#5cadef",},
   });
 };
 

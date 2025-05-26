@@ -5,8 +5,14 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 import { useParams } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
 
 const HolidayList = () => {
   // const HRHolidayList = () => {
@@ -42,14 +48,7 @@ const HolidayList = () => {
 
       if (response.ok) {
         fetchCalendarData(selectedYear); // Refresh from backend
-        toast.success("Holiday Deleted Successfully", {
-          className: "custom-toast",
-          bodyClassName: "custom-toast-body",
-          progressClassName: "custom-toast-progress",
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: true,
-        });
+        showSuccessToast("Holiday Deleted Successfully");
       } else {
         console.error("Failed to update holiday");
       }
@@ -71,14 +70,7 @@ const HolidayList = () => {
         (day) => day.date === formData.date
       );
       if (!matchingDate)
-        return toast.error("Date not found in calendar data", {
-          className: "custom-toast",
-          bodyClassName: "custom-toast-body",
-          progressClassName: "custom-toast-progress",
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: true,
-        });
+        return showErrorToast("Date not found in calendar data");
 
       //alert("Date not found in calendar data");
 
@@ -102,23 +94,9 @@ const HolidayList = () => {
         fetchCalendarData(selectedYear);
         setShowPopup(false);
         setFormData({ date: "", notes: "" });
-        toast.success("Holiday Added Successfully", {
-          className: "custom-toast",
-          bodyClassName: "custom-toast-body",
-          progressClassName: "custom-toast-progress",
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: true,
-        });
+        showSuccessToast("Holiday Added Successfully");
       } else {
-        toast.error("Failed to add holiday", {
-          className: "custom-toast",
-          bodyClassName: "custom-toast-body",
-          progressClassName: "custom-toast-progress",
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: true,
-        });
+        showErrorToast("Failed to add holiday");
         console.error("Failed to update holiday");
       }
     } catch (err) {
@@ -342,7 +320,7 @@ const HolidayList = () => {
     <button className="btn-cancel" onClick={() => setShowPopup(false)}>Cancel</button>
   </div>
 </Modal> */}
-      <ToastContainer />
+      <ToastContainerComponent />
     </div>
   );
 };

@@ -16,8 +16,14 @@ import Cropper from "react-easy-crop";
 import getCroppedImg from "../../constants/cropimage"; // Path to the helper
 import Slider from "@mui/material/Slider";
 import Modal from "@mui/material/Modal";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
 
 import { FaEdit } from "react-icons/fa";
 
@@ -220,17 +226,17 @@ const EditEmployee = () => {
     const cleanedData = cleanFormData(formData, fieldsToNullify);
 
     if (!cleanedData.employee_email) {
-      alert("Please enter employee email");
+      showInfoToast("Please enter employee email");
       return;
     }
 
     if (!cleanedData.employee_code) {
-      alert("Please enter employee code");
+      showInfoToast("Please enter employee code");
       return;
     }
 
     if (!cleanedData.employee_name) {
-      alert("Please enter employee name");
+      showInfoToast("Please enter employee name");
       return;
     }
 
@@ -299,18 +305,11 @@ const EditEmployee = () => {
       }
 
       if (!response.ok) throw new Error("Failed to update employee");
-      toast.success("Details Updated Successfully", {
-        className: "custom-toast",
-        bodyClassName: "custom-toast-body",
-        progressClassName: "custom-toast-progress",
-        position: "top-center",
-        autoClose: 2000,
-        hideProgressBar: true,
-      });
+      showSuccessToast("New changes are updated");
       setEditMode(false);
       // navigate("/hr/detail/employee-details");
     } catch (error) {
-      toast.error(`Failed to Update Details: ${error.message}`);
+      showErrorToast(`Failed to Update Details: ${error.message}`);
       console.error("Error submitting employee data:", error);
     }
   };
@@ -1395,7 +1394,7 @@ const EditEmployee = () => {
           </div>
         )}
       </form>
-      <ToastContainer />
+      <ToastContainerComponent />
     </div>
   );
 };

@@ -3,6 +3,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import config from "../../config";
 import { useAuth } from "../../AuthContext";
 
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
+
 const TeamLeadDailyTimeSheetEntry = () => {
   const { date } = useParams(); // Format: YYYY-MM-DD
   const navigate = useNavigate();
@@ -279,7 +287,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
         !lastRow.end_time?.trim() ||
         !lastRow.hours
       ) {
-        alert(
+        showInfoToast(
           "Please fill out all fields in the current row before adding a new one."
         );
         return;
@@ -331,7 +339,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
         if (!response.ok) {
           const errorData = await response.json();
           console.error("Failed to PATCH row:", errorData);
-          alert(`Failed to update task "${row.task}".`);
+          showErrorToast(`Failed to update task "${row.task}".`);
           return;
         }
       }
@@ -361,38 +369,45 @@ const TeamLeadDailyTimeSheetEntry = () => {
         if (!response.ok) {
           const errorData = await response.json();
           console.error("Failed to POST new row:", errorData);
-          alert(`Failed to submit new task "${row.task}".`);
+          showErrorToast(`Failed to submit new task "${row.task}".`);
           return;
         }
       }
 
       setNewRows([]);
-      alert("All timesheet rows saved successfully!");
+      showSuccessToast("All timesheet rows saved successfully!");
       // Optionally refresh data here
       fetchBiometricTaskData();
     } catch (error) {
       console.error("Submission failed:", error);
-      alert(error);
+      showErrorToast(error);
     }
   };
 
-  const handleDeleteRow = async (timesheet_id) => {
-    const response = await fetch(
-      `${config.apiBaseURL}/timesheet/${timesheet_id}/`,
-      {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        // body: JSON.stringify(payload),
-      }
-    );
+  const handleDeleteRow = async (idOrIndex, type = "existing") => {
+    if (type === "existing") {
+      // Delete from backend
+      const response = await fetch(
+        `${config.apiBaseURL}/timesheet/${idOrIndex}/`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Failed to PATCH row:", errorData);
-      // alert(`Failed to update task "${timesheet_id}".`);
-      return;
+      if (!response.ok) {
+        const errorData = await response.json();
+        showErrorToast("Failed to delete row.");
+        console.error("Failed to delete row:", errorData);
+        return;
+      }
+
+      showSuccessToast("Row deleted successfully");
+      fetchBiometricTaskData();
+    } else if (type === "new") {
+      // Delete from local newRows state
+      setNewRows((prevRows) => prevRows.filter((_, i) => i !== idOrIndex));
     }
-    fetchBiometricTaskData();
   };
 
   const handleSave = async () => {
@@ -423,7 +438,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
         if (!response.ok) {
           const errorData = await response.json();
           console.error("Failed to PATCH row:", errorData);
-          alert(`Failed to update task "${row.task}".`);
+          showErrorToast(`Failed to update task "${row.task}".`);
           return;
         }
       }
@@ -451,18 +466,18 @@ const TeamLeadDailyTimeSheetEntry = () => {
         if (!response.ok) {
           const errorData = await response.json();
           console.error("Failed to POST new row:", errorData);
-          alert(`Failed to submit new task "${row.task}".`);
+          showErrorToast(`Failed to submit new task "${row.task}".`);
           return;
         }
       }
 
       setNewRows([]);
-      alert("All timesheet rows saved successfully!");
+      showSuccessToast("All timesheet rows saved successfully!");
       // Optionally refresh data here
       fetchBiometricTaskData();
     } catch (error) {
       console.error("Submission failed:", error);
-      alert(error);
+      showSuccessToast(error);
     }
   };
 
@@ -530,196 +545,216 @@ const TeamLeadDailyTimeSheetEntry = () => {
       </div>
 
       {/* Timesheet Entry Table */}
-      <table className="timesheet-table">
-        <thead>
-          <tr>
-            <th>Project name</th>
-            <th>Buildings</th>
-            <th>Tasks</th>
-            <th>Start Time</th>
-            <th>End Time</th>
-            <th>Hours</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {/* Display fetched (existing) rows */}
-          {displayRows.map((row, index) => (
-            <tr key={"display-" + index}>
-              <td>
-                <input
-                  type="text"
-                  // placeholder="Enter project"
-                  value={row.project}
-                  readOnly
-                  // onChange={(e) =>
-                  //   handleDisplayRowChange(index, "project", e.target.value)
-                  // }
-                />
-              </td>
-              <td>
-                <input
-                  type="text"
-                  // placeholder="Enter building"
-                  value={row.building}
-                  readOnly
-                  // onChange={(e) =>
-                  //   handleDisplayRowChange(index, "building", e.target.value)
-                  // }
-                />
-              </td>
-              <td>
-                <input
-                  type="text"
-                  // placeholder="Enter task"
-                  value={row.task}
-                  readOnly
-                  // onChange={(e) =>
-                  //   handleDisplayRowChange(index, "task", e.target.value)
-                  // }
-                />
-              </td>
-              <td>
-                <input
-                  type="time"
-                  value={row.start_time ? row.start_time.slice(0, 5) : ""}
-                  onChange={(e) =>
-                    handleDisplayRowChange(index, "start_time", e.target.value)
-                  }
-                />
-              </td>
-              <td>
-                <input
-                  type="time"
-                  value={row.end_time ? row.end_time.slice(0, 5) : ""}
-                  onChange={(e) =>
-                    handleDisplayRowChange(index, "end_time", e.target.value)
-                  }
-                />
-              </td>
-              <td>
-                {row.formattedHours ? (
-                  <input
-                    type="text"
-                    readOnly
-                    value={row.formattedHours}
-                    style={{ backgroundColor: "#f9f9f9", border: "none" }}
-                  />
-                ) : (
-                  <input
-                    type="number"
-                    placeholder="Hours"
-                    value={row.hours}
-                    readOnly
-                    style={{ backgroundColor: "#f9f9f9", border: "none" }}
-                  />
-                )}
-              </td>
-
-              <td>
-                <button
-                  type="button"
-                  onClick={() => handleDeleteRow(row.timesheet_id)}
-                  style={{ color: "red", cursor: "pointer" }}
-                >
-                  Delete
-                </button>
-              </td>
+      <div className="table-scroll-container">
+        <table className="timesheet-table">
+          <thead>
+            <tr>
+              <th>Project name</th>
+              <th>Buildings</th>
+              <th>Tasks</th>
+              <th>Start Time</th>
+              <th>End Time</th>
+              <th>Hours</th>
+              <th>Actions</th>
             </tr>
-          ))}
-
-          {/* Display new (user added) rows */}
-          {newRows.map((row, index) => (
-            <tr key={"new-" + index}>
-              <td>
-                <input
-                  type="text"
-                  // placeholder="Enter project"
-                  value={row.project}
-                  readOnly
-                  // onChange={(e) =>
-                  //   handleNewRowChange(index, "project", e.target.value)
-                  // }
-                />
-              </td>
-              <td>
-                <input
-                  type="text"
-                  // placeholder="Enter building"
-                  value={row.building}
-                  readOnly
-                  // onChange={(e) =>
-                  //   handleNewRowChange(index, "building", e.target.value)
-                  // }
-                />
-              </td>
-              <td>
-                <select
-                  value={row.task}
-                  onChange={(e) =>
-                    handleNewRowChange(index, "task", e.target.value)
-                  }
-                  className="task-select"
-                >
-                  <option value="">Select task</option>
-                  {taskOptions.map((task) => (
-                    <option key={task.task_assign_id} value={task.task_title}>
-                      {task.task_title}
-                    </option>
-                  ))}
-                </select>
-              </td>
-              <td>
-                <input
-                  type="time"
-                  value={row.start_time ? row.start_time.slice(0, 5) : ""}
-                  onChange={(e) =>
-                    handleNewRowChange(index, "start_time", e.target.value)
-                  }
-                />
-              </td>
-              <td>
-                <input
-                  type="time"
-                  value={row.end_time ? row.end_time.slice(0, 5) : ""}
-                  onChange={(e) =>
-                    handleNewRowChange(index, "end_time", e.target.value)
-                  }
-                />
-              </td>
-
-              <td>
-                {row.formattedHours ? (
+          </thead>
+          <tbody>
+            {/* Display fetched (existing) rows */}
+            {displayRows.map((row, index) => (
+              <tr key={"display-" + index}>
+                <td>
                   <input
                     type="text"
+                    // placeholder="Enter project"
+                    value={row.project}
                     readOnly
-                    value={row.formattedHours}
-                    style={{ backgroundColor: "#f9f9f9", border: "none" }}
+                    // onChange={(e) =>
+                    //   handleDisplayRowChange(index, "project", e.target.value)
+                    // }
                   />
-                ) : (
+                </td>
+                <td>
                   <input
-                    type="number"
-                    placeholder="Hours"
-                    value={row.hours}
+                    type="text"
+                    // placeholder="Enter building"
+                    value={row.building}
                     readOnly
-                    style={{ backgroundColor: "#f9f9f9", border: "none" }}
+                    // onChange={(e) =>
+                    //   handleDisplayRowChange(index, "building", e.target.value)
+                    // }
                   />
-                )}
-              </td>
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    // placeholder="Enter task"
+                    value={row.task}
+                    readOnly
+                    // onChange={(e) =>
+                    //   handleDisplayRowChange(index, "task", e.target.value)
+                    // }
+                  />
+                </td>
+                <td>
+                  <input
+                    type="time"
+                    value={row.start_time ? row.start_time.slice(0, 5) : ""}
+                    onChange={(e) =>
+                      handleDisplayRowChange(
+                        index,
+                        "start_time",
+                        e.target.value
+                      )
+                    }
+                  />
+                </td>
+                <td>
+                  <input
+                    type="time"
+                    value={row.end_time ? row.end_time.slice(0, 5) : ""}
+                    onChange={(e) =>
+                      handleDisplayRowChange(index, "end_time", e.target.value)
+                    }
+                  />
+                </td>
+                <td>
+                  {row.formattedHours ? (
+                    <input
+                      type="text"
+                      readOnly
+                      value={row.formattedHours}
+                      style={{ backgroundColor: "#f9f9f9", border: "none" }}
+                    />
+                  ) : (
+                    <input
+                      type="number"
+                      placeholder="Hours"
+                      value={row.hours}
+                      readOnly
+                      style={{ backgroundColor: "#f9f9f9", border: "none" }}
+                    />
+                  )}
+                </td>
 
-              <td>
-                <button
-                  type="button"
+                <td>
+                  {/* <button
+                    type="button"
+                    onClick={() => handleDeleteRow(row.timesheet_id)}
+                    style={{ color: "red", cursor: "pointer" }}
+                  >
+                    Delete
+                  </button> */}
+                  <img
+                    src="\src\assets\reject.png"
+                    alt="reject button"
+                    className="leavebuttons"
+                    onClick={() =>
+                      handleDeleteRow(row.timesheet_id, "existing")
+                    }
+                  />
+                </td>
+              </tr>
+            ))}
+
+            {/* Display new (user added) rows */}
+            {newRows.map((row, index) => (
+              <tr key={"new-" + index}>
+                <td>
+                  <input
+                    type="text"
+                    // placeholder="Enter project"
+                    value={row.project}
+                    readOnly
+                    // onChange={(e) =>
+                    //   handleNewRowChange(index, "project", e.target.value)
+                    // }
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    // placeholder="Enter building"
+                    value={row.building}
+                    readOnly
+                    // onChange={(e) =>
+                    //   handleNewRowChange(index, "building", e.target.value)
+                    // }
+                  />
+                </td>
+                <td>
+                  <select
+                    value={row.task}
+                    onChange={(e) =>
+                      handleNewRowChange(index, "task", e.target.value)
+                    }
+                    className="task-select"
+                  >
+                    <option value="">Select task</option>
+                    {taskOptions.map((task) => (
+                      <option key={task.task_assign_id} value={task.task_title}>
+                        {task.task_title}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td>
+                  <input
+                    type="time"
+                    value={row.start_time ? row.start_time.slice(0, 5) : ""}
+                    onChange={(e) =>
+                      handleNewRowChange(index, "start_time", e.target.value)
+                    }
+                  />
+                </td>
+                <td>
+                  <input
+                    type="time"
+                    value={row.end_time ? row.end_time.slice(0, 5) : ""}
+                    onChange={(e) =>
+                      handleNewRowChange(index, "end_time", e.target.value)
+                    }
+                  />
+                </td>
+
+                <td>
+                  {row.formattedHours ? (
+                    <input
+                      type="text"
+                      readOnly
+                      value={row.formattedHours}
+                      style={{ width: `${row.formattedHours.length + 0.4}ch` }}
+                    />
+                  ) : (
+                    <input
+                      type="number"
+                      placeholder="Hours"
+                      value={row.hours}
+                      readOnly
+                      style={{ backgroundColor: "#f9f9f9", border: "none" }}
+                    />
+                  )}
+                </td>
+
+                <td>
+                  {/* <button
+                  className="delete-btn"
                   // onClick={() => handleDeleteRow(index, "new")}
                   style={{ color: "red", cursor: "pointer" }}
                 >
                   Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                </button> */}
+                  <img
+                    src="\src\assets\reject.png"
+                    alt="reject button"
+                    className="leavebuttons"
+                    onClick={() => handleDeleteRow(index, "new")}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <button onClick={handleAddRow} style={{ cursor: "pointer" }}>
         <div style={{ fontSize: "24px" }}>+</div>
       </button>
@@ -740,6 +775,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
           Submit
         </button>
       </div>
+      <ToastContainerComponent />
     </div>
   );
 };

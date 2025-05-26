@@ -7,6 +7,14 @@ import { format, differenceInCalendarDays } from "date-fns";
 import { useAttachmentManager } from "../../constants/useAttachmentManager";
 import useWorkingDays from "../../constants/useWorkingDays";
 
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
+
 const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
   const { user } = useAuth();
   const [approvedCompOffDates, setApprovedCompOffDates] = useState([]);
@@ -159,7 +167,9 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
     );
 
     if (nonDuplicateFiles.length < newFiles.length) {
-      alert("This file has already been added. Please choose a different one.");
+      showWarningToast(
+        "This file has already been added. Please choose a different one."
+      );
     }
 
     setSelectedFiles((prevFiles) => [...prevFiles, ...nonDuplicateFiles]);
@@ -182,13 +192,18 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!formData.startDate) {
+      showWarningToast("Enter the Start date.");
+      return;
+    }
+
     if (formData.endDate < formData.startDate) {
-      alert("End date must be the same or after the start date.");
+      showWarningToast("Enter the End date.");
       return;
     }
 
     if (formData.resumptionDate <= formData.endDate) {
-      alert("Resumption date must be after the end date.");
+      showWarningToast("Enter the Resumption date.");
       return;
     }
 
@@ -249,7 +264,7 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
     data.append("status", "pending"); // Default status when submitted
 
     if (mappedLeaveType === "comp_off" && !formData.compOffDate) {
-      alert("Enter a Date for Comp off");
+      showInfoToast("Enter a Date for Comp off");
       return;
     }
 
@@ -263,19 +278,22 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
         const result = await response.json();
         console.log("Leave submitted successfully:", result);
         console.log("Leave taken id:", result.data.leave_taken_id);
-        alert("Leave Request Submitted Successfully!");
+        showSuccessToast("Leave Request Submitted Successfully!");
         await patchLeaveAvailability(mappedLeaveType, formData.duration);
         await addAttachment(result.data.leave_taken_id);
 
-        onClose(); // Close form after successful submission
+        setTimeout(() => {
+          onClose();
+        }, 1600);
+        // Close form after successful submission
       } else {
         const errorData = await response.json();
         console.error("Submission failed", errorData);
-        alert("Failed to submit leave request.");
+        showErrorToast("Failed to submit leave request.");
       }
     } catch (error) {
       console.error("Error submitting leave request:", error);
-      alert("An error occurred while submitting.");
+      showErrorToast("An error occurred while submitting.");
     }
   };
 
@@ -567,6 +585,7 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
           </button>
         </div>
       </form>
+      <ToastContainerComponent />
     </div>
   );
 };

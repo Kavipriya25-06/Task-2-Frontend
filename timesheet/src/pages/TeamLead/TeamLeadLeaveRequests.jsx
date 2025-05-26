@@ -25,6 +25,7 @@ const TeamLeadLeaveRequests = () => {
     indexOfLastRow
   );
   const totalPages = Math.ceil(leaveRequests.length / rowsPerPage);
+  const [showDropdowns, setShowDropdowns] = useState({});
 
   useEffect(() => {
     fetchLeaveSummary();
@@ -167,35 +168,81 @@ const TeamLeadLeaveRequests = () => {
                     <td>{request.reason}</td>
                     <td>{request.status}</td>
                     <td>
-                      <ul className="attachments-list">
-                        {/* Existing attachments */}
-                        {request.attachments &&
-                        request.attachments.length > 0 ? (
-                          request.attachments?.map((file) => {
-                            const fullFilename = file.file.split("/").pop();
-                            const match = fullFilename.match(
-                              /^(.+?)_[a-zA-Z0-9]+\.(\w+)$/
-                            );
-                            const filename = match
-                              ? `${match[1]}.${match[2]}`
-                              : fullFilename;
-
-                            return (
-                              <li key={file.id} className="attachment-item">
-                                <a
-                                  href={config.apiBaseURL + file.file}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                >
-                                  {filename}
-                                </a>
-                              </li>
-                            );
-                          })
-                        ) : (
-                          <li className="no-attachment">No attachments</li>
-                        )}
-                      </ul>
+                      {request.attachments && request.attachments.length > 1 ? (
+                        <div>
+                          {!showDropdowns[request.id] ? (
+                            <button
+                              onClick={() =>
+                                setShowDropdowns((prev) => ({
+                                  ...prev,
+                                  [request.id]: true,
+                                }))
+                              }
+                              className="view-attachments-button"
+                            >
+                              View Attachments
+                            </button>
+                          ) : (
+                            <select
+                              onChange={(e) => {
+                                const url = e.target.value;
+                                if (url) window.open(url, "_blank");
+                              }}
+                              style={{
+                                padding: "6px 10px",
+                                borderRadius: "10px",
+                                border: "1px solid #ccc",
+                                backgroundColor: "#f9f9f9",
+                                fontSize: "13px",
+                              }}
+                            >
+                              {request.attachments.map((file) => {
+                                const fullFilename = file.file.split("/").pop();
+                                const match = fullFilename.match(
+                                  /^(.+?)_[a-zA-Z0-9]+\.(\w+)$/
+                                );
+                                const filename = match
+                                  ? `${match[1]}.${match[2]}`
+                                  : fullFilename;
+                                return (
+                                  <option
+                                    key={file.id}
+                                    value={config.apiBaseURL + file.file}
+                                  >
+                                    {filename}
+                                  </option>
+                                );
+                              })}
+                            </select>
+                          )}
+                        </div>
+                      ) : request.attachments &&
+                        request.attachments.length === 1 ? (
+                        <div className="attachment-items">
+                          <a
+                            href={
+                              config.apiBaseURL + request.attachments[0].file
+                            }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: "black" }}
+                          >
+                            {(() => {
+                              const fullFilename = request.attachments[0].file
+                                .split("/")
+                                .pop();
+                              const match = fullFilename.match(
+                                /^(.+?)_[a-zA-Z0-9]+\.(\w+)$/
+                              );
+                              return match
+                                ? `${match[1]}.${match[2]}`
+                                : fullFilename;
+                            })()}{" "}
+                          </a>
+                        </div>
+                      ) : (
+                        <span style={{ color: "#888" }}>No attachments</span>
+                      )}
                     </td>
                   </tr>
                 ))}

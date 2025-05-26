@@ -33,6 +33,7 @@
   padding: 20px;
 }
 
+
 .logo-container {
   flex: 1;
   display: flex;
@@ -60,6 +61,14 @@
   padding-right: 10px;
   cursor: pointer;
 }
+
+.leavebuttons {
+  height: 30px;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+}
+
 
 .infoicon {
   height: 20px;
@@ -3905,6 +3914,8 @@ h4 {
   white-space: nowrap;
 }
 
+
+
 .attachment-link {
   display: flex;
   align-items: center;
@@ -4178,6 +4189,8 @@ h4 {
   gap: 10px;
 }
 
+
+
 .attachment-item {
   background-color: white;
   padding: 4px 8px !important;
@@ -4186,17 +4199,52 @@ h4 {
   align-items: center;
   border: none !important;
   justify-content: center !important;
+  max-width: 200px;
 }
 
 .attachment-item a {
   color: black;
   text-decoration: none;
-  max-width: 200px;
+  max-width: 100px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .attachment-item a:hover {
+  text-decoration: underline;
+}
+
+.no-attachment {
+  display: flex;
+
+}
+
+.attachment-items {
+  background-color: white;
+  padding: 4px 16px;
+  border-radius: 16px !important;
+  align-items: center;
+  border: none !important;
+  justify-content: center !important;
+  font-size: 12px;
+  width: 120px;
+  max-width: 200px;
+}
+
+.attachments-list.multiple-attachments .attachment-items:not(:last-child) {
+  margin-bottom: 8px !important; /* Add margin only between items if multiple files */
+}
+
+
+
+.attachment-items a {
+ color: black;
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.attachment-items a:hover {
   text-decoration: underline;
 }
 
@@ -4245,6 +4293,26 @@ h4 {
   transform: translateY(-1px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
+
+.view-attachments-button {
+  display: inline-block;
+  background-color: rgb(255, 255, 255);
+  color: #101010;
+  padding: 4px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  border: none;
+  font-size: 13px;
+}
+
+.view-attachments-button:hover {
+  background-color: rgb(169, 169, 169);
+  color: black;
+  font-weight: 600;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
 
 .project-form-group p {
   margin: 0%;

@@ -5,8 +5,14 @@ import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
 // import Breadcrumbs from "../../components/Breadcrumbs";
 // import editIcon from "src/assets/edit.png";
 
@@ -67,14 +73,7 @@ const UsersPage = () => {
       setHasMoreUsers(filtered.length > 10);
 
       if (searchText && filtered.length === 0) {
-        toast.info("No users found", {
-          className: "custom-toast",
-          bodyClassName: "custom-toast-body",
-          progressClassName: "custom-toast-progress",
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: true,
-        });
+        showInfoToast("No users found");
       }
     }, 500);
 
@@ -182,7 +181,7 @@ const UsersPage = () => {
         )}
         {!hasMoreUsers && <div className="no-message">No more data</div>}
       </div>
-      <ToastContainer />
+      <ToastContainerComponent />
     </div>
   );
 };

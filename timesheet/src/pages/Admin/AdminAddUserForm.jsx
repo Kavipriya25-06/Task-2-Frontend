@@ -5,8 +5,14 @@ import { useNavigate } from "react-router-dom";
 import config from "../../config";
 import roleOptions from "../../constants/roleOptions";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
 
 // import Breadcrumbs from "../../components/Breadcrumbs";
 
@@ -60,10 +66,10 @@ const AddUserForm = ({ onCancel, onSave }) => {
         );
       }
 
-      toast.success("User is created successfully!");
+      showSuccessToast("New User Added Successfully");
       navigate("/admin/detail/users");
     } catch (error) {
-      toast.error(`Failed to create user: ${error.message}`);
+      showErrorToast(`Failed to create user: ${error.message}`);
       console.error("Error adding user:", error);
     }
   };
@@ -182,12 +188,7 @@ const AddUserForm = ({ onCancel, onSave }) => {
           </button>
         </div>
       </form>
-      <ToastContainer
-        position="top-center"
-        autoClose={500}
-        toastClassName="custom-toast"
-        hideProgressBar={true}
-      />
+      <ToastContainerComponent />
     </div>
   );
 };

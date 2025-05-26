@@ -2,6 +2,13 @@
 
 import { useState } from "react";
 import config from "../config";
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../constants/Toastify";
 
 export const useAttachmentManager = (initialAttachments = []) => {
   const [attachments, setAttachments] = useState(initialAttachments);
@@ -12,32 +19,36 @@ export const useAttachmentManager = (initialAttachments = []) => {
   const handleAttachmentChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
 
-    setNewAttachments((prevAttachments) => {
-      const existingSignatures = new Set([
-        ...prevAttachments.map((file) => `${file.name}_${file.size}`),
-        ...attachments.map((file) => {
-          const name = file.file
-            .split("/")
-            .pop()
-            .replace(/_[a-zA-Z0-9]+\./, ".");
-          return name; // Only compare names for server-stored files
-        }),
-      ]);
+    // Create a flat list of existing signatures (names + sizes)
+    const existingSignatures = new Set([
+      ...newAttachments.map((file) => `${file.name}_${file.size}`),
+      ...attachments.map((file) => {
+        const name = file.file
+          .split("/")
+          .pop()
+          .replace(/_[a-zA-Z0-9]+\./, ".");
+        return name; // For server-stored files
+      }),
+    ]);
 
-      const uniqueFiles = selectedFiles.filter((file) => {
-        const signature = `${file.name}_${file.size}`;
-        return (
-          !existingSignatures.has(signature) &&
-          !existingSignatures.has(file.name)
-        );
-      });
-
-      if (uniqueFiles.length < selectedFiles.length) {
-        alert("Some duplicate files were not added.");
-      }
-
-      return [...prevAttachments, ...uniqueFiles];
+    // Filter out duplicates
+    const uniqueFiles = selectedFiles.filter((file) => {
+      const signature = `${file.name}_${file.size}`;
+      return (
+        !existingSignatures.has(signature) && !existingSignatures.has(file.name)
+      );
     });
+
+    // Show warning once if there were duplicates
+    if (uniqueFiles.length < selectedFiles.length) {
+      showWarningToast("Some duplicate files were not added.");
+    }
+
+    // Add only the unique ones
+    setNewAttachments((prevAttachments) => [
+      ...prevAttachments,
+      ...uniqueFiles,
+    ]);
 
     e.target.value = "";
   };

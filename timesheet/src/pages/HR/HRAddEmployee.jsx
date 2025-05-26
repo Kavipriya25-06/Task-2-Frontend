@@ -18,8 +18,14 @@ import Cropper from "react-easy-crop";
 import getCroppedImg from "../../constants/cropimage"; // Path to the helper
 import Slider from "@mui/material/Slider";
 import Modal from "@mui/material/Modal";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
 
 const tabLabels = [
   "Employee details",
@@ -134,39 +140,19 @@ const AddEmployee = () => {
     });
 
     if (!cleanedData.employee_email) {
-      toast.success("Please enter employee email", {
-        className: "custom-toast",
-        bodyClassName: "custom-toast-body",
-        progressClassName: "custom-toast-progress",
-        position: "top-center",
-        autoClose: 2000,
-        hideProgressBar: true,
-      });
+      showWarningToast("Please enter employee email");
       // alert("Please enter employee email");
       return;
     }
 
     if (!cleanedData.employee_code) {
-      toast.success("Please enter employee code", {
-        className: "custom-toast",
-        bodyClassName: "custom-toast-body",
-        progressClassName: "custom-toast-progress",
-        position: "top-center",
-        autoClose: 2000,
-        hideProgressBar: true,
-      });
+      showWarningToast("Please enter employee code");
       return;
     }
 
     if (!cleanedData.employee_name) {
-      toast.success("Please enter employee name", {
-        className: "custom-toast",
-        bodyClassName: "custom-toast-body",
-        progressClassName: "custom-toast-progress",
-        position: "top-center",
-        autoClose: 2000,
-        hideProgressBar: true,
-      });
+      showWarningToast("Please enter employee name");
+
       // alert("Please enter employee name");
       return;
     }
@@ -230,20 +216,13 @@ const AddEmployee = () => {
         }
 
         console.log("All attachments uploaded");
-        toast.success("User Updated Successfully", {
-          className: "custom-toast",
-          bodyClassName: "custom-toast-body",
-          progressClassName: "custom-toast-progress",
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: true,
-        });
+        showSuccessToast("Employee Details are uploaded successfully");
       }
 
       // Step 4: Navigate after success
       navigate("/hr/detail/employee-details");
     } catch (error) {
-      toast.error(`Failed to create user: ${error.message}`);
+      showErrorToast(`Failed to create user: ${error.message}`);
       console.error(
         "Error during employee creation or attachment upload:",
         error
@@ -1026,7 +1005,7 @@ const AddEmployee = () => {
           </button>
         </div>
       </form>
-      <ToastContainer />
+      <ToastContainerComponent />
     </div>
   );
 };
