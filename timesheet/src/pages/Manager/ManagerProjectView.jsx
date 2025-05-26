@@ -9,6 +9,13 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 import { useAttachmentManager } from "../../constants/useAttachmentManager";
+import {
+  showErrorToast,
+  showInfoToast,
+  showSuccessToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
 
 const ManagerProjectView = () => {
   const navigate = useNavigate();
@@ -75,13 +82,13 @@ const ManagerProjectView = () => {
     // If the building has an assign ID, it exists in DB, so delete.
     if (building.building_assign_id) {
       const confirmDelete = window.confirm(
-        `Are you sure you want to remove building "${building.building.building_title}"?`
+        `Are you sure you want to remove building "${building?.building?.building_title}"?`
       );
       if (!confirmDelete) return;
 
       try {
         const res = await fetch(
-          `${config.apiBaseURL}/buildings-assigned/${building.building_assign_id}/`,
+          `${config.apiBaseURL}/buildings-assigned/${building?.building_assign_id}/`,
           { method: "DELETE" }
         );
 
@@ -91,9 +98,9 @@ const ManagerProjectView = () => {
               (b) => b.building_assign_id !== building.building_assign_id
             )
           );
-          alert("Building removed!");
+          showSuccessToast("Building removed!");
         } else {
-          alert("Failed to delete building.");
+          showErrorToast("Failed to delete building.");
         }
       } catch (err) {
         console.error("Error deleting building:", err);
@@ -130,7 +137,9 @@ const ManagerProjectView = () => {
         { date: "", title: "", hours: "", project: "" },
       ]);
     } else {
-      alert("Please fill the previous variation before adding a new one.");
+      showWarningToast(
+        "Please fill the previous variation before adding a new one."
+      );
     }
   };
 
@@ -156,7 +165,7 @@ const ManagerProjectView = () => {
       );
 
       if (!response.ok) {
-        alert("Failed to update project");
+        showErrorToast("Failed to update project");
         return;
       }
     } catch (err) {
@@ -184,7 +193,7 @@ const ManagerProjectView = () => {
       );
 
       if (!teamRes.ok) {
-        alert("Failed to update project assign");
+        showErrorToast("Failed to update project assign");
         return;
       }
     } catch (err) {
@@ -205,7 +214,7 @@ const ManagerProjectView = () => {
         );
         if (!updateResponse.ok) {
           console.error("Failed to update variation:", variation);
-          alert("Failed to update variations");
+          showErrorToast("Failed to update variations");
         }
       }
     });
@@ -219,7 +228,7 @@ const ManagerProjectView = () => {
       });
       if (!postResponse.ok) {
         console.error("Failed to post new variation:", newVariation);
-        alert("Failed to add new variation");
+        // showErrorToast("Failed to add new variation");
       }
     });
 
@@ -285,7 +294,7 @@ const ManagerProjectView = () => {
       );
 
       if (!buildingRes.ok) {
-        alert("Failed to update building assignments");
+        showErrorToast("Failed to update building assignments");
         return;
       }
     } catch (err) {
@@ -294,7 +303,7 @@ const ManagerProjectView = () => {
     }
 
     // If all succeeded
-    alert("Project updated successfully!");
+    showSuccessToast("Project updated successfully!");
     setEditMode(false);
     fetchProjectData(); // refresh UI
   };
@@ -334,13 +343,13 @@ const ManagerProjectView = () => {
       const data = await res.json();
 
       if (res.ok) {
-        alert("Building created successfully!");
+        showSuccessToast("Building created successfully!");
         setBuildingData({});
         setShowBuildingPopup(false);
         fetchProjectData(); // Refresh UI
       } else {
         console.error(data);
-        alert("Failed to create Building.");
+        showErrorToast("Failed to create Building.");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -1300,6 +1309,7 @@ const ManagerProjectView = () => {
           </div>
         )}
       </div>
+      <ToastContainerComponent />
     </div>
   );
 };

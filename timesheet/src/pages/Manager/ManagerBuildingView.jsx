@@ -6,6 +6,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
 
 const ManagerBuildingView = () => {
   const { user } = useAuth();
@@ -47,11 +54,14 @@ const ManagerBuildingView = () => {
 
       if (response.ok) {
         console.log("Building updated!");
+        showSuccessToast("Building Updated");
+        setEditMode(false);
       } else {
-        alert("Failed to update project");
+        showErrorToast("Failed to update project");
       }
     } catch (err) {
       console.error("Update error:", err);
+      showErrorToast(err);
     }
 
     for (let task of taskSelections) {
@@ -85,13 +95,15 @@ const ManagerBuildingView = () => {
         });
         if (response.ok) {
           console.log("Building updated!");
+          showSuccessToast("Building Updated");
           setEditMode(false);
           // fetchProjectData(); // refresh
         } else {
-          alert("Failed to update project");
+          showErrorToast("Failed to update project");
         }
       } catch (err) {
         console.error("Update error:", err);
+        showErrorToast(err);
       }
     }
     fetchBuildingsAssign(); // refresh state
@@ -194,7 +206,9 @@ const ManagerBuildingView = () => {
       (t) => !t.task_hours || parseFloat(t.task_hours) <= 0
     );
     if (invalid) {
-      alert(`Please enter valid hours for task "${invalid.task_title}".`);
+      showErrorToast(
+        `Please enter valid hours for task "${invalid.task_title}".`
+      );
       return;
     }
 
@@ -322,6 +336,7 @@ const ManagerBuildingView = () => {
                 <label>Sub-Division Hours</label>
                 {editMode ? (
                   <input
+                    type="number"
                     name="building_hours"
                     value={formData.building_hours}
                     onChange={handleChange}
@@ -492,6 +507,7 @@ const ManagerBuildingView = () => {
           </div>
         )}
       </div>
+      <ToastContainerComponent />
     </div>
   );
 };

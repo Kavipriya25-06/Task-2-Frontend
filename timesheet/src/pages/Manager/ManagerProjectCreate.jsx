@@ -9,6 +9,13 @@ import { format } from "date-fns";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAttachmentManager } from "../../constants/useAttachmentManager";
+import {
+  showErrorToast,
+  showInfoToast,
+  showSuccessToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
 
 const ManagerProjectCreate = () => {
   const [teamleadManager, setTeamleadManager] = useState([]);
@@ -64,14 +71,7 @@ const ManagerProjectCreate = () => {
         (value) => value === "" || value.length === 0
       )
     ) {
-      toast.info("Empty Form", {
-        className: "custom-toast",
-        bodyClassName: "custom-toast-body",
-        progressClassName: "custom-toast-progress",
-        position: "top-center",
-        autoClose: 2000,
-        hideProgressBar: true,
-      });
+      showErrorToast("Empty form");
       return;
     }
 
@@ -105,6 +105,17 @@ const ManagerProjectCreate = () => {
 
       const data = await response.json();
       console.log(data);
+      if (!response.ok) {
+        // Check for nested error structure
+        const errorMessages = data.details
+          ? Object.entries(data.details)
+              .map(([field, messages]) => `${field}: ${messages.join(", ")}`)
+              .join("\n")
+          : data.error || "Unknown error occurred";
+
+        showErrorToast(` ${data.error}\n${errorMessages}`);
+        return;
+      }
 
       if (newAttachments.length > 0) {
         for (const file of newAttachments) {
@@ -125,17 +136,10 @@ const ManagerProjectCreate = () => {
       }
 
       if (response.ok) {
-        toast.success("Project Created Successfully", {
-          className: "custom-toast",
-          bodyClassName: "custom-toast-body",
-          progressClassName: "custom-toast-progress",
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: true,
-        });
+        showSuccessToast("Project Created Successfully");
         navigate("/manager/detail/projects/");
       } else {
-        toast.error("Failed to Create project" + data.error);
+        showErrorToast("Failed to Create project " + data.error);
       }
     } catch (err) {
       console.error("Request error:", err);
@@ -155,7 +159,7 @@ const ManagerProjectCreate = () => {
       !buildingData.building_title ||
       !buildingData.building_hours
     ) {
-      toast.warning("Please fill all Sub-Division fields");
+      showWarningToast("Please fill all Sub-Division fields");
       return;
     }
 
@@ -532,6 +536,7 @@ const ManagerProjectCreate = () => {
           </div>
         </div>
       )}
+      <ToastContainerComponent />
     </div>
   );
 };
