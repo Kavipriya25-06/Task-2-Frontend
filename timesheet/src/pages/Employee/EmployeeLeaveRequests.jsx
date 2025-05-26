@@ -205,6 +205,33 @@ const EmployeeLeaveRequests = () => {
                 ))}
               </tbody>
             </table>
+            <div className="pagination-controls">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                <img
+                  src="/src/assets/left.png"
+                  alt="Previous"
+                  style={{ width: 10, height: 12 }}
+                />
+              </button>
+              <span>
+                {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+              >
+                <img
+                  src="/src/assets/right.png"
+                  alt="Previous"
+                  style={{ width: 10, height: 12 }}
+                />
+              </button>
+            </div>
           </>
         ) : (
           <EmployeeLeaveRequestForm
@@ -216,33 +243,6 @@ const EmployeeLeaveRequests = () => {
             }} // Go back to boxes + table when closed
           />
         )}
-      </div>
-      <div className="pagination-controls">
-        <button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-        >
-          <img
-            src="/src/assets/left.png"
-            alt="Previous"
-            style={{ width: 10, height: 12 }}
-          />
-        </button>
-        <span>
-          {currentPage} of {totalPages}
-        </span>
-        <button
-          onClick={() =>
-            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-          }
-          disabled={currentPage === totalPages}
-        >
-          <img
-            src="/src/assets/right.png"
-            alt="Previous"
-            style={{ width: 10, height: 12 }}
-          />
-        </button>
       </div>
     </div>
   );
