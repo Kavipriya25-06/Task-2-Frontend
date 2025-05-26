@@ -8,6 +8,14 @@ import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { useAttachmentManager } from "../../constants/useAttachmentManager";
 
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
+
 const ManagerLeaveRequests = () => {
   const { user } = useAuth();
   const [leaveRequests, setLeaveRequests] = useState([]);
@@ -78,8 +86,10 @@ const ManagerLeaveRequests = () => {
 
       fetchLeaveRequests();
       console.log("Leave approved successfully");
+      showSuccessToast("Leave approved successfully");
     } catch (error) {
       console.error("Error updating user", error);
+      showErrorToast("Error updating user", error);
     }
   };
   const handleReject = async (leave_taken_id) => {
@@ -103,9 +113,11 @@ const ManagerLeaveRequests = () => {
       }
 
       console.log("Leave rejected successfully");
+      showSuccessToast("Leave rejected successfully");
       fetchLeaveRequests(); // Refresh the leave requests after rejection
     } catch (error) {
       console.error("Error rejecting leave", error);
+      showErrorToast("Error rejecting leave", error);
     }
   };
 
@@ -258,6 +270,7 @@ const ManagerLeaveRequests = () => {
           />
         </button>
       </div>
+      <ToastContainerComponent />
     </div>
   );
 };

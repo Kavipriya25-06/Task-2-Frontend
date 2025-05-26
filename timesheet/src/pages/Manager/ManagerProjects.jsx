@@ -7,6 +7,13 @@ import config from "../../config";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
 
 const ManagerProjects = () => {
   const { user } = useAuth();
@@ -111,14 +118,14 @@ const ManagerProjects = () => {
       setVisibleProjects(10);
       setHasMoreProjects(filtered.length > 10);
       if (searchText && filtered.length === 0) {
-        toast.info("No users found", {
-          className: "custom-toast",
-          bodyClassName: "custom-toast-body",
-          progressClassName: "custom-toast-progress",
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: true,
-        });
+        // toast.info("No users found", {
+        //   className: "custom-toast",
+        //   bodyClassName: "custom-toast-body",
+        //   progressClassName: "custom-toast-progress",
+        //   position: "top-center",
+        //   autoClose: 2000,
+        //   hideProgressBar: true,
+        // });
       }
     }, 500);
 
@@ -142,14 +149,14 @@ const ManagerProjects = () => {
       setHasMoreBuildings(filtered.length > 10);
 
       if (searchText && filtered.length === 0) {
-        toast.info("No users found", {
-          className: "custom-toast",
-          bodyClassName: "custom-toast-body",
-          progressClassName: "custom-toast-progress",
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: true,
-        });
+        // toast.info("No users found", {
+        //   className: "custom-toast",
+        //   bodyClassName: "custom-toast-body",
+        //   progressClassName: "custom-toast-progress",
+        //   position: "top-center",
+        //   autoClose: 2000,
+        //   hideProgressBar: true,
+        // });
       }
     }, 500);
 
@@ -178,14 +185,14 @@ const ManagerProjects = () => {
       setHasMoreTasks(filtered.length > 10);
 
       if (searchText && filtered.length === 0) {
-        toast.info("No users found", {
-          className: "custom-toast",
-          bodyClassName: "custom-toast-body",
-          progressClassName: "custom-toast-progress",
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: true,
-        });
+        // toast.info("No users found", {
+        //   className: "custom-toast",
+        //   bodyClassName: "custom-toast-body",
+        //   progressClassName: "custom-toast-progress",
+        //   position: "top-center",
+        //   autoClose: 2000,
+        //   hideProgressBar: true,
+        // });
       }
     }, 500);
 
@@ -481,6 +488,7 @@ const ManagerProjects = () => {
         ))}
       </div>
       <div>{renderTabContent()}</div>
+      <ToastContainerComponent />
     </div>
   );
 };

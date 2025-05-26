@@ -2,6 +2,13 @@ import React, { useState, useEffect } from "react";
 import config from "../../config";
 import { format } from "date-fns";
 import { useAuth } from "../../AuthContext";
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
 
 const ManagerCompoff = () => {
   const { user } = useAuth(); // Get logged-in manager details
@@ -53,7 +60,7 @@ const ManagerCompoff = () => {
       );
 
       if (!statusResponse.ok) {
-        alert("Failed to update status");
+        showErrorToast("Failed to update comp-off request status");
         return;
       }
 
@@ -74,6 +81,10 @@ const ManagerCompoff = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ comp_off: updatedCompOff }),
         });
+
+        showSuccessToast("Comp-Off request approved.");
+      } else if (newStatus.toLowerCase() === "rejected") {
+        showSuccessToast("Comp-Off request rejected.");
       }
 
       // Step 3: Refresh table
@@ -167,6 +178,7 @@ const ManagerCompoff = () => {
           </tbody>
         </table>
       </div>
+      <ToastContainerComponent />
     </div>
   );
 };

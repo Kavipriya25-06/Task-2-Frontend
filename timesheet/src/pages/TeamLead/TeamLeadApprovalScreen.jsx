@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import config from "../../config"; // adjust path to your config
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
 
 const TeamLeadApprovalScreen = () => {
   const { date, employee_id } = useParams();
@@ -213,6 +220,11 @@ const TeamLeadApprovalScreen = () => {
         approved: newApproved,
         rejected: false,
       });
+      if (newApproved) {
+        showSuccessToast("Timesheet Approved Successfully");
+      } else {
+        showSuccessToast("Approval Removed");
+      }
     } catch (err) {
       console.error("Error toggling approve", err);
     }
@@ -240,6 +252,11 @@ const TeamLeadApprovalScreen = () => {
         approved: false,
         rejected: newRejected,
       });
+      if (newRejected) {
+        showSuccessToast("Timesheet Rejected Successfully");
+      } else {
+        showSuccessToast("Rejection Removed");
+      }
     } catch (err) {
       console.error("Error toggling reject", err);
     }
@@ -357,6 +374,7 @@ const TeamLeadApprovalScreen = () => {
           </>
         )}
       </div>
+      <ToastContainerComponent />
     </div>
   );
 };

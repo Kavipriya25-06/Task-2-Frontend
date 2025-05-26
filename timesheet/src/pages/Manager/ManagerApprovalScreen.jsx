@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import config from "../../config";
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
 
 const ManagerApprovalScreen = () => {
   const { date, employee_id } = useParams();
@@ -213,6 +220,11 @@ const ManagerApprovalScreen = () => {
         approved: newApproved,
         rejected: false,
       });
+      if (newApproved) {
+        showSuccessToast("Timesheet Approved Successfully");
+      } else {
+        showSuccessToast("Approval Removed");
+      }
     } catch (err) {
       console.error("Error toggling approve", err);
     }
@@ -240,6 +252,11 @@ const ManagerApprovalScreen = () => {
         approved: false,
         rejected: newRejected,
       });
+      if (newRejected) {
+        showSuccessToast("Timesheet Rejected Successfully");
+      } else {
+        showSuccessToast("Rejection Removed");
+      }
     } catch (err) {
       console.error("Error toggling reject", err);
     }
@@ -357,6 +374,7 @@ const ManagerApprovalScreen = () => {
           </>
         )}
       </div>
+      <ToastContainerComponent />
     </div>
   );
 };

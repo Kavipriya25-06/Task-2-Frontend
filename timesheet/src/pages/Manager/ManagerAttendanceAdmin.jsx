@@ -9,6 +9,14 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
+
 const ManagerAttendanceAdmin = () => {
   const { user } = useAuth();
   const [attendanceData, setAttendanceData] = useState([]);
@@ -111,13 +119,13 @@ const ManagerAttendanceAdmin = () => {
       });
 
       if (response.ok) {
-        alert("Attendance added!");
+        showSuccessToast("Attendance added!");
         setShowAddPopup(false);
         setNewAttendance(initialAttendanceState); // Reset form
         fetchAttendanceAdmin(); // Refresh the list
       } else {
         const data = await response.json();
-        alert("Failed to add attendance: " + data.error);
+        showErrorToast("Failed to add attendance: " + data.error);
       }
     } catch (err) {
       console.error("Error adding attendance:", err);
@@ -425,6 +433,7 @@ const ManagerAttendanceAdmin = () => {
           + Add Attendance
         </button>
       </div>
+      <ToastContainerComponent />
     </div>
   );
 };
