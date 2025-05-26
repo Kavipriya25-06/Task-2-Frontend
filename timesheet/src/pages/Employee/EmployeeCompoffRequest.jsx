@@ -2,6 +2,13 @@ import React, { useEffect, useState } from "react";
 import config from "../../config";
 import { format } from "date-fns";
 import { useAuth } from "../../AuthContext"; //  Added for employee_id
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
 
 const EmployeeCompoffRequest = () => {
   const { user } = useAuth(); //  Get employee_id
@@ -40,7 +47,7 @@ const EmployeeCompoffRequest = () => {
         throw new Error("Failed to apply comp-off");
       }
 
-      alert("Comp-off applied successfully!");
+      showSuccessToast("Comp-off for "+user.date+" appiled successfully");
       fetchCompOffData(user.employee_id); // refresh
     } catch (error) {
       console.error("Error applying comp-off", error);
@@ -98,6 +105,7 @@ const EmployeeCompoffRequest = () => {
           )}
         </tbody>
       </table>
+      <ToastContainerComponent />
     </div>
   );
 };

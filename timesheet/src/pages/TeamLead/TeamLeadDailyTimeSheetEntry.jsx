@@ -375,7 +375,11 @@ const TeamLeadDailyTimeSheetEntry = () => {
       }
 
       setNewRows([]);
-      showSuccessToast("All timesheet rows saved successfully!");
+      // if (newRows.length === 0) {
+      //   showWarningToast("Please enter some fieldsds before saving.");
+      //   return;
+      // }
+      showSuccessToast("All timesheet rows submitted successfully!");
       // Optionally refresh data here
       fetchBiometricTaskData();
     } catch (error) {
@@ -472,6 +476,10 @@ const TeamLeadDailyTimeSheetEntry = () => {
       }
 
       setNewRows([]);
+      //  if (newRows.length === 0) {
+      //   showWarningToast("Please enter some fields before saving.");
+      //   return;
+      // }
       showSuccessToast("All timesheet rows saved successfully!");
       // Optionally refresh data here
       fetchBiometricTaskData();
