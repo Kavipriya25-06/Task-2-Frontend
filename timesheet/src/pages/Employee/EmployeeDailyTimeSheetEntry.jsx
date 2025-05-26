@@ -367,6 +367,7 @@ const EmployeeDailyTimeSheetEntry = () => {
         }
       }
 
+      setNewRows([]);
       alert("All timesheet rows saved successfully!");
       // Optionally refresh data here
       fetchBiometricTaskData();
@@ -455,7 +456,7 @@ const EmployeeDailyTimeSheetEntry = () => {
           return;
         }
       }
-
+      setNewRows([]);
       alert("All timesheet rows saved successfully!");
       // Optionally refresh data here
       fetchBiometricTaskData();

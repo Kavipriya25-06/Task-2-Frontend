@@ -366,6 +366,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
         }
       }
 
+      setNewRows([]);
       alert("All timesheet rows saved successfully!");
       // Optionally refresh data here
       fetchBiometricTaskData();
@@ -455,6 +456,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
         }
       }
 
+      setNewRows([]);
       alert("All timesheet rows saved successfully!");
       // Optionally refresh data here
       fetchBiometricTaskData();
