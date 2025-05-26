@@ -311,11 +311,20 @@ const EmployeeDailyTimeSheetEntry = () => {
   //  console.log("Task assign id",row.task_assign_id);
 
   const handleSubmit = async () => {
+    // Step 1: Validate everything first
+    for (let row of [...displayRows, ...newRows]) {
+      const result = validateTimes(row);
+      console.log("result", result);
+      if (!result) return; // Stop if any row fails validation
+    }
     try {
       // ---------------- PATCH updated existing rows ----------------
       for (let row of displayRows) {
         // console.log("Display rows", row);
-        const { start_time, end_time } = validateTimes(row);
+        // const { start_time, end_time } = validateTimes(row);
+        const result = validateTimes(row);
+        if (!result) return; // Stop on any validation failure
+        const { start_time, end_time } = result;
         const payload = {
           employee: employee_id,
           date: date,
@@ -348,7 +357,10 @@ const EmployeeDailyTimeSheetEntry = () => {
       // ---------------- POST new rows ----------------
       for (let row of newRows) {
         // console.log("new rows", row);
-        const { start_time, end_time } = validateTimes(row);
+        // const { start_time, end_time } = validateTimes(row);
+        const result = validateTimes(row);
+        if (!result) return; // Stop on any validation failure
+        const { start_time, end_time } = result;
         const payload = {
           employee: employee_id,
           date: date,
@@ -376,10 +388,10 @@ const EmployeeDailyTimeSheetEntry = () => {
       }
 
       setNewRows([]);
-      if (newRows.length === 0) {
-        showWarningToast("Please enter some fields before saving.");
-        return;
-      }
+      // if (newRows.length === 0) {
+      //   showWarningToast("Please enter some fields before saving.");
+      //   return;
+      // }
       showSuccessToast("All timesheet rows submitted successfully!");
       // Optionally refresh data here
       fetchBiometricTaskData();
@@ -416,10 +428,18 @@ const EmployeeDailyTimeSheetEntry = () => {
   };
 
   const handleSave = async () => {
+    // Step 1: Validate everything first
+    for (let row of [...displayRows, ...newRows]) {
+      const result = validateTimes(row);
+      if (!result) return; // Stop if any row fails validation
+    }
     try {
       // ---------------- PATCH updated existing rows ----------------
       for (let row of displayRows) {
-        const { start_time, end_time } = validateTimes(row);
+        // const { start_time, end_time } = validateTimes(row);
+        const result = validateTimes(row);
+        if (!result) return; // Stop on any validation failure
+        const { start_time, end_time } = result;
         const payload = {
           employee: employee_id,
           date: date,
@@ -450,7 +470,10 @@ const EmployeeDailyTimeSheetEntry = () => {
 
       // ---------------- POST new rows ----------------
       for (let row of newRows) {
-        const { start_time, end_time } = validateTimes(row);
+        // const { start_time, end_time } = validateTimes(row);
+        const result = validateTimes(row);
+        if (!result) return; // Stop on any validation failure
+        const { start_time, end_time } = result;
         const payload = {
           employee: employee_id,
           date: date,
@@ -476,10 +499,10 @@ const EmployeeDailyTimeSheetEntry = () => {
         }
       }
       setNewRows([]);
-      if (newRows.length === 0) {
-        showWarningToast("Please enter some fields before saving.");
-        return;
-      }
+      // if (newRows.length === 0) {
+      //   showWarningToast("Please enter some fields before saving.");
+      //   return;
+      // }
       showSuccessToast("All timesheet rows saved successfully!");
       // Optionally refresh data here
       fetchBiometricTaskData();
@@ -497,6 +520,7 @@ const EmployeeDailyTimeSheetEntry = () => {
       showWarningToast(
         `Please enter both start and end time for task "${row.task}".`
       );
+      return null;
     }
 
     const parseTime = (timeStr) => {
@@ -515,16 +539,19 @@ const EmployeeDailyTimeSheetEntry = () => {
       showWarningToast(
         `Task "${row.task}" Start Time (${start}) cannot be before Intime (${attendanceDetails.in_time}).`
       );
+      return null;
     }
 
     if (endSeconds <= startSeconds) {
       showWarningToast(`Task "${row.task}" End Time must be after Start Time.`);
+      return null;
     }
 
     if (parseFloat(totalAssignedHours) > maxAllowedHours) {
       showWarningToast(
         `Total assigned hours exceed logged hours (${maxAllowedHours}).`
       );
+      return null;
     }
 
     // Prepare final time strings
