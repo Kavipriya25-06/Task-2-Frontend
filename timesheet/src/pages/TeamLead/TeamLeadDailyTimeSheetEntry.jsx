@@ -494,7 +494,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
     const end = row.end_time;
 
     if (!start || !end) {
-      throw new Error(
+      showWarningToast(
         `Please enter both start and end time for task "${row.task}".`
       );
     }
@@ -512,17 +512,17 @@ const TeamLeadDailyTimeSheetEntry = () => {
       (intimeParts[0] || 0) * 3600 + (intimeParts[1] || 0) * 60;
 
     if (startSeconds < intimeSeconds) {
-      throw new Error(
+      showWarningToast(
         `Task "${row.task}" Start Time (${start}) cannot be before Intime (${attendanceDetails.in_time}).`
       );
     }
 
     if (endSeconds <= startSeconds) {
-      throw new Error(`Task "${row.task}" End Time must be after Start Time.`);
+      showWarningToast(`Task "${row.task}" End Time must be after Start Time.`);
     }
 
     if (parseFloat(totalAssignedHours) > maxAllowedHours) {
-      throw new Error(
+      showWarningToast(
         `Total assigned hours exceed logged hours (${maxAllowedHours}).`
       );
     }
@@ -771,14 +771,14 @@ const TeamLeadDailyTimeSheetEntry = () => {
         <button
           className="btn-cancel"
           onClick={handleSave}
-          disabled={totalAssignedHours > maxAllowedHours}
+          // disabled={totalAssignedHours > maxAllowedHours}
         >
           Save
         </button>
         <button
           className="btn-save"
           onClick={handleSubmit}
-          disabled={totalAssignedHours > maxAllowedHours}
+          // disabled={totalAssignedHours > maxAllowedHours}
         >
           Submit
         </button>
