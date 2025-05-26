@@ -134,17 +134,40 @@ const AddEmployee = () => {
     });
 
     if (!cleanedData.employee_email) {
-      alert("Please enter employee email");
+      toast.success("Please enter employee email", {
+        className: "custom-toast",
+        bodyClassName: "custom-toast-body",
+        progressClassName: "custom-toast-progress",
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: true,
+      });
+      // alert("Please enter employee email");
       return;
     }
 
     if (!cleanedData.employee_code) {
-      alert("Please enter employee code");
+      toast.success("Please enter employee code", {
+        className: "custom-toast",
+        bodyClassName: "custom-toast-body",
+        progressClassName: "custom-toast-progress",
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: true,
+      });
       return;
     }
 
     if (!cleanedData.employee_name) {
-      alert("Please enter employee name");
+      toast.success("Please enter employee name", {
+        className: "custom-toast",
+        bodyClassName: "custom-toast-body",
+        progressClassName: "custom-toast-progress",
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: true,
+      });
+      // alert("Please enter employee name");
       return;
     }
 
@@ -393,8 +416,7 @@ const AddEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>
-                Employee Name
-                <span className="required-star">*</span>
+                Employee Name <span className="required-star">*</span>
               </label>
               <input
                 name="employee_name"
@@ -473,7 +495,8 @@ const AddEmployee = () => {
               </div>
             </div>
             <div className="individual-tabs">
-              <label>Personal Email</label>
+              <label>Personal Email <span className="required-star">*</span>
+              </label> 
               <input
                 name="personal_email"
                 value={formData.personal_email}
@@ -486,7 +509,9 @@ const AddEmployee = () => {
               )}
             </div>
             <div className="individual-tabs">
-              <label>Phone Number</label>
+              <label>Phone Number
+                
+              </label>
               <input
                 name="contact_number"
                 value={formData.contact_number}

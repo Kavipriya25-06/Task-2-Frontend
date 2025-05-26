@@ -516,7 +516,7 @@ const TeamLeadProjects = () => {
           <div>
             <div className="user-header">
               <h2 className="employee-title">Sub-Division</h2>
-              <div className="search-bar-container">
+              <div className="search-bar-containers">
                 <input
                   type="text"
                   placeholder="Search by code, name"

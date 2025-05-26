@@ -1166,6 +1166,19 @@ table input[type="number"]:focus {
   margin: 0px;
 }
 
+.search-bar-containers {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transform: translateX(-25%); /* Nudges slightly to the right */
+}
+
+
 .search-bar {
   width: 100%;
   padding: 7px 40px 7px 15px;
@@ -4119,6 +4132,8 @@ h4 {
   cursor: default;
 }
 
+
+
 .tab-content .attachments-box {
   background-color: #ebebeb;
   border: 1px solid rgb(202, 202, 202);
@@ -4170,6 +4185,7 @@ h4 {
   display: flex;
   align-items: center;
   border: none !important;
+  justify-content: center !important;
 }
 
 .attachment-item a {
