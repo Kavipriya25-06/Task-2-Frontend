@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useAuth } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
+import { showErrorToast, ToastContainerComponent } from "../constants/Toastify";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -27,13 +28,13 @@ const Login = () => {
       // Redirect logic here (e.g., navigate to dashboard)
       navigate("/home"); // Redirect to dashboard
     } else if (tryLogin === "inactive") {
-      alert("User is inactive, contact Admin");
+      showErrorToast("User is inactive, contact Admin");
     } else if (tryLogin === "passwordinvalid") {
-      alert("Password is incorrect");
+      showErrorToast("Password is incorrect");
     } else if (tryLogin === "invalid") {
-      alert("Invalid email or password");
+      showErrorToast("Invalid email or password");
     } else if (tryLogin === "nouser") {
-      alert("User does not exist, contact Admin");
+      showErrorToast("User does not exist, contact Admin");
     }
   };
 
@@ -89,6 +90,7 @@ const Login = () => {
           </p>
         </div>
       </div>
+      <ToastContainerComponent />
     </div>
   );
 };

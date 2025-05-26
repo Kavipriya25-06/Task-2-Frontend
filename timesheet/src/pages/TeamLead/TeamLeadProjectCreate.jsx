@@ -324,7 +324,7 @@ const TeamLeadProjectCreate = () => {
                         onClick={() =>
                           setSelectedBuildings((prev) =>
                             prev.filter(
-                              (item) => item.building_id !== b.building_id
+                              (item) => item.building_code !== b.building_code
                             )
                           )
                         }
