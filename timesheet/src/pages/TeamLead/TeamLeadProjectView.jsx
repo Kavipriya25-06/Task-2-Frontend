@@ -51,6 +51,9 @@ const TeamLeadProjectView = () => {
   const [availableBuildings, setAvailableBuildings] = useState([]);
   const [selectedAreas, setSelectedAreas] = useState([]);
   const [variations, setVariations] = useState([
+    { id: "", date: "", title: "", hours: "", project: "" },
+  ]);
+  const [newVariations, setNewVariations] = useState([
     { date: "", title: "", hours: "", project: "" },
   ]);
   const [availableAreas, setAvailableAreas] = useState([]);
@@ -104,9 +107,15 @@ const TeamLeadProjectView = () => {
   };
 
   const handleVariationChange = (index, field, value) => {
-    const newVariations = [...variations];
-    newVariations[index][field] = value;
-    setVariations(newVariations);
+    const existingVariations = [...variations];
+    existingVariations[index][field] = value;
+    setVariations(existingVariations);
+  };
+
+  const handleNewVariationChange = (index, field, value) => {
+    const newOnes = [...newVariations];
+    newOnes[index][field] = value;
+    setNewVariations(newOnes);
   };
 
   const handleRemoveVariation = (index) => {
@@ -116,8 +125,8 @@ const TeamLeadProjectView = () => {
   const handleAddVariation = () => {
     const last = variations[variations.length - 1];
     if (!last || (last.date && last.title && last.hours)) {
-      setVariations([
-        ...variations,
+      setNewVariations([
+        ...newVariations,
         { date: "", title: "", hours: "", project: "" },
       ]);
     } else {
@@ -182,6 +191,43 @@ const TeamLeadProjectView = () => {
       console.error("Project assign update error:", err);
       return;
     }
+    // 3️ Handle new and updated variations:
+    const updatedVariations = variations.map(async (variation) => {
+      if (variation.id) {
+        // Update existing variation using PATCH
+        const updateResponse = await fetch(
+          `${config.apiBaseURL}/variation/${variation.id}/`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(variation),
+          }
+        );
+        if (!updateResponse.ok) {
+          console.error("Failed to update variation:", variation);
+          alert("Failed to update variations");
+        }
+      }
+    });
+
+    const newVariationRequests = newVariations.map(async (newVariation) => {
+      // Create new variation using POST
+      const postResponse = await fetch(`${config.apiBaseURL}/variation/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newVariation),
+      });
+      if (!postResponse.ok) {
+        console.error("Failed to post new variation:", newVariation);
+        alert("Failed to add new variation");
+      }
+    });
+
+    // Wait for all PATCH and POST requests to complete
+    await Promise.all([...updatedVariations, ...newVariationRequests]);
+
+    // Clear new variations after submission
+    setNewVariations([{ date: "", title: "", hours: "", project: "" }]);
 
     if (newAttachments.length > 0) {
       for (const file of newAttachments) {
@@ -700,6 +746,97 @@ const TeamLeadProjectView = () => {
                                     const value = e.target.value;
                                     if (Number(value) >= 0 || value === "") {
                                       handleVariationChange(
+                                        index,
+                                        "hours",
+                                        value
+                                      );
+                                    }
+                                  }}
+                                />
+                              ) : (
+                                variation.hours
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                        {newVariations.map((variation, index) => (
+                          <tr key={index}>
+                            <td>
+                              {editMode ? (
+                                <div className="date-wrapper">
+                                  <DatePicker
+                                    selected={
+                                      variation.date
+                                        ? new Date(variation.date)
+                                        : null
+                                    }
+                                    onChange={(date) =>
+                                      handleNewVariationChange(
+                                        index,
+                                        "date",
+                                        date
+                                          ? date.toISOString().slice(0, 10)
+                                          : ""
+                                      )
+                                    }
+                                    dateFormat="dd-MMM-yyyy"
+                                    placeholderText="dd-mm-yyyy"
+                                    className="input1"
+                                    showMonthDropdown
+                                    showYearDropdown
+                                    dropdownMode="select"
+                                    calendarClassName="custom-datepicker"
+                                    popperPlacement="bottom-start"
+                                    popperModifiers={[
+                                      {
+                                        name: "preventOverflow",
+                                        options: {
+                                          boundary: "viewport",
+                                        },
+                                      },
+                                    ]}
+                                    popperContainer={({ children }) => (
+                                      <div className="datepicker-portal">
+                                        {children}
+                                      </div>
+                                    )}
+                                  />
+                                  <i className="fas fa-calendar-alt calendar-icon"></i>
+                                </div>
+                              ) : variation.date ? (
+                                format(new Date(variation.date), "dd-MMM-yyyy")
+                              ) : (
+                                ""
+                              )}
+                            </td>
+                            <td>
+                              {editMode ? (
+                                <input
+                                  type="text"
+                                  placeholder="Enter title"
+                                  value={variation.title}
+                                  onChange={(e) =>
+                                    handleNewVariationChange(
+                                      index,
+                                      "title",
+                                      e.target.value
+                                    )
+                                  }
+                                />
+                              ) : (
+                                variation.title
+                              )}
+                            </td>
+                            <td>
+                              {editMode ? (
+                                <input
+                                  type="number"
+                                  placeholder="Hours"
+                                  value={variation.hours}
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (Number(value) >= 0 || value === "") {
+                                      handleNewVariationChange(
                                         index,
                                         "hours",
                                         value
