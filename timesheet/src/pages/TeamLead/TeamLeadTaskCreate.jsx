@@ -3,6 +3,13 @@ import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate } from "react-router-dom";
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
 
 const TeamLeadTaskCreate = () => {
   const [taskData, setTaskData] = useState({});
@@ -31,12 +38,12 @@ const TeamLeadTaskCreate = () => {
 
       const data = await res.json();
       if (res.ok) {
-        alert("Task created successfully!");
+        showSuccessToast("Task created successfully!");
       } else {
         console.error(data);
-        alert("Failed to create Task.");
+        showErrorToast("Failed to create Task.");
       }
-      setTimeout(() => navigate(`/teamlead/detail/projects/`), 1000);
+      setTimeout(() => navigate(`/teamlead/detail/projects/`), 3000);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -107,6 +114,7 @@ const TeamLeadTaskCreate = () => {
           </button>
         </div>
       </form>
+      <ToastContainerComponent />
     </div>
   );
 };

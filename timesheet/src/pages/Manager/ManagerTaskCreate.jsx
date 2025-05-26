@@ -5,6 +5,14 @@ import config from "../../config";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+// import { showErrorToast, showSuccessToast } from "../../constants/Toastify";
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
 
 const ManagerTaskCreate = () => {
   const [taskData, setTaskData] = useState({});
@@ -33,19 +41,20 @@ const ManagerTaskCreate = () => {
 
       const data = await res.json();
       if (res.ok) {
-        toast.success("Task created successfully", {
-          className: "custom-toast",
-          bodyClassName: "custom-toast-body",
-          progressClassName: "custom-toast-progress",
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: true,
-        });
+        // toast.success("Task created successfully", {
+        //   className: "custom-toast",
+        //   bodyClassName: "custom-toast-body",
+        //   progressClassName: "custom-toast-progress",
+        //   position: "top-center",
+        //   autoClose: 2000,
+        //   hideProgressBar: true,
+        // });
+        showSuccessToast("Task created successfully");
       } else {
         console.error(data);
-        toast.error("Failed to create Task." + data.error);
+        showErrorToast("Failed to create Task.");
       }
-      setTimeout(() => navigate(`/manager/detail/projects/`), 1000);
+      setTimeout(() => navigate(`/manager/detail/projects/`), 3000);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -116,7 +125,7 @@ const ManagerTaskCreate = () => {
           </button>
         </div>
       </form>
-      <ToastContainer />
+      <ToastContainerComponent />
     </div>
   );
 };
