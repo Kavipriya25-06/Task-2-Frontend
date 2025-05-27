@@ -33,6 +33,11 @@ const EmployeeTaskDetail = () => {
       );
       const data = await response.json();
       setTaskData(data);
+      if (data.attachments && Array.isArray(data.attachments)) {
+        setAttachments(data.attachments);
+      } else {
+        setAttachments([]); // fallback to empty
+      }
       console.log("Task Assignment:", data);
     } catch (error) {
       console.error("Error fetching task assignment:", error);
@@ -83,46 +88,82 @@ const EmployeeTaskDetail = () => {
                 <p>{task?.task_description || "N/A"}</p>
               </div>
               <div className="project-form-group">
-  <label className="attaches">Attachments</label>
+                <label className="attaches">Attachments</label>
 
-  {attachments && attachments.length > 0 ? (
-    <ul className="attachment-list">
-      {attachments.map((file, index) => {
-        if (!file?.file) return null;
+                {attachments && attachments.length > 0 ? (
+                  <>
+                     <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowAttachments((prev) => !prev);
+                      }}
+                      className="view-attachment-link"
+                      style={{
+                        display: "inline-block",
+                        marginBottom: "10px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <img
+                        src="/src/assets/pin svg.svg"
+                        alt="Attachment"
+                        style={{
+                          width: "16px",
+                          height: "16px",
+                          marginRight: "5px",
+                          verticalAlign: "middle",
+                        }}
+                      />
+                      {showAttachments
+                        ? "Hide Attachments"
+                        : "View Attachments"}
+                    </a>
 
-        const fullFilename = file.file.split("/").pop();
-        const match = fullFilename.match(/^(.+?)_[a-zA-Z0-9]+\.(\w+)$/);
-        const filename = match ? `${match[1]}.${match[2]}` : fullFilename;
+                    {/* 📎 Show attachments only if toggle is on */}
+                    {showAttachments && (
+                      <ul className="attachment-list">
+                        {attachments.map((file, index) => {
+                          if (!file?.file) return null;
 
-        return (
-          <li key={index}>
-            <a
-              href={`${config.apiBaseURL}${file.file}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="view-attachment-link"
-            >
-              <img
-                src="/src/assets/pin svg.svg"
-                alt="Attachment"
-                style={{
-                  width: "16px",
-                  height: "16px",
-                  marginRight: "5px",
-                  verticalAlign: "middle",
-                }}
-              />
-              {filename}
-            </a>
-          </li>
-        );
-      })}
-    </ul>
-  ) : (
-    <p style={{ color: "#666" }}>No attachments added.</p>
-  )}
-</div>
+                          const fullFilename = file.file.split("/").pop();
+                          const match = fullFilename.match(
+                            /^(.+?)_[a-zA-Z0-9]+\.(\w+)$/
+                          );
+                          const filename = match
+                            ? `${match[1]}.${match[2]}`
+                            : fullFilename;
 
+                          return (
+                            <li key={index}>
+                              <a
+                                href={`${config.apiBaseURL}${file.file}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="view-attachment-link"
+                              >
+                                <img
+                                  src="/src/assets/pin svg.svg"
+                                  alt="Attachment"
+                                  style={{
+                                    width: "16px",
+                                    height: "16px",
+                                    marginRight: "5px",
+                                    verticalAlign: "middle",
+                                  }}
+                                />
+                                {filename}
+                              </a>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </>
+                ) : (
+                  <p style={{ color: "#666" }}>No attachments added.</p>
+                )}
+              </div>
             </div>
           </div>
           <div className="right-form">
