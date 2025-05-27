@@ -4,11 +4,23 @@ import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate, useParams } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import { useAttachmentManager } from "../../constants/useAttachmentManager";
 
 const EmployeeTaskDetail = () => {
   const { user } = useAuth();
   const { task_assign_id } = useParams(); // from URL
   const [taskData, setTaskData] = useState([]);
+  const [showAttachments, setShowAttachments] = useState(false);
+
+  const {
+    attachments,
+    setAttachments,
+    newAttachments,
+    setNewAttachments,
+    handleAttachmentChange,
+    removeExistingAttachment,
+    removeNewAttachment,
+  } = useAttachmentManager([]);
 
   useEffect(() => {
     fetchTaskAssignment();
@@ -71,30 +83,46 @@ const EmployeeTaskDetail = () => {
                 <p>{task?.task_description || "N/A"}</p>
               </div>
               <div className="project-form-group">
-                <label className="attaches">Attachments</label>
-                {task?.attachments ? (
-                  <a
-                    href={task.attachments}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="view-attachment-link"
-                  >
-                    <img
-                      src="/src/assets/pin svg.svg" // replace this with your actual image path
-                      alt="Attachment"
-                      style={{
-                        width: "16px",
-                        height: "16px",
-                        marginRight: "5px",
-                        verticalAlign: "middle",
-                      }}
-                    />
-                    View Attachment
-                  </a>
-                ) : (
-                  <p>No attachments</p>
-                )}
-              </div>
+  <label className="attaches">Attachments</label>
+
+  {attachments && attachments.length > 0 ? (
+    <ul className="attachment-list">
+      {attachments.map((file, index) => {
+        if (!file?.file) return null;
+
+        const fullFilename = file.file.split("/").pop();
+        const match = fullFilename.match(/^(.+?)_[a-zA-Z0-9]+\.(\w+)$/);
+        const filename = match ? `${match[1]}.${match[2]}` : fullFilename;
+
+        return (
+          <li key={index}>
+            <a
+              href={`${config.apiBaseURL}${file.file}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="view-attachment-link"
+            >
+              <img
+                src="/src/assets/pin svg.svg"
+                alt="Attachment"
+                style={{
+                  width: "16px",
+                  height: "16px",
+                  marginRight: "5px",
+                  verticalAlign: "middle",
+                }}
+              />
+              {filename}
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+  ) : (
+    <p style={{ color: "#666" }}>No attachments added.</p>
+  )}
+</div>
+
             </div>
           </div>
           <div className="right-form">
