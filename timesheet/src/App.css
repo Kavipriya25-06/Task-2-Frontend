@@ -33,7 +33,6 @@
   padding: 20px;
 }
 
-
 .logo-container {
   flex: 1;
   display: flex;
@@ -68,7 +67,6 @@
   display: block;
   margin: 0 auto;
 }
-
 
 .infoicon {
   height: 20px;
@@ -1186,7 +1184,6 @@ table input[type="number"]:focus {
   text-align: center;
   transform: translateX(-25%); /* Nudges slightly to the right */
 }
-
 
 .search-bar {
   width: 100%;
@@ -2561,7 +2558,7 @@ h3 {
 /* display: flex;
   align-items: center;
 } */
-*/ .uneditable-textarea {
+.uneditable-textarea {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -3914,8 +3911,6 @@ h4 {
   white-space: nowrap;
 }
 
-
-
 .attachment-link {
   display: flex;
   align-items: center;
@@ -4143,8 +4138,6 @@ h4 {
   cursor: default;
 }
 
-
-
 .tab-content .attachments-box {
   background-color: #ebebeb;
   border: 1px solid rgb(202, 202, 202);
@@ -4189,8 +4182,6 @@ h4 {
   gap: 10px;
 }
 
-
-
 .attachment-item {
   background-color: white;
   padding: 4px 8px !important;
@@ -4216,7 +4207,6 @@ h4 {
 
 .no-attachment {
   display: flex;
-
 }
 
 .attachment-items {
@@ -4235,10 +4225,8 @@ h4 {
   margin-bottom: 8px !important; /* Add margin only between items if multiple files */
 }
 
-
-
 .attachment-items a {
- color: black;
+  color: black;
   text-decoration: none;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -4312,7 +4300,6 @@ h4 {
   transform: translateY(-1px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
-
 
 .project-form-group p {
   margin: 0%;
