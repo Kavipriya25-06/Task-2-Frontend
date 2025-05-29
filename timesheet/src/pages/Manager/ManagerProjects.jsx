@@ -75,6 +75,49 @@ const ManagerProjects = () => {
     }
   };
 
+  const fetchReports = async () => {
+    try {
+      const response = await fetch(`${config.apiBaseURL}/export-report/`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "text/csv",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to download CSV");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+
+      // Set default filename (optional: you can get it from headers too)
+      const now = new Date();
+      const istNow = new Date(now.getTime() + 5.5 * 60 * 60 * 1000); // Add 5.5 hours
+      const formattedIST = istNow
+        .toISOString()
+        .slice(0, 19)
+        .replace("T", "_")
+        .replace(/:/g, "-");
+
+      link.download = `projects_report_${formattedIST}.csv`;
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading CSV:", error);
+    }
+  };
+
+  const handleReportClick = () => {
+    fetchReports();
+  };
+
   const handleAddClick = () => {
     navigate(`create`);
   };
@@ -488,7 +531,9 @@ const ManagerProjects = () => {
             </button>
           ))}
         </div>
-        <button className="report-btn">Download report</button>
+        <button onClick={() => handleReportClick()} className="report-btn">
+          Download report
+        </button>
       </div>
       <div>{renderTabContent()}</div>
       <ToastContainerComponent />
