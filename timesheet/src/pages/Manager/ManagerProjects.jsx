@@ -476,16 +476,19 @@ const ManagerProjects = () => {
 
   return (
     <div>
-      <div className="tab-header">
-        {tabLabels.map((label, index) => (
-          <button
-            key={label}
-            onClick={() => setActiveTab(index)}
-            className={activeTab === index ? "tab-btn active" : "tab-btn"}
-          >
-            {label}
-          </button>
-        ))}
+      <div className="report-header">
+        <div className="tab-header-report">
+          {tabLabels.map((label, index) => (
+            <button
+              key={label}
+              onClick={() => setActiveTab(index)}
+              className={activeTab === index ? "tab-btn active" : "tab-btn"}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <button className="report-btn">Download report</button>
       </div>
       <div>{renderTabContent()}</div>
       <ToastContainerComponent />
