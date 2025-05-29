@@ -1,4 +1,4 @@
-// src\pages\Manager\ManagerProjectView.jsx
+// src\pages\TeamLead\TeamLeadProjectView.jsx
 
 import React, { useEffect, useState, useRef } from "react";
 import { FaEdit } from "react-icons/fa";
@@ -994,7 +994,7 @@ const TeamLeadProjectView = () => {
                       }}
                     >
                       <img
-                        src="/src/assets/pin svg.svg"
+                        src="/pin_svg.svg"
                         alt="Attachment"
                         style={{
                           width: "16px",
@@ -1030,7 +1030,7 @@ const TeamLeadProjectView = () => {
                                 className="view-attachment-link"
                               >
                                 <img
-                                  src="/src/assets/pin svg.svg"
+                                  src="/pin_svg.svg"
                                   alt="Attachment"
                                   style={{
                                     width: "16px",

@@ -4,9 +4,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import config from "../../config";
 import { cleanFormData } from "../../utils/cleanFormData";
-import usePlaceholder from "../../assets/profile icon.svg";
-import cameraIcon from "../../assets/camera.png";
-import plusIcon from "../../assets/plus.png";
+import usePlaceholder from "/profile_icon.svg";
+import cameraIcon from "/camera.png";
+import plusIcon from "/plus.png";
 import { useAttachmentManager } from "../../constants/useAttachmentManager";
 import { useEmployeeFormHandler } from "../../constants/useEmployeeFormHandler";
 import { defaultEmployeeFormData } from "../../constants/defaultEmployeeFormData";
@@ -474,8 +474,9 @@ const AddEmployee = () => {
               </div>
             </div>
             <div className="individual-tabs">
-              <label>Personal Email <span className="required-star">*</span>
-              </label> 
+              <label>
+                Personal Email <span className="required-star">*</span>
+              </label>
               <input
                 name="personal_email"
                 value={formData.personal_email}
@@ -488,9 +489,7 @@ const AddEmployee = () => {
               )}
             </div>
             <div className="individual-tabs">
-              <label>Phone Number
-                
-              </label>
+              <label>Phone Number</label>
               <input
                 name="contact_number"
                 value={formData.contact_number}

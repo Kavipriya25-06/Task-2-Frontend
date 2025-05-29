@@ -53,7 +53,7 @@ export default function LogoutPopup({ onClose }) {
           <div className="logout-section" onClick={handleLogout}>
             <button className="logout-button" onClick={onClose}>
               <span>
-                <img src="/src/assets/logout icon.svg" />
+                <img src="/logouticon.svg" />
               </span>
               <span className="logout">Logout</span>
             </button>

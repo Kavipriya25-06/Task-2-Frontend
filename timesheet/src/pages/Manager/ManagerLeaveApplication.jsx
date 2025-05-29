@@ -227,7 +227,7 @@ const ManagerLeaveApplication = () => {
                 disabled={currentPage === 1}
               >
                 <img
-                  src="/src/assets/left.png"
+                  src="/left.png"
                   alt="Previous"
                   style={{ width: 10, height: 12 }}
                 />
@@ -242,7 +242,7 @@ const ManagerLeaveApplication = () => {
                 disabled={currentPage === totalPages}
               >
                 <img
-                  src="/src/assets/right.png"
+                  src="/right.png"
                   alt="Previous"
                   style={{ width: 10, height: 12 }}
                 />

@@ -680,7 +680,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
                     Delete
                   </button> */}
                   <img
-                    src="\src\assets\reject.png"
+                    src="\reject.png"
                     alt="reject button"
                     className="leavebuttons"
                     onClick={() =>
@@ -779,7 +779,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
                   Delete
                 </button> */}
                   <img
-                    src="\src\assets\reject.png"
+                    src="\reject.png"
                     alt="reject button"
                     className="leavebuttons"
                     onClick={() => handleDeleteRow(index, "new")}

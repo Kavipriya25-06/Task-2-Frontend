@@ -675,7 +675,7 @@ const EmployeeDailyTimeSheetEntry = () => {
                   Delete
                 </button> */}
                 <img
-                  src="\src\assets\reject.png"
+                  src="\reject.png"
                   alt="reject button"
                   className="leavebuttons"
                   onClick={() => handleDeleteRow(row.timesheet_id, "existing")}
@@ -772,7 +772,7 @@ const EmployeeDailyTimeSheetEntry = () => {
                   Delete
                 </button> */}
                 <img
-                  src="\src\assets\reject.png"
+                  src="\reject.png"
                   alt="reject button"
                   className="leavebuttons"
                   onClick={() => handleDeleteRow(index, "new")}

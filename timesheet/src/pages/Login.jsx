@@ -44,7 +44,7 @@ const Login = () => {
         <div className="logo-section">
           <div className="logo-container">
             <img
-              src="src/assets/Arris logo.jpg"
+              src="\arrislogo.png"
               // {\* src="src\assets\Logo.svg" *\}
               alt="Arris Logo"
               className="logo-c"
