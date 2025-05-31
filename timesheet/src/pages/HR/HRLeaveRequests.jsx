@@ -16,7 +16,7 @@ import {
   ToastContainerComponent,
 } from "../../constants/Toastify";
 
-const ManagerLeaveRequests = () => {
+const HRLeaveRequests = () => {
   const { user } = useAuth();
   const [leaveRequests, setLeaveRequests] = useState([]);
   const [filteredLeaveRequests, setFilteredLeaveRequests] = useState([]);
@@ -44,9 +44,7 @@ const ManagerLeaveRequests = () => {
 
   const fetchLeaveRequests = async () => {
     try {
-      const response = await fetch(
-        `${config.apiBaseURL}/leave-request/${user.employee_id}/`
-      );
+      const response = await fetch(`${config.apiBaseURL}/leave-request/`);
       const data = await response.json();
       setLeaveRequests(data);
       console.log("Leave requests", data);
@@ -64,118 +62,8 @@ const ManagerLeaveRequests = () => {
     setCurrentPage(1);
   };
 
-  const handleApprove = async (leave_taken_id) => {
-    // e.preventDefault();
-    const leaveUpdate = {
-      status: "approved",
-      approved_by: user.employee_id,
-    };
-
-    try {
-      const response = await fetch(
-        `${config.apiBaseURL}/leaves-taken/${leave_taken_id}/`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(leaveUpdate),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Error updating user: ${response.statusText}`);
-      }
-
-      fetchLeaveRequests();
-      console.log("Leave approved successfully");
-      showSuccessToast("Leave approved successfully");
-    } catch (error) {
-      console.error("Error updating user", error);
-      showErrorToast("Error updating user", error);
-    }
-  };
-  const handleReject = async (
-    leave_taken_id,
-    leaveTypeKey,
-    duration,
-    employee_id
-  ) => {
-    const leaveUpdate = {
-      status: "rejected",
-      approved_by: user.employee_id,
-    };
-
-    const balanceUpdate = {
-      status: "rejected",
-      approved_by: user.employee_id,
-    };
-
-    try {
-      const response = await fetch(
-        `${config.apiBaseURL}/leaves-taken/${leave_taken_id}/`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(leaveUpdate),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Error updating leave: ${response.statusText}`);
-      }
-
-      console.log("Leave rejected successfully");
-      showSuccessToast("Leave rejected successfully");
-      await patchLeaveAvailability(leaveTypeKey, duration, employee_id);
-      fetchLeaveRequests(); // Refresh the leave requests after rejection
-    } catch (error) {
-      console.error("Error rejecting leave", error);
-      showErrorToast("Error rejecting leave", error);
-    }
-  };
-
-  const patchLeaveAvailability = async (
-    leaveTypeKey,
-    duration,
-    employee_id
-  ) => {
-    const patchURL = `${config.apiBaseURL}/leaves-available/by_employee/${employee_id}/`;
-
-    try {
-      // Step 1: Fetch current available leave
-      const res = await fetch(patchURL);
-      const currentData = await res.json();
-
-      const currentLeave = parseFloat(currentData[leaveTypeKey] || 0);
-      const newLeaveBalance = currentLeave + parseFloat(duration);
-
-      // Step 2: Patch with updated value
-      const patchRes = await fetch(patchURL, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ [leaveTypeKey]: newLeaveBalance }),
-      });
-
-      if (!patchRes.ok) {
-        const err = await patchRes.json();
-        console.error("Leave availability update failed:", err);
-      }
-    } catch (err) {
-      console.error("Error patching leave availability:", err);
-    }
-  };
-
   return (
     <div className="leaves-container">
-      {/* Leave Application Button - Top Right */}
-      <div className="leave-application-topbar">
-        <button
-          onClick={() => navigate("Leaveapplication")}
-          className="leave-application-button"
-        >
-          Leave Application
-        </button>
-      </div>
-
       <div className="leaves-tab">
         {tabLabels.map((label, index) => (
           <button
@@ -202,8 +90,7 @@ const ManagerLeaveRequests = () => {
                 <th>End date</th>
                 <th>Leave type</th>
                 <th>Reason</th>
-                {activeTab === 0 && <th>Actions</th>}
-                <th style={{ width: "120px" }}>Attachments</th>
+                <th>Attachments</th>
               </tr>
             </thead>
             <tbody>
@@ -234,29 +121,7 @@ const ManagerLeaveRequests = () => {
                       : ""}
                   </td>
                   <td>{leave.reason}</td>
-                  {activeTab === 0 && (
-                    <td>
-                      <img
-                        src="/approve.png"
-                        alt="approve button"
-                        className="leavebutton"
-                        onClick={() => handleApprove(leave.leave_taken_id)}
-                      />
-                      <img
-                        src="/reject.png"
-                        alt="reject button"
-                        className="leavebutton"
-                        onClick={() =>
-                          handleReject(
-                            leave.leave_taken_id,
-                            leave.leave_type,
-                            leave.duration,
-                            leave.employee.employee_id
-                          )
-                        }
-                      />
-                    </td>
-                  )}
+
                   <td>
                     <ul className="attachments-list">
                       {/* Existing attachments */}
@@ -325,4 +190,4 @@ const ManagerLeaveRequests = () => {
   );
 };
 
-export default ManagerLeaveRequests;
+export default HRLeaveRequests;

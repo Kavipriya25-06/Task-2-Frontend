@@ -184,7 +184,7 @@ const EmployeeLeaveRequests = () => {
                               }
                               className="view-attachments-button"
                             >
-                              View Attachments 
+                              View Attachments
                               {/* ({request.attachments.length}) */}
                             </button>
                           ) : (
@@ -223,24 +223,26 @@ const EmployeeLeaveRequests = () => {
                         </div>
                       ) : request.attachments &&
                         request.attachments.length === 1 ? (
-                          <div className="attachment-items">
-                        <a
-                          href={config.apiBaseURL + request.attachments[0].file}
-                          target="_blank"
-                          rel="noopener noreferrer"                        
-                        >
-                          {(() => {
-                            const fullFilename = request.attachments[0].file
-                              .split("/")
-                              .pop();
-                            const match = fullFilename.match(
-                              /^(.+?)_[a-zA-Z0-9]+\.(\w+)$/
-                            );
-                            return match
-                              ? `${match[1]}.${match[2]}`
-                              : fullFilename;
-                          })()}
-                        </a>
+                        <div className="attachment-items">
+                          <a
+                            href={
+                              config.apiBaseURL + request.attachments[0].file
+                            }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {(() => {
+                              const fullFilename = request.attachments[0].file
+                                .split("/")
+                                .pop();
+                              const match = fullFilename.match(
+                                /^(.+?)_[a-zA-Z0-9]+\.(\w+)$/
+                              );
+                              return match
+                                ? `${match[1]}.${match[2]}`
+                                : fullFilename;
+                            })()}
+                          </a>
                         </div>
                       ) : (
                         <span style={{ color: "#888" }}>No attachments</span>

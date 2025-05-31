@@ -54,6 +54,8 @@ import EmployeeList from "./pages/HR/HREmployeeList.jsx";
 import HRHolidayCalendar from "./pages/HR/HRHolidayCalendar.jsx";
 import HRHolidayList from "./pages/HR/HRHolidayList.jsx";
 import HRSettings from "./pages/HR/HRSettings.jsx";
+import HRAttendance from "./pages/HR/HRAttendance.jsx";
+import HRLeaveRequests from "./pages/HR/HRLeaveRequests.jsx";
 
 // Manager pages
 import ManagerDashboard from "./pages/Manager/ManagerDashboard.jsx";
@@ -305,11 +307,8 @@ const App = () => {
                   path="employee-details/edit-employee/:employee_id"
                   element={<EditEmployee />}
                 />
-                <Route path="holidays" element={<HRHolidayCalendar />} />
-                {/* <Route
-                  path="holidays/holiday-list"
-                  element={<HRHolidayList />}
-                /> */}
+                <Route path="leave-requests" element={<HRLeaveRequests />} />
+                <Route path="attendance" element={<HRAttendance />} />
                 <Route path="settings" element={<HRSettings />} />
               </Route>
             </Route>

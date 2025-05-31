@@ -258,6 +258,11 @@ textarea {
   border: 2px solid #ccc !important;
 }
 
+.leave-requests-table select {
+  width: 120px;
+  font-size: 13px;
+}
+
 .leave-application-topbar .leave-application-button {
   background-color: #f1890d;
   color: black;
@@ -1094,6 +1099,13 @@ table input[type="number"]:focus {
 
 .attendance-container .table-scroll-container {
   overflow-x: auto;
+  /* overflow-y: auto; */
+}
+
+.attendance-scroll-container {
+  max-height: 400px;
+  overflow-x: auto;
+  overflow-y: auto;
 }
 
 .custom-file-label .choose-btn {
@@ -4312,7 +4324,7 @@ h4 {
 .view-attachments-button:hover {
   background-color: rgb(169, 169, 169);
   color: black;
-  font-weight: 600;
+  /* font-weight: 600; */
   transform: translateY(-1px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
