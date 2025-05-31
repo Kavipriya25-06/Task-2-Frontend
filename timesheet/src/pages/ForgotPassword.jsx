@@ -5,8 +5,9 @@ import { useAuth } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 import { showErrorToast, ToastContainerComponent } from "../constants/Toastify";
+import config from "../config";
 
-const Login = () => {
+const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -16,13 +17,7 @@ const Login = () => {
     e.preventDefault();
 
     const tryLogin = await login(email, password);
-    // if (success) {
-    //   console.log("User logged in successfully");
-    //   // Redirect logic here (e.g., navigate to dashboard)
-    //   navigate("/home"); // Redirect to dashboard
-    // } else {
-    //   alert("Invalid email or password");
-    // }
+
     if (tryLogin === "logged") {
       console.log("User logged in successfully");
       // Redirect logic here (e.g., navigate to dashboard)
@@ -38,8 +33,27 @@ const Login = () => {
     }
   };
 
-  const forgotPassword = async () => {
-    navigate("/forgotpassword");
+  // SendOTP.jsx
+  const handleSendOtp = async (e) => {
+    e.preventDefault();
+    const res = await fetch(`${config.apiBaseURL}/send-otp/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+    alert(data.message || data.error);
+  };
+
+  // ResetPassword.jsx
+  const handleResetPassword = async () => {
+    const res = await fetch(`${config.apiBaseURL}/reset-password/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, otp, password }),
+    });
+    const data = await res.json();
+    alert(data.message || data.error);
   };
 
   return (
@@ -57,8 +71,9 @@ const Login = () => {
         </div>
 
         <div className="login-form-section">
-          <h2>Login</h2>
-          <form onSubmit={handleLogin}>
+          <h2>Forgot password?</h2>
+          <form onSubmit={handleSendOtp}>
+            <p>Enter the Email associated with your account</p>
             <label>Email</label>
             <input
               type="email"
@@ -66,27 +81,9 @@ const Login = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-
-            <label>Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <button
-              type="button"
-              onClick={() => {
-                // showErrorToast("Contact Admin");
-                forgotPassword();
-              }}
-              className="btn-forgot"
-            >
-              Forgot Password
-            </button>
             <div className="button-group">
               <button type="submit" className="btn-login">
-                Log in
+                Send OTP
               </button>
             </div>
           </form>
@@ -106,4 +103,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ForgotPassword;

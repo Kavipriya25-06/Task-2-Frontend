@@ -23,6 +23,7 @@ import {
 import LogoutPopup from "./pages/Logout_popup.jsx"; // adjust the import path as needed
 
 import Login from "./pages/Login.jsx";
+import ForgotPassword from "./pages/ForgotPassword.jsx";
 import HeroSlider from "./components/HeroSlider.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import HomeRedirect from "./pages/HomeRedirect.jsx";
@@ -223,6 +224,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<HeroSlider />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/forgotpassword" element={<ForgotPassword />} />
             <Route path="/403" element={<Dashboard />} />
             <Route
               path="/home/*"

@@ -205,7 +205,7 @@ const EditUserForm = () => {
             </div>
           ) : (
             <div className="uneditable">
-              {password ? "*".repeat(password.length) : ""}
+              {password ? "*".repeat(8) : ""}
             </div>
           )}
         </div>
