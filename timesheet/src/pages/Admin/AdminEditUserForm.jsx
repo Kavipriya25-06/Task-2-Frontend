@@ -89,7 +89,7 @@ const EditUserForm = () => {
       }
 
       console.log("User updated successfully");
-      showSuccessToast(employeeID.employee_name+" Updated Successfully");
+      showSuccessToast(employeeID.employee_name + " Updated Successfully");
 
       setEditMode(false);
       // navigate("/admin/detail/users");
@@ -204,9 +204,7 @@ const EditUserForm = () => {
               </span>
             </div>
           ) : (
-            <div className="uneditable">
-              {password ? "*".repeat(8) : ""}
-            </div>
+            <div className="uneditable">{password ? "*".repeat(8) : ""}</div>
           )}
         </div>
 

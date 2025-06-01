@@ -5,10 +5,12 @@ import { useAuth } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 import { showErrorToast, ToastContainerComponent } from "../constants/Toastify";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -68,12 +70,28 @@ const Login = () => {
             />
 
             <label>Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <div style={{ position: "relative" }}>
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                style={{ paddingRight: "40px" }} // leave space for icon
+              />
+              <span
+                onClick={() => setShowPassword((prev) => !prev)}
+                style={{
+                  position: "absolute",
+                  right: "10px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  cursor: "pointer",
+                }}
+              >
+                {showPassword ? <FaEye /> : <FaEyeSlash />}
+              </span>
+            </div>
+
             <button
               type="button"
               onClick={() => {
@@ -84,7 +102,7 @@ const Login = () => {
             >
               Forgot Password
             </button>
-            <div className="button-group">
+            <div className="button-login">
               <button type="submit" className="btn-login">
                 Log in
               </button>

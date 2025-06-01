@@ -26,6 +26,7 @@ import Login from "./pages/Login.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import HeroSlider from "./components/HeroSlider.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
+import NotFound from "./pages/NotFound.jsx";
 import HomeRedirect from "./pages/HomeRedirect.jsx";
 import RoleSwitcher from "./pages/RoleSwitcher.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
@@ -583,6 +584,7 @@ const App = () => {
                 />
               </Route>
             </Route>
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
 
