@@ -376,7 +376,7 @@ const TeamLeadTaskView = () => {
                       }}
                     >
                       <img
-                        src="/src/assets/pin svg.svg"
+                        src="/pin_svg.svg"
                         alt="Attachment"
                         style={{
                           width: "16px",
@@ -412,7 +412,7 @@ const TeamLeadTaskView = () => {
                                 className="view-attachment-link"
                               >
                                 <img
-                                  src="/src/assets/pin svg.svg"
+                                  src="/pin_svg.svg"
                                   alt="Attachment"
                                   style={{
                                     width: "16px",

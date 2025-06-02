@@ -394,6 +394,10 @@ textarea {
   z-index: 9999 !important;
   position: absolute;
 }
+.datepicker-popper {
+  z-index: 9999 !important;
+}
+
 
 .react-datepicker__month-container {
   top: 20px;
@@ -2177,6 +2181,40 @@ h3 {
   pointer-events: none;
 }
 
+.date-variation .input1 {
+  width: 25% !important;
+}
+
+.date-variation {
+  position: relative;
+}
+
+.date-variation .calendar-icon {
+  position: absolute;
+  top: 25%;
+  left: 8%;
+  font-size: 15px; /* Icon size */
+  color: #3d3d3d; /* Icon color */
+  cursor: pointer; /* Make icon clickable */
+  pointer-events: none;
+}
+
+.date-input-container {
+  position: relative;
+  width: 100%;
+}
+
+.date-input-container .calendar-icon {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: #3d3d3d;
+  cursor: pointer;
+  pointer-events: none;
+}
+
 .date-wrapper .calendar-icon {
   position: relative;
   top: 25%;
@@ -3620,6 +3658,10 @@ button.delete-building:hover {
   box-sizing: border-box; /* Include padding in width and height calculations */
 }
 
+.create-variation-container {
+  overflow: auto;
+}
+
 .building-popup h3,
 h4 {
   margin-top: 0; /* Remove default margin at the top */
@@ -4898,6 +4940,28 @@ h4 {
   position: absolute;
   top: 7px;
   right: -20px;
+  width: 20px;
+  height: 20px;
+  background: rgb(121, 121, 121);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 20px;
+  text-align: center;
+}
+
+.variation-table td {
+  position: relative;
+}
+
+.variation-table .tag-variation {
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  transform: translateY(-50%);
   width: 20px;
   height: 20px;
   background: rgb(121, 121, 121);
