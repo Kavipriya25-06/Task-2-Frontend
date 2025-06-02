@@ -29,8 +29,8 @@ const NotFound = () => {
       <p className="notfound">404</p>
       {/* <p>Oops!</p> */}
       <h1>Oops!</h1>
-      <p></p>
-      <h4>The page you are looking for, does not exist!</h4>
+      {/* <p></p> */}
+      <p>The page you are looking for, does not exist!</p>
       <p></p>
   
       

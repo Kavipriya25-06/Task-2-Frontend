@@ -75,7 +75,7 @@ const ManagerProjectView = () => {
   console.log("Project ID from URL:", project_id);
 
   const buildingClick = (building_assign_id) => {
-    navigate(`/manager/detail/buildings/${building_assign_id}`);
+    navigate(`buildings/${building_assign_id}`);
   };
 
   const handleRemoveBuilding = async (building) => {

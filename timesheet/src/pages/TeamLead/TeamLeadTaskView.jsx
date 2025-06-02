@@ -104,8 +104,6 @@ const TeamLeadTaskView = () => {
     fetchTaskAssignment(); // Re-fetch to reset form
   };
 
-
-
   useEffect(() => {
     fetchTeamleadManager();
     fetchTaskAssignment();
@@ -168,7 +166,8 @@ const TeamLeadTaskView = () => {
   return (
     <div className="create-project-container">
       <div className="project-header">
-        <h2>Task details </h2>
+        {/* <h2>Task details </h2> */}
+        <h2>{editMode ? "Edit Task" : "View Task"}</h2>
         {editMode ? (
           <div></div>
         ) : (
@@ -194,11 +193,11 @@ const TeamLeadTaskView = () => {
                 <p>{project?.project_title || ""}</p>
               </div>
               <div className="project-form-group">
-                <label>Building Code</label>
+                <label>Sub-Division Code</label>
                 <p>{building?.building_code || ""}</p>
               </div>
               <div className="project-form-group">
-                <label>Building Title</label>
+                <label>Sub-Division Title</label>
                 <p>{building?.building_title || ""}</p>
               </div>
               <div className="project-form-group">
@@ -513,7 +512,7 @@ const TeamLeadTaskView = () => {
                 <p>{project?.estimated_hours || ""}</p>
               </div>
               <div className="project-form-group-small">
-                <label>Building Hours</label>
+                <label>Sub-Division Hours</label>
                 <p>{taskData?.building_assign?.building_hours || ""}</p>
               </div>
               <div className="project-form-group-small">
