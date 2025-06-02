@@ -261,8 +261,11 @@ const App = () => {
               }
             >
               <Route index element={<AdminDashboard />} />
-              <Route path="detail" element={<Navigate to="/admin" replace />} />
-              <Route path="detail" element={<AdminDetailView />}>
+              <Route
+                path="detail/"
+                element={<Navigate to="/admin" replace />}
+              />
+              <Route path="detail/*" element={<AdminDetailView />}>
                 <Route path="users" element={<UsersPage />}></Route>
                 <Route path="users/add-user" element={<AddUserForm />} />
                 <Route
@@ -293,8 +296,8 @@ const App = () => {
               }
             >
               <Route index element={<HRDashboard />} />
-              <Route path="detail" element={<Navigate to="/hr" replace />} />
-              <Route path="detail" element={<HRDetailView />}>
+              <Route path="detail/" element={<Navigate to="/hr" replace />} />
+              <Route path="detail/*" element={<HRDetailView />}>
                 <Route path="employee-details" element={<EmployeeList />} />
                 <Route path="holidays" element={<HRHolidayCalendar />} />
                 <Route
@@ -338,10 +341,10 @@ const App = () => {
             >
               <Route index element={<ManagerDashboard />} />
               <Route
-                path="detail"
+                path="detail/"
                 element={<Navigate to="/manager" replace />}
               />
-              <Route path="detail" element={<ManagerDetailView />}>
+              <Route path="detail/*" element={<ManagerDetailView />}>
                 <Route path="projects" element={<ManagerProjects />} />
                 <Route
                   path="projects/:project_id"
@@ -432,10 +435,10 @@ const App = () => {
             >
               <Route index element={<TeamLeadDashboard />} />
               <Route
-                path="detail"
+                path="detail/"
                 element={<Navigate to="/teamlead" replace />}
               />
-              <Route path="detail" element={<TeamLeadDetailView />}>
+              <Route path="detail/*" element={<TeamLeadDetailView />}>
                 <Route path="projects" element={<TeamLeadProjects />} />
                 <Route
                   path="projects/:project_id"
@@ -563,14 +566,10 @@ const App = () => {
             >
               <Route index element={<EmployeeDashboard />} />
               <Route
-                path="detail"
-                element={<Navigate to="/employee" replace />}
-              />
-              <Route
                 path="detail/"
                 element={<Navigate to="/employee" replace />}
               />
-              <Route path="detail" element={<EmployeeDetailView />}>
+              <Route path="detail/*" element={<EmployeeDetailView />}>
                 <Route
                   path="time-sheet-entry"
                   element={<EmployeeTimeSheetEntry />}

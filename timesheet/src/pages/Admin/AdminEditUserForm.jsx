@@ -27,6 +27,7 @@ const EditUserForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [editMode, setEditMode] = useState(false); //  Add this at the top
   const [inputValue, setInputValue] = useState("");
+  const [isSending, setIsSending] = useState(false);
 
   const [status, setStatus] = useState("");
 
@@ -68,6 +69,7 @@ const EditUserForm = () => {
 
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
+    setIsSending(true);
     const updatedUser = {
       // employee_id: employeeID,
       role: role,
@@ -98,6 +100,7 @@ const EditUserForm = () => {
 
       console.error("Error updating user", error);
     }
+    setIsSending(false);
   };
 
   const handleCancel = () => {
@@ -264,8 +267,15 @@ const EditUserForm = () => {
             onClick={() => {
               handleSubmit();
             }}
+            disabled={isSending}
           >
-            Update
+            {isSending ? (
+              <>
+                <span className="spinner-otp" /> Updating...
+              </>
+            ) : (
+              "Update"
+            )}
           </button>
           <button
             type="button"
