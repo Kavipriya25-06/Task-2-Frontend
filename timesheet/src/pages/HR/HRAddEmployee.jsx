@@ -673,7 +673,7 @@ const AddEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>Department</label>
-              <select
+              {/* <select
                 name="department"
                 value={formData.department}
                 onChange={handleChange}
@@ -688,7 +688,13 @@ const AddEmployee = () => {
                 <option value="Electrical&Instrumentation">
                   Electrical&Instrumentation
                 </option>
-              </select>
+              </select> */}
+              <input
+                name="department"
+                value={formData.department}
+                onChange={handleChange}
+                placeholder="Department"
+              />
             </div>
             <div className="individual-tabs">
               <label>Qualification</label>

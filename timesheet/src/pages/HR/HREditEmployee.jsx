@@ -895,22 +895,28 @@ const EditEmployee = () => {
             <div className="individual-tabs">
               <label>Department</label>
               {editMode ? (
-                <select
+                // <select
+                //   name="department"
+                //   value={formData.department}
+                //   onChange={handleChange}
+                //   // placeholder="Department"
+                // >
+                //   <option value="">Select Department</option>
+                //   <option value="Structural-Detailing">
+                //     Structural-Detailing
+                //   </option>
+                //   <option value="Structural-Design">Structural-Design</option>
+                //   <option value="Piping">Piping</option>
+                //   <option value="Electrical&Instrumentation">
+                //     Electrical&Instrumentation
+                //   </option>
+                // </select>
+                <input
                   name="department"
                   value={formData.department}
                   onChange={handleChange}
-                  // placeholder="Department"
-                >
-                  <option value="">Select Department</option>
-                  <option value="Structural-Detailing">
-                    Structural-Detailing
-                  </option>
-                  <option value="Structural-Design">Structural-Design</option>
-                  <option value="Piping">Piping</option>
-                  <option value="Electrical&Instrumentation">
-                    Electrical&Instrumentation
-                  </option>
-                </select>
+                  placeholder="Department"
+                />
               ) : (
                 <div className="uneditable">{formData.department || "-"}</div>
               )}
