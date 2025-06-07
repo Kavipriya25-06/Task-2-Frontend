@@ -85,19 +85,23 @@ const HRSettings = () => {
       const fullMax = timeToDecimal(compOffData.full_day.max_hours);
 
       if (halfMin >= halfMax) {
-        showErrorToast("For Half Day, Minimum hours should be less than Maximum hours.");
+        showErrorToast(
+          "For Half Day, Minimum hours should be less than Maximum hours."
+        );
         return;
       }
 
       if (fullMin <= halfMax) {
         showErrorToast(
-          "Full Day Minimum hours should be greater than Half Day Maximum hours.");
+          "Full Day Minimum hours should be greater than Half Day Maximum hours."
+        );
         return;
       }
 
       if (fullMin >= fullMax) {
         showErrorToast(
-          "For Full Day, Minimum hours should be less than Maximum hours.");
+          "For Full Day, Minimum hours should be less than Maximum hours."
+        );
         return;
       }
 

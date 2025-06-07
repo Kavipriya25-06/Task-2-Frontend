@@ -8,6 +8,13 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 import { useAttachmentManager } from "../../constants/useAttachmentManager";
+import {
+  showSuccessToast,
+  showErrorToast,
+  showWarningToast,
+  showInfoToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
 
 const ManagerTaskView = () => {
   const { user } = useAuth();
@@ -66,10 +73,10 @@ const ManagerTaskView = () => {
 
       const data = await response.json();
       if (response.ok) {
-        alert("Task created successfully!");
+        showSuccessToast("Task created successfully!");
       } else {
         console.error(data);
-        alert(" Failed to create Task");
+        showErrorToast(" Failed to create Task");
       }
     } catch (err) {
       console.error("Request error:", err);
@@ -584,6 +591,7 @@ const ManagerTaskView = () => {
           </div>
         )}
       </form>
+      <ToastContainerComponent />
     </div>
   );
 };

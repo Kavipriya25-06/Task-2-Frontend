@@ -149,12 +149,12 @@ const App = () => {
     setShowLogoutPopup(false);
   };
 
-  const { logout } = useAuth();
+  // const { logout } = useAuth();
 
-  const handleLogout = () => {
-    logout();
-    navigate("/"); // Redirect to login page
-  };
+  // const handleLogout = () => {
+  //   logout();
+  //   navigate("/"); // Redirect to login page
+  // };
 
   const renderDashboard = () => {
     switch (selectedRole) {

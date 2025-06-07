@@ -32,8 +32,7 @@ const NotFound = () => {
       {/* <p></p> */}
       <p>The page you are looking for, does not exist!</p>
       <p></p>
-  
-      
+
       {!user && (
         <button onClick={() => navigate("/login")} className="btn-cancel">
           Login

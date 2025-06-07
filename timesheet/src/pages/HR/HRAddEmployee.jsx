@@ -220,7 +220,9 @@ const AddEmployee = () => {
       }
 
       // Step 4: Navigate after success
-      navigate("/hr/detail/employee-details");
+      setTimeout(() => {
+        navigate("/hr/detail/employee-details");
+      }, 2000); // waits for 2 seconds (2000ms)
     } catch (error) {
       showErrorToast(`Failed to create user: ${error.message}`);
       console.error(
