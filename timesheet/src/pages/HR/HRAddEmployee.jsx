@@ -216,10 +216,11 @@ const AddEmployee = () => {
         }
 
         console.log("All attachments uploaded");
-        showSuccessToast("Employee Details are uploaded successfully");
+        // showSuccessToast("Employee Details are uploaded successfully");
       }
 
       // Step 4: Navigate after success
+      showSuccessToast("Employee Details are uploaded successfully");
       setTimeout(() => {
         navigate("/hr/detail/employee-details");
       }, 2000); // waits for 2 seconds (2000ms)
