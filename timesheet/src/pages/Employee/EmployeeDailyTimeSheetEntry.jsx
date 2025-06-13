@@ -50,6 +50,29 @@ const EmployeeDailyTimeSheetEntry = () => {
     return `${hrs} hrs ${mins} mins`;
   };
 
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
   const fetchBiometricTaskData = async () => {
     try {
       const response = await fetch(
@@ -573,7 +596,7 @@ const EmployeeDailyTimeSheetEntry = () => {
     <div className="daily-timesheet-container">
       <h3>Daily Timesheet</h3>
       <div className="timesheet-info">
-        <p>Date: {date}</p>
+        <p>Date: {formatDate(date)}</p>
         <p>Intime: {attendanceDetails.in_time}</p>
         <p>Outtime: {attendanceDetails.out_time}</p>
         <p>Total logged hours: {attendanceDetails.total_duration}</p>
