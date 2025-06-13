@@ -22,6 +22,8 @@ const HRDashboard = () => {
     { label: "Settings", path: "detail/settings" },
     { label: "Leave requests", path: "detail/leave-requests" },
     { label: "Attendance", path: "detail/attendance" },
+    { label: "Reports", path: "detail/reports" },
+
   ];
 
   // Current tab from path name
