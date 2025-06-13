@@ -53,6 +53,12 @@
   flex-direction: column;
 }
 
+.notfound {
+  padding: auto;
+  font-size: 80px;
+  color: #f1890d;
+}
+
 .denied {
   width: 128px;
   height: 128px;

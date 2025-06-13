@@ -4,10 +4,10 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import config from "../../config";
 import { cleanFormData } from "../../utils/cleanFormData";
-import cameraIcon from "../../assets/camera.png";
+import cameraIcon from "/camera.png";
 import userPlaceholder from "../../assets/user.png";
 import { getCleanFilename } from "../../utils/filenameUtils";
-import usePlaceholder from "../../assets/profile icon.svg";
+import usePlaceholder from "/profile_icon.svg";
 import plusIcon from "../../assets/plus.png";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -895,22 +895,28 @@ const EditEmployee = () => {
             <div className="individual-tabs">
               <label>Department</label>
               {editMode ? (
-                <select
+                // <select
+                //   name="department"
+                //   value={formData.department}
+                //   onChange={handleChange}
+                //   // placeholder="Department"
+                // >
+                //   <option value="">Select Department</option>
+                //   <option value="Structural-Detailing">
+                //     Structural-Detailing
+                //   </option>
+                //   <option value="Structural-Design">Structural-Design</option>
+                //   <option value="Piping">Piping</option>
+                //   <option value="Electrical&Instrumentation">
+                //     Electrical&Instrumentation
+                //   </option>
+                // </select>
+                <input
                   name="department"
                   value={formData.department}
                   onChange={handleChange}
-                  // placeholder="Department"
-                >
-                  <option value="">Select Department</option>
-                  <option value="Structural-Detailing">
-                    Structural-Detailing
-                  </option>
-                  <option value="Structural-Design">Structural-Design</option>
-                  <option value="Piping">Piping</option>
-                  <option value="Electrical&Instrumentation">
-                    Electrical&Instrumentation
-                  </option>
-                </select>
+                  placeholder="Department"
+                />
               ) : (
                 <div className="uneditable">{formData.department || "-"}</div>
               )}

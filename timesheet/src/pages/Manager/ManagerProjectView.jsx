@@ -54,15 +54,26 @@ const ManagerProjectView = () => {
   const [showBuildingPopup, setShowBuildingPopup] = useState(false);
   const [buildingData, setBuildingData] = useState({});
   const [showAreaPopup, setShowAreaPopup] = useState(false);
+  const [showVariationPopup, setShowVariationPopup] = useState(false);
   const [selectedBuildings, setSelectedBuildings] = useState([]);
   const [availableBuildings, setAvailableBuildings] = useState([]);
   const [selectedAreas, setSelectedAreas] = useState([]);
   const [variations, setVariations] = useState([
     { id: "", date: "", title: "", hours: "", project: "" },
   ]);
-  const [newVariations, setNewVariations] = useState([
-    { date: "", title: "", hours: "", project: "" },
-  ]);
+  const [newVariations, setNewVariations] = useState({
+    date: "",
+    title: "",
+    hours: "",
+  });
+  const [showEditVariationPopup, setShowEditVariationPopup] = useState(false);
+  const [editVariationData, setEditVariationData] = useState({
+    id: null,
+    date: "",
+    title: "",
+    hours: "",
+  });
+
   const [availableAreas, setAvailableAreas] = useState([]);
   const { project_id } = useParams();
   const [editMode, setEditMode] = useState(false); //  Add this at the top
@@ -75,7 +86,7 @@ const ManagerProjectView = () => {
   console.log("Project ID from URL:", project_id);
 
   const buildingClick = (building_assign_id) => {
-    navigate(`/manager/detail/buildings/${building_assign_id}`);
+    navigate(`buildings/${building_assign_id}`);
   };
 
   const handleRemoveBuilding = async (building) => {
@@ -119,6 +130,16 @@ const ManagerProjectView = () => {
     setVariations(existingVariations);
   };
 
+  const handleEditVariation = (variation) => {
+    setEditVariationData({
+      id: variation.id,
+      date: variation.date ? new Date(variation.date) : null,
+      title: variation.title,
+      hours: variation.hours,
+    });
+    setShowEditVariationPopup(true);
+  };
+
   const handleNewVariationChange = (index, field, value) => {
     const newOnes = [...newVariations];
     newOnes[index][field] = value;
@@ -127,6 +148,30 @@ const ManagerProjectView = () => {
 
   const handleRemoveVariation = (index) => {
     setVariations(variations.filter((_, i) => i !== index));
+  };
+
+  const handleDeleteVariation = async (variationId) => {
+    if (!window.confirm("Are you sure you want to delete this variation?"))
+      return;
+
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/variation/${variationId}/`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (response.ok) {
+        showSuccessToast("Variation deleted successfully");
+        fetchProjectData();
+      } else {
+        showErrorToast("Failed to delete variation");
+      }
+    } catch (err) {
+      console.error("Error deleting variation", err);
+      showErrorToast("Server error");
+    }
   };
 
   const handleAddVariation = () => {
@@ -201,42 +246,42 @@ const ManagerProjectView = () => {
       return;
     }
     // 3️ Handle new and updated variations:
-    const updatedVariations = variations.map(async (variation) => {
-      if (variation.id) {
-        // Update existing variation using PATCH
-        const updateResponse = await fetch(
-          `${config.apiBaseURL}/variation/${variation.id}/`,
-          {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(variation),
-          }
-        );
-        if (!updateResponse.ok) {
-          console.error("Failed to update variation:", variation);
-          showErrorToast("Failed to update variations");
-        }
-      }
-    });
+    // const updatedVariations = variations.map(async (variation) => {
+    //   if (variation.id) {
+    //     // Update existing variation using PATCH
+    //     const updateResponse = await fetch(
+    //       `${config.apiBaseURL}/variation/${variation.id}/`,
+    //       {
+    //         method: "PATCH",
+    //         headers: { "Content-Type": "application/json" },
+    //         body: JSON.stringify(variation),
+    //       }
+    //     );
+    //     if (!updateResponse.ok) {
+    //       console.error("Failed to update variation:", variation);
+    //       showErrorToast("Failed to update variations");
+    //     }
+    //   }
+    // });
 
-    const newVariationRequests = newVariations.map(async (newVariation) => {
-      // Create new variation using POST
-      const postResponse = await fetch(`${config.apiBaseURL}/variation/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newVariation),
-      });
-      if (!postResponse.ok) {
-        console.error("Failed to post new variation:", newVariation);
-        // showErrorToast("Failed to add new variation");
-      }
-    });
+    // const newVariationRequests = newVariations.map(async (newVariation) => {
+    //   // Create new variation using POST
+    //   const postResponse = await fetch(`${config.apiBaseURL}/variation/`, {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify(newVariation),
+    //   });
+    //   if (!postResponse.ok) {
+    //     console.error("Failed to post new variation:", newVariation);
+    //     // showErrorToast("Failed to add new variation");
+    //   }
+    // });
 
-    // Wait for all PATCH and POST requests to complete
-    await Promise.all([...updatedVariations, ...newVariationRequests]);
+    // // Wait for all PATCH and POST requests to complete
+    // await Promise.all([...updatedVariations, ...newVariationRequests]);
 
-    // Clear new variations after submission
-    setNewVariations([{ date: "", title: "", hours: "", project: "" }]);
+    // // Clear new variations after submission
+    // setNewVariations([{ date: "", title: "", hours: "", project: "" }]);
 
     if (newAttachments.length > 0) {
       for (const file of newAttachments) {
@@ -314,6 +359,79 @@ const ManagerProjectView = () => {
   };
 
   // console.log("The Project Assign Id isssss ",projectData.assign[0].project_assign_id);
+
+  const handleAddVariationSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!newVariations.date && !newVariations.title && !newVariations.hours) {
+      showErrorToast("Fill in the details.");
+      return;
+    }
+
+    const payload = {
+      project: project_id,
+      date: newVariations.date
+        ? format(new Date(newVariations.date), "yyyy-MM-dd")
+        : null,
+      title: newVariations.title,
+      hours: newVariations.hours,
+    };
+
+    try {
+      const response = await fetch(`${config.apiBaseURL}/variation/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        showSuccessToast("Variation added successfully");
+        setShowVariationPopup(false);
+        setNewVariations({ date: "", title: "", hours: "" });
+        fetchProjectData(); // Refresh full data after insertion
+      } else {
+        showErrorToast("Failed to add variation");
+      }
+    } catch (err) {
+      console.error("Error adding variation", err);
+      showErrorToast("Server error");
+    }
+  };
+
+  const handleEditVariationSubmit = async (e) => {
+    e.preventDefault();
+
+    const payload = {
+      date: editVariationData.date
+        ? format(new Date(editVariationData.date), "yyyy-MM-dd")
+        : null,
+      title: editVariationData.title,
+      hours: editVariationData.hours,
+      project: project_id, // if your backend expects project
+    };
+
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/variation/${editVariationData.id}/`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (response.ok) {
+        showSuccessToast("Variation updated successfully");
+        setShowEditVariationPopup(false);
+        fetchProjectData(); // refresh variations list
+      } else {
+        showErrorToast("Failed to update variation");
+      }
+    } catch (err) {
+      console.error("Error updating variation", err);
+      showErrorToast("Server error");
+    }
+  };
 
   const handleBuildingSubmit = async (e) => {
     e.preventDefault();
@@ -671,8 +789,8 @@ const ManagerProjectView = () => {
                     <table className="variation-table">
                       <thead>
                         <tr>
-                          <th>Date</th>
                           <th>Title</th>
+                          <th>Date</th>
                           <th>Hours</th>
                         </tr>
                       </thead>
@@ -681,180 +799,38 @@ const ManagerProjectView = () => {
                           <tr key={index}>
                             <td>
                               {editMode ? (
-                                <div className="date-wrapper">
-                                  <DatePicker
-                                    selected={
-                                      variation.date
-                                        ? new Date(variation.date)
-                                        : null
-                                    }
-                                    onChange={(date) =>
-                                      handleVariationChange(
-                                        index,
-                                        "date",
-                                        date
-                                          ? date.toISOString().slice(0, 10)
-                                          : ""
-                                      )
-                                    }
-                                    dateFormat="dd-MMM-yyyy"
-                                    placeholderText="dd-mm-yyyy"
-                                    className="input1"
-                                    showMonthDropdown
-                                    showYearDropdown
-                                    dropdownMode="select"
-                                    calendarClassName="custom-datepicker"
-                                    popperPlacement="bottom-start"
-                                    popperModifiers={[
-                                      {
-                                        name: "preventOverflow",
-                                        options: {
-                                          boundary: "viewport",
-                                        },
-                                      },
-                                    ]}
-                                    popperContainer={({ children }) => (
-                                      <div className="datepicker-portal">
-                                        {children}
-                                      </div>
-                                    )}
-                                  />
-                                  <i className="fas fa-calendar-alt calendar-icon"></i>
+                                <div
+                                  onClick={() => handleEditVariation(variation)}
+                                  style={{
+                                    cursor: "pointer",
+                                    textDecoration: "underline",
+                                  }}
+                                >
+                                  {variation.title}
                                 </div>
-                              ) : variation.date ? (
-                                format(new Date(variation.date), "dd-MMM-yyyy")
-                              ) : (
-                                ""
-                              )}
-                            </td>
-                            <td>
-                              {editMode ? (
-                                <input
-                                  type="text"
-                                  placeholder="Enter title"
-                                  value={variation.title}
-                                  onChange={(e) =>
-                                    handleVariationChange(
-                                      index,
-                                      "title",
-                                      e.target.value
-                                    )
-                                  }
-                                />
                               ) : (
                                 variation.title
                               )}
                             </td>
                             <td>
-                              {editMode ? (
-                                <input
-                                  type="number"
-                                  placeholder="Hours"
-                                  value={variation.hours}
-                                  onChange={(e) => {
-                                    const value = e.target.value;
-                                    if (Number(value) >= 0 || value === "") {
-                                      handleVariationChange(
-                                        index,
-                                        "hours",
-                                        value
-                                      );
-                                    }
-                                  }}
-                                />
-                              ) : (
-                                variation.hours
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                        {newVariations.map((variation, index) => (
-                          <tr key={index}>
-                            <td>
-                              {editMode ? (
-                                <div className="date-wrapper">
-                                  <DatePicker
-                                    selected={
-                                      variation.date
-                                        ? new Date(variation.date)
-                                        : null
-                                    }
-                                    onChange={(date) =>
-                                      handleNewVariationChange(
-                                        index,
-                                        "date",
-                                        date
-                                          ? date.toISOString().slice(0, 10)
-                                          : ""
-                                      )
-                                    }
-                                    dateFormat="dd-MMM-yyyy"
-                                    placeholderText="dd-mm-yyyy"
-                                    className="input1"
-                                    showMonthDropdown
-                                    showYearDropdown
-                                    dropdownMode="select"
-                                    calendarClassName="custom-datepicker"
-                                    popperPlacement="bottom-start"
-                                    popperModifiers={[
-                                      {
-                                        name: "preventOverflow",
-                                        options: {
-                                          boundary: "viewport",
-                                        },
-                                      },
-                                    ]}
-                                    popperContainer={({ children }) => (
-                                      <div className="datepicker-portal">
-                                        {children}
-                                      </div>
-                                    )}
-                                  />
-                                  <i className="fas fa-calendar-alt calendar-icon"></i>
-                                </div>
-                              ) : variation.date ? (
-                                format(new Date(variation.date), "dd-MMM-yyyy")
-                              ) : (
-                                ""
-                              )}
+                              {variation.date
+                                ? format(
+                                    new Date(variation.date),
+                                    "dd-MMM-yyyy"
+                                  )
+                                : ""}
                             </td>
                             <td>
-                              {editMode ? (
-                                <input
-                                  type="text"
-                                  placeholder="Enter title"
-                                  value={variation.title}
-                                  onChange={(e) =>
-                                    handleNewVariationChange(
-                                      index,
-                                      "title",
-                                      e.target.value
-                                    )
+                              {variation.hours}
+                              {editMode && (
+                                <button
+                                  className="tag-variation"
+                                  onClick={() =>
+                                    handleDeleteVariation(variation.id)
                                   }
-                                />
-                              ) : (
-                                variation.title
-                              )}
-                            </td>
-                            <td>
-                              {editMode ? (
-                                <input
-                                  type="number"
-                                  placeholder="Hours"
-                                  value={variation.hours}
-                                  onChange={(e) => {
-                                    const value = e.target.value;
-                                    if (Number(value) >= 0 || value === "") {
-                                      handleNewVariationChange(
-                                        index,
-                                        "hours",
-                                        value
-                                      );
-                                    }
-                                  }}
-                                />
-                              ) : (
-                                variation.hours
+                                >
+                                  ×
+                                </button>
                               )}
                             </td>
                           </tr>
@@ -864,7 +840,7 @@ const ManagerProjectView = () => {
                     {editMode && (
                       <button
                         type="button"
-                        onClick={handleAddVariation}
+                        onClick={() => setShowVariationPopup(true)}
                         className="plus-button"
                       >
                         +
@@ -994,7 +970,7 @@ const ManagerProjectView = () => {
                       }}
                     >
                       <img
-                        src="/src/assets/pin svg.svg"
+                        src="/pin_svg.svg"
                         alt="Attachment"
                         style={{
                           width: "16px",
@@ -1030,7 +1006,7 @@ const ManagerProjectView = () => {
                                 className="view-attachment-link"
                               >
                                 <img
-                                  src="/src/assets/pin svg.svg"
+                                  src="/pin_svg.svg"
                                   alt="Attachment"
                                   style={{
                                     width: "16px",
@@ -1252,6 +1228,162 @@ const ManagerProjectView = () => {
                     type="button"
                     className="btn-red"
                     onClick={handleBuildingCancel}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+        {showVariationPopup && (
+          <div className="building-popup">
+            <div className="create-variation-container">
+              <h3>Add Variation</h3>
+
+              <form onSubmit={handleAddVariationSubmit}>
+                <div className="form-group">
+                  <label>Title</label>
+                  <input
+                    type="text"
+                    value={newVariations.title}
+                    onChange={(e) =>
+                      setNewVariations((prev) => ({
+                        ...prev,
+                        title: e.target.value,
+                      }))
+                    }
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Date</label>
+                  <div className="date-input-container">
+                    <DatePicker
+                      selected={newVariations.date}
+                      onChange={(date) =>
+                        setNewVariations((prev) => ({ ...prev, date }))
+                      }
+                      dateFormat="dd-MMM-yyyy"
+                      placeholderText="dd-mm-yyyy"
+                      popperPlacement="right-start"
+                      popperModifiers={[
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "viewport", // you can also try 'window' or 'scrollParent'
+                          },
+                        },
+                      ]}
+                      popperClassName="datepicker-popper"
+                    />
+                    <i className="fas fa-calendar-alt calendar-icon"></i>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>Hours</label>
+                  <input
+                    type="number"
+                    value={newVariations.hours}
+                    onChange={(e) =>
+                      setNewVariations((prev) => ({
+                        ...prev,
+                        hours: e.target.value,
+                      }))
+                    }
+                    required
+                  />
+                </div>
+
+                <div className="form-buttons">
+                  <button type="submit" className="btn-green">
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-red"
+                    onClick={() => {
+                      setShowVariationPopup(false);
+                      setNewVariations({ date: "", title: "", hours: "" });
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {showEditVariationPopup && (
+          <div className="building-popup">
+            <div className="create-variation-container">
+              <h3>Edit Variation</h3>
+
+              <form onSubmit={handleEditVariationSubmit}>
+                <div className="form-group">
+                  <label>Title</label>
+                  <input
+                    type="text"
+                    value={editVariationData.title}
+                    onChange={(e) =>
+                      setEditVariationData((prev) => ({
+                        ...prev,
+                        title: e.target.value,
+                      }))
+                    }
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Date</label>
+                  <div className="date-input-container">
+                    <DatePicker
+                      selected={editVariationData.date}
+                      onChange={(date) =>
+                        setEditVariationData((prev) => ({ ...prev, date }))
+                      }
+                      dateFormat="dd-MMM-yyyy"
+                      placeholderText="dd-mm-yyyy"
+                      popperPlacement="right-start"
+                      popperModifiers={[
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "viewport", // you can also try 'window' or 'scrollParent'
+                          },
+                        },
+                      ]}
+                      popperClassName="datepicker-popper"
+                    />
+                    <i className="fas fa-calendar-alt calendar-icon"></i>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>Hours</label>
+                  <input
+                    type="number"
+                    value={editVariationData.hours}
+                    onChange={(e) =>
+                      setEditVariationData((prev) => ({
+                        ...prev,
+                        hours: e.target.value,
+                      }))
+                    }
+                    required
+                  />
+                </div>
+
+                <div className="form-buttons">
+                  <button type="submit" className="btn-green">
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-red"
+                    onClick={() => setShowEditVariationPopup(false)}
                   >
                     Cancel
                   </button>

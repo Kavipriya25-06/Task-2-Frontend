@@ -17,10 +17,10 @@ const Dashboard = () => {
 
   return (
     <div className="Dashboard">
-      <img src="src\assets\Close_circle.png" alt="Denied" className="denied" />
+      <img src="\Close_circle.png" alt="Denied" className="denied" />
       <h2>Access Denied</h2>
       {/* <img
-        src="src\assets\illegal_entry.jpg"
+        src="\illegal_entry.jpg"
         alt="Denied"
         width={360}
         height={202}

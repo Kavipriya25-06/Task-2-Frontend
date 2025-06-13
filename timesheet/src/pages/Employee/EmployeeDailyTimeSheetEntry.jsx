@@ -590,7 +590,9 @@ const EmployeeDailyTimeSheetEntry = () => {
     0
   );
 
-  const maxAllowedHours = parseFloat(attendanceDetails.total_duration || 0);
+  // const maxAllowedHours = parseFloat(attendanceDetails.total_duration || 0);
+  const duration = parseFloat(attendanceDetails.total_duration);
+  const maxAllowedHours = isNaN(duration) ? 0 : Math.min(duration, 8);
 
   return (
     <div className="daily-timesheet-container">
@@ -698,7 +700,7 @@ const EmployeeDailyTimeSheetEntry = () => {
                   Delete
                 </button> */}
                 <img
-                  src="\src\assets\reject.png"
+                  src="\reject.png"
                   alt="reject button"
                   className="leavebuttons"
                   onClick={() => handleDeleteRow(row.timesheet_id, "existing")}
@@ -795,7 +797,7 @@ const EmployeeDailyTimeSheetEntry = () => {
                   Delete
                 </button> */}
                 <img
-                  src="\src\assets\reject.png"
+                  src="\reject.png"
                   alt="reject button"
                   className="leavebuttons"
                   onClick={() => handleDeleteRow(index, "new")}

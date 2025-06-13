@@ -8,7 +8,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 578.4px;
+  height: auto;
   background-color: #ebe9e9;
   border-radius: 10px;
   /* Full viewport width */
@@ -18,10 +18,32 @@
   display: flex;
   background: white;
   padding: 30px;
+  margin: 30px;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
   width: 700px;
+}
+
+.spinner-otp {
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #ffffff;
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  margin-right: 8px;
+  display: inline-block;
+  animation: spin 0.8s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .logo-section {
@@ -32,7 +54,6 @@
   background: #ffffff;
   padding: 20px;
 }
-
 
 .logo-container {
   flex: 1;
@@ -68,7 +89,6 @@
   display: block;
   margin: 0 auto;
 }
-
 
 .infoicon {
   height: 20px;
@@ -108,9 +128,23 @@
   padding: 5px;
 }
 
+.login-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* vertical-align: middle; */
+  display: inline-block;
+  align-items: center;
+}
 .login-form-section {
   flex: 1;
   padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  text-align: left; /* Optional: center text inside */
 }
 
 .login-form-section input {
@@ -260,6 +294,11 @@ textarea {
   border: 2px solid #ccc !important;
 }
 
+.leave-requests-table select {
+  width: 120px;
+  font-size: 13px;
+}
+
 .leave-application-topbar .leave-application-button {
   background-color: #f1890d;
   color: black;
@@ -354,6 +393,9 @@ textarea {
 .datepicker-portal {
   z-index: 9999 !important;
   position: absolute;
+}
+.datepicker-popper {
+  z-index: 9999 !important;
 }
 
 .react-datepicker__month-container {
@@ -1096,6 +1138,13 @@ table input[type="number"]:focus {
 
 .attendance-container .table-scroll-container {
   overflow-x: auto;
+  /* overflow-y: auto; */
+}
+
+.attendance-scroll-container {
+  max-height: 400px;
+  overflow-x: auto;
+  overflow-y: auto;
 }
 
 .custom-file-label .choose-btn {
@@ -1186,7 +1235,6 @@ table input[type="number"]:focus {
   text-align: center;
   transform: translateX(-25%); /* Nudges slightly to the right */
 }
-
 
 .search-bar {
   width: 100%;
@@ -2132,6 +2180,40 @@ h3 {
   pointer-events: none;
 }
 
+.date-variation .input1 {
+  width: 25% !important;
+}
+
+.date-variation {
+  position: relative;
+}
+
+.date-variation .calendar-icon {
+  position: absolute;
+  top: 25%;
+  left: 8%;
+  font-size: 15px; /* Icon size */
+  color: #3d3d3d; /* Icon color */
+  cursor: pointer; /* Make icon clickable */
+  pointer-events: none;
+}
+
+.date-input-container {
+  position: relative;
+  width: 100%;
+}
+
+.date-input-container .calendar-icon {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: #3d3d3d;
+  cursor: pointer;
+  pointer-events: none;
+}
+
 .date-wrapper .calendar-icon {
   position: relative;
   top: 25%;
@@ -2561,7 +2643,7 @@ h3 {
 /* display: flex;
   align-items: center;
 } */
-*/ .uneditable-textarea {
+.uneditable-textarea {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -2720,6 +2802,12 @@ h3 {
   border: none;
 }
 
+.button-login {
+  display: flex;
+  justify-content: center;
+  padding-top: 30px;
+}
+
 .btn-login {
   color: #4b4b4b;
   padding: 10px 20px;
@@ -2730,8 +2818,9 @@ h3 {
   border: none;
   transition: background-color 0.2s ease;
   display: inline-block;
-  margin-top: 5%;
-  margin-left: 34%;
+  justify-content: center;
+  /* margin-top: 5%;
+  margin-left: 34%; */
 }
 
 .btn-login:hover {
@@ -2880,10 +2969,26 @@ h3 {
   }
 }
 
-.tab-header {
+.tab-header-report {
   display: flex;
   gap: 10px;
+  /* margin-bottom: 24px; */
+}
+
+.report-header {
+  justify-content: space-between;
+  display: flex;
   margin-bottom: 24px;
+}
+
+.report-btn {
+  padding: 10px 20px;
+  border-radius: 12px;
+  background-color: #cecccc;
+  border: none;
+  /* font-weight: 500; */
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .tab-btn {
@@ -3552,6 +3657,10 @@ button.delete-building:hover {
   box-sizing: border-box; /* Include padding in width and height calculations */
 }
 
+.create-variation-container {
+  overflow: auto;
+}
+
 .building-popup h3,
 h4 {
   margin-top: 0; /* Remove default margin at the top */
@@ -3914,8 +4023,6 @@ h4 {
   white-space: nowrap;
 }
 
-
-
 .attachment-link {
   display: flex;
   align-items: center;
@@ -4143,8 +4250,6 @@ h4 {
   cursor: default;
 }
 
-
-
 .tab-content .attachments-box {
   background-color: #ebebeb;
   border: 1px solid rgb(202, 202, 202);
@@ -4189,8 +4294,6 @@ h4 {
   gap: 10px;
 }
 
-
-
 .attachment-item {
   background-color: white;
   padding: 4px 8px !important;
@@ -4216,7 +4319,6 @@ h4 {
 
 .no-attachment {
   display: flex;
-
 }
 
 .attachment-items {
@@ -4235,10 +4337,8 @@ h4 {
   margin-bottom: 8px !important; /* Add margin only between items if multiple files */
 }
 
-
-
 .attachment-items a {
- color: black;
+  color: black;
   text-decoration: none;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -4308,11 +4408,10 @@ h4 {
 .view-attachments-button:hover {
   background-color: rgb(169, 169, 169);
   color: black;
-  font-weight: 600;
+  /* font-weight: 600; */
   transform: translateY(-1px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
-
 
 .project-form-group p {
   margin: 0%;
@@ -4840,6 +4939,28 @@ h4 {
   position: absolute;
   top: 7px;
   right: -20px;
+  width: 20px;
+  height: 20px;
+  background: rgb(121, 121, 121);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 20px;
+  text-align: center;
+}
+
+.variation-table td {
+  position: relative;
+}
+
+.variation-table .tag-variation {
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  transform: translateY(-50%);
   width: 20px;
   height: 20px;
   background: rgb(121, 121, 121);

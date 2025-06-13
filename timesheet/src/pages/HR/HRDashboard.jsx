@@ -18,9 +18,10 @@ const HRDashboard = () => {
 
   const tiles = [
     { label: "Employees Details", path: "detail/employee-details" },
-    // { label: "Holidays", path: "detail/holidays" },
     { label: "Holidays", path: "detail/holidays" },
     { label: "Settings", path: "detail/settings" },
+    { label: "Leave requests", path: "detail/leave-requests" },
+    { label: "Attendance", path: "detail/attendance" },
   ];
 
   // Current tab from path name

@@ -7,15 +7,13 @@ const HRDetailView = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const currentTab = location.pathname.split("/").slice(1)[2];
-  // const tabs = [
-  //   { label: "Employees Details", path: "employee-details" },
-  //   { label: "Holidays", path: "holidays" },
-  // ];
 
   const tabs = [
     { label: "Employee Details", path: "employee-details" },
     { label: "Holidays", path: "holidays" },
     { label: "Settings", path: "settings" },
+    { label: "Leave requests", path: "leave-requests" },
+    { label: "Attendance", path: "attendance" },
   ];
 
   return (

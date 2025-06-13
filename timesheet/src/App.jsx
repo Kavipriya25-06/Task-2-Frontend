@@ -23,9 +23,17 @@ import {
 import LogoutPopup from "./pages/Logout_popup.jsx"; // adjust the import path as needed
 
 import Login from "./pages/Login.jsx";
+import ForgotPassword from "./pages/ForgotPassword.jsx";
 import HeroSlider from "./components/HeroSlider.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
+import NotFound from "./pages/NotFound.jsx";
 import HomeRedirect from "./pages/HomeRedirect.jsx";
+import {
+  ManagerProjectRedirect,
+  ManagerBuildingTaskRedirect,
+  TeamLeadProjectRedirect,
+  TeamLeadBuildingTaskRedirect,
+} from "./pages/Redirects.jsx";
 import RoleSwitcher from "./pages/RoleSwitcher.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import { isDev } from "./constants/devmode.js";
@@ -54,6 +62,8 @@ import EmployeeList from "./pages/HR/HREmployeeList.jsx";
 import HRHolidayCalendar from "./pages/HR/HRHolidayCalendar.jsx";
 import HRHolidayList from "./pages/HR/HRHolidayList.jsx";
 import HRSettings from "./pages/HR/HRSettings.jsx";
+import HRAttendance from "./pages/HR/HRAttendance.jsx";
+import HRLeaveRequests from "./pages/HR/HRLeaveRequests.jsx";
 
 // Manager pages
 import ManagerDashboard from "./pages/Manager/ManagerDashboard.jsx";
@@ -139,12 +149,12 @@ const App = () => {
     setShowLogoutPopup(false);
   };
 
-  const { logout } = useAuth();
+  // const { logout } = useAuth();
 
-  const handleLogout = () => {
-    logout();
-    navigate("/"); // Redirect to login page
-  };
+  // const handleLogout = () => {
+  //   logout();
+  //   navigate("/"); // Redirect to login page
+  // };
 
   const renderDashboard = () => {
     switch (selectedRole) {
@@ -178,7 +188,7 @@ const App = () => {
           {/* <NavLink to="/" style={{ textDecoration: "none", color: "inherit" }}>
             <img src="\src\assets\Logo.svg" alt="Arris Logo" className="logo" />
           </NavLink> */}
-          <img src="\src\assets\Logo.svg" alt="Arris Logo" className="logo" />
+          <img src="\logologin.svg" alt="Arris Logo" className="logo" />
 
           <div style={{ alignItems: "center", display: "flex" }}>
             {/* <NavLink
@@ -189,7 +199,7 @@ const App = () => {
               {!showLogoutPopup && user && (
                 <>
                   <img
-                    src="/src/assets/user icon.svg"
+                    src="\user_icon.svg"
                     alt="User icon"
                     className="logoutbutton"
                   />
@@ -221,7 +231,9 @@ const App = () => {
           <Routes>
             <Route path="/" element={<HeroSlider />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/forgotpassword" element={<ForgotPassword />} />
             <Route path="/403" element={<Dashboard />} />
+            <Route path="/404" element={<NotFound />} />
             <Route
               path="/home/*"
               element={
@@ -249,7 +261,10 @@ const App = () => {
               }
             >
               <Route index element={<AdminDashboard />} />
-              <Route path="detail" element={<Navigate to="/admin" replace />} />
+              <Route
+                path="detail/"
+                element={<Navigate to="/admin" replace />}
+              />
               <Route path="detail" element={<AdminDetailView />}>
                 <Route path="users" element={<UsersPage />}></Route>
                 <Route path="users/add-user" element={<AddUserForm />} />
@@ -266,7 +281,9 @@ const App = () => {
                 {/* <Route path="holidays" element={<HolidayCalendar />} />
                 <Route path="holidays/holiday-list" element={<HolidayList />} /> */}
                 {/* <Route path="reports" element={<Reports />} /> */}
+                <Route path="*" element={<Navigate to="/404" replace />} />
               </Route>
+              <Route path="*" element={<Navigate to="/404" replace />} />
             </Route>
 
             {/* HR Layout with Dashboard and DetailView */}
@@ -279,7 +296,7 @@ const App = () => {
               }
             >
               <Route index element={<HRDashboard />} />
-              <Route path="detail" element={<Navigate to="/hr" replace />} />
+              <Route path="detail/" element={<Navigate to="/hr" replace />} />
               <Route path="detail" element={<HRDetailView />}>
                 <Route path="employee-details" element={<EmployeeList />} />
                 <Route path="holidays" element={<HRHolidayCalendar />} />
@@ -305,13 +322,12 @@ const App = () => {
                   path="employee-details/edit-employee/:employee_id"
                   element={<EditEmployee />}
                 />
-                <Route path="holidays" element={<HRHolidayCalendar />} />
-                {/* <Route
-                  path="holidays/holiday-list"
-                  element={<HRHolidayList />}
-                /> */}
+                <Route path="leave-requests" element={<HRLeaveRequests />} />
+                <Route path="attendance" element={<HRAttendance />} />
                 <Route path="settings" element={<HRSettings />} />
+                <Route path="*" element={<Navigate to="/404" replace />} />
               </Route>
+              <Route path="*" element={<Navigate to="/404" replace />} />
             </Route>
 
             {/* Manager layout with Dashboard and DetailView*/}
@@ -325,7 +341,7 @@ const App = () => {
             >
               <Route index element={<ManagerDashboard />} />
               <Route
-                path="detail"
+                path="detail/"
                 element={<Navigate to="/manager" replace />}
               />
               <Route path="detail" element={<ManagerDetailView />}>
@@ -347,7 +363,11 @@ const App = () => {
                   element={<ManagerBuildingCreate />}
                 />
                 <Route
-                  path="buildings/:building_assign_id"
+                  path="projects/:project_id/buildings/"
+                  element={<ManagerProjectRedirect />}
+                />
+                <Route
+                  path="projects/:project_id/buildings/:building_assign_id"
                   element={<ManagerBuildingView />}
                 />
                 <Route
@@ -356,7 +376,11 @@ const App = () => {
                 />
                 <Route path="tasks/create" element={<ManagerTaskCreate />} />
                 <Route
-                  path="tasks/:task_assign_id"
+                  path="projects/:project_id/buildings/:building_assign_id/tasks/"
+                  element={<ManagerBuildingTaskRedirect />}
+                />
+                <Route
+                  path="projects/:project_id/buildings/:building_assign_id/tasks/:task_assign_id"
                   element={<ManagerTaskView />}
                 />
                 <Route path="team-leaders" element={<ManagerTeamLeaders />} />
@@ -395,7 +419,9 @@ const App = () => {
                   element={<ManagerLeaveApplication />}
                 />
                 <Route path="Compoff" element={<ManagerCompoff />} />
+                <Route path="*" element={<Navigate to="/404" replace />} />
               </Route>
+              <Route path="*" element={<Navigate to="/404" replace />} />
             </Route>
 
             {/* Team leader layout with Dashboard and DetailView*/}
@@ -409,7 +435,7 @@ const App = () => {
             >
               <Route index element={<TeamLeadDashboard />} />
               <Route
-                path="detail"
+                path="detail/"
                 element={<Navigate to="/teamlead" replace />}
               />
               <Route path="detail" element={<TeamLeadDetailView />}>
@@ -435,7 +461,11 @@ const App = () => {
                   element={<TeamLeadBuildingCreate />}
                 />
                 <Route
-                  path="buildings/:building_assign_id"
+                  path="projects/:project_id/buildings/"
+                  element={<TeamLeadProjectRedirect />}
+                />
+                <Route
+                  path="projects/:project_id/buildings/:building_assign_id"
                   element={<TeamLeadBuildingView />}
                 />
                 <Route
@@ -444,7 +474,11 @@ const App = () => {
                 />
                 <Route path="tasks/create" element={<TeamLeadTaskCreate />} />
                 <Route
-                  path="tasks/:task_assign_id"
+                  path="projects/:project_id/buildings/:building_assign_id/tasks/"
+                  element={<TeamLeadBuildingTaskRedirect />}
+                />
+                <Route
+                  path="projects/:project_id/buildings/:building_assign_id/tasks/:task_assign_id"
                   element={<TeamLeadTaskView />}
                 />
                 <Route
@@ -516,7 +550,9 @@ const App = () => {
                   path="compoffrequest"
                   element={<TeamLeadCompoffRequest />}
                 />
+                <Route path="*" element={<Navigate to="/404" replace />} />
               </Route>
+              <Route path="*" element={<Navigate to="/404" replace />} />
             </Route>
 
             {/* Employee layout with Dashboard and DetailView*/}
@@ -529,10 +565,6 @@ const App = () => {
               }
             >
               <Route index element={<EmployeeDashboard />} />
-              <Route
-                path="detail"
-                element={<Navigate to="/employee" replace />}
-              />
               <Route
                 path="detail/"
                 element={<Navigate to="/employee" replace />}
@@ -580,8 +612,11 @@ const App = () => {
                   path="compoffrequest"
                   element={<EmployeeCompoffRequest />}
                 />
+                <Route path="*" element={<Navigate to="/404" replace />} />
               </Route>
+              <Route path="*" element={<Navigate to="/404" replace />} />
             </Route>
+            <Route path="*" element={<Navigate to="/404" replace />} />
           </Routes>
         </main>
 

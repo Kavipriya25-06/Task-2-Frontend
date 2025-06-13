@@ -61,6 +61,7 @@ const ManagerLeaveRequests = () => {
       .filter((leave) => leave.status.toLowerCase() === statusFilter)
       .sort((a, b) => new Date(b.end_date) - new Date(a.end_date));
     setFilteredLeaveRequests(filteredData);
+    setCurrentPage(1);
   };
 
   const handleApprove = async (leave_taken_id) => {
@@ -92,8 +93,18 @@ const ManagerLeaveRequests = () => {
       showErrorToast("Error updating user", error);
     }
   };
-  const handleReject = async (leave_taken_id) => {
+  const handleReject = async (
+    leave_taken_id,
+    leaveTypeKey,
+    duration,
+    employee_id
+  ) => {
     const leaveUpdate = {
+      status: "rejected",
+      approved_by: user.employee_id,
+    };
+
+    const balanceUpdate = {
       status: "rejected",
       approved_by: user.employee_id,
     };
@@ -114,10 +125,42 @@ const ManagerLeaveRequests = () => {
 
       console.log("Leave rejected successfully");
       showSuccessToast("Leave rejected successfully");
+      await patchLeaveAvailability(leaveTypeKey, duration, employee_id);
       fetchLeaveRequests(); // Refresh the leave requests after rejection
     } catch (error) {
       console.error("Error rejecting leave", error);
       showErrorToast("Error rejecting leave", error);
+    }
+  };
+
+  const patchLeaveAvailability = async (
+    leaveTypeKey,
+    duration,
+    employee_id
+  ) => {
+    const patchURL = `${config.apiBaseURL}/leaves-available/by_employee/${employee_id}/`;
+
+    try {
+      // Step 1: Fetch current available leave
+      const res = await fetch(patchURL);
+      const currentData = await res.json();
+
+      const currentLeave = parseFloat(currentData[leaveTypeKey] || 0);
+      const newLeaveBalance = currentLeave + parseFloat(duration);
+
+      // Step 2: Patch with updated value
+      const patchRes = await fetch(patchURL, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [leaveTypeKey]: newLeaveBalance }),
+      });
+
+      if (!patchRes.ok) {
+        const err = await patchRes.json();
+        console.error("Leave availability update failed:", err);
+      }
+    } catch (err) {
+      console.error("Error patching leave availability:", err);
     }
   };
 
@@ -160,7 +203,7 @@ const ManagerLeaveRequests = () => {
                 <th>Leave type</th>
                 <th>Reason</th>
                 {activeTab === 0 && <th>Actions</th>}
-                <th>Attachments</th>
+                <th style={{ width: "120px" }}>Attachments</th>
               </tr>
             </thead>
             <tbody>
@@ -194,16 +237,23 @@ const ManagerLeaveRequests = () => {
                   {activeTab === 0 && (
                     <td>
                       <img
-                        src="\src\assets\approve.png"
+                        src="/approve.png"
                         alt="approve button"
                         className="leavebutton"
                         onClick={() => handleApprove(leave.leave_taken_id)}
                       />
                       <img
-                        src="\src\assets\reject.png"
+                        src="/reject.png"
                         alt="reject button"
                         className="leavebutton"
-                        onClick={() => handleReject(leave.leave_taken_id)}
+                        onClick={() =>
+                          handleReject(
+                            leave.leave_taken_id,
+                            leave.leave_type,
+                            leave.duration,
+                            leave.employee.employee_id
+                          )
+                        }
                       />
                     </td>
                   )}
@@ -249,7 +299,7 @@ const ManagerLeaveRequests = () => {
           disabled={currentPage === 1}
         >
           <img
-            src="/src/assets/left.png"
+            src="/left.png"
             alt="Previous"
             style={{ width: 10, height: 12 }}
           />
@@ -264,7 +314,7 @@ const ManagerLeaveRequests = () => {
           disabled={currentPage === totalPages}
         >
           <img
-            src="/src/assets/right.png"
+            src="/right.png"
             alt="Previous"
             style={{ width: 10, height: 12 }}
           />

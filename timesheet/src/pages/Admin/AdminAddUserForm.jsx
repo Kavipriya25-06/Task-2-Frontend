@@ -67,7 +67,9 @@ const AddUserForm = ({ onCancel, onSave }) => {
       }
 
       showSuccessToast("New User Added Successfully");
-      navigate("/admin/detail/users");
+      setTimeout(() => {
+        navigate("/admin/detail/users");
+      }, 2000); // waits for 2 seconds (2000ms)
     } catch (error) {
       showErrorToast(`Failed to create user: ${error.message}`);
       console.error("Error adding user:", error);

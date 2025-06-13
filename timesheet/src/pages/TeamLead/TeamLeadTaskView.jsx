@@ -7,6 +7,13 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 import { useAttachmentManager } from "../../constants/useAttachmentManager";
+import {
+  showSuccessToast,
+  showErrorToast,
+  showWarningToast,
+  showInfoToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
 
 const TeamLeadTaskView = () => {
   const { user } = useAuth();
@@ -65,10 +72,10 @@ const TeamLeadTaskView = () => {
 
       const data = await response.json();
       if (response.ok) {
-        alert("Task created successfully!");
+        showSuccessToast("Task created successfully!");
       } else {
         console.error(data);
-        alert(" Failed to create Task");
+        showErrorToast(" Failed to create Task");
       }
     } catch (err) {
       console.error("Request error:", err);
@@ -103,8 +110,6 @@ const TeamLeadTaskView = () => {
     setEditMode(false);
     fetchTaskAssignment(); // Re-fetch to reset form
   };
-
-
 
   useEffect(() => {
     fetchTeamleadManager();
@@ -168,7 +173,8 @@ const TeamLeadTaskView = () => {
   return (
     <div className="create-project-container">
       <div className="project-header">
-        <h2>Task details </h2>
+        {/* <h2>Task details </h2> */}
+        <h2>{editMode ? "Edit Task" : "View Task"}</h2>
         {editMode ? (
           <div></div>
         ) : (
@@ -194,11 +200,11 @@ const TeamLeadTaskView = () => {
                 <p>{project?.project_title || ""}</p>
               </div>
               <div className="project-form-group">
-                <label>Building Code</label>
+                <label>Sub-Division Code</label>
                 <p>{building?.building_code || ""}</p>
               </div>
               <div className="project-form-group">
-                <label>Building Title</label>
+                <label>Sub-Division Title</label>
                 <p>{building?.building_title || ""}</p>
               </div>
               <div className="project-form-group">
@@ -377,7 +383,7 @@ const TeamLeadTaskView = () => {
                       }}
                     >
                       <img
-                        src="/src/assets/pin svg.svg"
+                        src="/pin_svg.svg"
                         alt="Attachment"
                         style={{
                           width: "16px",
@@ -413,7 +419,7 @@ const TeamLeadTaskView = () => {
                                 className="view-attachment-link"
                               >
                                 <img
-                                  src="/src/assets/pin svg.svg"
+                                  src="/pin_svg.svg"
                                   alt="Attachment"
                                   style={{
                                     width: "16px",
@@ -513,7 +519,7 @@ const TeamLeadTaskView = () => {
                 <p>{project?.estimated_hours || ""}</p>
               </div>
               <div className="project-form-group-small">
-                <label>Building Hours</label>
+                <label>Sub-Division Hours</label>
                 <p>{taskData?.building_assign?.building_hours || ""}</p>
               </div>
               <div className="project-form-group-small">
@@ -584,6 +590,7 @@ const TeamLeadTaskView = () => {
           </div>
         )}
       </form>
+      <ToastContainerComponent />
     </div>
   );
 };

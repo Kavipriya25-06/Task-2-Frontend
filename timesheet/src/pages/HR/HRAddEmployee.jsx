@@ -4,9 +4,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import config from "../../config";
 import { cleanFormData } from "../../utils/cleanFormData";
-import usePlaceholder from "../../assets/profile icon.svg";
-import cameraIcon from "../../assets/camera.png";
-import plusIcon from "../../assets/plus.png";
+import usePlaceholder from "/profile_icon.svg";
+import cameraIcon from "/camera.png";
+import plusIcon from "/plus.png";
 import { useAttachmentManager } from "../../constants/useAttachmentManager";
 import { useEmployeeFormHandler } from "../../constants/useEmployeeFormHandler";
 import { defaultEmployeeFormData } from "../../constants/defaultEmployeeFormData";
@@ -216,11 +216,14 @@ const AddEmployee = () => {
         }
 
         console.log("All attachments uploaded");
-        showSuccessToast("Employee Details are uploaded successfully");
+        // showSuccessToast("Employee Details are uploaded successfully");
       }
 
       // Step 4: Navigate after success
-      navigate("/hr/detail/employee-details");
+      showSuccessToast("Employee Details are uploaded successfully");
+      setTimeout(() => {
+        navigate("/hr/detail/employee-details");
+      }, 2000); // waits for 2 seconds (2000ms)
     } catch (error) {
       showErrorToast(`Failed to create user: ${error.message}`);
       console.error(
@@ -474,8 +477,9 @@ const AddEmployee = () => {
               </div>
             </div>
             <div className="individual-tabs">
-              <label>Personal Email <span className="required-star">*</span>
-              </label> 
+              <label>
+                Personal Email <span className="required-star">*</span>
+              </label>
               <input
                 name="personal_email"
                 value={formData.personal_email}
@@ -488,9 +492,7 @@ const AddEmployee = () => {
               )}
             </div>
             <div className="individual-tabs">
-              <label>Phone Number
-                
-              </label>
+              <label>Phone Number</label>
               <input
                 name="contact_number"
                 value={formData.contact_number}
@@ -674,7 +676,7 @@ const AddEmployee = () => {
             </div>
             <div className="individual-tabs">
               <label>Department</label>
-              <select
+              {/* <select
                 name="department"
                 value={formData.department}
                 onChange={handleChange}
@@ -689,7 +691,13 @@ const AddEmployee = () => {
                 <option value="Electrical&Instrumentation">
                   Electrical&Instrumentation
                 </option>
-              </select>
+              </select> */}
+              <input
+                name="department"
+                value={formData.department}
+                onChange={handleChange}
+                placeholder="Department"
+              />
             </div>
             <div className="individual-tabs">
               <label>Qualification</label>

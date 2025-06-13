@@ -231,12 +231,13 @@ const ManagerBuildingView = () => {
   const { project } = buildingsAssign.project_assign;
 
   const taskClick = (task_assign_id) => {
-    navigate(`/manager/detail/tasks/${task_assign_id}`);
+    navigate(`tasks/${task_assign_id}`);
   };
   return (
     <div className="create-project-container">
       <div className="project-header">
-        <h2>Sub-Division {buildingsAssign.building?.building_title}</h2>
+        {/* <h2>Sub-Division {buildingsAssign.building?.building_title}</h2> */}
+        <h2>{editMode ? "Edit Sub-Division" : "View Sub-Division"}</h2>
         {!editMode && (
           <button
             type="edit"

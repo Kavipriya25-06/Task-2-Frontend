@@ -6,7 +6,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useAttachmentManager } from "../../constants/useAttachmentManager";
 
-
 const EmployeeTaskDetail = () => {
   const { user } = useAuth();
   const { task_assign_id } = useParams(); // from URL
@@ -28,16 +27,27 @@ const EmployeeTaskDetail = () => {
   }, []);
 
   const formatDate = (dateStr) => {
-  if (!dateStr) return "";
-  const date = new Date(dateStr);
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = months[date.getMonth()];
-  const year = date.getFullYear();
-  return `${day}-${month}-${year}`;
-};
-
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
 
   const fetchTaskAssignment = async () => {
     try {
@@ -105,7 +115,7 @@ const EmployeeTaskDetail = () => {
 
                 {attachments && attachments.length > 0 ? (
                   <>
-                     <a
+                    <a
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
@@ -119,7 +129,7 @@ const EmployeeTaskDetail = () => {
                       }}
                     >
                       <img
-                        src="/src/assets/pin svg.svg"
+                        src="/pin_svg.svg"
                         alt="Attachment"
                         style={{
                           width: "16px",
@@ -156,7 +166,7 @@ const EmployeeTaskDetail = () => {
                                 className="view-attachment-link"
                               >
                                 <img
-                                  src="/src/assets/pin svg.svg"
+                                  src="/pin_svg.svg"
                                   alt="Attachment"
                                   style={{
                                     width: "16px",
