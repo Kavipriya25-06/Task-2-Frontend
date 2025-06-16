@@ -485,8 +485,27 @@ const EditEmployee = () => {
             </div>
 
             <div className="individual-tabs">
-              <label>Employee Code</label>
-              <div className="uneditable">{formData.employee_code || "-"}</div>
+              {editMode ? (
+                <>
+                  <label>
+                    Employee Code <span className="required-star">*</span>
+                  </label>
+                  <input
+                    name="employee_code"
+                    value={formData.employee_code}
+                    onChange={handleChange}
+                    placeholder="Employee Name"
+                    required
+                  />
+                </>
+              ) : (
+                <>
+                  <label>Employee Name</label>
+                  <div className="uneditable">
+                    {formData.employee_code || "-"}
+                  </div>
+                </>
+              )}
             </div>
             <div className="individual-tabs">
               {editMode ? (

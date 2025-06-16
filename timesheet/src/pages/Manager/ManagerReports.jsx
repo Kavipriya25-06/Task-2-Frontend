@@ -18,7 +18,7 @@ const ManagerReport = () => {
   const [isLoadingMoreEmployees, setIsLoadingMoreEmployees] = useState(false);
   const [hasMoreEmployees, setHasMoreEmployees] = useState(true);
   //new onee
-  const [selectedReport, setSelectedReport] = useState("Leave Taken Report");
+  const [selectedReport, setSelectedReport] = useState("Department Utilization");
   const handleReportChange = (e) => {
     setSelectedReport(e.target.value);
   };
@@ -29,9 +29,9 @@ const ManagerReport = () => {
       <div className="user-header">
         <div className="dropdown-container">
           <select className="employee-select" onChange={handleReportChange}>
-            <option value="Leave Taken Report">Department Utilization</option>
-            <option value="Leave Balance Report">Project Summary Report</option>
-            <option value="LOP Report">Utilization Report</option>
+            <option value="Department Utilization">Department Utilization</option>
+            <option value="Project Summary Report">Project Summary Report</option>
+            <option value="Utilization Report">Utilization Report</option>
             <option value="Weekly Utilization">Weekly Utilization</option>
             <option value="Monthly Utilization">Monthly Utilization</option>
             <option value="Yearly Utilization">Yearly Utilization</option>
@@ -40,6 +40,16 @@ const ManagerReport = () => {
             </option>
           </select>
         </div>
+         {selectedReport === "Department Utilization" && (
+        <div className="report-form-group">
+                <select name="designationYear" id="designationYear">
+                  <option value="">Structural-Detailing</option>
+                  <option value="">Strucutural Design</option>
+                  <option value="">Piping</option>
+                  <option value="">Electrical&Instrumentation</option>
+                </select>
+              </div>
+         )}
         {(selectedReport === "Weekly Utilization" ||
           selectedReport === "Monthly Utilization") && (
           <div
@@ -67,7 +77,7 @@ const ManagerReport = () => {
             </button>
           </div>
         )}
-
+          
         <button className="add-user-btn">Download Report</button>
       </div>
       <div
@@ -94,7 +104,7 @@ const ManagerReport = () => {
           }
         }}
       >
-        {selectedReport === "Leave Taken Report" && (
+        {selectedReport === "Department Utilization" && (
           <table className="employee-table">
             <thead>
               <tr>
@@ -112,6 +122,7 @@ const ManagerReport = () => {
                 <th>Holiday</th>
                 <th>IT/ Power Failure</th>
               </tr>
+              
             </thead>
             <tbody>
               <tr>
@@ -147,7 +158,7 @@ const ManagerReport = () => {
             </tbody>
           </table>
         )}
-        {selectedReport === "Leave Balance Report" && (
+        {selectedReport === "Project Summary Report" && (
           <table className="employee-table">
             <thead>
               <tr>
@@ -177,7 +188,7 @@ const ManagerReport = () => {
           </table>
         )}
 
-        {selectedReport === "LOP Report" && (
+        {selectedReport === "Utilization Report" && (
           <table className="employee-table">
             <thead>
               <tr>
@@ -502,10 +513,10 @@ const ManagerReport = () => {
 
               <div className="report-form-group">
                 <select name="designationYear" id="designationYear">
+                  <option value="">Structural-Detailing</option>
                   <option value="">Strucutural Design</option>
-                  <option value="">Strucutural Design</option>
-                  <option value="">Strucutural Design</option>
-                  <option value="">Strucutural Design</option>
+                  <option value="">Piping</option>
+                  <option value="">Electrical&Instrumentation</option>
                 </select>
               </div>
             </div>
