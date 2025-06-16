@@ -64,7 +64,7 @@ import HRHolidayList from "./pages/HR/HRHolidayList.jsx";
 import HRSettings from "./pages/HR/HRSettings.jsx";
 import HRAttendance from "./pages/HR/HRAttendance.jsx";
 import HRLeaveRequests from "./pages/HR/HRLeaveRequests.jsx";
-import HRReports from "./pages/HR/HRReports.jsx"
+import HRReports from "./pages/HR/HRReports.jsx";
 
 // Manager pages
 import ManagerDashboard from "./pages/Manager/ManagerDashboard.jsx";
@@ -83,6 +83,10 @@ import ManagerTeamLeadersView from "./pages/Manager/ManagerTeamLeadersView.jsx";
 import ManagerProjectCreate from "./pages/Manager/ManagerProjectCreate.jsx";
 import ManagerBuildingCreate from "./pages/Manager/ManagerBuildingCreate.jsx";
 import ManagerTaskCreate from "./pages/Manager/ManagerTaskCreate.jsx";
+import ManagerReports from "./pages/Manager/ManagerReports.jsx";
+import ManagerTimeSheetEntry from "./pages/Manager/ManagerTimeSheetEntry.jsx";
+import ManagerDailyTimeSheetEntry from "./pages/Manager/ManagerDailyTimeSheetEntry.jsx";
+
 
 import ManagerApprovalScreen from "./pages/Manager/ManagerApprovalScreen.jsx";
 import ManagerLeaveApplication from "./pages/Manager/ManagerLeaveApplication.jsx";
@@ -326,7 +330,7 @@ const App = () => {
                 <Route path="leave-requests" element={<HRLeaveRequests />} />
                 <Route path="attendance" element={<HRAttendance />} />
                 <Route path="settings" element={<HRSettings />} />
-                                <Route path="reports" element={<HRReports />} />
+                <Route path="reports" element={<HRReports />} />
 
                 <Route path="*" element={<Navigate to="/404" replace />} />
               </Route>
@@ -421,6 +425,23 @@ const App = () => {
                   path="leave-requests/Leaveapplication"
                   element={<ManagerLeaveApplication />}
                 />
+                 <Route
+                  path="time-sheet-entry"
+                  element={<ManagerTimeSheetEntry />}
+                />
+                <Route
+                  path="time-sheet-entry/createdaily/"
+                  element={
+                    <Navigate to="/manager/detail/time-sheet-entry" replace />
+                  }
+                />
+                <Route
+                  path="time-sheet-entry/createdaily/:date"
+                  element={<ManagerDailyTimeSheetEntry />}
+                />
+                <Route path="reports" element={<ManagerReports />} />
+                
+
                 <Route path="Compoff" element={<ManagerCompoff />} />
                 <Route path="*" element={<Navigate to="/404" replace />} />
               </Route>

@@ -19,12 +19,19 @@ const ManagerDetailView = () => {
     { label: "Team Leaders", path: "team-leaders", tabname: ["team-leaders"] },
     { label: "Employees", path: "employees", tabname: ["employees"] },
     {
+      label: "Time Sheet Entry",
+      path: "time-sheet-entry",
+      tabname: ["time-sheet-entry"],
+    },
+    {
       label: "Leave requests",
       path: "leave-requests",
       tabname: ["leave-requests"],
     },
     { label: "Attendance", path: "attendance", tabname: ["attendance"] },
     { label: "Comp-off", path: "Compoff", tabname: ["Compoff"] },
+    { label: "Reports", path: "reports", tabname: ["reports"] },
+
   ];
 
   return (

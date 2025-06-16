@@ -1,0 +1,284 @@
+import React, { useEffect, useState } from "react";
+import { useAuth } from "../../AuthContext";
+import config from "../../config";
+import { useNavigate } from "react-router-dom";
+
+const ManagerTimeSheetEntry = () => {
+  const { user } = useAuth();
+  const [calendarData, setCalendarData] = useState([]);
+  const [biometricData, setBiometricData] = useState([]);
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const navigate = useNavigate();
+
+  const fetchCalendarData = async (year) => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/calendar/?year=${year}`
+      );
+      const data = await response.json();
+      setCalendarData(data);
+    } catch (error) {
+      console.error("Error fetching calendar data:", error);
+    }
+  };
+
+  const fetchBiometricData = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/biometric-data/by_employee/${user.employee_id}/?month=${month}&year=${year}`
+      );
+      const data = await response.json();
+      setBiometricData(data);
+    } catch (error) {
+      console.error("Error fetching biometric data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCalendarData(selectedYear);
+    fetchBiometricData();
+    const updated = new Date(currentDate);
+    updated.setFullYear(selectedYear);
+    setCurrentDate(updated);
+  }, [selectedYear]);
+
+  const handlePrevMonth = () => {
+    const prev = new Date(currentDate);
+    prev.setMonth(currentDate.getMonth() - 1);
+    setCurrentDate(prev);
+    setSelectedYear(prev.getFullYear());
+  };
+
+  const handleNextMonth = () => {
+    const next = new Date(currentDate);
+    next.setMonth(currentDate.getMonth() + 1);
+    setCurrentDate(next);
+    setSelectedYear(next.getFullYear());
+  };
+
+  const handlePrevYear = () => {
+    setSelectedYear((prev) => prev - 1);
+  };
+
+  const handleNextYear = () => {
+    setSelectedYear((prev) => prev + 1);
+  };
+
+  const handleMonthChange = (e) => {
+    const newMonth = parseInt(e.target.value);
+    const updated = new Date(currentDate);
+    updated.setMonth(newMonth);
+    setCurrentDate(updated);
+    setSelectedMonth(newMonth);
+  };
+
+  const handleYearChange = (e) => {
+    const newYear = parseInt(e.target.value);
+    setSelectedYear(newYear);
+  };
+
+  const handleReset = () => {
+    const now = new Date();
+    setSelectedYear(now.getFullYear());
+    setSelectedMonth(now.getMonth());
+    setCurrentDate(now);
+  };
+
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth() + 1;
+  const monthName = currentDate.toLocaleString("default", { month: "long" });
+
+  const monthData = calendarData.filter(
+    (entry) => entry.year === year && entry.month === month
+  );
+
+  const daysInWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+  const renderCalendar = () => {
+    const today = new Date();
+    const todayKey = `${today.getFullYear()}-${
+      today.getMonth() + 1
+    }-${today.getDate()}`;
+    // console.log("Today", todayKey);
+
+    const offset = (new Date(year, month - 1, 1).getDay() + 6) % 7;
+    const filledData = new Array(offset).fill(null).concat(monthData);
+
+    const rows = [];
+    // const status = "save"; // e.g., "Pending"
+    for (let i = 0; i < filledData.length; i += 7) {
+      const week = filledData.slice(i, i + 7);
+      const firstValidDay = week.find((day) => day && day.date);
+      const monday = firstValidDay?.date || "";
+      const weekNumber = week.find((day) => day)?.week_of_year || "-";
+      rows.push(
+        <React.Fragment key={`week-${weekNumber}-${i}`}>
+          <div
+            className="week-number"
+            onClick={() => navigate(`createweekly/${monday}`)}
+          >
+            W-{weekNumber}
+          </div>
+          {week.map((entry, idx) =>
+            entry ? (
+              <div
+                key={entry.calendar_id}
+                className={`calendar-cell1 ${
+                  entry.is_weekend ? "weekend" : ""
+                } ${entry.is_holiday ? "holiday" : ""}`}
+                data-note={entry.notes || ""}
+              >
+                <div className="day-number">{entry.day}</div>
+                <div
+                  className="day-circle"
+                  onClick={() => {
+                    const clickedDate = `${entry.year}-${String(
+                      entry.month
+                    ).padStart(2, "0")}-${String(entry.day).padStart(2, "0")}`;
+                    navigate(`createdaily/${clickedDate}`);
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
+                  {/**  Show work_duration from biometric data */}
+                  {(() => {
+                    const dateStr = `${entry.year}-${String(
+                      entry.month
+                    ).padStart(2, "0")}-${String(entry.day).padStart(2, "0")}`;
+                    const dayRecords = biometricData.filter(
+                      (b) => b.date === dateStr
+                    );
+
+                    let latestRecord = null;
+
+                    dayRecords.forEach((record) => {
+                      if (
+                        !latestRecord ||
+                        new Date(record.modified_on) >
+                          new Date(latestRecord.modified_on)
+                      ) {
+                        latestRecord = record;
+                      }
+                    });
+
+                    let circleClass = "circle-gray";
+
+                    if (latestRecord?.timesheets?.length > 0) {
+                      const ts = latestRecord.timesheets;
+                      const hasApproved = ts.some((t) => t.approved);
+                      const hasRejected = ts.some((t) => t.rejected);
+                      const hasSubmitted = ts.some((t) => t.submitted);
+
+                      if (hasApproved) circleClass = "circle-green";
+                      else if (hasRejected) circleClass = "circle-red";
+                      else if (hasSubmitted) circleClass = "circle-yellow";
+                      else circleClass = "circle-blue";
+                    }
+
+                    return (
+                      <>
+                        <div
+                          className="day-circle"
+                          onClick={() => navigate(`createdaily/${dateStr}`)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          {latestRecord?.total_duration || ""}
+                        </div>
+                        <div
+                          className={`bottom-right-circle ${circleClass}`}
+                        ></div>
+                      </>
+                    );
+                  })()}
+                </div>
+
+                {entry.notes && (
+                  <div className="holiday-note1">{entry.notes}</div>
+                )}
+                {/* <div className={`bottom-right-circle ${circleClass}`}></div> */}
+              </div>
+            ) : (
+              <div key={`empty-${i + idx}`} className="calendar-cell empty" />
+            )
+          )}
+        </React.Fragment>
+      );
+    }
+    return rows;
+  };
+
+  return (
+    <div className="holiday-calendar">
+      <div className="calendar-headers">
+        <button className="lefts" onClick={handlePrevMonth}>
+          &lt;
+        </button>
+        <h3>
+          {monthName} {selectedYear}
+        </h3>
+        <button className="rights" onClick={handleNextMonth}>
+          &gt;
+        </button>
+        {/* Let this be here for now */}
+        {/* <button onClick={handlePrevYear} className="calendar-nav-btn">
+          ◀ Year
+        </button>
+        <button onClick={handleNextYear} className="calendar-nav-btn">
+          Year ▶
+        </button> */}
+        <select
+          className="calendar-nav-dropdown"
+          value={selectedMonth}
+          onChange={handleMonthChange}
+        >
+          {Array.from({ length: 12 }, (_, idx) => (
+            <option key={idx} value={idx}>
+              {new Date(0, idx).toLocaleString("default", { month: "long" })}
+            </option>
+          ))}
+        </select>
+
+        <select
+          className="calendar-nav-dropdown"
+          value={selectedYear}
+          onChange={handleYearChange}
+        >
+          {Array.from({ length: 20 }, (_, idx) => (
+            <option key={idx} value={2014 + idx}>
+              {2014 + idx}
+            </option>
+          ))}
+        </select>
+        {/* <button
+          className="calendar-title-btn"
+          onClick={() => navigate("/admin/detail/holidays/holiday-list")}
+        >
+          Holiday list {year}
+        </button> */}
+      </div>
+
+      {/* <div className="calendar-grid">
+        {daysInWeek.map((day) => (
+          <div className="calendar-day-label" key={day}>
+            {day}
+          </div>
+        ))}
+        {renderDays()}
+      </div> */}
+      <div className="calendar-grid">
+        <div className="calendar-day-label">Week</div>
+        {daysInWeek.map((day) => (
+          <div
+            className={`calendar-day-label ${day === "Sun" ? "sunday" : ""}`}
+            key={day}
+          >
+            {day}
+          </div>
+        ))}
+        {renderCalendar()}
+      </div>
+    </div>
+  );
+};
+export default ManagerTimeSheetEntry;

@@ -463,6 +463,7 @@ const ManagerBuildingView = () => {
                             dateFormat="dd-MMM-yyyy"
                             placeholderText="dd-mm-yyyy"
                             className="custom-datepicker"
+                            dropdownMode="select"
                           />
                           <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
                           {/* Font Awesome Calendar Icon */}
@@ -484,6 +485,7 @@ const ManagerBuildingView = () => {
                             dateFormat="dd-MMM-yyyy"
                             placeholderText="dd-mm-yyyy"
                             className="custom-datepicker"
+                            dropdownMode="select"
                           />
                           <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
                           {/* Font Awesome Calendar Icon */}

@@ -13,7 +13,7 @@ import {
   ToastContainerComponent,
 } from "../../constants/Toastify";
 
-const EmployeeList = () => {
+const HRReports = () => {
   const [visibleEmployees, setVisibleEmployees] = useState(10);
   const [isLoadingMoreEmployees, setIsLoadingMoreEmployees] = useState(false);
   const [hasMoreEmployees, setHasMoreEmployees] = useState(true);
@@ -79,6 +79,7 @@ const EmployeeList = () => {
                 <td>22-06-2022</td>
                 <td>22-06-2025</td>
                 <td>320</td>
+                <td>Sick</td>
               </tr>
               <tr>
                 <td>EC0001</td>
@@ -118,6 +119,7 @@ const EmployeeList = () => {
                 <td>1</td>
                 <td>2</td>
                 <td>5</td>
+                <td>10</td>
               </tr>
               <tr>
                 <td>EC0001</td>
@@ -130,6 +132,7 @@ const EmployeeList = () => {
                 <td>1</td>
                 <td>2</td>
                 <td>5</td>
+                <td>0</td>
               </tr>
             </tbody>
           </table>
@@ -172,12 +175,14 @@ const EmployeeList = () => {
                 <td>1</td>
                 <td>1</td>
                 <td>1</td>
+                <td>1</td>
               </tr>
               <tr>
                 <td>EC0001</td>
                 <td>Vijay</td>
                 <td>22-06-2025</td>
                 <td>Active</td>
+                <td>1</td>
                 <td>1</td>
                 <td>1</td>
                 <td>1</td>
@@ -204,12 +209,14 @@ const EmployeeList = () => {
                 <td>1</td>
                 <td>1</td>
                 <td>1</td>
+                <td>1</td>
               </tr>
               <tr>
                 <td>EC0001</td>
                 <td>Kasi</td>
                 <td>02-12-2025</td>
                 <td>Active</td>
+                <td>1</td>
                 <td>1</td>
                 <td>1</td>
                 <td>1</td>
@@ -234,4 +241,4 @@ const EmployeeList = () => {
   );
 };
 
-export default EmployeeList;
+export default HRReports;

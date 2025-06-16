@@ -888,7 +888,7 @@ table input[type="number"]:focus {
 }
 
 .task-select {
-  min-width: 140px;
+  min-width: 200px;
 }
 
 .task-select:focus {
@@ -1139,6 +1139,13 @@ table input[type="number"]:focus {
 .attendance-container .table-scroll-container {
   overflow-x: auto;
   /* overflow-y: auto; */
+}
+
+.table-scroll-container {
+  width: 100%;
+  overflow-x: auto;
+  /* Optional: set a minimum width so the table needs to scroll */
+  min-width: 800px;
 }
 
 .attendance-scroll-container {
@@ -2142,12 +2149,6 @@ h3 {
   background-color: white !important;
 }
 
-.date-input-container {
-  position: relative;
-  display: inline-block;
-  width: 78%;
-}
-
 .datepicker-wrapper {
   width: auto;
 }
@@ -2166,14 +2167,10 @@ h3 {
   width: 80%;
 }
 
-.date-input-container {
-  width: 100%;
-}
-
 .row1 .calendar-icon {
   position: absolute;
   top: 30%;
-  right: 22%;
+  right: 23%;
   font-size: 15px; /* Icon size */
   color: #3d3d3d; /* Icon color */
   cursor: pointer; /* Make icon clickable */
@@ -2203,17 +2200,6 @@ h3 {
   width: 100%;
 }
 
-.date-input-container .calendar-icon {
-  position: absolute;
-  top: 50%;
-  right: 10px;
-  transform: translateY(-50%);
-  font-size: 16px;
-  color: #3d3d3d;
-  cursor: pointer;
-  pointer-events: none;
-}
-
 .date-wrapper .calendar-icon {
   position: relative;
   top: 25%;
@@ -2226,7 +2212,7 @@ h3 {
 
 .project-form-group-small .calendar-icon {
   position: absolute;
-  top: 30%;
+  top: 32% !important;
   right: 6%;
   font-size: 15px; /* Icon size */
   color: #3d3d3d; /* Icon color */
@@ -5421,14 +5407,13 @@ select.no-arrow {
 .employee-select {
   padding: 10px 14px;
   padding-right: 36px; /* 👈 Add extra space on right side */
-
   border: none;
   border-radius: 6px;
   font-size: 22px;
   font-weight: bolder;
   color: #333;
   width: 100%;
-  max-width: 300px;
+  max-width: 400px;
   background-color: transparent; /* No background */
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 140 140' width='14' height='14' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M 10 50 L 70 110 L 130 50' stroke='%23000' stroke-width='14' fill='none'/%3E%3C/svg%3E");
@@ -5446,4 +5431,71 @@ select.no-arrow {
 .employee-select option {
   font-size: 16px; /* Smaller text size inside dropdown */
   font-weight: normal;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+.year-header {
+  text-align: center;
+  padding: 0;
+  border-top: 2px solid #ccc;
+}
+
+.year,
+.quarter {
+  margin: 0;
+  padding: 10px;
+}
+
+.divider {
+  margin: 0;
+  border: 0;
+  border-top: 2px solid #ccc;
+}
+
+.report-left,
+.report-right {
+  background-color: rgb(163, 162, 162);
+  color: #fff;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  flex-shrink: 0; /* Prevent shrinking */
+  gap: 50px;
+}
+
+.report-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  align-items: center;
+  margin-bottom: 20px;
+  margin-top: 10px;
+  padding-left: 20px;
+  padding-top: 10px;
+}
+
+.report-form-group {
+  display: flex;
+  flex-direction: row;
+  min-width: 260px;
+  gap: 10px;
+}
+
+.report-form-group label {
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.report-form-group select {
+  padding: 6px 10px;
+  font-size: 14px;
+  margin-top: -5px;
+  background-color: #d6d6d6;
+  border-radius: 5px;
 }
