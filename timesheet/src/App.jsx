@@ -87,7 +87,6 @@ import ManagerReports from "./pages/Manager/ManagerReports.jsx";
 import ManagerTimeSheetEntry from "./pages/Manager/ManagerTimeSheetEntry.jsx";
 import ManagerDailyTimeSheetEntry from "./pages/Manager/ManagerDailyTimeSheetEntry.jsx";
 
-
 import ManagerApprovalScreen from "./pages/Manager/ManagerApprovalScreen.jsx";
 import ManagerLeaveApplication from "./pages/Manager/ManagerLeaveApplication.jsx";
 import ManagerLeaveRequestForm from "./pages/Manager/ManagerLeaveRequestForm.jsx";
@@ -425,7 +424,7 @@ const App = () => {
                   path="leave-requests/Leaveapplication"
                   element={<ManagerLeaveApplication />}
                 />
-                 <Route
+                <Route
                   path="time-sheet-entry"
                   element={<ManagerTimeSheetEntry />}
                 />
@@ -440,7 +439,7 @@ const App = () => {
                   element={<ManagerDailyTimeSheetEntry />}
                 />
                 <Route path="reports" element={<ManagerReports />} />
-                
+               
 
                 <Route path="Compoff" element={<ManagerCompoff />} />
                 <Route path="*" element={<Navigate to="/404" replace />} />
