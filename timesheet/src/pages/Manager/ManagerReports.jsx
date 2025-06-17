@@ -14,23 +14,72 @@ import {
 } from "../../constants/Toastify";
 
 const ManagerReport = () => {
-  const [visibleEmployees, setVisibleEmployees] = useState(10);
-  const [isLoadingMoreEmployees, setIsLoadingMoreEmployees] = useState(false);
-  const [hasMoreEmployees, setHasMoreEmployees] = useState(true);
+  // const [visibleEmployees, setVisibleEmployees] = useState(10);
+  // const [isLoadingMoreEmployees, setIsLoadingMoreEmployees] = useState(false);
+  // const [hasMoreEmployees, setHasMoreEmployees] = useState(true);
   //new onee
-  const [selectedReport, setSelectedReport] = useState("Department Utilization");
+  const [selectedReport, setSelectedReport] = useState(
+    "Project Summary Report"
+  );
   const handleReportChange = (e) => {
     setSelectedReport(e.target.value);
   };
   const [selectedYear, setSelectedYear] = useState(2024);
+
+const [reportData, setReportData] = useState([]);
+const [taskTitles, setTaskTitles] = useState([]);
+
+useEffect(() => {
+  if (selectedReport === "Utilization Report") {
+    fetch(`${config.apiBaseURL}/project-hours/`)
+      .then((res) => res.json())
+      .then((data) => {
+        const formatted = [];
+        const titleSet = new Set();
+
+        data.forEach((project) => {
+          project.assigns.forEach((assign) => {
+            assign.buildings.forEach((buildingAssign) => {
+              const taskHoursMap = {};
+              let totalHours = 0;
+
+              buildingAssign.tasks.forEach((taskAssign) => {
+                const title = taskAssign.task.task_title;
+                const hours = parseFloat(taskAssign.task_consumed_hours);
+                taskHoursMap[title] = (taskHoursMap[title] || 0) + hours;
+                totalHours += hours;
+                titleSet.add(title);
+              });
+
+              formatted.push({
+                project_code: project.project_code,
+                project_name: project.project_title,
+                sub_division: buildingAssign.building?.building_code, // ← building code as sub_division
+                tasks: taskHoursMap,
+                total: totalHours.toFixed(2),
+              });
+            });
+          });
+        });
+
+        setTaskTitles(Array.from(titleSet));
+        setReportData(formatted);
+      })
+      .catch((error) =>
+        console.error("Error fetching Utilization Report:", error)
+      );
+  }
+}, [selectedReport]);
+
 
   return (
     <div className="employee-table-wrapper">
       <div className="user-header">
         <div className="dropdown-container">
           <select className="employee-select" onChange={handleReportChange}>
-            <option value="Department Utilization">Department Utilization</option>
-            <option value="Project Summary Report">Project Summary Report</option>
+            <option value="Project Summary Report">
+              Project Summary Report
+            </option>
             <option value="Utilization Report">Utilization Report</option>
             <option value="Weekly Utilization">Weekly Utilization</option>
             <option value="Monthly Utilization">Monthly Utilization</option>
@@ -38,18 +87,21 @@ const ManagerReport = () => {
             <option value="Timesheet Client Report">
               TimeSheet Client Report
             </option>
+            <option value="Department Utilization">
+              Department Utilization
+            </option>
           </select>
         </div>
-         {selectedReport === "Department Utilization" && (
-        <div className="report-form-group">
-                <select name="designationYear" id="designationYear">
-                  <option value="">Structural-Detailing</option>
-                  <option value="">Strucutural Design</option>
-                  <option value="">Piping</option>
-                  <option value="">Electrical&Instrumentation</option>
-                </select>
-              </div>
-         )}
+        {selectedReport === "Department Utilization" && (
+          <div className="report-form-group">
+            <select name="designationYear" id="designationYear">
+              <option value="">Structural-Detailing</option>
+              <option value="">Strucutural Design</option>
+              <option value="">Piping</option>
+              <option value="">Electrical & Instrumentation</option>
+            </select>
+          </div>
+        )}
         {(selectedReport === "Weekly Utilization" ||
           selectedReport === "Monthly Utilization") && (
           <div
@@ -77,7 +129,7 @@ const ManagerReport = () => {
             </button>
           </div>
         )}
-          
+
         <button className="add-user-btn">Download Report</button>
       </div>
       <div
@@ -104,60 +156,6 @@ const ManagerReport = () => {
           }
         }}
       >
-        {selectedReport === "Department Utilization" && (
-          <table className="employee-table">
-            <thead>
-              <tr>
-                <th>Year</th>
-                <th>Week</th>
-                <th>No.of Employees</th>
-                <th>No.of Working Days</th>
-                <th>Available Hours</th>
-                <th>Project Hours</th>
-                <th>Utilization Ratio</th>
-                <th>Standardisation</th>
-                <th>Idle Hours</th>
-                <th>Training</th>
-                <th>Leave/Permission</th>
-                <th>Holiday</th>
-                <th>IT/ Power Failure</th>
-              </tr>
-              
-            </thead>
-            <tbody>
-              <tr>
-                <td>2025</td>
-                <td>1</td>
-                <td>6</td>
-                <td>6</td>
-                <td>288</td>
-                <td>68</td>
-                <td>30.4</td>
-                <td>20</td>
-                <td>48</td>
-                <td>80</td>
-                <td>32</td>
-                <td>32</td>
-                <td>0</td>
-              </tr>
-              <tr>
-                <td>2025</td>
-                <td>1</td>
-                <td>6</td>
-                <td>6</td>
-                <td>288</td>
-                <td>68</td>
-                <td>30.4</td>
-                <td>20</td>
-                <td>48</td>
-                <td>80</td>
-                <td>32</td>
-                <td>32</td>
-                <td>0</td>
-              </tr>
-            </tbody>
-          </table>
-        )}
         {selectedReport === "Project Summary Report" && (
           <table className="employee-table">
             <thead>
@@ -195,50 +193,26 @@ const ManagerReport = () => {
                 <th>Project Code</th>
                 <th>Project Name</th>
                 <th>Sub-Division</th>
-                <th>Modeling</th>
-                <th>Detailing</th>
-                <th>Primary Design/Stress Analysis</th>
-                <th>Connection Design</th>
-                <th>AutoSpool Extraction</th>
-                <th>Drawing Preparation</th>
-                <th>Checking</th>
-                <th>Coordination</th>
-                <th>Training</th>
+                 {taskTitles.map((title, idx) => (
+          <th key={idx}>{title}</th>
+        ))}
                 <th>Total</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>2051012</td>
-                <td>Idle Hours</td>
-                <td>Design</td>
-                <td>103373.10</td>
-                <td>103373.10</td>
-                <td>103373.10</td>
-                <td>103373.10</td>
-                <td>103373.10</td>
-                <td>103373.10</td>
-                <td>103373.10</td>
-                <td>103373.10</td>
-                <td>103373.10</td>
-                <td>103373.10</td>
-              </tr>
-              <tr>
-                <td>2051012</td>
-                <td>Idle Hours</td>
-                <td>Design</td>
-                <td>103373.10</td>
-                <td>103373.10</td>
-                <td>103373.10</td>
-                <td>103373.10</td>
-                <td>103373.10</td>
-                <td>103373.10</td>
-                <td>103373.10</td>
-                <td>103373.10</td>
-                <td>103373.10</td>
-                <td>103373.10</td>
-              </tr>
-            </tbody>
+               <tbody>
+      {reportData.map((item, index) => (
+        <tr key={index}>
+          <td>{item.project_code}</td>
+          <td>{item.project_name}</td>
+          <td>{item.sub_division}</td>
+          {taskTitles.map((title, i) => (
+            <td key={i}>{item.tasks[title] || 0}</td>
+          ))}
+          <td>{item.total}</td>
+        </tr>
+      ))}
+    </tbody>
+
           </table>
         )}
 
@@ -607,10 +581,64 @@ const ManagerReport = () => {
           </>
         )}
 
-        {isLoadingMoreEmployees && (
+        {selectedReport === "Department Utilization" && (
+          <table className="employee-table">
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th>Week</th>
+                <th>No.of Employees</th>
+                <th>No.of Working Days</th>
+                <th>Available Hours</th>
+                <th>Project Hours</th>
+                <th>Utilization Ratio</th>
+                <th>Standardisation</th>
+                <th>Idle Hours</th>
+                <th>Training</th>
+                <th>Leave/Permission</th>
+                <th>Holiday</th>
+                <th>IT/ Power Failure</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>2025</td>
+                <td>1</td>
+                <td>6</td>
+                <td>6</td>
+                <td>288</td>
+                <td>68</td>
+                <td>30.4</td>
+                <td>20</td>
+                <td>48</td>
+                <td>80</td>
+                <td>32</td>
+                <td>32</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>2025</td>
+                <td>1</td>
+                <td>6</td>
+                <td>6</td>
+                <td>288</td>
+                <td>68</td>
+                <td>30.4</td>
+                <td>20</td>
+                <td>48</td>
+                <td>80</td>
+                <td>32</td>
+                <td>32</td>
+                <td>0</td>
+              </tr>
+            </tbody>
+          </table>
+        )}
+
+        {/* {isLoadingMoreEmployees && (
           <div className="loading-message">Loading...</div>
         )}
-        {!hasMoreEmployees && <div className="no-message">No more data</div>}
+        {!hasMoreEmployees && <div className="no-message">No more data</div>} */}
       </div>
       <ToastContainerComponent />
     </div>
