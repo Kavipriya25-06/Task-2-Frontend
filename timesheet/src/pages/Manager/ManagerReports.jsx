@@ -18,7 +18,7 @@ import MonthlyUtilization from "./Reports/MonthlyUtilizationReport";
 import UtilizationReport from "./Reports/UtilizationReport";
 import ProjectSummaryReport from "./Reports/ProjectSummaryReport";
 import TimeSheetClientReport from "./Reports/TimeSheetClientReport";
-import YearlyUtilizationReport from "./Reports/YeaarlyUtilizationReport";
+import YearlyUtilizationReport from "./Reports/YearlyUtilizationReport";
 
 const ManagerReport = () => {
   const [selectedReport, setSelectedReport] = useState(

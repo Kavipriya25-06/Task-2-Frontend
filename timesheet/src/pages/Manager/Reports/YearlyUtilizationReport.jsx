@@ -38,7 +38,10 @@ const YearlyUtilizationReport = () => {
 
   return (
     <div className="employee-table-wrapper">
-      <div className="table-wrapper" style={{ maxHeight: "400px", overflowY: "auto" }}>
+      <div
+        className="table-wrapper"
+        style={{ maxHeight: "400px", overflowY: "auto" }}
+      >
         {loading ? (
           <div className="loading-message">Loading data...</div>
         ) : projectData.length === 0 ? (
@@ -49,9 +52,7 @@ const YearlyUtilizationReport = () => {
               <tr>
                 <th rowSpan="2">Project Code</th>
                 <th rowSpan="2">Project Name</th>
-                 <th rowSpan="2">
-                  Allocated Hours
-                </th>
+                <th rowSpan="2">Allocated Hours</th>
                 <th colSpan={years.length + 1} style={{ textAlign: "center" }}>
                   Consumed Hours Year Wise
                 </th>
@@ -98,7 +99,9 @@ const YearlyUtilizationReport = () => {
 
                     {/* Consumed Hours */}
                     {years.map((y) => (
-                      <td key={`ch-${y}`}>{(consumedMap[y] || 0).toFixed(2)}</td>
+                      <td key={`ch-${y}`}>
+                        {(consumedMap[y] || 0).toFixed(2)}
+                      </td>
                     ))}
                     <td>{totalConsumed.toFixed(2)}</td>
 
@@ -107,7 +110,9 @@ const YearlyUtilizationReport = () => {
                       const consumed = consumedMap[y] || 0;
                       return (
                         <td key={`perc-${y}`}>
-                          {allocated ? `${((consumed / allocated) * 100).toFixed(0)}%` : "0%"}
+                          {allocated
+                            ? `${((consumed / allocated) * 100).toFixed(0)}%`
+                            : "0%"}
                         </td>
                       );
                     })}
@@ -118,10 +123,19 @@ const YearlyUtilizationReport = () => {
                     </td>
 
                     {/* Allocated Hours */}
-                    {years.map((y) => (
-                      <td key={`ah-${y}`}>{allocated.toFixed(2)}</td>
+                      {years.map((y) => (
+                      <td key={`ch-${y}`}>
+                        {(consumedMap[y] || 0).toFixed(2)}
+                      </td>
                     ))}
-                    <td>{allocated.toFixed(2)}</td>
+                    <td>{totalConsumed.toFixed(2)}</td>
+
+                    {/* {years.map((y) => (
+                      <td key={`ah-${y}`}>
+                        {(allocated / years.length).toFixed(2)}
+                      </td>
+                    ))}
+                    <td>{allocated.toFixed(2)}</td> */}
                   </tr>
                 );
               })}
