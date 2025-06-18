@@ -5455,6 +5455,28 @@ table {
   border-top: 2px solid #ccc;
 }
 
+.year-headers {
+  text-align: center;
+  padding: 0;
+  border-top: 2px solid #ccc;
+}
+
+ .year-headers .year{
+ margin-top: 5px;
+ margin-bottom: -15px;
+}
+
+.quarter {
+  margin: 0;
+  padding: 10px;
+}
+
+.divider {
+  margin: 0;
+  border: 0;
+  border-top: 2px solid #ccc;
+}
+
 .report-left,
 .report-right {
   background-color: rgb(163, 162, 162);
@@ -5500,4 +5522,23 @@ table {
   border-radius: 5px;
 }
 
+.report-navigation button{
+  width: 24px; /* Set width for square shape */
+  height: 24px; /* Set height equal to width */
+  background-color: #dbdbdb;
+  border: none;
+  font-size: 24px; /* Make the < and > bigger */
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 6px; /* Slightly rounded corners */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+  color: #363535;
+}
+
+.report-navigation button:hover{
+    background-color: #b9b9b9;
+}
 

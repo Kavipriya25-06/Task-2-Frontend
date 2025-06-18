@@ -13,14 +13,39 @@ import {
   ToastContainerComponent,
 } from "../../constants/Toastify";
 
+import LeaveTakenReport from "./Reports/LeaveTakenReport";
+import LeaveBalanceReport from "./Reports/LeaveBalanceReport";
+import LOPReport from "./Reports/LOPReport";
+
+
 const HRReports = () => {
-  const [visibleEmployees, setVisibleEmployees] = useState(10);
-  const [isLoadingMoreEmployees, setIsLoadingMoreEmployees] = useState(false);
-  const [hasMoreEmployees, setHasMoreEmployees] = useState(true);
   //new onee
+  const [year, setYear] = useState(new Date().getFullYear());
+
   const [selectedReport, setSelectedReport] = useState("Leave Taken Report");
   const handleReportChange = (e) => {
     setSelectedReport(e.target.value);
+  };
+
+  // const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+
+  const renderReportComponent = () => {
+    switch (selectedReport) {
+      case "Leave Taken Report":
+        return <LeaveTakenReport year={year} />;
+      case "Leave Balance Report":
+        return <LeaveBalanceReport year={year} />;
+      case "LOP Report":
+        return <LOPReport year={year} />;
+      // case "Monthly Utilization":
+      //   return <MonthlyUtilization year={selectedYear} />;
+      // case "Utilization Report":
+      //   return <UtilizationReport />;
+      // case "Project Summary Report":
+      //   return <ProjectSummaryReport />;
+      //   case "Timesheet Client Report":
+      //   return <TimeSheetClientReport />;
+    }
   };
 
   return (
@@ -32,6 +57,38 @@ const HRReports = () => {
             <option value="Leave Balance Report">Leave Balance Report</option>
             <option value="LOP Report">LOP Report</option>
           </select>
+        </div>
+        <div className="report-navigation">
+          <div
+            className="report-form-group"
+            style={{ display: "flex", alignItems: "center", gap: "10px" }}
+          >
+            {/* <label>
+              <strong>Year:</strong>
+            </label> */}
+            <button
+              onClick={() => setYear((prev) => prev - 1)}
+              disabled={year <= 2020}
+            >
+              &lt;
+            </button>
+            <span
+              style={{
+                minWidth: "60px",
+                textAlign: "center",
+                fontWeight: "bold",
+                fontSize:"19px"
+              }}
+            >
+              {year}
+            </span>
+            <button
+              onClick={() => setYear((prev) => prev + 1)}
+              disabled={year >= 2030}
+            >
+              &gt;
+            </button>
+          </div>
         </div>
 
         <button className="add-user-btn">Download Report</button>
@@ -60,181 +117,7 @@ const HRReports = () => {
           }
         }}
       >
-        {selectedReport === "Leave Taken Report" && (
-          <table className="employee-table">
-            <thead>
-              <tr>
-                <th>Employee Code</th>
-                <th>Name</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>No.of.Days</th>
-                <th>Type</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>EC0001</td>
-                <td>Vijay</td>
-                <td>22-06-2022</td>
-                <td>22-06-2025</td>
-                <td>320</td>
-                <td>Sick</td>
-              </tr>
-              <tr>
-                <td>EC0001</td>
-                <td>Vijay</td>
-                <td>22-06-2022</td>
-                <td>22-06-2025</td>
-                <td>320</td>
-              </tr>
-            </tbody>
-          </table>
-        )}
-        {selectedReport === "Leave Balance Report" && (
-          <table className="employee-table">
-            <thead>
-              <tr>
-                <th>Employee Code</th>
-                <th>Name</th>
-                <th>DOJ</th>
-                <th>Present Status</th>
-                <th>CL</th>
-                <th>SL</th>
-                <th>EL</th>
-                <th>Comp-off</th>
-                <th>LOP</th>
-                <th>Total Leaves Available</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>EC0001</td>
-                <td>Vijay</td>
-                <td>22-06-2022</td>
-                <td>Active</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>2</td>
-                <td>5</td>
-                <td>10</td>
-              </tr>
-              <tr>
-                <td>EC0001</td>
-                <td>Vijay</td>
-                <td>22-06-2022</td>
-                <td>Active</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>2</td>
-                <td>5</td>
-                <td>0</td>
-              </tr>
-            </tbody>
-          </table>
-        )}
-
-        {selectedReport === "LOP Report" && (
-          <table className="employee-table">
-            <thead>
-              <tr>
-                <th>Employee Code</th>
-                <th>Name</th>
-                <th>DOJ</th>
-                <th>Present Status</th>
-                <th>Resigned</th>
-                <th>Jan 2025</th>
-                <th>Feb 2025</th>
-                <th>Mar 2025</th>
-                <th>Apr 2025</th>
-                <th>May 2025</th>
-                <th>Jun 2025</th>
-                <th>Jul 2025</th>
-                <th>Aug 2025</th>
-                <th>Sep 2025</th>
-                <th>Oct 2025</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>EC0001</td>
-                <td>Vijay</td>
-                <td>22-06-2025</td>
-                <td>Active</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-              </tr>
-              <tr>
-                <td>EC0001</td>
-                <td>Vijay</td>
-                <td>22-06-2025</td>
-                <td>Active</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-              </tr>
-              <tr>
-                <td>EC0002</td>
-                <td>Kumar</td>
-                <td>12-2-2025</td>
-                <td>Active</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-              </tr>
-              <tr>
-                <td>EC0001</td>
-                <td>Kasi</td>
-                <td>02-12-2025</td>
-                <td>Active</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-              </tr>
-            </tbody>
-          </table>
-        )}
-        {isLoadingMoreEmployees && (
-          <div className="loading-message">Loading...</div>
-        )}
-        {!hasMoreEmployees && <div className="no-message">No more data</div>}
+        {renderReportComponent()}
       </div>
       <ToastContainerComponent />
     </div>
