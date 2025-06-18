@@ -214,6 +214,7 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
       Casual: "casual_leave",
       "Comp off": "comp_off",
       Earned: "earned_leave",
+      LOP: "lop",
       "": "others", // Default if no match
     };
 
@@ -343,6 +344,7 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
               <option value="Casual">Casual</option>
               <option value="Comp off">Comp off</option>
               <option value="Earned">Earned</option>
+              <option value="LOP">LOP</option>
               <option value="">Others</option>
             </select>
           </div>
