@@ -231,7 +231,7 @@ const ManagerLeaveRequests = () => {
                       ? "Casual Leave"
                       : leave.leave_type === "sick_leave"
                       ? "Sick Leave"
-                      : request.leave_type === "lop"
+                      : leave.leave_type === "lop"
                       ? "LOP"
                       : ""}
                   </td>

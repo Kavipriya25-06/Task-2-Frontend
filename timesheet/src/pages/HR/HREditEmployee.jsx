@@ -250,6 +250,28 @@ const EditEmployee = () => {
         }
       );
 
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        const data = responseData; // from response.json()
+
+        if (response.status === 400 && data.details) {
+          // Loop through all field-specific error messages
+          Object.entries(data.details).forEach(([field, messages]) => {
+            showErrorToast(`Failed to add employee: ${messages.join(", ")}`);
+          });
+        } else {
+          // Generic error handler
+          const errorMessage =
+            data.error ||
+            Object.values(data).flat().join(", ") || // fallback to other validation messages
+            "Unknown error occurred.";
+          showErrorToast(`Failed to add employee: ${errorMessage}`);
+        }
+
+        return;
+      }
+
       if (profilePictureBlob) {
         const picturePayload = new FormData();
         picturePayload.append(
@@ -304,7 +326,6 @@ const EditEmployee = () => {
         setNewAttachments([]);
       }
 
-      if (!response.ok) throw new Error("Failed to update employee");
       showSuccessToast("New changes are updated");
       setEditMode(false);
       // navigate("/hr/detail/employee-details");
@@ -494,13 +515,13 @@ const EditEmployee = () => {
                     name="employee_code"
                     value={formData.employee_code}
                     onChange={handleChange}
-                    placeholder="Employee Name"
+                    placeholder="Employee Code"
                     required
                   />
                 </>
               ) : (
                 <>
-                  <label>Employee Name</label>
+                  <label>Employee Code</label>
                   <div className="uneditable">
                     {formData.employee_code || "-"}
                   </div>

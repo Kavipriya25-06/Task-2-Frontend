@@ -164,9 +164,28 @@ const AddEmployee = () => {
         body: formPayload,
       });
 
-      if (!response.ok) throw new Error("Failed to add employee");
-
       const responseData = await response.json();
+
+      if (!response.ok) {
+        const data = responseData; // from response.json()
+
+        if (response.status === 400 && data.details) {
+          // Loop through all field-specific error messages
+          Object.entries(data.details).forEach(([field, messages]) => {
+            showErrorToast(`Failed to add employee: ${messages.join(", ")}`);
+          });
+        } else {
+          // Generic error handler
+          const errorMessage =
+            data.error ||
+            Object.values(data).flat().join(", ") || // fallback to other validation messages
+            "Unknown error occurred.";
+          showErrorToast(`Failed to add employee: ${errorMessage}`);
+        }
+
+        return;
+      }
+
       const newEmployeeId = responseData.data.employee_id;
 
       console.log("Employee created with ID:", newEmployeeId);
