@@ -100,6 +100,7 @@ const AuthProvider = ({ children }) => {
     setUser(null);
     localStorage.removeItem("user");
     localStorage.removeItem("lastActivity");
+    localStorage.setItem("logoutEvent", Date.now()); // broadcast logout
     if (inactivityTimer.current) {
       clearTimeout(inactivityTimer.current);
     }
@@ -118,6 +119,20 @@ const AuthProvider = ({ children }) => {
       logout();
     }, INACTIVITY_TIMEOUT);
   }, [logout]);
+
+  useEffect(() => {
+    const syncLogout = (event) => {
+      if (event.key === "logoutEvent") {
+        setUser(null);
+        localStorage.removeItem("user");
+        localStorage.removeItem("lastActivity");
+        // window.location.href = "/login"; // Or redirect as needed
+      }
+    };
+
+    window.addEventListener("storage", syncLogout);
+    return () => window.removeEventListener("storage", syncLogout);
+  }, []);
 
   // Check for inactivity on page load
   useEffect(() => {

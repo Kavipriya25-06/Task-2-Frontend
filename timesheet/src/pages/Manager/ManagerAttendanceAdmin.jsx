@@ -20,6 +20,7 @@ import {
 const ManagerAttendanceAdmin = () => {
   const { user } = useAuth();
   const [attendanceData, setAttendanceData] = useState([]);
+  const [groupedData, setGroupedData] = useState({});
   const [attendanceAdminData, setAttendanceAdminData] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
   const [currentWeek, setCurrentWeek] = useState(new Date()); // Start with current week
@@ -28,7 +29,8 @@ const ManagerAttendanceAdmin = () => {
   const initialAttendanceState = {
     employee: "",
     shift: "",
-    date: "",
+    start_date: "",
+    end_date: "",
     in_time: "",
     out_time: "",
     work_duration: "",
@@ -97,9 +99,44 @@ const ManagerAttendanceAdmin = () => {
       const data = await response.json();
       console.log("Attendance data", data);
       setAttendanceAdminData(data);
+      groupAttendanceData(data);
+      if (response.ok) {
+        groupAttendanceData(data); // Group the data when it's fetched
+      } else {
+        showErrorToast("Failed to fetch attendance data");
+      }
     } catch (err) {
       console.error("Unable to fetch attendance data", err);
     }
+  };
+
+  // Group the attendance data by group_id
+  const groupAttendanceData = (data) => {
+    const grouped = {};
+    data.forEach((item) => {
+      const groupKey = item.group_id || item.biometric_id; // Use biometric_id as key if no group
+      if (!grouped[groupKey]) {
+        grouped[groupKey] = {
+          records: [],
+          isExpanded: item.group_id ? false : true, // Expand standalone by default
+          isGrouped: !!item.group_id,
+        };
+      }
+      grouped[groupKey].records.push(item);
+    });
+    setGroupedData(grouped);
+    console.log("Grouped data", grouped);
+  };
+
+  // Toggle expanded/collapsed state for a group
+  const toggleGroup = (groupId) => {
+    setGroupedData((prev) => ({
+      ...prev,
+      [groupId]: {
+        ...prev[groupId],
+        isExpanded: !prev[groupId].isExpanded,
+      },
+    }));
   };
 
   const handleAddAttendance = async (e) => {
@@ -111,8 +148,13 @@ const ManagerAttendanceAdmin = () => {
       modified_on: new Date().toISOString(),
     };
 
+    if (payload.end_date < payload.start_date) {
+      showWarningToast("Enter valid End date.");
+      return;
+    }
+
     try {
-      const response = await fetch(`${config.apiBaseURL}/biometric-data/`, {
+      const response = await fetch(`${config.apiBaseURL}/attendance-upload/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -248,31 +290,90 @@ const ManagerAttendanceAdmin = () => {
               <th>Date</th>
               <th>Start Time</th>
               <th>End Time</th>
+              <th>Status</th>
               <th>Modified On</th>
             </tr>
           </thead>
           <tbody>
-            {attendanceAdminData.map((att) => (
-              <tr key={att.biometric_id}>
-                <td>{att.employee_name}</td>
-                <td>
-                  {new Date(att.date).toLocaleString("en-IN", {
-                    month: "2-digit",
-                    day: "2-digit",
-                    year: "numeric",
-                  })}
-                </td>
-                <td>{att.in_time}</td>
-                <td>{att.out_time}</td>
-                <td>
-                  {new Date(att.modified_on)?.toLocaleString("en-IN", {
-                    month: "2-digit",
-                    day: "2-digit",
-                    year: "numeric",
-                  })}
-                </td>
-              </tr>
-            ))}
+            {Object.entries(groupedData).map(([groupId, group]) => {
+              const firstRecord = group.records[0];
+              const hasGroupId = !!firstRecord.group_id;
+              const isGrouped = hasGroupId && group.records.length > 1;
+              // const isGrouped = group.isGrouped || group.records.length > 1;
+
+              if (!isGrouped) {
+                return (
+                  <tr key={firstRecord.biometric_id}>
+                    <td>{firstRecord.employee_name}</td>
+                    <td>
+                      {new Date(firstRecord.date).toLocaleDateString("en-IN")}
+                    </td>
+                    <td>{firstRecord.in_time}</td>
+                    <td>{firstRecord.out_time}</td>
+                    <td>{firstRecord.status}</td>
+                    <td>
+                      {new Date(firstRecord.modified_on).toLocaleDateString(
+                        "en-IN"
+                      )}
+                    </td>
+                  </tr>
+                );
+              }
+
+              return (
+                <React.Fragment key={groupId}>
+                  {/* Group Header Row */}
+                  <tr
+                    onClick={() => toggleGroup(groupId)}
+                    style={{
+                      cursor: "pointer",
+                      fontWeight: "bold",
+                      backgroundColor: "#f5f5f5",
+                    }}
+                  >
+                    <td>
+                      <span>
+                        <span style={{ marginRight: "8px" }}>
+                          {group.isExpanded ? "▼" : "▶"}
+                        </span>
+                        {firstRecord.employee_name} — {group.records.length}{" "}
+                        records
+                      </span>
+                    </td>
+                    <td>
+                      {new Date(firstRecord.date).toLocaleDateString("en-IN")}
+                    </td>
+                    <td>{firstRecord.in_time}</td>
+                    <td>{firstRecord.out_time}</td>
+                    <td>{firstRecord.status}</td>
+                    <td>
+                      {new Date(firstRecord.modified_on).toLocaleDateString(
+                        "en-IN"
+                      )}
+                    </td>
+                  </tr>
+
+                  {/* Expanded Rows – inline with same table */}
+                  {group.isExpanded &&
+                    group.records.slice(1).map((att) => (
+                      <tr key={att.biometric_id}>
+                        <td>{att.employee_name}</td>
+                        <td>
+                          {new Date(att.date).toLocaleDateString("en-IN")}
+                        </td>
+                        <td>{att.in_time}</td>
+                        <td>{att.out_time}</td>
+                        <td>{att.status}</td>
+                        <td>
+                          {new Date(att.modified_on).toLocaleDateString(
+                            "en-IN"
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                </React.Fragment>
+              );
+            })}
           </tbody>
         </table>
         {showAddPopup && (
@@ -314,15 +415,35 @@ const ManagerAttendanceAdmin = () => {
                 <option value="Night">Night</option>
               </select>
 
-              <label>Date</label>
+              <label>Start Date</label>
 
               <div className="date-input-container">
                 <DatePicker
-                  selected={newAttendance.date}
+                  selected={newAttendance.start_date}
                   onChange={(date) =>
                     setNewAttendance({
                       ...newAttendance,
-                      date: format(date, "yyyy-MM-dd"),
+                      start_date: format(date, "yyyy-MM-dd"),
+                    })
+                  }
+                  dateFormat="dd-MMM-yyyy"
+                  placeholderText="dd-mm-yyyy"
+                  className="input1"
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
+                />
+                <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+                {/* Font Awesome Calendar Icon */}
+              </div>
+              <label>End Date</label>
+              <div className="date-input-container">
+                <DatePicker
+                  selected={newAttendance.end_date}
+                  onChange={(date) =>
+                    setNewAttendance({
+                      ...newAttendance,
+                      end_date: format(date, "yyyy-MM-dd"),
                     })
                   }
                   dateFormat="dd-MMM-yyyy"
@@ -402,6 +523,7 @@ const ManagerAttendanceAdmin = () => {
                 <option value="Absent">Absent</option>
                 <option value="WFH">WFH</option>
                 <option value="OD">OD</option>
+                <option value="Deputation">Deputation</option>
               </select>
 
               <label>Remarks</label>

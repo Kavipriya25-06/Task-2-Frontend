@@ -77,3 +77,15 @@
   border-top: 1px solid #ddd;
   box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
 }
+
+.expandable-content {
+  max-height: 1000px;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+.collapsed-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
