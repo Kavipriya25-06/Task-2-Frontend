@@ -17,7 +17,6 @@ import LeaveTakenReport from "./Reports/LeaveTakenReport";
 import LeaveBalanceReport from "./Reports/LeaveBalanceReport";
 import LOPReport from "./Reports/LOPReport";
 
-
 const HRReports = () => {
   //new onee
   const [year, setYear] = useState(new Date().getFullYear());
@@ -29,22 +28,15 @@ const HRReports = () => {
 
   // const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
+  const reportRef = useRef();
   const renderReportComponent = () => {
     switch (selectedReport) {
       case "Leave Taken Report":
-        return <LeaveTakenReport year={year} />;
+        return <LeaveTakenReport ref={reportRef} year={year} />;
       case "Leave Balance Report":
-        return <LeaveBalanceReport year={year} />;
+        return <LeaveBalanceReport ref={reportRef} year={year} />;
       case "LOP Report":
-        return <LOPReport year={year} />;
-      // case "Monthly Utilization":
-      //   return <MonthlyUtilization year={selectedYear} />;
-      // case "Utilization Report":
-      //   return <UtilizationReport />;
-      // case "Project Summary Report":
-      //   return <ProjectSummaryReport />;
-      //   case "Timesheet Client Report":
-      //   return <TimeSheetClientReport />;
+        return <LOPReport ref={reportRef} year={year} />;
     }
   };
 
@@ -77,7 +69,7 @@ const HRReports = () => {
                 minWidth: "60px",
                 textAlign: "center",
                 fontWeight: "bold",
-                fontSize:"19px"
+                fontSize: "19px",
               }}
             >
               {year}
@@ -91,7 +83,21 @@ const HRReports = () => {
           </div>
         </div>
 
-        <button className="add-user-btn">Download Report</button>
+        <button
+          className="add-user-btn"
+          onClick={() => {
+            if (
+              reportRef.current &&
+              typeof reportRef.current.downloadReport === "function"
+            ) {
+              reportRef.current.downloadReport();
+            } else {
+              showWarningToast("Download not supported for this report.");
+            }
+          }}
+        >
+          Download Report
+        </button>
       </div>
       <div
         className="table-wrapper"

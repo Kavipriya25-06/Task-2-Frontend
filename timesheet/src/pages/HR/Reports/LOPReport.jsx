@@ -1,8 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+  useImperativeHandle,
+  forwardRef,
+} from "react";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 import config from "../../../config";
 import { ToastContainerComponent } from "../../../constants/Toastify";
 
-const LOPReport = ({ year }) => {
+const LOPReport = forwardRef(({ year }, ref) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -32,6 +39,59 @@ const LOPReport = ({ year }) => {
   };
 
   const months = getMonthsForYear(year);
+  useImperativeHandle(ref, () => ({
+    downloadReport: () => {
+      if (data.length === 0) {
+        showInfoToast("No data to export.");
+        return;
+      }
+
+      const exportData = data.map((l) => {
+        const row = {
+          "Employee Code": l.employee_code,
+          "Employee Name": l.employee_name,
+          DOJ: l.doj ? new Date(l.doj).toLocaleDateString("en-GB") : "-",
+          "Present Status": l.status,
+          Resigned: l.resignation_date
+            ? new Date(l.resignation_date).toLocaleDateString("en-GB")
+            : "-",
+        };
+
+        // Fill monthly LOP values
+        const lopMap = {};
+        l.lop_by_month?.forEach((entry) => {
+          lopMap[entry.month] = entry.days;
+        });
+
+        months.forEach((m) => {
+          row[m.label] = lopMap[m.key] ?? 0;
+        });
+
+        return row;
+      });
+
+      try {
+        const worksheet = XLSX.utils.json_to_sheet(exportData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Monthly LOP");
+
+        const buffer = XLSX.write(workbook, {
+          bookType: "xlsx",
+          type: "array",
+        });
+
+        const blob = new Blob([buffer], {
+          type: "application/octet-stream",
+        });
+
+        const dateStr = new Date().toISOString().split("T")[0];
+        saveAs(blob, `LOP_Report_${dateStr}.xlsx`);
+      } catch (error) {
+        console.error("Excel export error:", error);
+        showInfoToast("Failed to generate Excel file.");
+      }
+    },
+  }));
 
   return (
     <div className="employee-table-wrapper">
@@ -90,6 +150,6 @@ const LOPReport = ({ year }) => {
       <ToastContainerComponent />
     </div>
   );
-};
+});
 
 export default LOPReport;

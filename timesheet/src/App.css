@@ -5461,9 +5461,9 @@ table {
   border-top: 2px solid #ccc;
 }
 
- .year-headers .year{
- margin-top: 5px;
- margin-bottom: -15px;
+.year-headers .year {
+  margin-top: 5px;
+  margin-bottom: -15px;
 }
 
 .quarter {
@@ -5505,7 +5505,7 @@ table {
 .report-form-group {
   display: flex;
   flex-direction: row;
-  min-width: 260px;
+  min-width: 250px;
   gap: 10px;
 }
 
@@ -5522,7 +5522,7 @@ table {
   border-radius: 5px;
 }
 
-.report-navigation button{
+.report-navigation button {
   width: 24px; /* Set width for square shape */
   height: 24px; /* Set height equal to width */
   background-color: #dbdbdb;
@@ -5538,7 +5538,80 @@ table {
   color: #363535;
 }
 
-.report-navigation button:hover{
-    background-color: #b9b9b9;
+.report-navigation button:hover {
+  background-color: #b9b9b9;
+}
+
+.multi-select {
+  position: relative;
+}
+
+.multi-select-box {
+  border: 1px solid gray;
+  padding: 7px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 200px;
+  height: 16px;
+  background-color: #d6d6d6;
+  border-radius: 5px;
+  font-size: 14px;
+  margin-top: -5px;
+}
+
+.multi-select-dropdown {
+  position: absolute;
+  top: 110%;
+  left: 8px;
+  z-index: 10;
+  border: 1px solid #ccc;
+  max-height: 200px;
+  overflow-y: auto;
+  width: 250px;
+  background-color: #d6d6d6;
+  border-radius: 5px;
+}
+
+.multi-select-item {
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  gap: 10px;
+  
+}
+
+.multi-select-item input[type="checkbox"] {
+  margin: 0;
+  padding: 0;
+  vertical-align: middle;
+  width: 13px;
+  height: 13px;
+}
+
+
+.multi-select-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+  margin-top: -4px;
+}
+
+.selected-names {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  flex: 1;
+  padding-right: 10px;
+}
+
+.dropdown-caret {
+  flex-shrink: 0;
+  font-size: 24px; /* or try 20px, 24px as per your UI */
+  line-height: 1;
 }
 

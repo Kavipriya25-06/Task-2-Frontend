@@ -30,20 +30,24 @@ const ManagerReport = () => {
     setSelectedReport(e.target.value);
   };
 
+  const reportRef = useRef();
+
   const renderReportComponent = () => {
     switch (selectedReport) {
       case "Weekly Utilization":
-        return <WeeklyUtilization year={selectedYear} />;
+        return <WeeklyUtilization ref={reportRef} year={selectedYear} />;
       case "Monthly Utilization":
-        return <MonthlyUtilization year={selectedYear} />;
+        return <MonthlyUtilization ref={reportRef} year={selectedYear} />;
       case "Utilization Report":
-        return <UtilizationReport />;
+        return <UtilizationReport ref={reportRef} />;
       case "Project Summary Report":
-        return <ProjectSummaryReport />;
+        return <ProjectSummaryReport ref={reportRef} year={selectedYear} />;
       case "Timesheet Client Report":
-        return <TimeSheetClientReport />;
+        return <TimeSheetClientReport ref={reportRef} />;
       case "Yearly Utilization":
-        return <YearlyUtilizationReport />;
+        return <YearlyUtilizationReport ref={reportRef} />;
+      default:
+        return null;
     }
   };
 
@@ -105,32 +109,23 @@ const ManagerReport = () => {
           </div>
         )}
 
-        <button className="add-user-btn">Download Report</button>
+        <button
+          className="add-user-btn"
+          onClick={() => {
+            if (
+              reportRef.current &&
+              typeof reportRef.current.downloadReport === "function"
+            ) {
+              reportRef.current.downloadReport();
+            } else {
+              showWarningToast("Download not supported for this report.");
+            }
+          }}
+        >
+          Download Report
+        </button>
       </div>
-      <div
-        className="table-wrapper"
-        style={{ maxHeight: "400px" }}
-        onScroll={(e) => {
-          const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-          if (
-            scrollTop + clientHeight >= scrollHeight - 10 &&
-            !isLoadingMoreEmployees &&
-            hasMoreEmployees
-          ) {
-            setIsLoadingMoreEmployees(true);
-            setTimeout(() => {
-              const nextVisible = visibleEmployees + 10;
-              if (nextVisible >= filteredEmployees.length) {
-                setVisibleEmployees(filteredEmployees.length);
-                setHasMoreEmployees(false);
-              } else {
-                setVisibleEmployees(nextVisible);
-              }
-              setIsLoadingMoreEmployees(false);
-            }, 1000); // Simulate 2 seconds loading
-          }
-        }}
-      >
+      <div className="table-wrapper" style={{ maxHeight: "400px" }}>
         {renderReportComponent()}
       </div>
       <ToastContainerComponent />
