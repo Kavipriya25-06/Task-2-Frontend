@@ -5,7 +5,7 @@ import React, {
   useRef,
   useImperativeHandle,
 } from "react";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import config from "../../../config";
 import { ToastContainerComponent } from "../../../constants/Toastify";
@@ -27,13 +27,21 @@ const TimeSheetClientReport = forwardRef((props, ref) => {
     const startDate = new Date(startDateStr);
     setSelectedWeekStart(startDate);
 
-    const days = [];
-    for (let i = 1; i < 8; i++) {
+    const weekDates = [];
+    for (let i = 0; i < 7; i++) {
       const day = new Date(startDate);
-      day.setDate(day.getDate() + i); // Mon to Sun
-      days.push(day);
+      day.setDate(startDate.getDate() + i); // Monday to Sunday
+      weekDates.push(day);
     }
-    setWeekDays(days);
+
+    const formattedFromDate = weekDates[0].toISOString().split("T")[0];
+    const formattedToDate = weekDates[6].toISOString().split("T")[0];
+    const weekNo = getISOWeekNumber(startDate);
+
+    setWeekDays(weekDates);
+    setFromDate(formattedFromDate);
+    setToDate(formattedToDate);
+    setWeekNumber(weekNo);
   };
 
   // Fetch employee list on mount
@@ -84,7 +92,7 @@ const TimeSheetClientReport = forwardRef((props, ref) => {
 
     let current = new Date(firstDay);
     // Move to previous Monday
-    current.setDate(current.getDate() - ((current.getDay() + 6) % 7));
+    current.setDate(current.getDate() - ((current.getDay() + 5) % 7));
 
     while (current <= lastDay) {
       dates.push(new Date(current));
@@ -183,61 +191,203 @@ const TimeSheetClientReport = forwardRef((props, ref) => {
     downloadReport: handleExportToExcel,
   }));
 
-  const handleExportToExcel = () => {
-    const wb = XLSX.utils.book_new();
+  const handleExportToExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const monthName = new Date(0, selectedMonth - 1).toLocaleString("default", {
+      month: "long",
+    });
+    const monthYearDisplay = `${monthName} ${selectedYear}`;
 
-    selectedEmployees.forEach((empId) => {
+    const weekNumber = selectedWeekStart
+      ? getISOWeekNumber(selectedWeekStart)
+      : "";
+    const fromDate = selectedWeekStart
+      ? selectedWeekStart.toLocaleDateString("en-GB")
+      : "";
+    const toDate = selectedWeekStart
+      ? new Date(
+          selectedWeekStart.getTime() + 6 * 24 * 60 * 60 * 1000
+        ).toLocaleDateString("en-GB")
+      : "";
+
+    for (const empId of selectedEmployees) {
       const emp = employees.find((e) => e.employee_id === empId);
       const groupedData = groupedDataByEmployee[empId];
+      if (!emp || !groupedData) continue;
 
-      if (!emp || !groupedData) return;
-
-      const rows = [];
+      const sheet = workbook.addWorksheet(emp.employee_name);
+      const weekHeaders = weekDays.map(
+        (day) =>
+          `${day.toLocaleDateString("en-GB")} (${day.toLocaleDateString(
+            "en-GB",
+            {
+              weekday: "short",
+            }
+          )})`
+      );
 
       const headers = [
+        "S.No",
         "Discipline Code",
-        "Project Code",
-        "Sub‑Division",
+        "Project Number",
+        "Project Name",
+        "Subdivision",
         "Area of Work",
         "Variation",
         "Work Day",
-        ...weekDays.map(
-          (day) =>
-            `${day.toLocaleDateString("en-GB")} (${day.toLocaleDateString(
-              "en-GB",
-              {
-                weekday: "short",
-              }
-            )})`
-        ),
+        ...weekHeaders,
         "Total Hours",
       ];
-      rows.push(headers);
 
-      Object.values(groupedData).forEach((group) => {
-        const row = [
+      // ➤ TITLE
+      sheet.mergeCells("E1", "K1");
+      const titleCell = sheet.getCell("E1");
+      titleCell.value = "ARRIS ENGINEERING SERVICES PVT. LTD. - TIME SHEET";
+      titleCell.font = { size: 18, bold: true };
+      titleCell.alignment = { horizontal: "center", vertical: "middle" };
+
+      // ➤ EMPLOYEE INFO ROWS
+      sheet.addRow([]);
+
+      const nameRow = sheet.addRow([
+        "NAME :",
+        emp.employee_name,
+        "",
+        "EMPLOYEE ID :",
+        emp.employee_id,
+        "",
+        "MONTH & YEAR :",
+        monthYearDisplay,
+      ]);
+      nameRow.eachCell((cell) => {
+        cell.font = { bold: true, size: 12 };
+      });
+
+      const calendarWeekText = `${weekNumber} FROM ${fromDate} TO ${toDate}`;
+
+      const designationRow = sheet.addRow([
+        "DESIGNATION :",
+        emp.designation || "N/A",
+        "",
+        "DISCIPLINE :",
+        emp.discipline || "N/A",
+        "",
+        "CALENDAR WEEK :",
+        calendarWeekText,
+      ]);
+      designationRow.eachCell((cell) => {
+        cell.font = { bold: true, size: 12 };
+      });
+
+      sheet.addRow([]);
+
+      // ➤ TABLE HEADER
+      const headerRow = sheet.addRow(headers);
+
+      // Set row height for visual padding (e.g., 25 for taller headers)
+      headerRow.height = 55;
+
+      headerRow.eachCell((cell) => {
+        cell.font = { bold: true, size: 12 }; // Larger font for better spacing
+        cell.alignment = {
+          horizontal: "center",
+          vertical: "middle",
+          wrapText: true,
+        };
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "D3D3D3" },
+        };
+        cell.border = {
+          top: { style: "thin" },
+          bottom: { style: "thin" },
+          left: { style: "thin" },
+          right: { style: "thin" },
+        };
+      });
+
+      // ➤ DATA ROWS
+      let counter = 1;
+
+      for (const group of Object.values(groupedData)) {
+        const rowData = [
+          counter++,
           group.taskAssign?.task?.task_code || "N/A",
           group.taskAssign?.building_assign?.project_assign?.project
             ?.project_code || "N/A",
           group.taskAssign?.building_assign?.building?.building_title || "N/A",
+          group.taskAssign?.building_assign?.building?.subdivision || "N/A",
           group.taskAssign?.task?.task_title || "N/A",
-          "", // Variation placeholder
+          "",
           group.workedDates.size,
           ...weekDays.map((day) => {
-            const formattedDay = day.toISOString().split("T")[0];
-            const entry = group.data.find((e) => e.date === formattedDay);
-            return entry ? parseFloat(entry.task_hours) : 0;
+            const d = day.toISOString().split("T")[0];
+            const e = group.data.find((x) => x.date === d);
+            return e ? parseFloat(e.task_hours) : 0;
           }),
           group.data.reduce((sum, e) => sum + parseFloat(e.task_hours || 0), 0),
         ];
-        rows.push(row);
+
+        const row = sheet.addRow(rowData);
+        row.height = 35;
+
+        const weekColumnStart = 9;
+        const weekColumnEnd = 8 + weekDays.length;
+        const totalHoursColumn = weekColumnEnd + 1;
+
+        row.eachCell((cell, colNumber) => {
+          const centerColumns = [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6, // S.No to Area of Work
+            8, // Work Day
+            ...Array.from(
+              { length: weekDays.length },
+              (_, i) => weekColumnStart + i
+            ), // Weekday columns
+            totalHoursColumn, // Total Hours
+          ];
+
+          cell.font = { size: 11 };
+          cell.alignment = {
+            vertical: "middle",
+            horizontal: centerColumns.includes(colNumber) ? "center" : "left",
+          };
+          cell.border = {
+            top: { style: "thin" },
+            bottom: { style: "thin" },
+            left: { style: "thin" },
+            right: { style: "thin" },
+          };
+        });
+      }
+
+      // ➤ AUTO WIDTH
+      // ➤ AUTO WIDTH with max limit for specific columns
+      sheet.columns.forEach((col, index) => {
+        let maxLength = 12;
+        col.eachCell({ includeEmpty: true }, (cell) => {
+          const val = cell.value ? cell.value.toString() : "";
+          maxLength = Math.max(maxLength, val.length + 4);
+        });
+
+        // Set maximum column width to 25 for all columns, and 15 for weekly columns and total
+        if (index >= 8) {
+          // Weekday columns and Total Hours
+          col.width = Math.min(maxLength, 20);
+        } else {
+          // Other columns like S.No, Project Name, etc.
+          col.width = Math.min(maxLength, 25);
+        }
       });
+    }
 
-      const ws = XLSX.utils.aoa_to_sheet(rows);
-      XLSX.utils.book_append_sheet(wb, ws, emp.employee_name);
-    });
-
-    XLSX.writeFile(wb, "Timesheet_Report.xlsx");
+    const buffer = await workbook.xlsx.writeBuffer();
+    saveAs(new Blob([buffer]), "Timesheet_Report.xlsx");
   };
 
   return (
@@ -317,6 +467,19 @@ const TimeSheetClientReport = forwardRef((props, ref) => {
 
         <div className="report-form-group">
           <h5>Designation:</h5>
+         {selectedEmployees.length > 0 ? (
+  selectedEmployees.map((id) => {
+    const emp = employees.find((e) => e.employee_id === id);
+    return (
+      <p key={id}>
+        {emp?.employee_name}: {emp?.designation || "N/A"}
+      </p>
+    );
+  })
+) : (
+  <p>No employees selected</p>
+)}
+
         </div>
 
         <div className="report-form-group">

@@ -4,7 +4,7 @@ import React, {
   useImperativeHandle,
   forwardRef,
 } from "react";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import { useNavigate } from "react-router-dom";
 import config from "../../../config";
@@ -22,49 +22,6 @@ const MonthlyUtilizationReport = forwardRef(({ year }, ref) => {
   //new onee
 
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  //   const [taskTitles, setTaskTitles] = useState([]);
-
-  //   useEffect(() => {
-  //     if (selectedReport === "Utilization Report") {
-  //       fetch(`${config.apiBaseURL}/project-hours/`)
-  //         .then((res) => res.json())
-  //         .then((data) => {
-  //           const formatted = [];
-  //           const titleSet = new Set();
-
-  //           data.forEach((project) => {
-  //             project.assigns.forEach((assign) => {
-  //               assign.buildings.forEach((buildingAssign) => {
-  //                 const taskHoursMap = {};
-  //                 let totalHours = 0;
-
-  //                 buildingAssign.tasks.forEach((taskAssign) => {
-  //                   const title = taskAssign.task.task_title;
-  //                   const hours = parseFloat(taskAssign.task_consumed_hours);
-  //                   taskHoursMap[title] = (taskHoursMap[title] || 0) + hours;
-  //                   totalHours += hours;
-  //                   titleSet.add(title);
-  //                 });
-
-  //                 formatted.push({
-  //                   project_code: project.project_code,
-  //                   project_name: project.project_title,
-  //                   sub_division: buildingAssign.building?.building_code, // ← building code as sub_division
-  //                   tasks: taskHoursMap,
-  //                   total: totalHours.toFixed(2),
-  //                 });
-  //               });
-  //             });
-  //           });
-
-  //           setTaskTitles(Array.from(titleSet));
-  //           setReportData(formatted);
-  //         })
-  //         .catch((error) =>
-  //           console.error("Error fetching Utilization Report:", error)
-  //         );
-  //     }
-  //   }, [selectedReport]);
 
   //Monthly
   const [monthlyData, setMonthlyData] = useState([]);
@@ -108,41 +65,66 @@ const MonthlyUtilizationReport = forwardRef(({ year }, ref) => {
   const allMonths = generateMonthLabels(year);
 
   useImperativeHandle(ref, () => ({
-    downloadReport: () => {
+    downloadReport: async () => {
+      const workbook = new ExcelJS.Workbook();
+      const sheet = workbook.addWorksheet("Monthly Report");
+
       const headers = [
+        "S.No",
         "Project Code",
         "Project Name",
         ...allMonths.map((m) => m.label),
       ];
 
-      const data = monthlyData.map((project) => {
+      // Add header row
+      const headerRow = sheet.addRow(headers);
+      headerRow.eachCell((cell) => {
+        cell.font = { bold: true };
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "D3D3D3" },
+        };
+        cell.alignment = { horizontal: "center", vertical: "middle" };
+        cell.border = {
+          top: { style: "thin" },
+          bottom: { style: "thin" },
+          left: { style: "thin" },
+          right: { style: "thin" },
+        };
+      });
+
+      // Add data rows
+      monthlyData.forEach((project, index) => {
         const monthMap = {};
         project.task_consumed_hours_by_month?.forEach((monthObj) => {
           monthMap[monthObj.month] = monthObj.hours;
         });
 
         const row = [
+          index + 1,
           project.project_code,
           project.project_title,
-          ...allMonths.map((m) => monthMap[m.key] || 0),
+          ...allMonths.map((m) => parseFloat(monthMap[m.key] || 0)),
         ];
 
-        return row;
+        sheet.addRow(row);
       });
 
-      const worksheetData = [headers, ...data];
-
-      const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Monthly Report");
-
-      const excelBuffer = XLSX.write(workbook, {
-        bookType: "xlsx",
-        type: "array",
+      // Auto-fit column widths
+      sheet.columns.forEach((column) => {
+        let maxLength = 10;
+        column.eachCell({ includeEmpty: true }, (cell) => {
+          const val = cell.value ? cell.value.toString() : "";
+          maxLength = Math.max(maxLength, val.length);
+        });
+        column.width = maxLength + 2;
       });
 
-      const blob = new Blob([excelBuffer], {
-        type: "application/octet-stream",
+      // Generate Excel file
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
 
       saveAs(blob, `MonthlyUtilizationReport_${year}.xlsx`);

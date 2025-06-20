@@ -4,7 +4,7 @@ import React, {
   forwardRef,
   useImperativeHandle,
 } from "react";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import config from "../../../config";
 import { ToastContainerComponent } from "../../../constants/Toastify";
@@ -41,8 +41,12 @@ const YearlyUtilizationReport = forwardRef((props, ref) => {
   }, []);
 
   useImperativeHandle(ref, () => ({
-    downloadReport: () => {
+    downloadReport: async () => {
+      const workbook = new ExcelJS.Workbook();
+      const sheet = workbook.addWorksheet("Yearly Report");
+
       const headers = [
+        "S.No",
         "Project Code",
         "Project Name",
         "Allocated Hours",
@@ -54,7 +58,26 @@ const YearlyUtilizationReport = forwardRef((props, ref) => {
         "Total Allocated",
       ];
 
-      const rows = projectData.map((project) => {
+      // Add header row
+      const headerRow = sheet.addRow(headers);
+      headerRow.eachCell((cell) => {
+        cell.font = { bold: true };
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "D3D3D3" },
+        };
+        cell.alignment = { horizontal: "center", vertical: "middle" };
+        cell.border = {
+          top: { style: "thin" },
+          bottom: { style: "thin" },
+          left: { style: "thin" },
+          right: { style: "thin" },
+        };
+      });
+
+      // Add data rows
+      projectData.forEach((project, index) => {
         const consumedMap = {};
         project.task_consumed_hours_by_year.forEach((entry) => {
           consumedMap[entry.year] = entry.hours;
@@ -67,13 +90,14 @@ const YearlyUtilizationReport = forwardRef((props, ref) => {
         );
 
         const row = [
+          index + 1,
           project.project_code,
           project.project_title,
-          allocated.toFixed(2),
+          parseFloat(allocated.toFixed(2)),
 
           // Consumed Hours by Year
-          ...years.map((y) => (consumedMap[y] || 0).toFixed(2)),
-          totalConsumed.toFixed(2),
+          ...years.map((y) => parseFloat((consumedMap[y] || 0).toFixed(2))),
+          parseFloat(totalConsumed.toFixed(2)),
 
           // Consumed Percentages
           ...years.map((y) => {
@@ -86,25 +110,28 @@ const YearlyUtilizationReport = forwardRef((props, ref) => {
             ? `${((totalConsumed / allocated) * 100).toFixed(0)}%`
             : "0%",
 
-          // Allocated Hours by Year (duplicated consumed hours here, adjust if different)
-          ...years.map((y) => (consumedMap[y] || 0).toFixed(2)),
-          totalConsumed.toFixed(2),
+          // Allocated Hours by Year (currently repeating consumed values)
+          ...years.map((y) => parseFloat((consumedMap[y] || 0).toFixed(2))),
+          parseFloat(totalConsumed.toFixed(2)),
         ];
 
-        return row;
+        sheet.addRow(row);
       });
 
-      const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Yearly Report");
-
-      const excelBuffer = XLSX.write(workbook, {
-        bookType: "xlsx",
-        type: "array",
+      // Auto-fit column widths
+      sheet.columns.forEach((col) => {
+        let maxLength = 10;
+        col.eachCell({ includeEmpty: true }, (cell) => {
+          const val = cell.value ? cell.value.toString() : "";
+          maxLength = Math.max(maxLength, val.length);
+        });
+        col.width = maxLength + 2;
       });
 
-      const blob = new Blob([excelBuffer], {
-        type: "application/octet-stream",
+      // Generate and save
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
 
       saveAs(blob, `YearlyUtilizationReport.xlsx`);

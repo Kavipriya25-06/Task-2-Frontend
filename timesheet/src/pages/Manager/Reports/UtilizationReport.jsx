@@ -1,12 +1,10 @@
-// src/pages/HR/EmployeeList.jsx
-
 import React, {
   useEffect,
   useState,
   useImperativeHandle,
   forwardRef,
 } from "react";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import { useNavigate } from "react-router-dom";
 import config from "../../../config";
@@ -71,36 +69,70 @@ const UtilizationReport = forwardRef((props, ref) => {
   }, []);
 
   useImperativeHandle(ref, () => ({
-    downloadReport: () => {
+    downloadReport: async () => {
       if (reportData.length === 0) {
         showInfoToast("No data to export.");
         return;
       }
 
-      const exportData = reportData.map((item) => {
-        const row = {
-          "Project Code": item.project_code,
-          "Project Name": item.project_name,
-          "Sub-Division": item.sub_division,
+      const workbook = new ExcelJS.Workbook();
+      const sheet = workbook.addWorksheet("Utilization Report");
+
+      // Prepare headers
+      const headers = [
+        "S.No",
+        "Project Code",
+        "Project Name",
+        "Sub-Division",
+        ...taskTitles,
+        "Total",
+      ];
+
+      // Add and style header row
+      const headerRow = sheet.addRow(headers);
+      headerRow.eachCell((cell) => {
+        cell.font = { bold: true };
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "D3D3D3" },
         };
+        cell.alignment = { horizontal: "center", vertical: "middle" };
+        cell.border = {
+          top: { style: "thin" },
+          bottom: { style: "thin" },
+          left: { style: "thin" },
+          right: { style: "thin" },
+        };
+      });
 
-        taskTitles.forEach((title) => {
-          row[title] = item.tasks[title] || 0;
+      // Add data rows with proper number formatting
+      reportData.forEach((item, index) => {
+        const row = [
+          index + 1,
+          item.project_code,
+          item.project_name,
+          item.sub_division,
+          ...taskTitles.map((title) => parseFloat(item.tasks[title] || 0)),
+          parseFloat(item.total || 0),
+        ];
+        sheet.addRow(row);
+      });
+
+      // Auto-fit column widths
+      sheet.columns.forEach((col) => {
+        let maxLength = 0;
+        col.eachCell({ includeEmpty: true }, (cell) => {
+          const val = cell.value ? cell.value.toString() : "";
+          maxLength = Math.max(maxLength, val.length);
         });
-
-        row["Total"] = item.total;
-        return row;
+        col.width = maxLength + 2;
       });
 
-      const worksheet = XLSX.utils.json_to_sheet(exportData);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Utilization Report");
-      const excelBuffer = XLSX.write(workbook, {
-        bookType: "xlsx",
-        type: "array",
-      });
-      const blob = new Blob([excelBuffer], {
-        type: "application/octet-stream",
+      // Generate Excel and save
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
       const currentDate = new Date().toISOString().split("T")[0];
       saveAs(blob, `UtilizationReport_${currentDate}.xlsx`);

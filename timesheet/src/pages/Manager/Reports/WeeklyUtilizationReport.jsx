@@ -4,7 +4,7 @@ import React, {
   useImperativeHandle,
   forwardRef,
 } from "react";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import { useNavigate } from "react-router-dom";
 import config from "../../../config";
@@ -53,41 +53,67 @@ const WeeklyUtilizationReport = forwardRef(({ year }, ref) => {
   const allWeeks = generateWeeksOfYear(year); // only 2025 weeks
 
   useImperativeHandle(ref, () => ({
-    downloadReport: () => {
+    downloadReport: async () => {
       if (weeklyData.length === 0) {
         showInfoToast("No data to export.");
         return;
       }
 
-      const exportData = weeklyData.map((project) => {
-        const row = {
-          "Project Code": project.project_code,
-          "Project Name": project.project_title,
-        };
+      const workbook = new ExcelJS.Workbook();
+      const sheet = workbook.addWorksheet("Weekly Utilization");
 
+      // Header setup
+      const headers = ["S.No", "Project Code", "Project Name", ...allWeeks];
+      const headerRow = sheet.addRow(headers);
+
+      // Style the header row
+      headerRow.eachCell((cell) => {
+        cell.font = { bold: true };
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "D3D3D3" }, // Light gray
+        };
+        cell.alignment = { horizontal: "center", vertical: "middle" };
+        cell.border = {
+          top: { style: "thin" },
+          bottom: { style: "thin" },
+          left: { style: "thin" },
+          right: { style: "thin" },
+        };
+      });
+
+      // Data rows
+      weeklyData.forEach((project, index) => {
         const weekMap = {};
         project.task_consumed_hours_by_week?.forEach((weekObj) => {
           weekMap[weekObj.week] = weekObj.hours;
         });
 
-        allWeeks.forEach((week) => {
-          row[week] = weekMap[week] || 0;
+        const row = [
+          index + 1,
+          project.project_code,
+          project.project_title,
+          ...allWeeks.map((week) => parseFloat(weekMap[week] || 0)),
+        ];
+
+        sheet.addRow(row);
+      });
+
+      // Auto-fit column widths
+      sheet.columns.forEach((column) => {
+        let maxLength = 0;
+        column.eachCell({ includeEmpty: true }, (cell) => {
+          const cellVal = cell.value ? cell.value.toString() : "";
+          maxLength = Math.max(maxLength, cellVal.length);
         });
-
-        return row;
+        column.width = maxLength + 2;
       });
 
-      const worksheet = XLSX.utils.json_to_sheet(exportData);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Weekly Utilization");
-
-      const excelBuffer = XLSX.write(workbook, {
-        bookType: "xlsx",
-        type: "array",
-      });
-
-      const blob = new Blob([excelBuffer], {
-        type: "application/octet-stream",
+      // Generate and download file
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
 
       const currentDate = new Date().toISOString().split("T")[0];

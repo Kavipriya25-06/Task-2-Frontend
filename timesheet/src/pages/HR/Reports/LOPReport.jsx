@@ -4,7 +4,7 @@ import React, {
   useImperativeHandle,
   forwardRef,
 } from "react";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import config from "../../../config";
 import { ToastContainerComponent } from "../../../constants/Toastify";
@@ -39,59 +39,92 @@ const LOPReport = forwardRef(({ year }, ref) => {
   };
 
   const months = getMonthsForYear(year);
-  useImperativeHandle(ref, () => ({
-    downloadReport: () => {
-      if (data.length === 0) {
-        showInfoToast("No data to export.");
-        return;
-      }
 
-      const exportData = data.map((l) => {
-        const row = {
-          "Employee Code": l.employee_code,
-          "Employee Name": l.employee_name,
-          DOJ: l.doj ? new Date(l.doj).toLocaleDateString("en-GB") : "-",
-          "Present Status": l.status,
-          Resigned: l.resignation_date
-            ? new Date(l.resignation_date).toLocaleDateString("en-GB")
-            : "-",
-        };
 
-        // Fill monthly LOP values
+useImperativeHandle(ref, () => ({
+  downloadReport: async () => {
+    if (data.length === 0) {
+      showInfoToast("No data to export.");
+      return;
+    }
+
+    try {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Monthly LOP");
+
+      // Header row with S.No and dynamic month columns
+      const headers = [
+        "S.No",
+        "Employee Code",
+        "Employee Name",
+        "DOJ",
+        "Present Status",
+        "Resigned",
+        ...months.map((m) => m.label),
+      ];
+      worksheet.addRow(headers);
+
+      // Add data rows
+      data.forEach((l, index) => {
         const lopMap = {};
         l.lop_by_month?.forEach((entry) => {
           lopMap[entry.month] = entry.days;
         });
 
-        months.forEach((m) => {
-          row[m.label] = lopMap[m.key] ?? 0;
-        });
-
-        return row;
+        worksheet.addRow([
+          index + 1,
+          l.employee_code || "",
+          l.employee_name || "",
+          l.doj ? new Date(l.doj) : "",
+          l.status || "",
+          l.resignation_date ? new Date(l.resignation_date) : "",
+          ...months.map((m) => lopMap[m.key] ?? 0),
+        ]);
       });
 
-      try {
-        const worksheet = XLSX.utils.json_to_sheet(exportData);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Monthly LOP");
+      // Style header
+      const headerRow = worksheet.getRow(1);
+      headerRow.eachCell((cell) => {
+        cell.font = { bold: true };
+        cell.alignment = { vertical: "middle", horizontal: "center" };
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "D9D9D9" },
+        };
+        cell.border = {
+          top: { style: "thin" },
+          left: { style: "thin" },
+          bottom: { style: "thin" },
+          right: { style: "thin" },
+        };
+      });
 
-        const buffer = XLSX.write(workbook, {
-          bookType: "xlsx",
-          type: "array",
-        });
+      // Set column widths and formats
+      const baseWidths = [8, 18, 22, 15, 18, 15];
+      worksheet.columns = [
+        ...baseWidths.map((width, idx) => ({
+          width,
+          style: idx === 3 || idx === 5 ? { numFmt: "dd/mm/yyyy" } : {},
+        })),
+        ...months.map(() => ({ width: 10 })),
+      ];
 
-        const blob = new Blob([buffer], {
-          type: "application/octet-stream",
-        });
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type:
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
 
-        const dateStr = new Date().toISOString().split("T")[0];
-        saveAs(blob, `LOP_Report_${dateStr}.xlsx`);
-      } catch (error) {
-        console.error("Excel export error:", error);
-        showInfoToast("Failed to generate Excel file.");
-      }
-    },
-  }));
+      const dateStr = new Date().toISOString().split("T")[0];
+      saveAs(blob, `LOP_Report_${dateStr}.xlsx`);
+    } catch (error) {
+      console.error("Excel export error:", error);
+      showInfoToast("Failed to generate Excel file.");
+    }
+  },
+}));
+
 
   return (
     <div className="employee-table-wrapper">

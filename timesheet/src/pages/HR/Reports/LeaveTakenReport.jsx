@@ -4,7 +4,7 @@ import React, {
   useImperativeHandle,
   forwardRef,
 } from "react";
-import * as XLSX from "xlsx";
+ import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import config from "../../../config";
 import { ToastContainerComponent } from "../../../constants/Toastify";
@@ -27,52 +27,87 @@ const LeaveTakenReport = forwardRef(({ year }, ref) => {
       });
   }, [year]);
 
-  useImperativeHandle(ref, () => ({
-    downloadReport: () => {
-      if (data.length === 0) {
-        showInfoToast("No data to export.");
-        return;
-      }
 
-      const exportData = data.map((leave) => ({
-        "Employee Code": leave?.employee?.employee_code || "",
-        "Employee Name": leave?.employee?.employee_name || "",
-        "Start Date": leave?.start_date
-          ? new Date(leave.start_date).toLocaleDateString("en-GB")
-          : "",
-        "End Date": leave?.end_date
-          ? new Date(leave.end_date).toLocaleDateString("en-GB")
-          : "",
-        "No. of Days": isNaN(parseFloat(leave?.duration))
-          ? ""
-          : parseFloat(leave.duration),
-        "Leave Type": leave?.leave_type
-          ? leave.leave_type.replace("_", " ")
-          : "",
-      }));
 
-      try {
-        const worksheet = XLSX.utils.json_to_sheet(exportData);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Leave Report");
+useImperativeHandle(ref, () => ({
+  downloadReport: async () => {
+    if (data.length === 0) {
+      showInfoToast("No data to export.");
+      return;
+    }
 
-        const excelBuffer = XLSX.write(workbook, {
-          bookType: "xlsx",
-          type: "array",
-        });
+    try {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Leave Report");
 
-        const blob = new Blob([excelBuffer], {
-          type: "application/octet-stream",
-        });
+      // Add headers with S.No
+      const headers = [
+        "S.No",
+        "Employee Code",
+        "Employee Name",
+        "Start Date",
+        "End Date",
+        "No. of Days",
+        "Leave Type",
+      ];
+      worksheet.addRow(headers);
 
-        const currentDate = new Date().toISOString().split("T")[0];
-        saveAs(blob, `LeaveReport_${currentDate}.xlsx`);
-      } catch (error) {
-        console.error("Excel Export Error:", error);
-        showInfoToast("Failed to generate Excel file.");
-      }
-    },
-  }));
+      // Add data rows with S.No
+      data.forEach((leave, index) => {
+        worksheet.addRow([
+          index + 1,
+          leave?.employee?.employee_code || "",
+          leave?.employee?.employee_name || "",
+          leave?.start_date ? new Date(leave.start_date) : "",
+          leave?.end_date ? new Date(leave.end_date) : "",
+          isNaN(parseFloat(leave?.duration)) ? null : parseFloat(leave.duration),
+          leave?.leave_type ? leave.leave_type.replace("_", " ") : "",
+        ]);
+      });
+
+      // Style header row
+      worksheet.getRow(1).eachCell((cell) => {
+        cell.font = { bold: true };
+        cell.alignment = { vertical: "middle", horizontal: "center" };
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "D3D3D3" }, // Light gray
+        };
+        cell.border = {
+          top: { style: "thin" },
+          bottom: { style: "thin" },
+          left: { style: "thin" },
+          right: { style: "thin" },
+        };
+      });
+
+      // Set column widths and formatting
+      worksheet.columns = [
+        { key: "sno", width: 8 },
+        { key: "empCode", width: 18 },
+        { key: "empName", width: 25 },
+        { key: "startDate", width: 15, style: { numFmt: "dd/mm/yyyy" } },
+        { key: "endDate", width: 15, style: { numFmt: "dd/mm/yyyy" } },
+        { key: "days", width: 15, style: { numFmt: "0.00" } },
+        { key: "leaveType", width: 20 },
+      ];
+
+      // Generate Excel file and save
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      const currentDate = new Date().toISOString().split("T")[0];
+      saveAs(blob, `LeaveReport_${currentDate}.xlsx`);
+    } catch (error) {
+      console.error("Excel Export Error:", error);
+      showInfoToast("Failed to generate Excel file.");
+    }
+  },
+}));
+
 
   return (
     <div className="employee-table-wrapper">

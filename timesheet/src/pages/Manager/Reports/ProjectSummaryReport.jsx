@@ -4,7 +4,8 @@ import React, {
   useImperativeHandle,
   forwardRef,
 } from "react";
-import * as XLSX from "xlsx";
+
+import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import config from "../../../config";
 import {
@@ -32,42 +33,79 @@ const ProjectSummaryReport = forwardRef(({ year }, ref) => {
   }, []);
 
   useImperativeHandle(ref, () => ({
-    downloadReport: () => {
+    downloadReport: async () => {
       if (projectData.length === 0) {
         showInfoToast("No data to export.");
         return;
       }
 
-      const worksheetData = projectData.map((project) => {
-        const allocated = parseFloat(project.total_hours || 0);
-        const consumed = parseFloat(project.consumed_hours || 0);
-        const ratio =
-          allocated > 0
-            ? ((consumed / allocated) * 100).toFixed(0) + "%"
-            : "0%";
+      const workbook = new ExcelJS.Workbook();
+      const sheet = workbook.addWorksheet("Project Summary");
 
-        return {
-          "Project Code": project.project_code,
-          "Project Name": project.project_title,
-          "Allocated Hours": allocated.toFixed(2),
-          "Consumed Hours": consumed.toFixed(2),
-          "Utilization Ratio": ratio,
+      // Add header with S.No.
+      const headers = [
+        "S.No",
+        "Project Code",
+        "Project Name",
+        "Allocated Hours",
+        "Consumed Hours",
+        "Utilization Ratio",
+      ];
+      sheet.addRow(headers);
+
+      // Style header row
+      const headerRow = sheet.getRow(1);
+      headerRow.eachCell((cell) => {
+        cell.font = { bold: true };
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "D3D3D3" },
+        };
+        cell.alignment = { horizontal: "center", vertical: "middle" };
+        cell.border = {
+          top: { style: "thin" },
+          bottom: { style: "thin" },
+          left: { style: "thin" },
+          right: { style: "thin" },
         };
       });
 
-      //convert to worksheet
-      const worksheet = XLSX.utils.json_to_sheet(worksheetData);
-      //Create workbook
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Project Summary");
-      const excelBuffer = XLSX.write(workbook, {
-        bookType: "xlsx",
-        type: "array",
+      // Add data rows
+      projectData.forEach((project, index) => {
+        const allocated = parseFloat(project.total_hours || 0);
+        const consumed = parseFloat(project.consumed_hours || 0);
+        const ratio = allocated > 0 ? (consumed / allocated) * 100 : 0;
+
+        const row = sheet.addRow([
+          index + 1,
+          project.project_code,
+          project.project_title,
+          allocated,
+          consumed,
+          ratio / 100, // Store as fraction for % formatting
+        ]);
+
+        // Format ratio column as percentage
+        row.getCell(6).numFmt = "0%";
       });
-      const blob = new Blob([excelBuffer], {
-        type: "application/octet-stream",
+
+      // Auto-width for all columns
+      sheet.columns.forEach((col) => {
+        let maxLength = 0;
+        col.eachCell({ includeEmpty: true }, (cell) => {
+          const val = cell.value ? cell.value.toString() : "";
+          maxLength = Math.max(maxLength, val.length);
+        });
+        col.width = maxLength + 2;
       });
-      const currentDate = new Date().toISOString().split("T")[0]; // e.g., "2025-06-19"
+
+      // Generate Excel and save
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const currentDate = new Date().toISOString().split("T")[0];
       saveAs(blob, `ProjectSummaryReport_${currentDate}.xlsx`);
     },
   }));
