@@ -152,8 +152,12 @@ const ManagerAttendance = () => {
               {weekDays.map((day) => (
                 <th
                   key={day.key}
+                  onClick={() => {
+                    navigate(`timesheetapproval/${day.mapdate}/`);
+                  }}
                   style={{
                     color: day.weekday === "Sun" ? "orange" : "inherit",
+                    cursor: "pointer",
                   }}
                 >
                   {day.weekday} ({day.date})

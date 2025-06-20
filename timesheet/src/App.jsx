@@ -86,6 +86,7 @@ import ManagerTaskCreate from "./pages/Manager/ManagerTaskCreate.jsx";
 import ManagerReports from "./pages/Manager/ManagerReports.jsx";
 import ManagerTimeSheetEntry from "./pages/Manager/ManagerTimeSheetEntry.jsx";
 import ManagerDailyTimeSheetEntry from "./pages/Manager/ManagerDailyTimeSheetEntry.jsx";
+import ManagerBulkApprovalScreen from "./pages/Manager/ManagerBulkApprovalScreen.jsx";
 
 import ManagerApprovalScreen from "./pages/Manager/ManagerApprovalScreen.jsx";
 import ManagerLeaveApplication from "./pages/Manager/ManagerLeaveApplication.jsx";
@@ -409,6 +410,10 @@ const App = () => {
                   element={<Navigate to="/manager/detail/attendance" replace />}
                 />
                 <Route
+                  path="attendance/timesheetapproval/:date/"
+                  element={<ManagerBulkApprovalScreen />}
+                />
+                <Route
                   path="attendance/timesheetapproval/:employee_id/"
                   element={<Navigate to="/manager/detail/attendance" replace />}
                 />
@@ -439,7 +444,6 @@ const App = () => {
                   element={<ManagerDailyTimeSheetEntry />}
                 />
                 <Route path="reports" element={<ManagerReports />} />
-               
 
                 <Route path="Compoff" element={<ManagerCompoff />} />
                 <Route path="*" element={<Navigate to="/404" replace />} />

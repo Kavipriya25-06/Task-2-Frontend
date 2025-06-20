@@ -89,3 +89,58 @@
   overflow: hidden;
   transition: max-height 0.4s ease;
 }
+
+
+
+.timesheet-approve {
+  padding: 8px 16px;
+  background-color: #b6f0b6;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.timesheet-reject {
+  padding: 8px 16px;
+  background-color: #f3c8b6;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+
+.button-container .timesheet-approve {
+  background-color: rgb(222, 222, 222);
+  color: black;
+  font-weight: 500;
+}
+
+.button-container .timesheet-approve:hover {
+  background-color: rgb(147, 148, 147);
+  font-weight: 500;
+}
+
+.button-container .timesheet-reject {
+  background-color: rgb(222, 222, 222);
+  font-weight: 500;
+  color: black;
+}
+
+.button-container .timesheet-reject:hover {
+  background-color: rgb(147, 148, 147);
+  font-weight: 500;
+}
+
+.button-container .timesheet-approve:disabled,
+.button-container .timesheet-reject:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.button-container .timesheet-approve:disabled:hover,
+.button-container .timesheet-reject:disabled:hover {
+  background-color: rgb(222, 222, 222); /* or same as non-hover */
+}
+

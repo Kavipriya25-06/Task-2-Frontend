@@ -19,6 +19,9 @@ const ManagerApprovalScreen = () => {
     total_duration: "0.00",
     comp_off: false,
     leave_deduction: 0,
+    employee_code: "",
+    employee_name: "",
+    employee_id: "",
   });
 
   const [status, setStatus] = useState({
@@ -57,6 +60,9 @@ const ManagerApprovalScreen = () => {
                 ? true
                 : false,
             leave_deduction: latestRecord.leave_deduction || 0,
+            employee_code: latestRecord.employee_code || "",
+            employee_name: latestRecord.employee_name || "",
+            employee_id: latestRecord.employee || "",
           });
 
           // Step 3: Prepare rows from timesheets
@@ -125,6 +131,9 @@ const ManagerApprovalScreen = () => {
             total_duration: "0.00",
             comp_off: false,
             leave_deduction: 0,
+            employee_code: "",
+            employee_name: "",
+            employee_id: "",
           });
           setRows([
             // {
@@ -149,6 +158,9 @@ const ManagerApprovalScreen = () => {
           total_duration: "0.00",
           comp_off: false,
           leave_deduction: 0,
+          employee_code: "",
+          employee_name: "",
+          employee_id: "",
         });
         setRows([
           // {
@@ -267,9 +279,14 @@ const ManagerApprovalScreen = () => {
       {/* <h3>Daily Timesheet Entry</h3> */}
       <div className="timesheet-info">
         <p>
-          <strong>Employee ID:</strong>
+          <strong>Employee Code:</strong>
           <br />
-          {employee_id}
+          {attendanceDetails.employee_code}
+        </p>
+        <p>
+          <strong>Employee Name:</strong>
+          <br />
+          {attendanceDetails.employee_name}
         </p>
         <p>
           <strong>Date:</strong>
@@ -282,7 +299,6 @@ const ManagerApprovalScreen = () => {
           {attendanceDetails.in_time || "--:--"}
         </p>
         <p>
-          {" "}
           <strong>Outtime:</strong>
           <br />
           {attendanceDetails.out_time || "--:--"}

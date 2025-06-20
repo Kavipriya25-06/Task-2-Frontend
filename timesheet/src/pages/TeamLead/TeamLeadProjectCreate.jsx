@@ -19,6 +19,8 @@ import {
 
 const TeamLeadProjectCreate = () => {
   const [teamleadManager, setTeamleadManager] = useState([]);
+  const [lastProject, setLastProject] = useState([]);
+  const [lastProjectCode, setLastProjectCode] = useState([]);
   const buildingPopupRef = useRef();
   // const { employee_id } = useParams();
   const [selectedTeamleadManager, setSelectedTeamleadManager] = useState([]);
@@ -177,6 +179,7 @@ const TeamLeadProjectCreate = () => {
   useEffect(() => {
     fetchTeamleadManager();
     fetchDiscipline();
+    fetchLastProject();
   }, []);
 
   const fetchDiscipline = async () => {
@@ -188,6 +191,47 @@ const TeamLeadProjectCreate = () => {
       console.error("Error fetching Discipline:", error);
     }
   };
+
+  const fetchLastProject = async () => {
+    try {
+      const res = await fetch(`${config.apiBaseURL}/last-project/`);
+      const data = await res.json();
+      setLastProject(data);
+      // console.log("Last project", data);
+      setLastProjectCode(data.project_code);
+    } catch (error) {
+      console.error("Error fetching last project:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (!formData.discipline_code || !formData.start_date || !lastProjectCode)
+      return;
+
+    const generateProjectCode = () => {
+      const year = new Date(formData.start_date)
+        .getFullYear()
+        .toString()
+        .slice(-2); // e.g., "25"
+      const disciplineCode = String(formData.discipline_code).padStart(2, "0");
+
+      // Extract last 4 digits from last project's code
+      const lastSerial = lastProjectCode.slice(4); // e.g., from "2553736" => "3736"
+      const nextSerial = String(parseInt(lastSerial || "0") + 1).padStart(
+        4,
+        "0"
+      );
+
+      const newCode = `${year}${disciplineCode}${nextSerial}`;
+
+      setFormData((prev) => ({
+        ...prev,
+        project_code: newCode,
+      }));
+    };
+
+    generateProjectCode();
+  }, [formData.discipline_code, lastProjectCode, formData.start_date]);
 
   const fetchTeamleadManager = async () => {
     try {
@@ -217,6 +261,7 @@ const TeamLeadProjectCreate = () => {
                   name="project_code"
                   value={formData.project_code}
                   onChange={handleChange}
+                  readOnly
                   required
                 />
               </div>
