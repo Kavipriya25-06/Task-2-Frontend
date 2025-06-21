@@ -915,8 +915,17 @@ table input[type="number"]:focus {
 }
 
 .employee-table-wrapper {
-  overflow: hidden;
+  position: relative;
+  overflow: hidden; /* Still hides overflow */
+  height: auto;
+  min-height: 400px; /* Increase based on how much dropdown you want visible */
 }
+
+.no-emp {
+  font-size: 14px;
+  text-align: center;
+}
+
 .table-section {
   flex: 1;
   padding: 20px;
@@ -5581,7 +5590,6 @@ table {
   cursor: pointer;
   white-space: nowrap;
   gap: 10px;
-  
 }
 
 .multi-select-item input[type="checkbox"] {
@@ -5591,7 +5599,6 @@ table {
   width: 13px;
   height: 13px;
 }
-
 
 .multi-select-content {
   display: flex;
@@ -5614,4 +5621,3 @@ table {
   font-size: 24px; /* or try 20px, 24px as per your UI */
   line-height: 1;
 }
-

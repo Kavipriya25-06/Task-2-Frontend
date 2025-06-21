@@ -21,6 +21,8 @@ const TimeSheetClientReport = forwardRef((props, ref) => {
   const [selectedWeekStart, setSelectedWeekStart] = useState(null);
   const [weekDays, setWeekDays] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showSelectedDropdown, setShowSelectedDropdown] = useState(false);
+  const [showSelectDropdown, setShowSelectDropdown] = useState(false);
 
   const handleWeekChange = (e) => {
     const startDateStr = e.target.value;
@@ -48,7 +50,10 @@ const TimeSheetClientReport = forwardRef((props, ref) => {
   useEffect(() => {
     fetch(`${config.apiBaseURL}/employees/`)
       .then((res) => res.json())
-      .then(setEmployees)
+      .then((data) => {
+        console.log("Fetched employees:", data); // ✅ ADD THIS
+        setEmployees(data);
+      })
       .catch(console.error);
   }, []);
 
@@ -140,11 +145,25 @@ const TimeSheetClientReport = forwardRef((props, ref) => {
   }, {});
 
   const dropdownRef = useRef(null);
+  const selectedDropdownRef = useRef(null);
+  const selectDropdownRef = useRef(null);
 
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
+      }
+      if (
+        selectedDropdownRef.current &&
+        !selectedDropdownRef.current.contains(event.target)
+      ) {
+        setShowSelectedDropdown(false);
+      }
+      if (
+        selectDropdownRef.current &&
+        !selectDropdownRef.current.contains(event.target)
+      ) {
+        setShowSelectDropdown(false);
       }
     }
 
@@ -270,7 +289,7 @@ const TimeSheetClientReport = forwardRef((props, ref) => {
         emp.designation || "N/A",
         "",
         "DISCIPLINE :",
-        emp.discipline || "N/A",
+        emp.department || "N/A",
         "",
         "CALENDAR WEEK :",
         calendarWeekText,
@@ -387,12 +406,14 @@ const TimeSheetClientReport = forwardRef((props, ref) => {
     }
 
     const buffer = await workbook.xlsx.writeBuffer();
-    saveAs(new Blob([buffer]), "Timesheet_Report.xlsx");
+    const currentDate = new Date().toISOString().split("T")[0];
+    saveAs(new Blob([buffer]), `TimeSheetReport_${currentDate}.xlsx`);
   };
 
   return (
     <div className="employee-table-wrapper">
       <div className="report-form">
+        {/* EMPLOYEES DROPDOWN */}
         <div className="report-form-group" ref={dropdownRef}>
           <label>
             <strong>Employees</strong>
@@ -400,13 +421,17 @@ const TimeSheetClientReport = forwardRef((props, ref) => {
           <div className="multi-select">
             <div
               className="multi-select-box"
-              onClick={() => setShowDropdown((prev) => !prev)}
+              onClick={() => {
+                setShowDropdown((prev) => !prev);
+                setShowSelectedDropdown(false);
+              }}
             >
               <div className="multi-select-content">
-                <span className="selected-names">Select Employees</span>
+                <span className="selected-names">Select Employee </span>
                 <span className="dropdown-caret">▾</span>
               </div>
             </div>
+
             {showDropdown && (
               <div className="multi-select-dropdown">
                 {employees.map((emp) => (
@@ -415,14 +440,15 @@ const TimeSheetClientReport = forwardRef((props, ref) => {
                       type="checkbox"
                       className="emp-checkbox"
                       checked={selectedEmployees.includes(emp.employee_id)}
-                      onChange={() => {
+                      onChange={(e) => {
+                        const isChecked = e.target.checked;
                         setSelectedEmployees((prev) =>
-                          prev.includes(emp.employee_id)
-                            ? prev.filter((id) => id !== emp.employee_id)
-                            : [...prev, emp.employee_id]
+                          isChecked
+                            ? [...prev, emp.employee_id]
+                            : prev.filter((id) => id !== emp.employee_id)
                         );
                       }}
-                    />
+                    />{" "}
                     {emp.employee_name}
                   </label>
                 ))}
@@ -465,21 +491,55 @@ const TimeSheetClientReport = forwardRef((props, ref) => {
           </select>
         </div>
 
-        <div className="report-form-group">
-          <h5>Designation:</h5>
-         {selectedEmployees.length > 0 ? (
-  selectedEmployees.map((id) => {
-    const emp = employees.find((e) => e.employee_id === id);
-    return (
-      <p key={id}>
-        {emp?.employee_name}: {emp?.designation || "N/A"}
-      </p>
-    );
-  })
-) : (
-  <p>No employees selected</p>
-)}
+        {/* SELECTED EMPLOYEES (DESIGNATION) DROPDOWN */}
+        <div className="report-form-group" ref={selectedDropdownRef}>
+          <label>
+            <strong>Designation</strong>
+          </label>
+          <div className="multi-select">
+            <div
+              className="multi-select-box"
+              onClick={() => {
+                setShowSelectedDropdown((prev) => !prev);
+                setShowDropdown(false);
+              }}
+            >
+              <div className="multi-select-content">
+                <span className="selected-names">
+                  {selectedEmployees.length > 0
+                    ? `${selectedEmployees.length} Selected`
+                    : "Select Employees"}
+                </span>
+                <span className="dropdown-caret">▾</span>
+              </div>
+            </div>
 
+            {showSelectedDropdown && (
+              <div className="multi-select-dropdown">
+                {selectedEmployees.length > 0 ? (
+                  selectedEmployees.map((id) => {
+                    const emp = employees.find((e) => e.employee_id === id);
+                    return (
+                      <label key={id} className="multi-select-item">
+                        {/* <input
+                          type="checkbox"
+                          checked={true}
+                          onChange={() =>
+                            setSelectedEmployees((prev) =>
+                              prev.filter((empId) => empId !== id)
+                            )
+                          }
+                        />{" "} */}
+                        {emp?.employee_name}: {emp?.designation || "N/A"}
+                      </label>
+                    );
+                  })
+                ) : (
+                  <p className="no-emp">No employees selected</p>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="report-form-group">
@@ -503,14 +563,56 @@ const TimeSheetClientReport = forwardRef((props, ref) => {
             })}
           </select>
         </div>
+        <div className="report-form-group" ref={selectDropdownRef}>
+          {/* <label>
+            <strong>Department</strong>
+          </label> */}
+          <div className="multi-select">
+            <div
+              className="multi-select-box"
+              onClick={() => {
+                setShowSelectDropdown((prev) => !prev);
+                setShowDropdown(false);
+                setShowSelectedDropdown(false);
+              }}
+            >
+              <div className="multi-select-content">
+                <span className="selected-names">
+                  Department
+                  {/* {selectedEmployees.length > 0
+                    ? `${selectedEmployees.length} Selected`
+                    : "Select Employees"} */}
+                </span>
+                <span className="dropdown-caret">▾</span>
+              </div>
+            </div>
 
-        <div className="report-form-group">
-          <select name="designationYear" id="designationYear">
-            <option value="">Structural-Detailing</option>
-            <option value="">Strucutural Design</option>
-            <option value="">Piping</option>
-            <option value="">Electrical&Instrumentation</option>
-          </select>
+            {showSelectDropdown && (
+              <div className="multi-select-dropdown">
+                {selectedEmployees.length > 0 ? (
+                  selectedEmployees.map((id) => {
+                    const emp = employees.find((e) => e.employee_id === id);
+                    return (
+                      <label key={id} className="multi-select-item">
+                        {/* <input
+                          type="checkbox"
+                          checked={true}
+                          onChange={() =>
+                            setSelectedEmployees((prev) =>
+                              prev.filter((empId) => empId !== id)
+                            )
+                          }
+                        />{" "} */}
+                        {emp?.employee_name}: {emp?.department || "N/A"}
+                      </label>
+                    );
+                  })
+                ) : (
+                  <p className="no-emp">No employees selected</p>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -522,7 +624,7 @@ const TimeSheetClientReport = forwardRef((props, ref) => {
           return null;
 
         return (
-          <div key={empId} style={{ marginBottom: "2rem" }}>
+          <div key={empId} style={{ marginBottom: "2rem", marginTop: "50px" }}>
             <h4>{emp.employee_name}</h4>
             <div
               className="table-wrapper"

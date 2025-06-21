@@ -25,9 +25,7 @@
     "react-modal": "^3.16.3",
     "react-router-dom": "^7.6.0",
     "react-toastify": "^11.0.5",
-    "swiper": "^11.2.6",
-    "timesheet": "file:",
-    "xlsx": "^0.18.5"
+    "swiper": "^11.2.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

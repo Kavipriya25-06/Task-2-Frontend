@@ -126,8 +126,9 @@ const MonthlyUtilizationReport = forwardRef(({ year }, ref) => {
       const blob = new Blob([buffer], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
+      const currentDate = new Date().toISOString().split("T")[0];
 
-      saveAs(blob, `MonthlyUtilizationReport_${year}.xlsx`);
+      saveAs(blob, `MonthlyUtilizationReport_${currentDate}.xlsx`);
     },
   }));
 
