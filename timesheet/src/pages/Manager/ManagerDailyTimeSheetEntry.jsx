@@ -24,12 +24,12 @@ const ManagerDailyTimeSheetEntry = () => {
   const [updatedRows, setUpdatedRows] = useState([]);
 
   const [taskOptions, setTaskOptions] = useState([]);
-  const projectOptions = [
-    ...new Set(taskOptions.map((t) => t.project_title).filter(Boolean)),
-  ];
-  const buildingOptions = [
-    ...new Set(taskOptions.map((t) => t.building_title).filter(Boolean)),
-  ];
+  // const projectOptions = [
+  //   ...new Set(taskOptions.map((t) => t.project_title).filter(Boolean)),
+  // ];
+  // const buildingOptions = [
+  //   ...new Set(taskOptions.map((t) => t.building_title).filter(Boolean)),
+  // ];
 
   const [rows, setRows] = useState([
     {
@@ -168,32 +168,71 @@ const ManagerDailyTimeSheetEntry = () => {
     fetchBiometricTaskData();
   }, [employee_id, date]);
 
+  // useEffect(() => {
+  //   const fetchTaskOptions = async () => {
+  //     try {
+  //       const response = await fetch(
+  //         `${config.apiBaseURL}/tasks-by-employee/${employee_id}/`
+  //       );
+  //       const data = await response.json();
+
+  //       const formatted = data.map((item) => ({
+  //         task_assign_id: item.task_assign_id,
+  //         task_title: item.task?.task_title || "",
+  //         project_title:
+  //           item.building_assign?.project_assign?.project?.project_title || "",
+  //         building_title: item.building_assign?.building?.building_title || "",
+  //       }));
+
+  //       setTaskOptions(formatted);
+  //     } catch (error) {
+  //       console.error("Failed to load task options:", error);
+  //     }
+  //   };
+
+  //   if (employee_id) {
+  //     fetchTaskOptions();
+  //   }
+  // }, [employee_id]);
+
   useEffect(() => {
-    const fetchTaskOptions = async () => {
-      try {
-        const response = await fetch(
-          `${config.apiBaseURL}/tasks-by-employee/${employee_id}/`
-        );
-        const data = await response.json();
-
-        const formatted = data.map((item) => ({
-          task_assign_id: item.task_assign_id,
-          task_title: item.task?.task_title || "",
-          project_title:
-            item.building_assign?.project_assign?.project?.project_title || "",
-          building_title: item.building_assign?.building?.building_title || "",
-        }));
-
-        setTaskOptions(formatted);
-      } catch (error) {
-        console.error("Failed to load task options:", error);
-      }
-    };
-
     if (employee_id) {
       fetchTaskOptions();
     }
   }, [employee_id]);
+
+  const fetchTaskOptions = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/tasks-by-employee/${employee_id}/`
+      );
+      const data = await response.json();
+
+      const structured = {};
+
+      data.forEach((item) => {
+        const project =
+          item.building_assign?.project_assign?.project?.project_title ||
+          "Unassigned Project";
+        const building =
+          item.building_assign?.building?.building_title ||
+          "Unassigned Building";
+        const task = item.task?.task_title || "Untitled Task";
+
+        if (!structured[project]) structured[project] = {};
+        if (!structured[project][building]) structured[project][building] = [];
+
+        structured[project][building].push({
+          task_assign_id: item.task_assign_id,
+          task_title: task,
+        });
+      });
+
+      setTaskOptions(structured);
+    } catch (error) {
+      console.error("Failed to load task options:", error);
+    }
+  };
 
   const handleDisplayRowChange = (index, field, value) => {
     const updated = [...displayRows];
@@ -233,13 +272,31 @@ const ManagerDailyTimeSheetEntry = () => {
     const updated = [...newRows];
     updated[index][field] = value;
 
+    if (field === "project") {
+      // Reset building and task if project changes
+      updated[index].project = value;
+      updated[index].building = "";
+      updated[index].task = "";
+      updated[index].task_assign_id = "";
+    }
+
+    if (field === "building") {
+      // Reset task if building changes
+      updated[index].building = value;
+      updated[index].task = "";
+      updated[index].task_assign_id = "";
+    }
+
     if (field === "task") {
-      const selected = taskOptions.find((t) => t.task_title === value);
+      // const taskList = taskOptions[row.project]?.[row.building] || [];
+      const selected = taskOptions?.[updated[index].project]?.[
+        updated[index].building
+      ]?.find((t) => t.task_title === value);
       if (selected) {
         updated[index].task = selected.task_title;
         updated[index].task_assign_id = selected.task_assign_id;
-        updated[index].project = selected.project_title;
-        updated[index].building = selected.building_title;
+        // updated[index].project = selected.project_title;
+        // updated[index].building = selected.building_title;
       }
     }
 
@@ -560,9 +617,20 @@ const ManagerDailyTimeSheetEntry = () => {
     const startSeconds = parseTime(start);
     const endSeconds = parseTime(end);
 
+    const currentTime = new Date();
+
+    const currentTimeSeconds =
+      (currentTime.getHours() || 0) * 3600 +
+      (currentTime.getMinutes() || 0) * 60 +
+      (currentTime.getSeconds() || 0);
+
     const intimeParts = attendanceDetails.in_time.split(":").map(Number);
     const intimeSeconds =
       (intimeParts[0] || 0) * 3600 + (intimeParts[1] || 0) * 60;
+
+    const outtimeParts = attendanceDetails.out_time.split(":").map(Number);
+    const outtimeSeconds =
+      (outtimeParts[0] || 0) * 3600 + (outtimeParts[1] || 0) * 60;
 
     if (startSeconds < intimeSeconds) {
       showWarningToast(
@@ -576,6 +644,20 @@ const ManagerDailyTimeSheetEntry = () => {
       return null;
     }
 
+    if (attendanceDetails.out_time) {
+      if (endSeconds > outtimeSeconds) {
+        showWarningToast(
+          `Task "${row.task}" End Time must be before Out Time.`
+        );
+        return null;
+      }
+    } else if (endSeconds > currentTimeSeconds) {
+      showWarningToast(
+        `Task "${row.task}" End Time must be before current Time.`
+      );
+      return null;
+    }
+
     if (parseFloat(totalAssignedHours) > maxAllowedHours) {
       showWarningToast(
         `Total assigned hours exceed logged hours (${maxAllowedHours}).`
@@ -585,7 +667,7 @@ const ManagerDailyTimeSheetEntry = () => {
 
     // Prepare final time strings
     return {
-      start_time: start.includes(":00") ? start : start + ":00",
+      start_time: start.length === 5 ? start + ":00" : start,
       end_time: end.includes(":00") ? end : end + ":00",
     };
   };
@@ -596,7 +678,41 @@ const ManagerDailyTimeSheetEntry = () => {
     0
   );
 
-  const maxAllowedHours = parseFloat(attendanceDetails.total_duration || 0);
+  const calculateHours = () => {
+    const start = attendanceDetails.in_time;
+    const end = attendanceDetails.out_time;
+
+    const currentTime = new Date();
+
+    const currentTimeSeconds =
+      (currentTime.getHours() || 0) * 3600 +
+      (currentTime.getMinutes() || 0) * 60 +
+      (currentTime.getSeconds() || 0);
+
+    if (start) {
+      const parseTime = (timeStr) => {
+        const [hours = 0, minutes = 0, seconds = 0] = timeStr
+          .split(":")
+          .map(Number);
+        return hours * 3600 + minutes * 60 + seconds;
+      };
+      const startSeconds = parseTime(start);
+      let endSeconds = 0;
+      let diffSeconds = 0;
+      if (end) {
+        endSeconds = parseTime(end);
+        diffSeconds = endSeconds - startSeconds;
+      } else {
+        diffSeconds = currentTimeSeconds - startSeconds;
+      }
+
+      if (diffSeconds < 0) diffSeconds = 0;
+
+      const decimalHours = diffSeconds / 3600;
+      return decimalHours.toFixed(2);
+    }
+  };
+  const maxAllowedHours = parseFloat(calculateHours() || 0);
 
   return (
     <div className="daily-timesheet-container">
@@ -732,9 +848,12 @@ const ManagerDailyTimeSheetEntry = () => {
                     className="task-select"
                   >
                     <option value="">Select project</option>
-                    {projectOptions.map((proj, idx) => (
+                    {/* {projectOptions.map((proj, idx) => (
                       <option key={idx} value={proj}>
-                        {proj}
+                        {proj} */}
+                    {Object.keys(taskOptions).map((projectTitle) => (
+                      <option key={projectTitle} value={projectTitle}>
+                        {projectTitle}
                       </option>
                     ))}
                   </select>
@@ -746,14 +865,18 @@ const ManagerDailyTimeSheetEntry = () => {
                     onChange={(e) =>
                       handleNewRowChange(index, "building", e.target.value)
                     }
-                     className="task-select"
+                    disabled={!row.project}
+                    className="task-select"
                   >
                     <option value="">Select building</option>
-                    {buildingOptions.map((build, idx) => (
-                      <option key={idx} value={build}>
-                        {build}
-                      </option>
-                    ))}
+                    {row.project &&
+                      Object.keys(taskOptions[row.project] || {}).map(
+                        (buildingTitle) => (
+                          <option key={buildingTitle} value={buildingTitle}>
+                            {buildingTitle}
+                          </option>
+                        )
+                      )}
                   </select>
                 </td>
 
@@ -763,14 +886,22 @@ const ManagerDailyTimeSheetEntry = () => {
                     onChange={(e) =>
                       handleNewRowChange(index, "task", e.target.value)
                     }
+                    disabled={!row.building}
                     className="task-select"
                   >
                     <option value="">Select task</option>
-                    {taskOptions.map((task) => (
-                      <option key={task.task_assign_id} value={task.task_title}>
-                        {task.task_title}
-                      </option>
-                    ))}
+                    {row.project &&
+                      row.building &&
+                      (taskOptions[row.project]?.[row.building] || []).map(
+                        (task) => (
+                          <option
+                            key={task.task_assign_id}
+                            value={task.task_title}
+                          >
+                            {task.task_title}
+                          </option>
+                        )
+                      )}
                   </select>
                 </td>
                 <td>

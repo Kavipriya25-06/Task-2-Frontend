@@ -19,8 +19,10 @@ import {
 
 const TeamLeadProjectCreate = () => {
   const [teamleadManager, setTeamleadManager] = useState([]);
+  const [additionalResources, setAdditionalResources] = useState([]);
   const [lastProject, setLastProject] = useState([]);
   const [lastProjectCode, setLastProjectCode] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const buildingPopupRef = useRef();
   // const { employee_id } = useParams();
   const [selectedTeamleadManager, setSelectedTeamleadManager] = useState([]);
@@ -139,6 +141,7 @@ const TeamLeadProjectCreate = () => {
 
       if (response.ok) {
         showSuccessToast("Project Created Successfully");
+        setSearchQuery("");
         navigate("/teamlead/detail/projects/");
       } else {
         showErrorToast("Failed to Create project " + data.error);
@@ -178,6 +181,7 @@ const TeamLeadProjectCreate = () => {
 
   useEffect(() => {
     fetchTeamleadManager();
+    fetchAdditionalResources();
     fetchDiscipline();
     fetchLastProject();
   }, []);
@@ -217,7 +221,8 @@ const TeamLeadProjectCreate = () => {
 
       // Extract last 4 digits from last project's code
       const lastSerial = lastProjectCode.slice(4); // e.g., from "2553736" => "3736"
-      const nextSerial = String(parseInt(lastSerial || "0") + 1).padStart(
+      const validSerial = Math.max(parseInt(lastSerial), 800);
+      const nextSerial = String(parseInt(validSerial || "0") + 1).padStart(
         4,
         "0"
       );
@@ -236,11 +241,24 @@ const TeamLeadProjectCreate = () => {
   const fetchTeamleadManager = async () => {
     try {
       const response = await fetch(
-        `${config.apiBaseURL}/teamlead-and-managers/`
+        `${config.apiBaseURL}/emp-details/${user.employee_id}/`
       );
       const data = await response.json();
       setTeamleadManager(data);
       console.log("Team leads and managers", data);
+    } catch (error) {
+      console.error("Error fetching employee data:", error);
+    }
+  };
+
+  const fetchAdditionalResources = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/additional-resource/${user.employee_id}/`
+      );
+      const data = await response.json();
+      setAdditionalResources(data);
+      console.log("Additional resources", data);
     } catch (error) {
       console.error("Error fetching employee data:", error);
     }
@@ -323,32 +341,106 @@ const TeamLeadProjectCreate = () => {
               <div className="roles-box">
                 <label>Project Roles</label>
                 <div className="select-container">
-                  {teamleadManager.map((employee) => (
-                    <div
-                      key={employee.employee_id}
-                      className="employee-checkbox"
+                  <input
+                    type="text"
+                    placeholder="Search employee..."
+                    className="search-input"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{
+                      width: "50%",
+                      height: "30px",
+                      marginLeft: "10px",
+                    }}
+                  />
+                  <div>
+                    {teamleadManager
+                      .filter((employee) =>
+                        employee.employee_name
+                          .toLowerCase()
+                          .includes(searchQuery.toLowerCase())
+                      )
+                      .map((employee) => (
+                        <div
+                          key={employee.employee_id}
+                          className="employee-checkbox"
+                        >
+                          {employee.employee_name} - {employee.designation}
+                          <input
+                            type="checkbox"
+                            className="create-checkbox"
+                            value={employee.employee_id}
+                            checked={selectedTeamleadManager.includes(
+                              employee.employee_id
+                            )}
+                            onChange={(e) => {
+                              const checked = e.target.checked;
+                              if (checked) {
+                                setSelectedTeamleadManager((prev) => [
+                                  ...prev,
+                                  employee.employee_id,
+                                ]);
+                              } else {
+                                setSelectedTeamleadManager((prev) =>
+                                  prev.filter(
+                                    (id) => id !== employee.employee_id
+                                  )
+                                );
+                              }
+                            }}
+                          />
+                        </div>
+                      ))}
+                  </div>
+                  {/* --- Additional Resources Section --- */}
+                  <div>
+                    <h4
+                      style={{
+                        margin: "20px 0 10px",
+                        color: "#333",
+                        marginLeft: "10px",
+                      }}
                     >
-                      {employee.employee_name} - {employee.designation}
-                      <input
-                        type="checkbox"
-                        className="create-checkbox"
-                        value={employee.employee_id}
-                        onChange={(e) => {
-                          const checked = e.target.checked;
-                          if (checked) {
-                            setSelectedTeamleadManager((prev) => [
-                              ...prev,
-                              employee.employee_id,
-                            ]);
-                          } else {
-                            setSelectedTeamleadManager((prev) =>
-                              prev.filter((id) => id !== employee.employee_id)
-                            );
-                          }
-                        }}
-                      />
-                    </div>
-                  ))}
+                      Additional Resources
+                    </h4>
+                    {additionalResources
+                      .filter((employee) =>
+                        employee.employee_name
+                          .toLowerCase()
+                          .includes(searchQuery.toLowerCase())
+                      )
+                      .map((employee) => (
+                        <div
+                          key={employee.employee_id}
+                          className="employee-checkbox"
+                        >
+                          {employee.employee_name} - {employee.designation}
+                          <input
+                            type="checkbox"
+                            className="create-checkbox"
+                            value={employee.employee_id}
+                            checked={selectedTeamleadManager.includes(
+                              employee.employee_id
+                            )}
+                            onChange={(e) => {
+                              const checked = e.target.checked;
+                              if (checked) {
+                                setSelectedTeamleadManager((prev) => [
+                                  ...prev,
+                                  employee.employee_id,
+                                ]);
+                              } else {
+                                setSelectedTeamleadManager((prev) =>
+                                  prev.filter(
+                                    (id) => id !== employee.employee_id
+                                  )
+                                );
+                              }
+                            }}
+                          />
+                        </div>
+                      ))}
+                  </div>
                 </div>
               </div>
               <div className="project-form-group">

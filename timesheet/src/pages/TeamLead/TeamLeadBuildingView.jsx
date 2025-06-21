@@ -23,6 +23,8 @@ const TeamLeadBuildingView = () => {
   const { building_assign_id } = useParams(); // from URL
   const [teamleadManager, setTeamleadManager] = useState([]);
   const [availableTeamleadManager, setAvailableTeamleadManager] = useState([]);
+  const [additionalResources, setAdditionalResources] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [buildingsAssign, setBuildingsAssign] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [taskSelections, setTaskSelections] = useState([]);
@@ -58,6 +60,7 @@ const TeamLeadBuildingView = () => {
         console.log("Building updated!");
         showSuccessToast("Building Updated");
         setEditMode(false);
+        setSearchQuery("");
       } else {
         showErrorToast("Failed to update project");
       }
@@ -97,7 +100,9 @@ const TeamLeadBuildingView = () => {
         });
         if (response.ok) {
           console.log("Building updated!");
+          showSuccessToast("Building Updated");
           setEditMode(false);
+          setSearchQuery("");
           // fetchProjectData(); // refresh
         } else {
           showErrorToast("Failed to update project");
@@ -112,6 +117,7 @@ const TeamLeadBuildingView = () => {
 
   useEffect(() => {
     fetchTeamleadManager();
+    fetchAdditionalResources();
     fetchTasks();
     fetchBuildingsAssign();
   }, []);
@@ -124,6 +130,19 @@ const TeamLeadBuildingView = () => {
       const data = await response.json();
       setTeamleadManager(data);
       console.log("Team leads and managers", data);
+    } catch (error) {
+      console.error("Error fetching employee data:", error);
+    }
+  };
+
+  const fetchAdditionalResources = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/additional-resource/${user.employee_id}/`
+      );
+      const data = await response.json();
+      setAdditionalResources(data);
+      console.log("Additional resources", data);
     } catch (error) {
       console.error("Error fetching employee data:", error);
     }
@@ -355,38 +374,106 @@ const TeamLeadBuildingView = () => {
                 <label>Sub-Division Roles</label>
                 {editMode ? (
                   <div className="select-container">
-                    {teamleadManager.map((employee) => (
-                      <div
-                        key={employee.employee_id}
-                        className="employee-checkbox"
+                    <input
+                      type="text"
+                      placeholder="Search employee..."
+                      className="search-input"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      style={{
+                        width: "50%",
+                        height: "30px",
+                        marginLeft: "10px",
+                      }}
+                    />
+                    <div>
+                      {teamleadManager
+                        .filter((employee) =>
+                          employee.employee_name
+                            .toLowerCase()
+                            .includes(searchQuery.toLowerCase())
+                        )
+                        .map((employee) => (
+                          <div
+                            key={employee.employee_id}
+                            className="employee-checkbox"
+                          >
+                            {employee.employee_name} - {employee.designation}
+                            <input
+                              type="checkbox"
+                              className="larger-checkbox"
+                              value={employee.employee_id}
+                              checked={availableTeamleadManager.some(
+                                (e) => e.employee_id === employee.employee_id
+                              )}
+                              onChange={(e) => {
+                                const checked = e.target.checked;
+                                if (checked) {
+                                  setAvailableTeamleadManager((prev) => [
+                                    ...prev,
+                                    employee,
+                                  ]);
+                                } else {
+                                  setAvailableTeamleadManager((prev) =>
+                                    prev.filter(
+                                      (emp) =>
+                                        emp.employee_id !== employee.employee_id
+                                    )
+                                  );
+                                }
+                              }}
+                            />
+                          </div>
+                        ))}
+                    </div>
+                    <div>
+                      <h4
+                        style={{
+                          margin: "20px 0 10px",
+                          color: "#333",
+                          marginLeft: "10px",
+                        }}
                       >
-                        {employee.employee_name} - {employee.designation}
-                        <input
-                          type="checkbox"
-                          className="larger-checkbox"
-                          value={employee.employee_id}
-                          checked={availableTeamleadManager.some(
-                            (e) => e.employee_id === employee.employee_id
-                          )}
-                          onChange={(e) => {
-                            const checked = e.target.checked;
-                            if (checked) {
-                              setAvailableTeamleadManager((prev) => [
-                                ...prev,
-                                employee,
-                              ]);
-                            } else {
-                              setAvailableTeamleadManager((prev) =>
-                                prev.filter(
-                                  (emp) =>
-                                    emp.employee_id !== employee.employee_id
-                                )
-                              );
-                            }
-                          }}
-                        />
-                      </div>
-                    ))}
+                        Additional Resources
+                      </h4>
+                      {additionalResources
+                        .filter((employee) =>
+                          employee.employee_name
+                            .toLowerCase()
+                            .includes(searchQuery.toLowerCase())
+                        )
+                        .map((employee) => (
+                          <div
+                            key={employee.employee_id}
+                            className="employee-checkbox"
+                          >
+                            {employee.employee_name} - {employee.designation}
+                            <input
+                              type="checkbox"
+                              className="create-checkbox"
+                              value={employee.employee_id}
+                              checked={availableTeamleadManager.some(
+                                (e) => e.employee_id === employee.employee_id
+                              )}
+                              onChange={(e) => {
+                                const checked = e.target.checked;
+                                if (checked) {
+                                  setAvailableTeamleadManager((prev) => [
+                                    ...prev,
+                                    employee,
+                                  ]);
+                                } else {
+                                  setAvailableTeamleadManager((prev) =>
+                                    prev.filter(
+                                      (id) => id !== employee.employee_id
+                                    )
+                                  );
+                                }
+                              }}
+                            />
+                          </div>
+                        ))}
+                    </div>
                   </div>
                 ) : (
                   <div className="select-container">
@@ -464,6 +551,7 @@ const TeamLeadBuildingView = () => {
                             dateFormat="dd-MMM-yyyy"
                             placeholderText="dd-mm-yyyy"
                             className="custom-datepicker"
+                            dropdownMode="select"
                           />
                           <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
                           {/* Font Awesome Calendar Icon */}
@@ -485,6 +573,7 @@ const TeamLeadBuildingView = () => {
                             dateFormat="dd-MMM-yyyy"
                             placeholderText="dd-mm-yyyy"
                             className="custom-datepicker"
+                            dropdownMode="select"
                           />
                           <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
                           {/* Font Awesome Calendar Icon */}

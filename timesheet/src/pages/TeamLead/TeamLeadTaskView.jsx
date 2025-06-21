@@ -20,6 +20,8 @@ const TeamLeadTaskView = () => {
   const { task_assign_id } = useParams(); // from URL
   const [editMode, setEditMode] = useState(false); //  Add this at the top
   const [teamleadManager, setTeamleadManager] = useState([]);
+  const [additionalResources, setAdditionalResources] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [taskData, setTaskData] = useState({});
   const [showAttachments, setShowAttachments] = useState(false);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
@@ -108,11 +110,13 @@ const TeamLeadTaskView = () => {
     }
 
     setEditMode(false);
+    setSearchQuery("");
     fetchTaskAssignment(); // Re-fetch to reset form
   };
 
   useEffect(() => {
     fetchTeamleadManager();
+    fetchAdditionalResources();
     fetchTaskAssignment();
   }, []);
 
@@ -124,6 +128,19 @@ const TeamLeadTaskView = () => {
       const data = await response.json();
       setTeamleadManager(data);
       console.log("Team leads and managers", data);
+    } catch (error) {
+      console.error("Error fetching employee data:", error);
+    }
+  };
+
+  const fetchAdditionalResources = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/additional-resource/${user.employee_id}/`
+      );
+      const data = await response.json();
+      setAdditionalResources(data);
+      console.log("Additional resources", data);
     } catch (error) {
       console.error("Error fetching employee data:", error);
     }
@@ -225,33 +242,101 @@ const TeamLeadTaskView = () => {
                 <label className="taskroles">Task Roles</label>
                 {editMode ? (
                   <div className="select-container">
-                    {teamleadManager?.map((emp) => (
-                      <div key={emp.employee_id}>
-                        <input
-                          type="checkbox"
-                          value={emp.employee_id}
-                          checked={formData.employee.includes(emp.employee_id)}
-                          onChange={(e) => {
-                            const checked = e.target.checked;
-                            const empId = emp.employee_id;
-                            if (checked) {
-                              setFormData((prev) => ({
-                                ...prev,
-                                employee: [...prev.employee, empId],
-                              }));
-                            } else {
-                              setFormData((prev) => ({
-                                ...prev,
-                                employee: prev.employee.filter(
-                                  (id) => id !== empId
-                                ),
-                              }));
-                            }
-                          }}
-                        />
-                        {emp.employee_name} - {emp.designation}
-                      </div>
-                    ))}
+                    <input
+                      type="text"
+                      placeholder="Search employee..."
+                      className="search-input"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      style={{
+                        width: "50%",
+                        height: "30px",
+                        marginLeft: "10px",
+                      }}
+                    />
+                    <div>
+                      {teamleadManager
+                        ?.filter((employee) =>
+                          employee.employee_name
+                            .toLowerCase()
+                            .includes(searchQuery.toLowerCase())
+                        )
+                        .map((emp) => (
+                          <div key={emp.employee_id}>
+                            <input
+                              type="checkbox"
+                              value={emp.employee_id}
+                              checked={formData.employee.includes(
+                                emp.employee_id
+                              )}
+                              onChange={(e) => {
+                                const checked = e.target.checked;
+                                const empId = emp.employee_id;
+                                if (checked) {
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    employee: [...prev.employee, empId],
+                                  }));
+                                } else {
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    employee: prev.employee.filter(
+                                      (id) => id !== empId
+                                    ),
+                                  }));
+                                }
+                              }}
+                            />
+                            {emp.employee_name} - {emp.designation}
+                          </div>
+                        ))}
+                    </div>
+                    <div>
+                      <h4
+                        style={{
+                          margin: "20px 0 10px",
+                          color: "#333",
+                          marginLeft: "10px",
+                        }}
+                      >
+                        Additional Resources
+                      </h4>
+                      {additionalResources
+                        ?.filter((employee) =>
+                          employee.employee_name
+                            .toLowerCase()
+                            .includes(searchQuery.toLowerCase())
+                        )
+                        .map((emp) => (
+                          <div key={emp.employee_id}>
+                            <input
+                              type="checkbox"
+                              value={emp.employee_id}
+                              checked={formData.employee.includes(
+                                emp.employee_id
+                              )}
+                              onChange={(e) => {
+                                const checked = e.target.checked;
+                                const empId = emp.employee_id;
+                                if (checked) {
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    employee: [...prev.employee, empId],
+                                  }));
+                                } else {
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    employee: prev.employee.filter(
+                                      (id) => id !== empId
+                                    ),
+                                  }));
+                                }
+                              }}
+                            />
+                            {emp.employee_name} - {emp.designation}
+                          </div>
+                        ))}
+                    </div>
                   </div>
                 ) : (
                   <div className="select-container">
