@@ -100,7 +100,7 @@ useImperativeHandle(ref, () => ({
       });
 
       const currentDate = new Date().toISOString().split("T")[0];
-      saveAs(blob, `LeaveReport_${currentDate}.xlsx`);
+      saveAs(blob, `LeaveTakenReport_${currentDate}.xlsx`);
     } catch (error) {
       console.error("Excel Export Error:", error);
       showInfoToast("Failed to generate Excel file.");
