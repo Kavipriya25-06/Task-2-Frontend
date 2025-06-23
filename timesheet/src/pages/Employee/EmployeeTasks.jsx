@@ -71,7 +71,7 @@ const EmployeeTasks = () => {
             <tr>
               <th>Task</th>
               <th>Hours</th>
-              <th>Building</th>
+              <th>Sub-Division</th>
               <th>Project</th>
               <th>Start Date</th>
             </tr>

@@ -89,11 +89,11 @@ const EmployeeTaskDetail = () => {
                 <p>{project?.project_title || ""}</p>
               </div>
               <div className="project-form-group">
-                <label>Building Code</label>
+                <label>Sub-Division Code</label>
                 <p>{building?.building_code || ""}</p>
               </div>
               <div className="project-form-group">
-                <label>Building Title</label>
+                <label>Sub-Division Title</label>
                 <p>{building?.building_title || ""}</p>
               </div>
               <div className="project-form-group">
@@ -204,7 +204,7 @@ const EmployeeTaskDetail = () => {
                 <p>{project?.estimated_hours || ""}</p>
               </div>
               <div className="project-form-group-small">
-                <label>Building Hours</label>
+                <label>Sub-Division Hours</label>
                 <p>{taskData?.building_assign?.building_hours || ""}</p>
               </div>
               <div className="project-form-group-small">
