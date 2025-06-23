@@ -86,6 +86,7 @@ import ManagerTaskCreate from "./pages/Manager/ManagerTaskCreate.jsx";
 import ManagerReports from "./pages/Manager/ManagerReports.jsx";
 import ManagerTimeSheetEntry from "./pages/Manager/ManagerTimeSheetEntry.jsx";
 import ManagerDailyTimeSheetEntry from "./pages/Manager/ManagerDailyTimeSheetEntry.jsx";
+import ManagerWeeklyTimeSheetEntry from "./pages/Manager/ManagerWeeklyTimeSheet.jsx";
 import ManagerBulkApprovalScreen from "./pages/Manager/ManagerBulkApprovalScreen.jsx";
 
 import ManagerApprovalScreen from "./pages/Manager/ManagerApprovalScreen.jsx";
@@ -442,6 +443,16 @@ const App = () => {
                 <Route
                   path="time-sheet-entry/createdaily/:date"
                   element={<ManagerDailyTimeSheetEntry />}
+                />
+                <Route
+                  path="time-sheet-entry/createweekly/"
+                  element={
+                    <Navigate to="/manager/detail/time-sheet-entry" replace />
+                  }
+                />
+                <Route
+                  path="time-sheet-entry/createweekly/:date"
+                  element={<ManagerWeeklyTimeSheetEntry />}
                 />
                 <Route path="reports" element={<ManagerReports />} />
 

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import config from "../../config";
 import { useAuth } from "../../AuthContext";
 import { FaEdit } from "react-icons/fa";
-import config from "../../config";
 
 import {
   showSuccessToast,
@@ -164,31 +164,43 @@ const EmployeeDailyTimeSheetEntry = () => {
   }, [employee_id, date]);
 
   useEffect(() => {
-    const fetchTaskOptions = async () => {
-      try {
-        const response = await fetch(
-          `${config.apiBaseURL}/tasks-by-employee/${employee_id}/`
-        );
-        const data = await response.json();
-
-        const formatted = data.map((item) => ({
-          task_assign_id: item.task_assign_id,
-          task_title: item.task?.task_title || "",
-          project_title:
-            item.building_assign?.project_assign?.project?.project_title || "",
-          building_title: item.building_assign?.building?.building_title || "",
-        }));
-
-        setTaskOptions(formatted);
-      } catch (error) {
-        console.error("Failed to load task options:", error);
-      }
-    };
-
     if (employee_id) {
       fetchTaskOptions();
     }
   }, [employee_id]);
+
+  const fetchTaskOptions = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/tasks-by-employee/${employee_id}/`
+      );
+      const data = await response.json();
+
+      const structured = {};
+
+      data.forEach((item) => {
+        const project =
+          item.building_assign?.project_assign?.project?.project_title ||
+          "Unassigned Project";
+        const building =
+          item.building_assign?.building?.building_title ||
+          "Unassigned Building";
+        const task = item.task?.task_title || "Untitled Task";
+
+        if (!structured[project]) structured[project] = {};
+        if (!structured[project][building]) structured[project][building] = [];
+
+        structured[project][building].push({
+          task_assign_id: item.task_assign_id,
+          task_title: task,
+        });
+      });
+
+      setTaskOptions(structured);
+    } catch (error) {
+      console.error("Failed to load task options:", error);
+    }
+  };
 
   const handleDisplayRowChange = (index, field, value) => {
     const updated = [...displayRows];
@@ -228,13 +240,31 @@ const EmployeeDailyTimeSheetEntry = () => {
     const updated = [...newRows];
     updated[index][field] = value;
 
+    if (field === "project") {
+      // Reset building and task if project changes
+      updated[index].project = value;
+      updated[index].building = "";
+      updated[index].task = "";
+      updated[index].task_assign_id = "";
+    }
+
+    if (field === "building") {
+      // Reset task if building changes
+      updated[index].building = value;
+      updated[index].task = "";
+      updated[index].task_assign_id = "";
+    }
+
     if (field === "task") {
-      const selected = taskOptions.find((t) => t.task_title === value);
+      // const taskList = taskOptions[row.project]?.[row.building] || [];
+      const selected = taskOptions?.[updated[index].project]?.[
+        updated[index].building
+      ]?.find((t) => t.task_title === value);
       if (selected) {
         updated[index].task = selected.task_title;
         updated[index].task_assign_id = selected.task_assign_id;
-        updated[index].project = selected.project_title;
-        updated[index].building = selected.building_title;
+        // updated[index].project = selected.project_title;
+        // updated[index].building = selected.building_title;
       }
     }
 
@@ -521,8 +551,9 @@ const EmployeeDailyTimeSheetEntry = () => {
           return;
         }
       }
+
       setNewRows([]);
-      // if (newRows.length === 0) {
+      //  if (newRows.length === 0) {
       //   showWarningToast("Please enter some fields before saving.");
       //   return;
       // }
@@ -554,9 +585,20 @@ const EmployeeDailyTimeSheetEntry = () => {
     const startSeconds = parseTime(start);
     const endSeconds = parseTime(end);
 
+    const currentTime = new Date();
+
+    const currentTimeSeconds =
+      (currentTime.getHours() || 0) * 3600 +
+      (currentTime.getMinutes() || 0) * 60 +
+      (currentTime.getSeconds() || 0);
+
     const intimeParts = attendanceDetails.in_time.split(":").map(Number);
     const intimeSeconds =
       (intimeParts[0] || 0) * 3600 + (intimeParts[1] || 0) * 60;
+
+    const outtimeParts = attendanceDetails.out_time.split(":").map(Number);
+    const outtimeSeconds =
+      (outtimeParts[0] || 0) * 3600 + (outtimeParts[1] || 0) * 60;
 
     if (startSeconds < intimeSeconds) {
       showWarningToast(
@@ -570,6 +612,20 @@ const EmployeeDailyTimeSheetEntry = () => {
       return null;
     }
 
+    if (attendanceDetails.out_time) {
+      if (endSeconds > outtimeSeconds) {
+        showWarningToast(
+          `Task "${row.task}" End Time must be before Out Time.`
+        );
+        return null;
+      }
+    } else if (endSeconds > currentTimeSeconds) {
+      showWarningToast(
+        `Task "${row.task}" End Time must be before current Time.`
+      );
+      return null;
+    }
+
     if (parseFloat(totalAssignedHours) > maxAllowedHours) {
       showWarningToast(
         `Total assigned hours exceed logged hours (${maxAllowedHours}).`
@@ -579,7 +635,7 @@ const EmployeeDailyTimeSheetEntry = () => {
 
     // Prepare final time strings
     return {
-      start_time: start.includes(":00") ? start : start + ":00",
+      start_time: start.length === 5 ? start + ":00" : start,
       end_time: end.includes(":00") ? end : end + ":00",
     };
   };
@@ -590,9 +646,44 @@ const EmployeeDailyTimeSheetEntry = () => {
     0
   );
 
+  const calculateHours = () => {
+    const start = attendanceDetails.in_time;
+    const end = attendanceDetails.out_time;
+
+    const currentTime = new Date();
+
+    const currentTimeSeconds =
+      (currentTime.getHours() || 0) * 3600 +
+      (currentTime.getMinutes() || 0) * 60 +
+      (currentTime.getSeconds() || 0);
+
+    if (start) {
+      const parseTime = (timeStr) => {
+        const [hours = 0, minutes = 0, seconds = 0] = timeStr
+          .split(":")
+          .map(Number);
+        return hours * 3600 + minutes * 60 + seconds;
+      };
+      const startSeconds = parseTime(start);
+      let endSeconds = 0;
+      let diffSeconds = 0;
+      if (end) {
+        endSeconds = parseTime(end);
+        diffSeconds = endSeconds - startSeconds;
+      } else {
+        diffSeconds = currentTimeSeconds - startSeconds;
+      }
+
+      if (diffSeconds < 0) diffSeconds = 0;
+
+      const decimalHours = diffSeconds / 3600;
+      return decimalHours.toFixed(2);
+    }
+  };
+  const maxAllowedHours = parseFloat(calculateHours() || 0);
   // const maxAllowedHours = parseFloat(attendanceDetails.total_duration || 0);
   const duration = parseFloat(attendanceDetails.total_duration);
-  const maxAllowedHours = isNaN(duration) ? 0 : Math.min(duration, 8);
+  // const maxAllowedHours = isNaN(duration) ? 0 : Math.min(duration, 8);
 
   return (
     <div className="daily-timesheet-container">
@@ -605,208 +696,243 @@ const EmployeeDailyTimeSheetEntry = () => {
       </div>
 
       {/* Timesheet Entry Table */}
-      <table className="timesheet-table">
-        <thead>
-          <tr>
-            <th>Project name</th>
-            <th>Buildings</th>
-            <th>Tasks</th>
-            <th>Start Time</th>
-            <th>End Time</th>
-            <th>Hours</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {/* Display fetched (existing) rows */}
-          {displayRows.map((row, index) => (
-            <tr key={"display-" + index}>
-              <td>
-                <input
-                  type="text"
-                  // placeholder="Enter project"
-                  value={row.project}
-                  readOnly
-                  // onChange={(e) =>
-                  //   handleDisplayRowChange(index, "project", e.target.value)
-                  // }
-                />
-              </td>
-              <td>
-                <input
-                  type="text"
-                  // placeholder="Enter building"
-                  value={row.building}
-                  readOnly
-                  // onChange={(e) =>
-                  //   handleDisplayRowChange(index, "building", e.target.value)
-                  // }
-                />
-              </td>
-              <td>
-                <input
-                  type="text"
-                  // placeholder="Enter task"
-                  value={row.task}
-                  readOnly
-                  // onChange={(e) =>
-                  //   handleDisplayRowChange(index, "task", e.target.value)
-                  // }
-                />
-              </td>
-              <td>
-                <input
-                  type="time"
-                  value={row.start_time ? row.start_time.slice(0, 5) : ""}
-                  onChange={(e) =>
-                    handleDisplayRowChange(index, "start_time", e.target.value)
-                  }
-                />
-              </td>
-              <td>
-                <input
-                  type="time"
-                  value={row.end_time ? row.end_time.slice(0, 5) : ""}
-                  onChange={(e) =>
-                    handleDisplayRowChange(index, "end_time", e.target.value)
-                  }
-                />
-              </td>
-              <td>
-                {row.formattedHours ? (
-                  <input
-                    type="text"
-                    readOnly
-                    value={row.formattedHours}
-                    style={{ backgroundColor: "#f9f9f9", border: "none" }}
-                  />
-                ) : (
-                  <input
-                    type="number"
-                    placeholder="Hours"
-                    value={row.hours}
-                    readOnly
-                    style={{ backgroundColor: "#f9f9f9", border: "none" }}
-                  />
-                )}
-              </td>
-
-              <td>
-                {/* <button
-                  type="button"
-                  onClick={() => handleDeleteRow(row.timesheet_id)}
-                  style={{ color: "red", cursor: "pointer" }}
-                >
-                  Delete
-                </button> */}
-                <img
-                  src="\reject.png"
-                  alt="reject button"
-                  className="leavebuttons"
-                  onClick={() => handleDeleteRow(row.timesheet_id, "existing")}
-                />
-              </td>
+      <div className="table-scroll-container">
+        <table className="timesheet-table">
+          <thead>
+            <tr>
+              <th>Project name</th>
+              <th>Buildings</th>
+              <th>Tasks</th>
+              <th>Start Time</th>
+              <th>End Time</th>
+              <th>Hours</th>
+              <th>Actions</th>
             </tr>
-          ))}
-
-          {/* Display new (user added) rows */}
-          {newRows.map((row, index) => (
-            <tr key={"new-" + index}>
-              <td>
-                <input
-                  type="text"
-                  // placeholder="Enter project"
-                  value={row.project}
-                  readOnly
-                  // onChange={(e) =>
-                  //   handleNewRowChange(index, "project", e.target.value)
-                  // }
-                />
-              </td>
-              <td>
-                <input
-                  type="text"
-                  // placeholder="Enter building"
-                  value={row.building}
-                  readOnly
-                  // onChange={(e) =>
-                  //   handleNewRowChange(index, "building", e.target.value)
-                  // }
-                />
-              </td>
-              <td>
-                <select
-                  value={row.task}
-                  onChange={(e) =>
-                    handleNewRowChange(index, "task", e.target.value)
-                  }
-                  className="task-select"
-                >
-                  <option value="">Select task</option>
-                  {taskOptions.map((task) => (
-                    <option key={task.task_assign_id} value={task.task_title}>
-                      {task.task_title}
-                    </option>
-                  ))}
-                </select>
-              </td>
-              <td>
-                <input
-                  type="time"
-                  value={row.start_time ? row.start_time.slice(0, 5) : ""}
-                  onChange={(e) =>
-                    handleNewRowChange(index, "start_time", e.target.value)
-                  }
-                />
-              </td>
-              <td>
-                <input
-                  type="time"
-                  value={row.end_time ? row.end_time.slice(0, 5) : ""}
-                  onChange={(e) =>
-                    handleNewRowChange(index, "end_time", e.target.value)
-                  }
-                />
-              </td>
-
-              <td>
-                {row.formattedHours ? (
+          </thead>
+          <tbody>
+            {/* Display fetched (existing) rows */}
+            {displayRows.map((row, index) => (
+              <tr key={"display-" + index}>
+                <td>
                   <input
                     type="text"
+                    // placeholder="Enter project"
+                    value={row.project}
                     readOnly
-                    value={row.formattedHours}
-                    style={{ width: `${row.formattedHours.length + 0.4}ch` }}
+                    // onChange={(e) =>
+                    //   handleDisplayRowChange(index, "project", e.target.value)
+                    // }
                   />
-                ) : (
+                </td>
+                <td>
                   <input
-                    type="number"
-                    placeholder="Hours"
-                    value={row.hours}
+                    type="text"
+                    // placeholder="Enter building"
+                    value={row.building}
                     readOnly
-                    style={{ backgroundColor: "#f9f9f9", border: "none" }}
+                    // onChange={(e) =>
+                    //   handleDisplayRowChange(index, "building", e.target.value)
+                    // }
                   />
-                )}
-              </td>
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    // placeholder="Enter task"
+                    value={row.task}
+                    readOnly
+                    // onChange={(e) =>
+                    //   handleDisplayRowChange(index, "task", e.target.value)
+                    // }
+                  />
+                </td>
+                <td>
+                  <input
+                    type="time"
+                    value={row.start_time ? row.start_time.slice(0, 5) : ""}
+                    onChange={(e) =>
+                      handleDisplayRowChange(
+                        index,
+                        "start_time",
+                        e.target.value
+                      )
+                    }
+                  />
+                </td>
+                <td>
+                  <input
+                    type="time"
+                    value={row.end_time ? row.end_time.slice(0, 5) : ""}
+                    onChange={(e) =>
+                      handleDisplayRowChange(index, "end_time", e.target.value)
+                    }
+                  />
+                </td>
+                <td>
+                  {row.formattedHours ? (
+                    <input
+                      type="text"
+                      readOnly
+                      value={row.formattedHours}
+                      style={{ backgroundColor: "#f9f9f9", border: "none" }}
+                    />
+                  ) : (
+                    <input
+                      type="number"
+                      placeholder="Hours"
+                      value={row.hours}
+                      readOnly
+                      style={{ backgroundColor: "#f9f9f9", border: "none" }}
+                    />
+                  )}
+                </td>
 
-              <td>
-                {/* <button
-                  type="button"
+                <td>
+                  {/* <button
+                    type="button"
+                    onClick={() => handleDeleteRow(row.timesheet_id)}
+                    style={{ color: "red", cursor: "pointer" }}
+                  >
+                    Delete
+                  </button> */}
+                  <img
+                    src="\reject.png"
+                    alt="reject button"
+                    className="leavebuttons"
+                    onClick={() =>
+                      handleDeleteRow(row.timesheet_id, "existing")
+                    }
+                  />
+                </td>
+              </tr>
+            ))}
+
+            {/* Display new (user added) rows */}
+            {newRows.map((row, index) => (
+              <tr key={"new-" + index}>
+                <td>
+                  <select
+                    value={row.project}
+                    onChange={(e) =>
+                      handleNewRowChange(index, "project", e.target.value)
+                    }
+                    className="task-select"
+                  >
+                    <option value="">Select project</option>
+                    {/* {projectOptions.map((proj, idx) => (
+                      <option key={idx} value={proj}>
+                        {proj} */}
+                    {Object.keys(taskOptions).map((projectTitle) => (
+                      <option key={projectTitle} value={projectTitle}>
+                        {projectTitle}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+
+                <td>
+                  <select
+                    value={row.building}
+                    onChange={(e) =>
+                      handleNewRowChange(index, "building", e.target.value)
+                    }
+                    disabled={!row.project}
+                    className="task-select"
+                  >
+                    <option value="">Select building</option>
+                    {row.project &&
+                      Object.keys(taskOptions[row.project] || {}).map(
+                        (buildingTitle) => (
+                          <option key={buildingTitle} value={buildingTitle}>
+                            {buildingTitle}
+                          </option>
+                        )
+                      )}
+                  </select>
+                </td>
+
+                <td>
+                  <select
+                    value={row.task}
+                    onChange={(e) =>
+                      handleNewRowChange(index, "task", e.target.value)
+                    }
+                    disabled={!row.building}
+                    className="task-select"
+                  >
+                    <option value="">Select task</option>
+                    {row.project &&
+                      row.building &&
+                      (taskOptions[row.project]?.[row.building] || []).map(
+                        (task) => (
+                          <option
+                            key={task.task_assign_id}
+                            value={task.task_title}
+                          >
+                            {task.task_title}
+                          </option>
+                        )
+                      )}
+                  </select>
+                </td>
+                <td>
+                  <input
+                    type="time"
+                    value={row.start_time ? row.start_time.slice(0, 5) : ""}
+                    onChange={(e) =>
+                      handleNewRowChange(index, "start_time", e.target.value)
+                    }
+                  />
+                </td>
+                <td>
+                  <input
+                    type="time"
+                    value={row.end_time ? row.end_time.slice(0, 5) : ""}
+                    onChange={(e) =>
+                      handleNewRowChange(index, "end_time", e.target.value)
+                    }
+                  />
+                </td>
+
+                <td>
+                  {row.formattedHours ? (
+                    <input
+                      type="text"
+                      readOnly
+                      value={row.formattedHours}
+                      style={{ width: `${row.formattedHours.length + 0.4}ch` }}
+                    />
+                  ) : (
+                    <input
+                      type="number"
+                      placeholder="Hours"
+                      value={row.hours}
+                      readOnly
+                      style={{ backgroundColor: "#f9f9f9", border: "none" }}
+                    />
+                  )}
+                </td>
+
+                <td>
+                  {/* <button
+                  className="delete-btn"
                   // onClick={() => handleDeleteRow(index, "new")}
                   style={{ color: "red", cursor: "pointer" }}
                 >
                   Delete
                 </button> */}
-                <img
-                  src="\reject.png"
-                  alt="reject button"
-                  className="leavebuttons"
-                  onClick={() => handleDeleteRow(index, "new")}
-                />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                  <img
+                    src="\reject.png"
+                    alt="reject button"
+                    className="leavebuttons"
+                    onClick={() => handleDeleteRow(index, "new")}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <button onClick={handleAddRow} style={{ cursor: "pointer" }}>
         <div style={{ fontSize: "24px" }}>+</div>
       </button>
