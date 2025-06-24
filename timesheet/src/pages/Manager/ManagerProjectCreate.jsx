@@ -191,6 +191,7 @@ const ManagerProjectCreate = () => {
       const res = await fetch(`${config.apiBaseURL}/discipline/`);
       const data = await res.json();
       setDiscipline(data);
+      console.log("Disciplines", data);
     } catch (error) {
       console.error("Error fetching Discipline:", error);
     }
@@ -209,8 +210,9 @@ const ManagerProjectCreate = () => {
   };
 
   useEffect(() => {
-    if (!formData.discipline_code || !formData.start_date || !lastProjectCode)
-      return;
+    if (!formData.start_date || !lastProjectCode) return;
+    // if (!formData.discipline_code || !formData.start_date || !lastProjectCode)
+    // return;
 
     const generateProjectCode = () => {
       const year = new Date(formData.start_date)
@@ -218,6 +220,7 @@ const ManagerProjectCreate = () => {
         .toString()
         .slice(-2); // e.g., "25"
       const disciplineCode = String(formData.discipline_code).padStart(2, "0");
+      // console.log("Discipline code", disciplineCode);
 
       // Extract last 4 digits from last project's code
       const lastSerial = lastProjectCode.slice(4); // e.g., from "2553736" => "3736"

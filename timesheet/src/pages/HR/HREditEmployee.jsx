@@ -1199,6 +1199,40 @@ const EditEmployee = () => {
                 </div>
               )}
             </div>
+            <div className="individual-tabs">
+              <label>Resignation date</label>
+              {editMode ? (
+                <div className="date-input-container">
+                  <DatePicker
+                    selected={
+                      formData.resignation_date
+                        ? parseISO(formData.resignation_date)
+                        : null
+                    }
+                    onChange={(date) =>
+                      handleChange({
+                        target: {
+                          name: "resignation_date",
+                          value: format(date, "yyyy-MM-dd"),
+                        },
+                      })
+                    }
+                    dateFormat="dd-MMM-yyy"
+                    className="input1"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
+                  />
+                  <i className="fas fa-calendar-alt calendar-icon"></i>
+                </div>
+              ) : (
+                <div className="uneditable">
+                  {formData.resignation_date
+                    ? format(parseISO(formData.resignation_date), "dd-MMM-yyyy")
+                    : "-"}
+                </div>
+              )}
+            </div>
 
             <div className="individual-tabs">
               <label>Official Email</label>
