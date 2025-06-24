@@ -41,9 +41,9 @@ const TimeSheetClientReport = forwardRef((props, ref) => {
     const weekNo = getISOWeekNumber(startDate);
 
     setWeekDays(weekDates);
-    setFromDate(formattedFromDate);
-    setToDate(formattedToDate);
-    setWeekNumber(weekNo);
+    // setFromDate(formattedFromDate);
+    // setToDate(formattedToDate);
+    // setWeekNumber(weekNo);
   };
 
   // Fetch employee list on mount
@@ -652,7 +652,10 @@ const TimeSheetClientReport = forwardRef((props, ref) => {
                 <tbody>
                   {Object.values(groupedData).map((group, i) => (
                     <tr key={i}>
-                      <td>{group.taskAssign?.task?.task_code || "N/A"}</td>
+                      <td>
+                        {group.taskAssign?.building_assign?.project_assign
+                          ?.project?.discipline_code || "N/A"}
+                      </td>
                       <td>
                         {group.taskAssign?.building_assign?.project_assign
                           ?.project?.project_code || "N/A"}
@@ -670,10 +673,15 @@ const TimeSheetClientReport = forwardRef((props, ref) => {
                         const entry = group.data.find(
                           (e) => e.date === formattedDay
                         );
+                        const totalHours = group.data.filter(
+                          (e) => e.date === formattedDay
+                        );
+                        let final = totalHours.reduce(
+                          (sum, e) => sum + parseFloat(e.task_hours || 0),
+                          0
+                        );
                         return (
-                          <td key={idx}>
-                            {entry ? parseFloat(entry.task_hours) : 0}
-                          </td>
+                          <td key={idx}>{entry ? parseFloat(final) : 0}</td>
                         );
                       })}
                       <td>
