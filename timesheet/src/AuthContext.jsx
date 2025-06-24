@@ -34,11 +34,17 @@ const AuthProvider = ({ children }) => {
 
   // Login function
   const login = async (email, password) => {
+    const loginPayload = { email: email, password: password };
     try {
       // Call API to authenticate user
-      const response = await fetch(
-        `${config.apiBaseURL}/login-details/${email}/${password}/`
-      );
+      const response = await fetch(`${config.apiBaseURL}/login-details/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(loginPayload),
+      });
+      // const response = await fetch(
+      //   `${config.apiBaseURL}/login-details/${email}/${password}/`
+      // );
       const foundUser = await response.json();
       console.log("Found user", foundUser);
       // const foundUser = users.find(
