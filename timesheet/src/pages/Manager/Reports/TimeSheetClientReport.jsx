@@ -19,6 +19,7 @@ const TimeSheetClientReport = forwardRef((props, ref) => {
   const [weekDates, setWeekDates] = useState([]);
   const [weeks, setWeeks] = useState([]);
   const [selectedWeekStart, setSelectedWeekStart] = useState(null);
+  const [weekStart, setWeekStart] = useState(null);
   const [weekDays, setWeekDays] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showSelectedDropdown, setShowSelectedDropdown] = useState(false);
@@ -28,6 +29,10 @@ const TimeSheetClientReport = forwardRef((props, ref) => {
     const startDateStr = e.target.value;
     const startDate = new Date(startDateStr);
     setSelectedWeekStart(startDate);
+
+    // Format to YYYY-MM-DD
+    const formatted = startDate.toISOString().slice(0, 10);
+    setWeekStart(formatted);
 
     const weekDates = [];
     for (let i = 0; i < 7; i++) {
@@ -40,6 +45,8 @@ const TimeSheetClientReport = forwardRef((props, ref) => {
     const formattedToDate = weekDates[6].toISOString().split("T")[0];
     const weekNo = getISOWeekNumber(startDate);
 
+    console.log("Start date and week number", weekNo, startDate, startDateStr);
+
     setWeekDays(weekDates);
     // setFromDate(formattedFromDate);
     // setToDate(formattedToDate);
@@ -51,7 +58,7 @@ const TimeSheetClientReport = forwardRef((props, ref) => {
     fetch(`${config.apiBaseURL}/employees/`)
       .then((res) => res.json())
       .then((data) => {
-        console.log("Fetched employees:", data); // ✅ ADD THIS
+        // console.log("Fetched employees:", data); //  ADD THIS
         setEmployees(data);
       })
       .catch(console.error);
@@ -68,16 +75,23 @@ const TimeSheetClientReport = forwardRef((props, ref) => {
 
   // Fetch timesheet data based on selections
   useEffect(() => {
-    if (selectedYear && selectedMonth && selectedEmployees.length > 0) {
+    if (
+      selectedYear &&
+      selectedMonth &&
+      weekStart &&
+      selectedEmployees.length > 0
+    ) {
       const today = `${selectedYear}-${String(selectedMonth).padStart(
         2,
         "0"
       )}-01`;
 
+      // console.log("Today in code", today);
+
       Promise.all(
         selectedEmployees.map((empId) =>
           fetch(
-            `${config.apiBaseURL}/employee-report-week/${empId}/?today=${today}`
+            `${config.apiBaseURL}/employee-report-week/${empId}/?today=${weekStart}`
           ).then((res) => res.json())
         )
       )
@@ -88,7 +102,7 @@ const TimeSheetClientReport = forwardRef((props, ref) => {
         })
         .catch(console.error);
     }
-  }, [selectedYear, selectedMonth, selectedEmployees]);
+  }, [selectedYear, selectedMonth, selectedEmployees, weekStart]);
 
   const getWeekStartDatesForMonth = (year, month) => {
     const dates = [];

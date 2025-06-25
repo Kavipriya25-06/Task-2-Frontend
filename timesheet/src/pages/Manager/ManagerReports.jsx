@@ -19,6 +19,7 @@ import UtilizationReport from "./Reports/UtilizationReport";
 import ProjectSummaryReport from "./Reports/ProjectSummaryReport";
 import TimeSheetClientReport from "./Reports/TimeSheetClientReport";
 import YearlyUtilizationReport from "./Reports/YearlyUtilizationReport";
+import DepartmentUtilizationReport from "./Reports/DepartmentUtilizationReport";
 
 const ManagerReport = () => {
   const [selectedReport, setSelectedReport] = useState(
@@ -29,6 +30,8 @@ const ManagerReport = () => {
   const handleReportChange = (e) => {
     setSelectedReport(e.target.value);
   };
+  const [department, setDepartment] = useState("Management");
+  console.log("Department", department);
 
   const reportRef = useRef();
 
@@ -46,6 +49,14 @@ const ManagerReport = () => {
         return <TimeSheetClientReport ref={reportRef} />;
       case "Yearly Utilization":
         return <YearlyUtilizationReport ref={reportRef} />;
+      case "Department Utilization":
+        return (
+          <DepartmentUtilizationReport
+            ref={reportRef}
+            year={selectedYear}
+            department={department}
+          />
+        );
       default:
         return null;
     }
@@ -73,15 +84,28 @@ const ManagerReport = () => {
         </div>
         {selectedReport === "Department Utilization" && (
           <div className="report-form-group">
-            <select name="designationYear" id="designationYear">
-              <option value="">Structural-Detailing</option>
-              <option value="">Strucutural Design</option>
-              <option value="">Piping</option>
-              <option value="">Electrical & Instrumentation</option>
+            <select
+              name="designationYear"
+              id="designationYear"
+              value={department}
+              onChange={(e) => setDepartment(e.target.value)}
+            >
+              <option value="Management">Management</option>
+              <option value="Mechanical">Mechanical</option>
+              <option value="Process">Process</option>
+              <option value="Piping">Piping</option>
+              <option value="Structural">Structural</option>
+              <option value="EIC">EIC</option>
+              <option value="Admin">Admin</option>
+              <option value="HR">HR</option>
+              <option value="Finance">Finance</option>
+              <option value="IT">IT</option>
             </select>
           </div>
         )}
+        {console.log("Department change", department)}
         {(selectedReport === "Weekly Utilization" ||
+          selectedReport === "Department Utilization" ||
           selectedReport === "Monthly Utilization") && (
           <div
             style={{
