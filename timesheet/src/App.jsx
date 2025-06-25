@@ -564,10 +564,10 @@ const App = () => {
                   element={<TeamLeadApprovalScreen />}
                 /> */}
 
-                <Route
+                {/* <Route
                   path="attendance/attendance-admin"
                   element={<TeamLeadAttendanceAdmin />}
-                />
+                /> */}
                 <Route
                   path="attendance/timesheetapproval/"
                   element={

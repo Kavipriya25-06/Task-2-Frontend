@@ -176,7 +176,7 @@ const HRAttendance = () => {
                           <div>
                             <div>
                               {attendance.in_time.slice(0, 5)} -{" "}
-                              {attendance.out_time.slice(0, 5)}
+                              {attendance.out_time?.slice(0, 5)}
                             </div>
                             <div>
                               <strong>Total:</strong>{" "}
