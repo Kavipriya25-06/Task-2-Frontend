@@ -50,7 +50,7 @@ const UtilizationReport = forwardRef((props, ref) => {
               formatted.push({
                 project_code: project.project_code,
                 project_name: project.project_title,
-                sub_division: buildingAssign.building?.building_code, // ← building code as sub_division
+                sub_division: buildingAssign.building?.building_title, // ← building code as sub_division
                 tasks: taskHoursMap,
                 total: totalHours.toFixed(2),
               });

@@ -25,13 +25,14 @@ const LeaveBalanceReport = forwardRef(({ year }, ref) => {
         console.error("Leave fetch error:", err);
         setLoading(false);
       });
-  }, [year]);
+  }, []);
 
   useImperativeHandle(ref, () => ({
     downloadReport: async () => {
-      const filtered = data.filter(
-        (l) => new Date(l.employee.doj).getFullYear() === parseInt(year)
-      );
+      const filtered = data;
+      //   .filter(
+      //   (l) => new Date(l.employee.doj).getFullYear() === parseInt(year)
+      // );
 
       if (filtered.length === 0) {
         showInfoToast("No data to export.");
@@ -136,7 +137,7 @@ const LeaveBalanceReport = forwardRef(({ year }, ref) => {
         {loading ? (
           <div style={{ padding: 20 }}>Loading leave data...</div>
         ) : data.length === 0 ? (
-          <div style={{ padding: 20 }}>No leave records found for {year}.</div>
+          <div style={{ padding: 20 }}>No leave records found.</div>
         ) : (
           <table className="employee-table">
             <thead>
@@ -155,10 +156,10 @@ const LeaveBalanceReport = forwardRef(({ year }, ref) => {
             </thead>
             <tbody>
               {data
-                .filter(
-                  (l) =>
-                    new Date(l.employee.doj).getFullYear() === parseInt(year)
-                )
+                // .filter(
+                //   (l) =>
+                //     new Date(l.employee.doj).getFullYear() === parseInt(year)
+                // )
                 .map((l, i) => (
                   <tr key={i}>
                     <td>{l.employee.employee_code}</td>

@@ -87,7 +87,7 @@ const ProjectSummaryReport = forwardRef(({ year }, ref) => {
         ]);
 
         // Format ratio column as percentage
-        row.getCell(6).numFmt = "0%";
+        row.getCell(6).numFmt = "0.00%";
       });
 
       // Auto-width for all columns
@@ -134,7 +134,7 @@ const ProjectSummaryReport = forwardRef(({ year }, ref) => {
                 const consumed = parseFloat(project.consumed_hours || 0);
                 const ratio =
                   allocated > 0
-                    ? ((consumed / allocated) * 100).toFixed(0) + "%"
+                    ? ((consumed / allocated) * 100).toFixed(2) + "%"
                     : "0%";
 
                 return (

@@ -102,20 +102,19 @@ const YearlyUtilizationReport = forwardRef((props, ref) => {
           // Consumed Percentages
           ...years.map((y) => {
             const consumed = consumedMap[y] || 0;
-            return allocated
-              ? `${((consumed / allocated) * 100).toFixed(0)}%`
-              : "0%";
+            return allocated ? parseFloat(consumed / allocated) : 0;
           }),
-          allocated
-            ? `${((totalConsumed / allocated) * 100).toFixed(0)}%`
-            : "0%",
+          allocated ? parseFloat(totalConsumed / allocated) : 0,
 
           // Allocated Hours by Year (currently repeating consumed values)
           ...years.map((y) => parseFloat((consumedMap[y] || 0).toFixed(2))),
           parseFloat(totalConsumed.toFixed(2)),
         ];
 
-        sheet.addRow(row);
+        const addedRow = sheet.addRow(row);
+        // Format ratio column as percentage
+        addedRow.getCell(7).numFmt = "0.00%";
+        addedRow.getCell(8).numFmt = "0.00%";
       });
 
       // Auto-fit column widths
@@ -214,14 +213,14 @@ const YearlyUtilizationReport = forwardRef((props, ref) => {
                       return (
                         <td key={`perc-${y}`}>
                           {allocated
-                            ? `${((consumed / allocated) * 100).toFixed(0)}%`
+                            ? `${((consumed / allocated) * 100).toFixed(2)}%`
                             : "0%"}
                         </td>
                       );
                     })}
                     <td>
                       {allocated
-                        ? `${((totalConsumed / allocated) * 100).toFixed(0)}%`
+                        ? `${((totalConsumed / allocated) * 100).toFixed(2)}%`
                         : "0%"}
                     </td>
 

@@ -25,10 +25,11 @@ const EmployeeList = () => {
 
   const fetchEmployees = async () => {
     try {
-      const response = await fetch(`${config.apiBaseURL}/employees/`);
+      const response = await fetch(`${config.apiBaseURL}/employees-list/`);
       const data = await response.json();
       setEmployees(data);
       setFilteredEmployees(data);
+      // console.log("Employees", data);
     } catch (error) {
       console.error("Error fetching employees:", error);
     }
@@ -142,7 +143,9 @@ const EmployeeList = () => {
                 <td>{emp.employee_name}</td>
                 <td>{emp.department}</td>
                 <td>{emp.designation}</td>
-                <td>{emp.reporting_manager || "-"}</td>
+                <td>
+                  {emp.hierarchy_details[0]?.reporting_to?.employee_name || "-"}
+                </td>
               </tr>
             ))}
           </tbody>

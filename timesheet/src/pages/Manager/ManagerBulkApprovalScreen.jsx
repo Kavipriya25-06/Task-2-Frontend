@@ -192,6 +192,10 @@ const ManagerBulkApprovalScreen = () => {
 
   return (
     <div className="daily-timesheet-container">
+      <p>
+        <strong>Date: </strong>
+        <strong>{date ? date : ""}</strong>
+      </p>
       <table className="timesheet-table">
         <thead>
           <tr>
