@@ -612,7 +612,12 @@ const EmployeeDailyTimeSheetEntry = () => {
       return null;
     }
 
-    if (attendanceDetails.out_time) {
+    if (!intimeParts[0]) {
+      showWarningToast(`Task "${row.task}" No in Time present.`);
+      return null;
+    }
+
+    if (outtimeParts[0]) {
       if (endSeconds > outtimeSeconds) {
         showWarningToast(
           `Task "${row.task}" End Time must be before Out Time.`

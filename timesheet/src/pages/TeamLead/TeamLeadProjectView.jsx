@@ -36,10 +36,10 @@ const TeamLeadProjectView = () => {
     start_date: "",
     estimated_hours: "",
     project_description: "",
-    project_code: "",
+    // project_code: "",
     subdivision: "",
-    discipline_code: "",
-    discipline: "",
+    // discipline_code: "",
+    // discipline: "",
     area_of_work: [],
   });
 
@@ -632,7 +632,7 @@ const TeamLeadProjectView = () => {
           <div className="left-form">
             <div className="left-form-first">
               <div className="project-form-group">
-                <label>
+                {/* <label>
                   Project Code <span className="required-star">*</span>
                 </label>
                 {editMode ? (
@@ -644,7 +644,9 @@ const TeamLeadProjectView = () => {
                   />
                 ) : (
                   <p className="view-data">{projectData.project_code}</p>
-                )}
+                )} */}
+                <label>Project Code</label>
+                <p>{projectData?.project_code || ""}</p>
               </div>
               <div className="project-form-group">
                 <label>
@@ -676,12 +678,13 @@ const TeamLeadProjectView = () => {
               </div>
               <div className="project-form-group">
                 <label>Discipline Code</label>
-                {editMode ? (
+                {/* {editMode ? (
                   <select
                     name="discipline_code"
                     value={formData.discipline_code}
                     onChange={(e) => {
-                      const selectedCode = e.target.value;
+                      const selectedCodee = e.target.value;
+                      const selectedCode = parseInt(selectedCodee);
                       const selectedItem = discipline.find(
                         (item) => item.discipline_code === selectedCode
                       );
@@ -700,8 +703,13 @@ const TeamLeadProjectView = () => {
                     ))}
                   </select>
                 ) : (
-                  <p className="view-data">{projectData.discipline_code}</p>
-                )}
+                  <p className="view-data">
+                    {projectData.discipline_code} - {projectData.discipline}
+                  </p>
+                )} */}
+                <p>
+                  {projectData.discipline_code} - {projectData.discipline}
+                </p>
               </div>
             </div>
             <div className="left-form-second">
