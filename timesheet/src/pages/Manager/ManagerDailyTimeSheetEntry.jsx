@@ -735,7 +735,7 @@ const ManagerDailyTimeSheetEntry = () => {
           <thead>
             <tr>
               <th>Project name</th>
-              <th>Buildings</th>
+              <th>Sub-Divisions</th>
               <th>Tasks</th>
               <th>Start Time</th>
               <th>End Time</th>
