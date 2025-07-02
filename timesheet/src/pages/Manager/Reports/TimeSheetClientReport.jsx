@@ -24,6 +24,7 @@ const TimeSheetClientReport = forwardRef((props, ref) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showSelectedDropdown, setShowSelectedDropdown] = useState(false);
   const [showSelectDropdown, setShowSelectDropdown] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleWeekChange = (e) => {
     const startDateStr = e.target.value;
@@ -448,24 +449,50 @@ const TimeSheetClientReport = forwardRef((props, ref) => {
 
             {showDropdown && (
               <div className="multi-select-dropdown">
-                {employees.map((emp) => (
-                  <label key={emp.employee_id} className="multi-select-item">
-                    <input
-                      type="checkbox"
-                      className="emp-checkbox"
-                      checked={selectedEmployees.includes(emp.employee_id)}
-                      onChange={(e) => {
-                        const isChecked = e.target.checked;
-                        setSelectedEmployees((prev) =>
-                          isChecked
-                            ? [...prev, emp.employee_id]
-                            : prev.filter((id) => id !== emp.employee_id)
-                        );
-                      }}
-                    />{" "}
-                    {emp.employee_name}
-                  </label>
-                ))}
+                <input
+                  type="text"
+                  placeholder="Search employees..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="employee-search-input"
+                  style={{
+                    width: "90%",
+                    maxWidth: "400px",
+                    padding: "7px",
+                    marginBottom: "8px",
+                    borderRadius: "4px",
+                    border: "1px solid #ccc",
+                    marginLeft: "auto", 
+                    marginRight: "auto", 
+                    display: "block",
+                    fontSize:"12px",
+                    marginTop:"10px"
+                  }}
+                />
+                {employees
+                  .filter((emp) =>
+                    emp.employee_name
+                      .toLowerCase()
+                      .includes(searchQuery.toLowerCase())
+                  )
+                  .map((emp) => (
+                    <label key={emp.employee_id} className="multi-select-item">
+                      <input
+                        type="checkbox"
+                        className="emp-checkbox"
+                        checked={selectedEmployees.includes(emp.employee_id)}
+                        onChange={(e) => {
+                          const isChecked = e.target.checked;
+                          setSelectedEmployees((prev) =>
+                            isChecked
+                              ? [...prev, emp.employee_id]
+                              : prev.filter((id) => id !== emp.employee_id)
+                          );
+                        }}
+                      />{" "}
+                      {emp.employee_name}
+                    </label>
+                  ))}
               </div>
             )}
           </div>

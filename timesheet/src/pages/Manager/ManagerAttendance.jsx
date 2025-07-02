@@ -12,6 +12,8 @@ const ManagerAttendance = () => {
   const [employeeData, setEmployeeData] = useState([]);
   const [currentWeek, setCurrentWeek] = useState(new Date()); // Start with current week
   const [totalHours, setTotalHours] = useState({});
+  const [employeeSearch, setEmployeeSearch] = useState("");
+
   const navigate = useNavigate();
 
   // Get the start and end date of the week
@@ -137,6 +139,20 @@ const ManagerAttendance = () => {
           </h3>
           <button onClick={() => handleWeekChange(1)}> &gt;</button>
         </div>
+        <div style={{ margin: "10px 0", textAlign: "center" }}>
+          <input
+            type="text"
+            placeholder="Search employee by name..."
+            value={employeeSearch}
+            onChange={(e) => setEmployeeSearch(e.target.value)}
+            className="search-bar"
+            style={{
+              width: "300px",
+              fontSize: "14px",
+            }}
+          />
+        </div>
+
         <div>
           <button className="btn-save" onClick={() => handleAttendanceClick()}>
             Attendance Admin
@@ -167,100 +183,106 @@ const ManagerAttendance = () => {
             </tr>
           </thead>
           <tbody>
-            {employeeData.map((emp) => (
-              <tr key={emp.employee_id}>
-                <td>{emp.employee_name}</td>
-                {/* For each day of the week, check if attendance data exists */}
-                {weekDays.map((day) => {
-                  // Find the attendance record for this employee on this specific day
-                  const attendance = attendanceData.find(
-                    (a) =>
-                      a.employee === emp.employee_id && a.date === day.mapdate
-                  );
+            {employeeData
+              .filter((emp) =>
+                emp.employee_name
+                  .toLowerCase()
+                  .includes(employeeSearch.toLowerCase())
+              )
+              .map((emp) => (
+                <tr key={emp.employee_id}>
+                  <td>{emp.employee_name}</td>
+                  {/* For each day of the week, check if attendance data exists */}
+                  {weekDays.map((day) => {
+                    // Find the attendance record for this employee on this specific day
+                    const attendance = attendanceData.find(
+                      (a) =>
+                        a.employee === emp.employee_id && a.date === day.mapdate
+                    );
 
-                  return (
-                    // <td key={day.key}>
-                    //   {attendance ? `${attendance.work_duration} hrs` : "-"}
-                    // </td>
+                    return (
+                      // <td key={day.key}>
+                      //   {attendance ? `${attendance.work_duration} hrs` : "-"}
+                      // </td>
 
-                    // <td key={day.key} onClick={() => navigate("/manager/detail/team-leaders/approvalscreen")} style={{ cursor: "pointer" }}>
-                    //   {attendance ? (
-                    //     <div className="attendance-tile">
-                    //       <div>
-                    //         {attendance.in_time.slice(0, 5)} -{" "}
-                    //         {attendance.out_time.slice(0, 5)}
-                    //       </div>
-                    //       <div>
-                    //         <strong>Total:</strong> {attendance.total_duration}{" "}
-                    //         hrs
-                    //       </div>
+                      // <td key={day.key} onClick={() => navigate("/manager/detail/team-leaders/approvalscreen")} style={{ cursor: "pointer" }}>
+                      //   {attendance ? (
+                      //     <div className="attendance-tile">
+                      //       <div>
+                      //         {attendance.in_time.slice(0, 5)} -{" "}
+                      //         {attendance.out_time.slice(0, 5)}
+                      //       </div>
+                      //       <div>
+                      //         <strong>Total:</strong> {attendance.total_duration}{" "}
+                      //         hrs
+                      //       </div>
 
-                    <td
-                      key={day.key}
-                      onClick={() => {
-                        if (attendance) {
-                          navigate(
-                            `timesheetapproval/${emp.employee_id}/${day.mapdate}`
-                          );
-                        }
-                      }}
-                      style={{
-                        cursor: attendance ? "pointer" : "default",
-                      }}
-                    >
-                      {attendance ? (
-                        <div
-                          className={`attendance-tile ${(() => {
-                            if (
-                              !attendance.timesheets ||
-                              attendance.timesheets.length === 0
-                            )
+                      <td
+                        key={day.key}
+                        onClick={() => {
+                          if (attendance) {
+                            navigate(
+                              `timesheetapproval/${emp.employee_id}/${day.mapdate}`
+                            );
+                          }
+                        }}
+                        style={{
+                          cursor: attendance ? "pointer" : "default",
+                        }}
+                      >
+                        {attendance ? (
+                          <div
+                            className={`attendance-tile ${(() => {
+                              if (
+                                !attendance.timesheets ||
+                                attendance.timesheets.length === 0
+                              )
+                                return "";
+                              const ts = attendance.timesheets[0];
+                              if (ts.submitted && ts.approved && !ts.rejected)
+                                return "status-approved";
+                              if (ts.submitted && !ts.approved && ts.rejected)
+                                return "status-rejected";
+                              if (ts.submitted && !ts.approved && !ts.rejected)
+                                return "status-pending";
                               return "";
-                            const ts = attendance.timesheets[0];
-                            if (ts.submitted && ts.approved && !ts.rejected)
-                              return "status-approved";
-                            if (ts.submitted && !ts.approved && ts.rejected)
-                              return "status-rejected";
-                            if (ts.submitted && !ts.approved && !ts.rejected)
-                              return "status-pending";
-                            return "";
-                          })()}`}
-                        >
-                          <div>
+                            })()}`}
+                          >
                             <div>
-                              {attendance.in_time.slice(0, 5)} -{" "}
-                              {attendance.out_time?.slice(0, 5)}
+                              <div>
+                                {attendance.in_time.slice(0, 5)} -{" "}
+                                {attendance.out_time?.slice(0, 5)}
+                              </div>
+                              <div>
+                                <strong>Total:</strong>{" "}
+                                {attendance.total_duration} hrs
+                              </div>
                             </div>
-                            <div>
-                              <strong>Total:</strong>{" "}
-                              {attendance.total_duration} hrs
-                            </div>
+                            {attendance.modified_by && (
+                              <div>
+                                <img
+                                  src="\info.png"
+                                  alt="info button"
+                                  className="infoicon"
+                                />
+                              </div>
+                            )}
                           </div>
-                          {attendance.modified_by && (
-                            <div>
-                              <img
-                                src="\info.png"
-                                alt="info button"
-                                className="infoicon"
-                              />
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <div className="attendance-tile no-data">-</div>
-                      )}
-                    </td>
-                  );
-                })}
+                        ) : (
+                          <div className="attendance-tile no-data">-</div>
+                        )}
+                      </td>
+                    );
+                  })}
 
-                {/* Total Hours for that employee (from calculated object) */}
-                <td>
-                  {totalHours[emp.employee_id]
-                    ? `${totalHours[emp.employee_id].toFixed(2)} hrs`
-                    : "-"}
-                </td>
-              </tr>
-            ))}
+                  {/* Total Hours for that employee (from calculated object) */}
+                  <td>
+                    {totalHours[emp.employee_id]
+                      ? `${totalHours[emp.employee_id].toFixed(2)} hrs`
+                      : "-"}
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>
