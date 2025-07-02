@@ -111,9 +111,9 @@ const ManagerProjectView = () => {
               (b) => b.building_assign_id !== building.building_assign_id
             )
           );
-          showSuccessToast("Building removed!");
+          showSuccessToast("Sub-Division removed!");
         } else {
-          showErrorToast("Failed to delete building.");
+          showErrorToast("Failed to delete Sub-Division.");
         }
       } catch (err) {
         console.error("Error deleting building:", err);
@@ -341,7 +341,7 @@ const ManagerProjectView = () => {
       );
 
       if (!buildingRes.ok) {
-        showErrorToast("Failed to update building assignments");
+        showErrorToast("Failed to update Sub-Division assignments");
         return;
       }
     } catch (err) {
@@ -464,13 +464,13 @@ const ManagerProjectView = () => {
       const data = await res.json();
 
       if (res.ok) {
-        showSuccessToast("Building created successfully!");
+        showSuccessToast("Sub-Division created successfully!");
         setBuildingData({});
         setShowBuildingPopup(false);
         fetchProjectData(); // Refresh UI
       } else {
         console.error(data);
-        showErrorToast("Failed to create Building.");
+        showErrorToast("Failed to create Sub-Division.");
       }
     } catch (error) {
       console.error("Error:", error);

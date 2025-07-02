@@ -56,7 +56,7 @@ const ManagerBuildingView = () => {
 
       if (response.ok) {
         console.log("Building updated!");
-        showSuccessToast("Building Updated");
+        showSuccessToast("Sub-Division Updated");
         setEditMode(false);
         setSearchQuery("");
       } else {
@@ -98,7 +98,7 @@ const ManagerBuildingView = () => {
         });
         if (response.ok) {
           console.log("Building updated!");
-          showSuccessToast("Building Updated");
+          showSuccessToast("Sub-Division Updated");
           setEditMode(false);
           setSearchQuery("");
           // fetchProjectData(); // refresh

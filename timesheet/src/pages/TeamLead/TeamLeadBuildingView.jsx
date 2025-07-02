@@ -58,7 +58,7 @@ const TeamLeadBuildingView = () => {
 
       if (response.ok) {
         console.log("Building updated!");
-        showSuccessToast("Building Updated");
+        showSuccessToast("Sub-Division Updated");
         setEditMode(false);
         setSearchQuery("");
       } else {
@@ -100,7 +100,7 @@ const TeamLeadBuildingView = () => {
         });
         if (response.ok) {
           console.log("Building updated!");
-          showSuccessToast("Building Updated");
+          showSuccessToast("Sub-Division Updated");
           setEditMode(false);
           setSearchQuery("");
           // fetchProjectData(); // refresh
