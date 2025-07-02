@@ -1,3 +1,5 @@
+// src\pages\Manager\ManagerBuildingView.jsx
+
 import React, { useEffect, useState } from "react";
 import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
@@ -13,6 +15,7 @@ import {
   showWarningToast,
   ToastContainerComponent,
 } from "../../constants/Toastify";
+import confirm from "../../constants/ConfirmDialog";
 
 const ManagerBuildingView = () => {
   const { user } = useAuth();
@@ -35,6 +38,42 @@ const ManagerBuildingView = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     console.log("Form data", formData);
+  };
+
+  const handleRemoveTask = async (task) => {
+    // If the building has an assign ID, it exists in DB, so delete.
+    if (task.task_assign_id) {
+      // const confirmDelete = window.confirm(
+      //   `Are you sure you want to remove building "${building?.building?.building_title}"?`
+      // );
+      const confirmDelete = await confirm({
+        message: `Are you sure you want to remove Task "${task?.task_title}"?`,
+      });
+      if (!confirmDelete) return;
+
+      try {
+        const res = await fetch(
+          `${config.apiBaseURL}/tasks-assigned/${task?.task_assign_id}/`,
+          { method: "DELETE" }
+        );
+
+        if (res.ok) {
+          setTaskSelections((prev) =>
+            prev.filter((t) => t.task_assign_id !== task.task_assign_id)
+          );
+          showSuccessToast("Task removed!");
+        } else {
+          showErrorToast("Failed to delete Task.");
+        }
+      } catch (err) {
+        console.error("Error deleting building:", err);
+      }
+    } else {
+      // It's a new building not yet saved → just remove from state
+      setTaskSelections((prev) =>
+        prev.filter((t) => t.task_id !== task.task_id)
+      );
+    }
   };
 
   const handleUpdate = async () => {
@@ -299,7 +338,8 @@ const ManagerBuildingView = () => {
                     {taskSelections?.map((t) => (
                       <div key={t.task_id} className="task-tile">
                         <div
-                          onClick={() => taskClick(t.task_id)}
+                          // onClick={() => taskClick(t.task_id)}
+
                           className="building-tile-small"
                         >
                           {t.task_title}
@@ -307,6 +347,12 @@ const ManagerBuildingView = () => {
                         <div className="building-tile-small">
                           {t.task_hours} hours
                         </div>
+                        <button
+                          className="tag-button"
+                          onClick={() => handleRemoveTask(t)}
+                        >
+                          ×
+                        </button>
                       </div>
                     ))}
                     <button

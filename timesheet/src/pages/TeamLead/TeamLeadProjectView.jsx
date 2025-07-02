@@ -16,6 +16,7 @@ import {
   showWarningToast,
   ToastContainerComponent,
 } from "../../constants/Toastify";
+import confirm from "../../constants/ConfirmDialog";
 
 const TeamLeadProjectView = () => {
   const [teamleadManager, setTeamleadManager] = useState([]);
@@ -94,9 +95,12 @@ const TeamLeadProjectView = () => {
   const handleRemoveBuilding = async (building) => {
     // If the building has an assign ID, it exists in DB, so delete.
     if (building.building_assign_id) {
-      const confirmDelete = window.confirm(
-        `Are you sure you want to remove building "${building?.building?.building_title}"?`
-      );
+      // const confirmDelete = window.confirm(
+      //   `Are you sure you want to remove building "${building?.building?.building_title}"?`
+      // );
+       const confirmDelete = await confirm({
+              message: `Are you sure you want to remove building "${building?.building?.building_title}"?`,
+            });
       if (!confirmDelete) return;
 
       try {
@@ -153,8 +157,12 @@ const TeamLeadProjectView = () => {
   };
 
   const handleDeleteVariation = async (variationId) => {
-    if (!window.confirm("Are you sure you want to delete this variation?"))
-      return;
+     const confirmDelete = await confirm({
+          message: `Are you sure you want to delete this variation?`,
+        });
+        if (!confirmDelete) return;
+    // if (!window.confirm("Are you sure you want to delete this variation?"))
+    //   return;
 
     try {
       const response = await fetch(
