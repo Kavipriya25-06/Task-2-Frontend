@@ -25,6 +25,8 @@ const ManagerBuildingView = () => {
   const [teamleadManager, setTeamleadManager] = useState([]);
   const [availableTeamleadManager, setAvailableTeamleadManager] = useState([]);
   const [additionalResources, setAdditionalResources] = useState([]);
+  const [projectResources, setProjectResources] = useState([]);
+  const [projectAssign, setProjectAssign] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [buildingsAssign, setBuildingsAssign] = useState([]);
   const [tasks, setTasks] = useState([]);
@@ -137,7 +139,7 @@ const ManagerBuildingView = () => {
         });
         if (response.ok) {
           console.log("Building updated!");
-          showSuccessToast("Sub-Division Updated");
+          // showSuccessToast("Sub-Division Updated");
           setEditMode(false);
           setSearchQuery("");
           // fetchProjectData(); // refresh
@@ -158,6 +160,25 @@ const ManagerBuildingView = () => {
     fetchTasks();
     fetchBuildingsAssign();
   }, []);
+
+  useEffect(() => {
+    if (projectAssign) {
+      fetchProjectResources();
+    }
+  }, [projectAssign]);
+
+  const fetchProjectResources = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/projects-assigned-employee/${projectAssign}/`
+      );
+      const data = await response.json();
+      setProjectResources(data);
+      console.log("Project resources", data);
+    } catch (error) {
+      console.error("Error fetching employee data:", error);
+    }
+  };
 
   const fetchTeamleadManager = async () => {
     try {
@@ -210,6 +231,7 @@ const ManagerBuildingView = () => {
 
       console.log("Buildings", data);
       console.log("Projects", data.project_assign);
+      setProjectAssign(data.project_assign?.project_assign_id);
     } catch (error) {
       console.error("Error fetching Buildings:", error);
     }
@@ -431,7 +453,7 @@ const ManagerBuildingView = () => {
                       }}
                     />
                     <div>
-                      {teamleadManager
+                      {projectResources
                         .filter((employee) =>
                           employee.employee_name
                             .toLowerCase()
@@ -470,6 +492,7 @@ const ManagerBuildingView = () => {
                           </div>
                         ))}
                     </div>
+                    {/*  
                     <div>
                       <h4
                         style={{
@@ -518,6 +541,7 @@ const ManagerBuildingView = () => {
                           </div>
                         ))}
                     </div>
+                    */}
                   </div>
                 ) : (
                   <div className="select-container">
