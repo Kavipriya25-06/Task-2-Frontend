@@ -138,6 +138,13 @@ const HRAttendance = () => {
     setCurrentPage(1);
   }, [employeeSearch]);
 
+  const formatToHHMM = (decimalHours) => {
+    const hours = Math.floor(decimalHours);
+    const minutes = Math.round((decimalHours - hours) * 60);
+    const paddedMinutes = minutes.toString().padStart(2, "0");
+    return `${hours}:${paddedMinutes}`;
+  };
+
   return (
     <div className="attendance-container">
       <div className="hr-attendance-header">
@@ -200,7 +207,12 @@ const HRAttendance = () => {
                             {attendance.out_time?.slice(0, 5)}
                             <div>
                               <strong>Total:</strong>{" "}
-                              {attendance.total_duration} hrs
+                              {attendance.total_duration
+                                ? formatToHHMM(
+                                    parseFloat(attendance.total_duration)
+                                  )
+                                : "00:00"}{" "}
+                              hrs
                             </div>
                           </div>
                         </div>
@@ -211,10 +223,10 @@ const HRAttendance = () => {
                   );
                 })}
                 <td>
-                  {totalHours[emp.employee_id]
-                    ? `${totalHours[emp.employee_id].toFixed(2)} hrs`
-                    : "-"}
-                </td>
+                    {totalHours[emp.employee_id]
+                      ? `${formatToHHMM(totalHours[emp.employee_id])} hrs`
+                      : "-"}
+                  </td>
               </tr>
             ))}
           </tbody>
