@@ -8,6 +8,7 @@ import {
   showWarningToast,
   ToastContainerComponent,
 } from "../../constants/Toastify";
+import { format } from "date-fns";
 
 const ManagerApprovalScreen = () => {
   const { date, employee_id } = useParams();
@@ -274,6 +275,13 @@ const ManagerApprovalScreen = () => {
     }
   };
 
+  const formatToHHMM = (decimalHours) => {
+    const hours = Math.floor(decimalHours);
+    const minutes = Math.round((decimalHours - hours) * 60);
+    const paddedMinutes = minutes.toString().padStart(2, "0");
+    return `${hours}:${paddedMinutes}`;
+  };
+
   return (
     <div className="daily-timesheet-container">
       {/* <h3>Daily Timesheet Entry</h3> */}
@@ -291,8 +299,9 @@ const ManagerApprovalScreen = () => {
         <p>
           <strong>Date:</strong>
           <br />
-          {date}
+          {date ? format(new Date(date), "dd-MM-yyyy") : "-"}
         </p>
+
         <p>
           <strong>Intime:</strong>
           <br />
@@ -306,7 +315,10 @@ const ManagerApprovalScreen = () => {
         <p>
           <strong>Total logged hours: </strong>
           <br />
-          {attendanceDetails.total_duration || "0.00"} hrs
+          {attendanceDetails.total_duration
+            ? formatToHHMM(parseFloat(attendanceDetails.total_duration))
+            : "00:00"}{" "}
+          hrs{" "}
         </p>
         {/* {attendanceDetails.comp_off && (
           <div>
@@ -361,7 +373,12 @@ const ManagerApprovalScreen = () => {
                 <td>{row.task}</td>
                 <td>{row.start_time}</td>
                 <td>{row.end_time}</td>
-                <td>{row.hours}</td>
+                <td>
+                  {row.hours !== undefined && row.hours !== null
+                    ? formatToHHMM(parseFloat(row.hours))
+                    : "-"}{" "}
+                  hrs
+                </td>
               </tr>
             ))
           )}

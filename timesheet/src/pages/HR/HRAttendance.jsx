@@ -13,13 +13,20 @@ const HRAttendance = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [currentWeek, setCurrentWeek] = useState(new Date()); // Start with current week
   const [totalHours, setTotalHours] = useState({});
+  const [employeeSearch, setEmployeeSearch] = useState("");
+
   const rowsPerPage = 15;
+  const filteredEmployees = employeeData.filter((emp) =>
+    emp.employee_name.toLowerCase().includes(employeeSearch.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredEmployees.length / rowsPerPage);
+
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-  const currentRows = employeeData.slice(indexOfFirstRow, indexOfLastRow);
-  const totalPages = Math.ceil(employeeData.length / rowsPerPage);
+  const currentRows = filteredEmployees.slice(indexOfFirstRow, indexOfLastRow);
+
   const navigate = useNavigate();
-  const [employeeSearch, setEmployeeSearch] = useState("");
 
   // Get the start and end date of the week
   const getWeekDates = (date) => {
@@ -127,6 +134,17 @@ const HRAttendance = () => {
     fetchEmployee();
   }, [user]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [employeeSearch]);
+
+  const formatToHHMM = (decimalHours) => {
+    const hours = Math.floor(decimalHours);
+    const minutes = Math.round((decimalHours - hours) * 60);
+    const paddedMinutes = minutes.toString().padStart(2, "0");
+    return `${hours}:${paddedMinutes}`;
+  };
+
   return (
     <div className="attendance-container">
       <div className="hr-attendance-header">
@@ -148,7 +166,6 @@ const HRAttendance = () => {
             style={{
               width: "300px",
               fontSize: "14px",
-              
             }}
           />
         </div>
@@ -173,52 +190,45 @@ const HRAttendance = () => {
             </tr>
           </thead>
           <tbody>
-            {currentRows
-              .filter((emp) =>
-                emp.employee_name
-                  .toLowerCase()
-                  .includes(employeeSearch.toLowerCase())
-              )
-              .map((emp) => (
-                <tr key={emp.employee_id}>
-                  <td>{emp.employee_name}</td>
-                  {/* For each day of the week, check if attendance data exists */}
-                  {weekDays.map((day) => {
-                    // Find the attendance record for this employee on this specific day
-                    const attendance = attendanceData.find(
-                      (a) =>
-                        a.employee === emp.employee_id && a.date === day.mapdate
-                    );
-
-                    return (
-                      <td key={day.key}>
-                        {attendance ? (
-                          <div className="attendance-tile">
+            {currentRows.map((emp) => (
+              <tr key={emp.employee_id}>
+                <td>{emp.employee_name}</td>
+                {weekDays.map((day) => {
+                  const attendance = attendanceData.find(
+                    (a) =>
+                      a.employee === emp.employee_id && a.date === day.mapdate
+                  );
+                  return (
+                    <td key={day.key}>
+                      {attendance ? (
+                        <div className="attendance-tile">
+                          <div>
+                            {attendance.in_time.slice(0, 5)} -{" "}
+                            {attendance.out_time?.slice(0, 5)}
                             <div>
-                              <div>
-                                {attendance.in_time.slice(0, 5)} -{" "}
-                                {attendance.out_time?.slice(0, 5)}
-                              </div>
-                              <div>
-                                <strong>Total:</strong>{" "}
-                                {attendance.total_duration} hrs
-                              </div>
+                              <strong>Total:</strong>{" "}
+                              {attendance.total_duration
+                                ? formatToHHMM(
+                                    parseFloat(attendance.total_duration)
+                                  )
+                                : "00:00"}{" "}
+                              hrs
                             </div>
                           </div>
-                        ) : (
-                          <div className="attendance-tile no-data">-</div>
-                        )}
-                      </td>
-                    );
-                  })}
-
-                  <td>
+                        </div>
+                      ) : (
+                        <div className="attendance-tile no-data">-</div>
+                      )}
+                    </td>
+                  );
+                })}
+                <td>
                     {totalHours[emp.employee_id]
-                      ? `${totalHours[emp.employee_id].toFixed(2)} hrs`
+                      ? `${formatToHHMM(totalHours[emp.employee_id])} hrs`
                       : "-"}
                   </td>
-                </tr>
-              ))}
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

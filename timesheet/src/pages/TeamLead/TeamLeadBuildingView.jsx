@@ -390,7 +390,7 @@ const TeamLeadBuildingView = () => {
                     {buildingsAssign.tasks.map((t) => (
                       <div key={t.task_assign_id} className="task-tile">
                         <div
-                          onClick={() => taskClick(t.task_assign_id)}
+                          // onClick={() => taskClick(t.task_assign_id)}
                           className="building-tile-small"
                         >
                           {t.task.task_title}
@@ -602,7 +602,7 @@ const TeamLeadBuildingView = () => {
                           alignItems: "center",
                         }}
                       >
-                        <div className="date-input-container">
+                        {/* <div className="date-input-container">
                           <DatePicker
                             selected={
                               selected.start_date
@@ -622,7 +622,6 @@ const TeamLeadBuildingView = () => {
                             dropdownMode="select"
                           />
                           <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
-                          {/* Font Awesome Calendar Icon */}
                         </div>
                         <div className="date-input-container">
                           <DatePicker
@@ -644,8 +643,7 @@ const TeamLeadBuildingView = () => {
                             dropdownMode="select"
                           />
                           <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
-                          {/* Font Awesome Calendar Icon */}
-                        </div>
+                        </div> */}
                       </div>
                     </>
                   )}

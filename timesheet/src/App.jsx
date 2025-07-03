@@ -127,9 +127,9 @@ import EmployeeTimeSheetEntry from "./pages/Employee/EmployeeTimeSheetEntry.jsx"
 import EmployeeTaskDetail from "./pages/Employee/EmployeeTaskDetail.jsx";
 import EmployeeDailyTimeSheetEntry from "./pages/Employee/EmployeeDailyTimeSheetEntry.jsx";
 import EmployeeWeeklyTimeSheetEntry from "./pages/Employee/EmployeeWeeklyTimeSheetEntry.jsx";
-import EmployeeLeaveRequestForm from "./pages/Employee/EmployeeLeaveRequestForm.jsx";
-
+import EmployeeLeaveRequestForm from "./pages/Employee/EmployeeLeaveRequestForm.jsx"
 import EmployeeCompoffRequest from "./pages/Employee/EmployeeCompoffRequest.jsx";
+import EmployeeAttendance from "./pages/Employee/EmployeeAttendance.jsx"
 
 const App = () => {
   const { user } = useAuth();
@@ -649,6 +649,10 @@ const App = () => {
                 <Route
                   path="compoffrequest"
                   element={<EmployeeCompoffRequest />}
+                />
+                 <Route
+                  path="attendance"
+                  element={<EmployeeAttendance />}
                 />
                 <Route path="*" element={<Navigate to="/404" replace />} />
               </Route>

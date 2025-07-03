@@ -5646,3 +5646,29 @@ table {
   font-size: 24px; /* or try 20px, 24px as per your UI */
   line-height: 1;
 }
+
+.project-footer {
+  position: relative;
+  height: 60px; /* Or enough space for the button */
+}
+
+.delete-project-button {
+  position: absolute;
+  bottom: -30px;
+  right: 10px;
+  padding: 8px 16px;
+  font-size: 15px;
+  border: none;
+  background-color: gray;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.delete-project-button i {
+  margin-right: 6px;
+}
+
+.delete-project-button:hover{
+  background-color: #ccc;
+}
