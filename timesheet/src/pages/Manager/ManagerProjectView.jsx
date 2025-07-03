@@ -614,6 +614,38 @@ const ManagerProjectView = () => {
     }));
   };
 
+  const handleDeleteProject = async () => {
+    const confirmDelete = await confirm({
+      message: `Are you sure you want to delete this project?`,
+    });
+    if (!confirmDelete) return;
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/projects/${project_id}/`, //  Match fetch URL
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        showSuccessToast("Project deleted successfully.");
+        setTimeout(() => {
+          navigate("/manager/detail/projects");
+        }, 2000);
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to delete:", errorData);
+        showErrorToast("Failed to delete the project.");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      showWarningToast("Something went wrong while deleting the project.");
+    }
+  };
+
   if (!projectData) return <p>Loading...</p>;
 
   return (
@@ -1249,6 +1281,21 @@ const ManagerProjectView = () => {
             </div>
           </div>
         </div>
+        <div className="project-footer">
+          {!editMode ? (
+            <button
+              type="button"
+              onClick={handleDeleteProject}
+              className="btn-red delete-project-button"
+              title="Delete Project"
+            >
+              <i className="fas fa-trash-alt" /> Delete
+            </button>
+          ) : (
+            <div></div>
+          )}
+        </div>
+
         <div className="form-buttons">
           {editMode && (
             <>
