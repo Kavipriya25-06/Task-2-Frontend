@@ -7,6 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 import { toast, ToastContainer } from "react-toastify";
+import nextCode from "../../constants/nextCode";
 import "react-toastify/dist/ReactToastify.css";
 import { useAttachmentManager } from "../../constants/useAttachmentManager";
 import {
@@ -89,14 +90,26 @@ const ManagerProjectCreate = () => {
         employee: selectedTeamleadManager,
         status: "pending",
       },
-      buildings: selectedBuildings.map((b) => ({
-        building_title: b.building_title,
-        building_description: b.building_description,
-        building_code: b.building_code,
-        employee: [],
-        building_hours: b.building_hours,
-        // status: "pending",
-      })),
+      buildings:
+        selectedBuildings.length > 0
+          ? selectedBuildings.map((b) => ({
+              building_title: b.building_title,
+              building_description: b.building_description,
+              building_code: b.building_code,
+              employee: [],
+              building_hours: b.building_hours,
+              // status: "pending",
+            }))
+          : [
+              {
+                building_title: "-",
+                building_description: "-",
+                building_code: "-",
+                employee: [],
+                building_hours: formData.estimated_hours,
+                // status: "pending",
+              },
+            ],
     };
     console.log("Final payload to send:", payload);
 
@@ -141,6 +154,7 @@ const ManagerProjectCreate = () => {
 
       if (response.ok) {
         showSuccessToast("Project Created Successfully");
+
         navigate("/manager/detail/projects/");
       } else {
         showErrorToast("Failed to Create project " + data.error);
@@ -158,6 +172,9 @@ const ManagerProjectCreate = () => {
 
   const handleBuildingSubmit = (e) => {
     e.preventDefault();
+
+    const result = nextCode(selectedBuildings.at(-1)?.building_code);
+    console.log("Generated next building code", result);
 
     if (
       !buildingData.building_code ||
@@ -177,6 +194,7 @@ const ManagerProjectCreate = () => {
   const handleBuildingCancel = () => {
     setShowBuildingPopup(false);
     setBuildingData({});
+    generateBuildingCode();
   };
 
   useEffect(() => {
@@ -211,6 +229,12 @@ const ManagerProjectCreate = () => {
 
   useEffect(() => {
     if (!formData.start_date || !lastProjectCode) return;
+    if (
+      formData.discipline_code === null ||
+      formData.discipline_code === undefined ||
+      formData.discipline_code === ""
+    )
+      return;
     // if (!formData.discipline_code || !formData.start_date || !lastProjectCode)
     // return;
 
@@ -240,6 +264,26 @@ const ManagerProjectCreate = () => {
 
     generateProjectCode();
   }, [formData.discipline_code, lastProjectCode, formData.start_date]);
+
+  useEffect(() => {
+    generateBuildingCode();
+  }, [selectedBuildings]);
+
+  const generateBuildingCode = () => {
+    let code = selectedBuildings.at(-1)?.building_code;
+    let buildingCode = "";
+    if (code) {
+      buildingCode = code.trim().slice(-1);
+    }
+
+    let buildingLetter = buildingCode?.toUpperCase();
+    const result = nextCode(buildingLetter);
+
+    setBuildingData((prev) => ({
+      ...prev,
+      building_code: result,
+    }));
+  };
 
   const fetchTeamleadManager = async () => {
     try {
@@ -622,6 +666,7 @@ const ManagerProjectCreate = () => {
                       value={buildingData.building_code || ""}
                       onChange={handleBuildingChange}
                       className="bottom-inputs"
+                      readOnly
                     />
                   </div>
                   <div>

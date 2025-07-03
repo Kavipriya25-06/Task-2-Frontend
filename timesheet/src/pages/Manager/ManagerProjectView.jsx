@@ -5,6 +5,7 @@ import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate, useParams } from "react-router-dom";
+import nextCode from "../../constants/nextCode";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
@@ -488,6 +489,7 @@ const ManagerProjectView = () => {
   const handleBuildingCancel = () => {
     setShowBuildingPopup(false);
     setBuildingData({});
+    generateBuildingCode();
   };
 
   useEffect(() => {
@@ -599,6 +601,26 @@ const ManagerProjectView = () => {
     } catch (error) {
       console.error("Failed to fetch project:", error);
     }
+  };
+
+  useEffect(() => {
+    generateBuildingCode();
+  }, [availableBuildings]);
+
+  const generateBuildingCode = () => {
+    let code = availableBuildings?.at(-1)?.building?.building_code;
+    let buildingCode = "";
+    if (code) {
+      buildingCode = code.trim().slice(-1);
+    }
+
+    let buildingLetter = buildingCode?.toUpperCase();
+    const result = nextCode(buildingLetter);
+
+    setBuildingData((prev) => ({
+      ...prev,
+      building_code: result,
+    }));
   };
 
   // const handleRemoveBuilding = (indexToRemove) => {
@@ -1270,7 +1292,7 @@ const ManagerProjectView = () => {
           )}
         </div>
         {showBuildingPopup && (
-          <div className="popup" ref={buildingPopupRef}>
+          <div className="building-popup" ref={buildingPopupRef}>
             <div className="create-building-container">
               <h2>Create Sub-Division</h2>
               <form onSubmit={handleBuildingSubmit}>
@@ -1284,6 +1306,7 @@ const ManagerProjectView = () => {
                         value={buildingData.building_code || ""}
                         onChange={handleBuildingChange}
                         className="bottom-inputs"
+                        readOnly
                       />
                     </div>
                     <div>
@@ -1313,10 +1336,11 @@ const ManagerProjectView = () => {
                       <label>Sub-Division Hours</label>
                       <br />
                       <input
+                        type="number"
                         name="building_hours"
                         value={buildingData.building_hours || ""}
                         onChange={handleBuildingChange}
-                        className="bottom-inputs"
+                        className="sub-division-hours"
                       />
                     </div>
                   </div>
