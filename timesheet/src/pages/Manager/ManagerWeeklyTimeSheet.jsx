@@ -478,8 +478,8 @@ const ManagerWeeklyTimeSheetEntry = () => {
             <th>Project name</th>
             <th>Sub-Divisions</th>
             <th>Tasks</th>
-            <th>Start Time</th>
-            <th>End Time</th>
+            {/* <th>Start Time</th>
+            <th>End Time</th> */}
             <th>Hours</th>
           </tr>
         </thead>
@@ -497,12 +497,12 @@ const ManagerWeeklyTimeSheetEntry = () => {
               <td>
                 <span>{row.task}</span>
               </td>
-              <td>
+              {/* <td>
                 <span>{row.start_time?.slice(0, 5)}</span>
               </td>
               <td>
                 <span>{row.end_time?.slice(0, 5)}</span>
-              </td>
+              </td> */}
               <td>
                 <span>{`${formatToHoursMinutes(row.hours)} hrs`}</span>
               </td>

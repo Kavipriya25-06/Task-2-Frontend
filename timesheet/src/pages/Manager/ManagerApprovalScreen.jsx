@@ -31,112 +31,88 @@ const ManagerApprovalScreen = () => {
   });
 
   useEffect(() => {
-    const fetchBiometricTaskData = async () => {
-      try {
-        const response = await fetch(
-          `${config.apiBaseURL}/biometric-daily-task/${employee_id}/?today=${date}`
-        );
-        const data = await response.json();
-        console.log("Biometric task data:", data);
+    fetchBiometricTaskData();
+  }, [employee_id, date]);
 
-        if (data && data.length > 0) {
-          // Step 1: Find latest biometric record for the day
-          let latestRecord = data[0];
-          data.forEach((record) => {
-            if (
-              new Date(record.modified_on) > new Date(latestRecord.modified_on)
-            ) {
-              latestRecord = record;
-            }
-          });
+  const fetchBiometricTaskData = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/biometric-daily-task/${employee_id}/?today=${date}`
+      );
+      const data = await response.json();
+      console.log("Biometric task data:", data);
 
-          // Step 2: Set attendance details from the latest record
-          setAttendanceDetails({
-            in_time: latestRecord.in_time || "--:--",
-            out_time: latestRecord.out_time || "--:--",
-            total_duration: latestRecord.total_duration || "0.00",
-            comp_off:
-              latestRecord.calendar?.is_weekend ||
-              latestRecord.calendar?.is_holiday
-                ? true
-                : false,
-            leave_deduction: latestRecord.leave_deduction || 0,
-            employee_code: latestRecord.employee_code || "",
-            employee_name: latestRecord.employee_name || "",
-            employee_id: latestRecord.employee || "",
-          });
-
-          // Step 3: Prepare rows from timesheets
-          let timesheetRows = [];
+      if (data && data.length > 0) {
+        // Step 1: Find latest biometric record for the day
+        let latestRecord = data[0];
+        data.forEach((record) => {
           if (
-            latestRecord.timesheets &&
-            latestRecord.timesheets.length > 0 &&
-            latestRecord.timesheets[0].submitted === true
+            new Date(record.modified_on) > new Date(latestRecord.modified_on)
           ) {
-            latestRecord.timesheets.forEach((entry) => {
-              const project =
-                entry.task_assign?.building_assign?.project_assign?.project
-                  ?.project_title || "";
-
-              const building =
-                entry.task_assign?.building_assign?.building?.building_title ||
-                "";
-
-              const task = entry.task_assign?.task?.task_title || "";
-
-              const start_time = entry.start_time || "0";
-              const end_time = entry.end_time || "0";
-
-              const hours = parseFloat(entry.task_hours || "0");
-
-              timesheetRows.push({
-                timesheet_id: entry.timesheet_id,
-                project,
-                building,
-                task,
-                start_time: start_time.toString(),
-                end_time: end_time.toString(),
-                hours: hours.toString(),
-              });
-            });
-
-            // If at least one timesheet, set status from the first one
-            setStatus({
-              approved: latestRecord.timesheets[0].approved,
-              rejected: latestRecord.timesheets[0].rejected,
-            });
-          } else {
-            // No timesheets found
-            timesheetRows = [
-              // {
-              //   project: "",
-              //   building: "",
-              //   task: "",
-              //   start_time: "",
-              //   end_time: "",
-              //   hours: "",
-              // },
-            ];
-            setStatus({
-              approved: false,
-              rejected: false,
-            });
+            latestRecord = record;
           }
+        });
 
-          setRows(timesheetRows);
-        } else {
-          // No data found
-          setAttendanceDetails({
-            in_time: "--:--",
-            out_time: "--:--",
-            total_duration: "0.00",
-            comp_off: false,
-            leave_deduction: 0,
-            employee_code: "",
-            employee_name: "",
-            employee_id: "",
+        // Step 2: Set attendance details from the latest record
+        setAttendanceDetails({
+          in_time: latestRecord.in_time || "--:--",
+          out_time: latestRecord.out_time || "--:--",
+          total_duration: latestRecord.total_duration || "0.00",
+          comp_off:
+            latestRecord.calendar?.is_weekend ||
+            latestRecord.calendar?.is_holiday
+              ? true
+              : false,
+          leave_deduction: latestRecord.leave_deduction || 0,
+          employee_code: latestRecord.employee_code || "",
+          employee_name: latestRecord.employee_name || "",
+          employee_id: latestRecord.employee || "",
+        });
+
+        // Step 3: Prepare rows from timesheets
+        let timesheetRows = [];
+        if (
+          latestRecord.timesheets &&
+          latestRecord.timesheets.length > 0 &&
+          latestRecord.timesheets[0].submitted === true
+        ) {
+          latestRecord.timesheets.forEach((entry) => {
+            const project =
+              entry.task_assign?.building_assign?.project_assign?.project
+                ?.project_title || "";
+
+            const building =
+              entry.task_assign?.building_assign?.building?.building_title ||
+              "";
+
+            const task = entry.task_assign?.task?.task_title || "";
+
+            const start_time = entry.start_time || "0";
+            const end_time = entry.end_time || "0";
+
+            const hours = parseFloat(entry.task_hours || "0");
+
+            timesheetRows.push({
+              timesheet_id: entry.timesheet_id,
+              project,
+              building,
+              task,
+              start_time: start_time.toString(),
+              end_time: end_time.toString(),
+              hours: hours.toString(),
+              approved: entry.approved,
+              rejected: entry.rejected,
+            });
           });
-          setRows([
+
+          // If at least one timesheet, set status from the first one
+          setStatus({
+            approved: latestRecord.timesheets[0].approved,
+            rejected: latestRecord.timesheets[0].rejected,
+          });
+        } else {
+          // No timesheets found
+          timesheetRows = [
             // {
             //   project: "",
             //   building: "",
@@ -145,14 +121,16 @@ const ManagerApprovalScreen = () => {
             //   end_time: "",
             //   hours: "",
             // },
-          ]);
+          ];
           setStatus({
             approved: false,
             rejected: false,
           });
         }
-      } catch (err) {
-        console.error("Error fetching biometric task data", err);
+
+        setRows(timesheetRows);
+      } else {
+        // No data found
         setAttendanceDetails({
           in_time: "--:--",
           out_time: "--:--",
@@ -178,10 +156,34 @@ const ManagerApprovalScreen = () => {
           rejected: false,
         });
       }
-    };
-
-    fetchBiometricTaskData();
-  }, [employee_id, date]);
+    } catch (err) {
+      console.error("Error fetching biometric task data", err);
+      setAttendanceDetails({
+        in_time: "--:--",
+        out_time: "--:--",
+        total_duration: "0.00",
+        comp_off: false,
+        leave_deduction: 0,
+        employee_code: "",
+        employee_name: "",
+        employee_id: "",
+      });
+      setRows([
+        // {
+        //   project: "",
+        //   building: "",
+        //   task: "",
+        //   start_time: "",
+        //   end_time: "",
+        //   hours: "",
+        // },
+      ]);
+      setStatus({
+        approved: false,
+        rejected: false,
+      });
+    }
+  };
 
   const handleRowChange = (index, field, value) => {
     const updatedRows = [...rows];
@@ -235,8 +237,10 @@ const ManagerApprovalScreen = () => {
       });
       if (newApproved) {
         showSuccessToast("Timesheet Approved Successfully");
+        fetchBiometricTaskData();
       } else {
         showSuccessToast("Approval Removed");
+        fetchBiometricTaskData();
       }
     } catch (err) {
       console.error("Error toggling approve", err);
@@ -267,8 +271,10 @@ const ManagerApprovalScreen = () => {
       });
       if (newRejected) {
         showSuccessToast("Timesheet Rejected Successfully");
+        fetchBiometricTaskData();
       } else {
         showSuccessToast("Rejection Removed");
+        fetchBiometricTaskData();
       }
     } catch (err) {
       console.error("Error toggling reject", err);
@@ -353,9 +359,10 @@ const ManagerApprovalScreen = () => {
             <th>Project name</th>
             <th>Sub-Division</th>
             <th>Tasks</th>
-            <th>Start Time</th>
-            <th>End Time</th>
+            {/* <th>Start Time</th>
+            <th>End Time</th> */}
             <th>Hours</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
@@ -366,21 +373,41 @@ const ManagerApprovalScreen = () => {
               </td>
             </tr>
           ) : (
-            rows.map((row, index) => (
-              <tr key={index}>
-                <td>{row.project}</td>
-                <td>{row.building}</td>
-                <td>{row.task}</td>
-                <td>{row.start_time}</td>
-                <td>{row.end_time}</td>
-                <td>
-                  {row.hours !== undefined && row.hours !== null
-                    ? formatToHHMM(parseFloat(row.hours))
-                    : "-"}{" "}
-                  hrs
-                </td>
-              </tr>
-            ))
+            rows.map((row, index) => {
+              const statusText = row.approved
+                ? "Approved"
+                : row.rejected
+                ? "Rejected"
+                : "Pending";
+
+              return (
+                <tr key={index}>
+                  <td>{row.project}</td>
+                  <td>{row.building}</td>
+                  <td>{row.task}</td>
+                  {/* <td>{row.start_time}</td>
+                <td>{row.end_time}</td> */}
+                  <td>
+                    {row.hours !== undefined && row.hours !== null
+                      ? formatToHHMM(parseFloat(row.hours))
+                      : "-"}{" "}
+                    hrs
+                  </td>
+                  <td
+                    style={{
+                      color: row.approved
+                        ? "green"
+                        : row.rejected
+                        ? "red"
+                        : "orange",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {statusText}
+                  </td>
+                </tr>
+              );
+            })
           )}
         </tbody>
       </table>

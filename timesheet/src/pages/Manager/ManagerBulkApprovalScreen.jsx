@@ -226,8 +226,8 @@ const ManagerBulkApprovalScreen = () => {
             <th>Project</th>
             <th>Sub-Division</th>
             <th>Task</th>
-            <th>Start Time</th>
-            <th>End Time</th>
+            {/* <th>Start Time</th>
+            <th>End Time</th> */}
             <th>Hours</th>
             <th>Status</th>
           </tr>
@@ -318,8 +318,8 @@ const ManagerBulkApprovalScreen = () => {
                           <td>{row.project}</td>
                           <td>{row.building}</td>
                           <td>{row.task}</td>
-                          <td>{row.start_time}</td>
-                          <td>{row.end_time}</td>
+                          {/* <td>{row.start_time}</td>
+                          <td>{row.end_time}</td> */}
                           <td>{`${formatToHoursMinutes(
                             parseFloat(row.hours)
                           )} hrs`}</td>
