@@ -10,7 +10,7 @@ import {
   ToastContainerComponent,
 } from "../../constants/Toastify";
 
-const ManagerBulkApprovalScreen = () => {
+const TeamLeadBulkApprovalScreen = () => {
   const { date, employee_id } = useParams();
   const { user } = useAuth();
   const [rows, setRows] = useState([]);
@@ -372,4 +372,4 @@ const ManagerBulkApprovalScreen = () => {
   );
 };
 
-export default ManagerBulkApprovalScreen;
+export default TeamLeadBulkApprovalScreen;

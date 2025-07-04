@@ -118,6 +118,9 @@ const ManagerTimeSheetEntry = () => {
           <div
             className="week-number"
             onClick={() => navigate(`createweekly/${monday}`)}
+            style={{
+              cursor: "pointer",
+            }}
           >
             W-{weekNumber}
           </div>
@@ -183,7 +186,11 @@ const ManagerTimeSheetEntry = () => {
                           onClick={() => navigate(`createdaily/${dateStr}`)}
                           style={{ cursor: "pointer" }}
                         >
-                          {latestRecord?.total_duration || ""}
+                          {latestRecord?.total_duration
+                            ? formatToHoursMinutes(
+                                parseFloat(latestRecord?.total_duration)
+                              )
+                            : ""}
                         </div>
                         <div
                           className={`bottom-right-circle ${circleClass}`}
@@ -206,6 +213,14 @@ const ManagerTimeSheetEntry = () => {
       );
     }
     return rows;
+  };
+
+  const formatToHoursMinutes = (decimalHours) => {
+    const hours = Math.floor(decimalHours);
+    const minutes = Math.round((decimalHours - hours) * 60);
+    const paddedHours = hours.toString().padStart(2, "0");
+    const paddedMinutes = minutes.toString().padStart(2, "0");
+    return `${paddedHours}:${paddedMinutes}`;
   };
 
   return (

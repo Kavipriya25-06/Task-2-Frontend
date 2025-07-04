@@ -132,12 +132,12 @@ const EmployeeAttendance = () => {
               {weekDays.map((day) => (
                 <th
                   key={day.key}
-                  onClick={() => {
-                    navigate(`timesheetapproval/${day.mapdate}/`);
-                  }}
+                  // onClick={() => {
+                  //   navigate(`timesheetapproval/${day.mapdate}/`);
+                  // }}
                   style={{
                     color: day.weekday === "Sun" ? "orange" : "inherit",
-                    cursor: "pointer",
+                    // cursor: "pointer",
                   }}
                 >
                   {day.weekday} ({day.date})
@@ -186,7 +186,8 @@ const EmployeeAttendance = () => {
                               ? formatToHHMM(
                                   parseFloat(attendance.total_duration)
                                 )
-                              : "00:00"} hrs
+                              : "00:00"}{" "}
+                            hrs
                           </div>
                         </div>
                       </div>

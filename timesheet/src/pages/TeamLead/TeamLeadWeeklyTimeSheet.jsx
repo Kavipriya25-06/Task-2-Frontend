@@ -454,13 +454,21 @@ const TeamLeadWeeklyTimeSheetEntry = () => {
   //   setRows([...rows, { project: "", building: "", task: "", hours: "" }]);
   // };
 
+  const formatToHoursMinutes = (decimalHours) => {
+    const hours = Math.floor(decimalHours);
+    const minutes = Math.round((decimalHours - hours) * 60);
+    const paddedHours = hours.toString().padStart(2, "0");
+    const paddedMinutes = minutes.toString().padStart(2, "0");
+    return `${paddedHours}:${paddedMinutes}`;
+  };
+
   return (
     <div className="weekly-timesheet-container">
       <h3>Weekly Timesheet</h3>
       <div className="timesheet-info">
         <p>Start Date: {startOfWeek}</p>
         <p>End Date: {endOfWeek}</p>
-        <p>Total logged hours: {totalLoggedHours.toFixed(2)}</p>
+        <p>Total logged hours: {formatToHoursMinutes(totalLoggedHours)} hrs</p>
       </div>
 
       <table className="timesheet-table">
@@ -496,7 +504,7 @@ const TeamLeadWeeklyTimeSheetEntry = () => {
                 <span>{row.end_time?.slice(0, 5)}</span>
               </td>
               <td>
-                <span>{row.hours}</span>
+                <span>{`${formatToHoursMinutes(row.hours)} hrs`}</span>
               </td>
             </tr>
           ))}

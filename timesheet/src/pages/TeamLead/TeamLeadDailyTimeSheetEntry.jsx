@@ -222,7 +222,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
 
         const decimalHours = diffSeconds / 3600;
         updated[index].hours = decimalHours.toFixed(2);
-        updated[index].formattedHours = formatHoursMinutes(decimalHours);
+        updated[index].formattedHours = formatToHoursMinutes(decimalHours);
       }
     }
 
@@ -283,7 +283,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
         if (diffSeconds < 0) diffSeconds = 0;
         const decimalHours = diffSeconds / 3600;
         updated[index].hours = decimalHours.toFixed(2);
-        updated[index].formattedHours = formatHoursMinutes(decimalHours);
+        updated[index].formattedHours = formatToHoursMinutes(decimalHours);
       }
     }
 
@@ -441,7 +441,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
 
       setNewRows([]);
       // if (newRows.length === 0) {
-      //   showWarningToast("Please enter some fieldsds before saving.");
+      //   showWarningToast("Please enter some fields before saving.");
       //   return;
       // }
       showSuccessToast("All timesheet rows submitted successfully!");
@@ -706,7 +706,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
             ? formatToHoursMinutes(parseFloat(attendanceDetails.total_duration))
             : "-"}{" "}
           hrs
-        </p>{" "}
+        </p>
       </div>
 
       {/* Timesheet Entry Table */}
@@ -787,7 +787,9 @@ const TeamLeadDailyTimeSheetEntry = () => {
                     <input
                       type="text"
                       readOnly
-                      value={`${formatToHoursMinutes(row.hours)} hrs`}
+                      value={`${formatToHoursMinutes(
+                        parseFloat(row.hours)
+                      )} hrs`}
                       style={{ backgroundColor: "#f9f9f9", border: "none" }}
                     />
                   ) : (
@@ -848,6 +850,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
                     ))}
                   </select>
                 </td>
+
                 <td>
                   <select
                     value={row.building}
@@ -917,8 +920,10 @@ const TeamLeadDailyTimeSheetEntry = () => {
                     <input
                       type="text"
                       readOnly
-                      value={`${formatToHoursMinutes(row.hours)} hrs`}
-                      style={{ width: `${row.formattedHours.length + 0.4}ch` }}
+                      value={`${formatToHoursMinutes(
+                        parseFloat(row.hours)
+                      )} hrs`}
+                      style={{ backgroundColor: "#f9f9f9", border: "none" }}
                     />
                   ) : (
                     <input

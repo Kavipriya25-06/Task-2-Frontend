@@ -223,7 +223,7 @@ const EmployeeDailyTimeSheetEntry = () => {
 
         const decimalHours = diffSeconds / 3600;
         updated[index].hours = decimalHours.toFixed(2);
-        updated[index].formattedHours = formatHoursMinutes(decimalHours);
+        updated[index].formattedHours = formatToHoursMinutes(decimalHours);
       }
     }
 
@@ -284,7 +284,7 @@ const EmployeeDailyTimeSheetEntry = () => {
         if (diffSeconds < 0) diffSeconds = 0;
         const decimalHours = diffSeconds / 3600;
         updated[index].hours = decimalHours.toFixed(2);
-        updated[index].formattedHours = formatHoursMinutes(decimalHours);
+        updated[index].formattedHours = formatToHoursMinutes(decimalHours);
       }
     }
 
@@ -709,8 +709,9 @@ const EmployeeDailyTimeSheetEntry = () => {
           Total logged hours:{" "}
           {attendanceDetails.total_duration
             ? formatToHoursMinutes(parseFloat(attendanceDetails.total_duration))
-            : "-"} hrs
-        </p>{" "}
+            : "-"}{" "}
+          hrs
+        </p>
       </div>
 
       {/* Timesheet Entry Table */}
@@ -791,7 +792,9 @@ const EmployeeDailyTimeSheetEntry = () => {
                     <input
                       type="text"
                       readOnly
-                      value={formatToHoursMinutes(row.hours)}
+                      value={`${formatToHoursMinutes(
+                        parseFloat(row.hours)
+                      )} hrs`}
                       style={{ backgroundColor: "#f9f9f9", border: "none" }}
                     />
                   ) : (
@@ -922,8 +925,10 @@ const EmployeeDailyTimeSheetEntry = () => {
                     <input
                       type="text"
                       readOnly
-                      value={formatToHoursMinutes(row.hours)}
-                      style={{ width: `${row.formattedHours.length + 0.4}ch` }}
+                      value={`${formatToHoursMinutes(
+                        parseFloat(row.hours)
+                      )} hrs`}
+                      style={{ backgroundColor: "#f9f9f9", border: "none" }}
                     />
                   ) : (
                     <input

@@ -12,8 +12,9 @@ const TeamLeadAttendance = () => {
   const [employeeData, setEmployeeData] = useState([]);
   const [currentWeek, setCurrentWeek] = useState(new Date()); // Start with current week
   const [totalHours, setTotalHours] = useState({});
-  const navigate = useNavigate();
   const [employeeSearch, setEmployeeSearch] = useState("");
+
+  const navigate = useNavigate();
 
   // Get the start and end date of the week
   const getWeekDates = (date) => {
@@ -164,8 +165,12 @@ const TeamLeadAttendance = () => {
               {weekDays.map((day) => (
                 <th
                   key={day.key}
+                  onClick={() => {
+                    navigate(`timesheetapproval/${day.mapdate}/`);
+                  }}
                   style={{
                     color: day.weekday === "Sun" ? "orange" : "inherit",
+                    cursor: "pointer",
                   }}
                 >
                   {day.weekday} ({day.date})
@@ -184,7 +189,6 @@ const TeamLeadAttendance = () => {
               .map((emp) => (
                 <tr key={emp.employee_id}>
                   <td>{emp.employee_name}</td>
-
                   {/* For each day of the week, check if attendance data exists */}
                   {weekDays.map((day) => {
                     // Find the attendance record for this employee on this specific day
@@ -259,9 +263,6 @@ const TeamLeadAttendance = () => {
                       </td>
                     );
                   })}
-
-                  {/* );
-                                      })} */}
 
                   {/* Total Hours for that employee (from calculated object) */}
                   <td>
