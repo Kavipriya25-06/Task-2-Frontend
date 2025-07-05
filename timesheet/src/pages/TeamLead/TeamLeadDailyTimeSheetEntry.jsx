@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import config from "../../config";
 import { useAuth } from "../../AuthContext";
+import { FaEdit } from "react-icons/fa";
+import EditableTimeField from "../../constants/EditableTimeField";
 
 import {
   showSuccessToast,
@@ -109,6 +111,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
             building:
               ts.task_assign?.building_assign?.building?.building_title || "",
             task: ts.task_assign?.task?.task_title || "",
+            task_assign_id: ts.task_assign?.task_assign_id || "",
             hours: parseFloat(ts.task_hours || "0").toString(),
             start_time: ts.start_time || "",
             end_time: ts.end_time || "",
@@ -206,25 +209,25 @@ const TeamLeadDailyTimeSheetEntry = () => {
     updated[index][field] = value;
 
     // Auto-calculate hours if start_time or end_time changes
-    if (field === "start_time" || field === "end_time") {
-      const start = updated[index].start_time;
-      const end = updated[index].end_time;
+    // if (field === "start_time" || field === "end_time") {
+    //   const start = updated[index].start_time;
+    //   const end = updated[index].end_time;
 
-      if (start && end) {
-        const parseTime = (timeStr) => {
-          const [hours = 0, minutes = 0] = timeStr.split(":").map(Number);
-          return hours * 3600 + minutes * 60;
-        };
-        const startSeconds = parseTime(start);
-        const endSeconds = parseTime(end);
-        let diffSeconds = endSeconds - startSeconds;
-        if (diffSeconds < 0) diffSeconds = 0;
+    //   if (start && end) {
+    //     const parseTime = (timeStr) => {
+    //       const [hours = 0, minutes = 0] = timeStr.split(":").map(Number);
+    //       return hours * 3600 + minutes * 60;
+    //     };
+    //     const startSeconds = parseTime(start);
+    //     const endSeconds = parseTime(end);
+    //     let diffSeconds = endSeconds - startSeconds;
+    //     if (diffSeconds < 0) diffSeconds = 0;
 
-        const decimalHours = diffSeconds / 3600;
-        updated[index].hours = decimalHours.toFixed(2);
-        updated[index].formattedHours = formatToHoursMinutes(decimalHours);
-      }
-    }
+    //     const decimalHours = diffSeconds / 3600;
+    //     updated[index].hours = decimalHours.toFixed(2);
+    //     updated[index].formattedHours = formatToHoursMinutes(decimalHours);
+    //   }
+    // }
 
     setDisplayRows(updated);
     // console.log("display rows", updated);
@@ -268,24 +271,24 @@ const TeamLeadDailyTimeSheetEntry = () => {
     }
 
     // Auto-calculate hours if start_time or end_time changes
-    if (field === "start_time" || field === "end_time") {
-      const start = updated[index].start_time;
-      const end = updated[index].end_time;
+    // if (field === "start_time" || field === "end_time") {
+    //   const start = updated[index].start_time;
+    //   const end = updated[index].end_time;
 
-      if (start && end) {
-        const parseTime = (timeStr) => {
-          const [hours = 0, minutes = 0] = timeStr.split(":").map(Number);
-          return hours * 3600 + minutes * 60;
-        };
-        const startSeconds = parseTime(start);
-        const endSeconds = parseTime(end);
-        let diffSeconds = endSeconds - startSeconds;
-        if (diffSeconds < 0) diffSeconds = 0;
-        const decimalHours = diffSeconds / 3600;
-        updated[index].hours = decimalHours.toFixed(2);
-        updated[index].formattedHours = formatToHoursMinutes(decimalHours);
-      }
-    }
+    //   if (start && end) {
+    //     const parseTime = (timeStr) => {
+    //       const [hours = 0, minutes = 0] = timeStr.split(":").map(Number);
+    //       return hours * 3600 + minutes * 60;
+    //     };
+    //     const startSeconds = parseTime(start);
+    //     const endSeconds = parseTime(end);
+    //     let diffSeconds = endSeconds - startSeconds;
+    //     if (diffSeconds < 0) diffSeconds = 0;
+    //     const decimalHours = diffSeconds / 3600;
+    //     updated[index].hours = decimalHours.toFixed(2);
+    //     updated[index].formattedHours = formatToHoursMinutes(decimalHours);
+    //   }
+    // }
 
     setNewRows(updated);
     // console.log("new rows", updated);
@@ -367,6 +370,8 @@ const TeamLeadDailyTimeSheetEntry = () => {
     for (let row of [...displayRows, ...newRows]) {
       const result = validateTimes(row);
       console.log("result", result);
+      const validation = validateRows(row);
+      if (!validation) return;
       if (!result) return; // Stop if any row fails validation
     }
     try {
@@ -376,6 +381,8 @@ const TeamLeadDailyTimeSheetEntry = () => {
         // const { start_time, end_time } = validateTimes(row);
         const result = validateTimes(row);
         if (!result) return; // Stop on any validation failure
+        const validation = validateRows(row);
+        if (!validation) return;
         const { start_time, end_time } = result;
         const payload = {
           employee: employee_id,
@@ -384,8 +391,8 @@ const TeamLeadDailyTimeSheetEntry = () => {
           building: row.building,
           task_assign: row.task_assign_id,
           task_hours: parseFloat(row.hours || 0),
-          start_time,
-          end_time,
+          // start_time,
+          // end_time,
           submitted: true,
         };
 
@@ -420,8 +427,8 @@ const TeamLeadDailyTimeSheetEntry = () => {
           building: row.building,
           task_assign: row.task_assign_id,
           task_hours: parseFloat(row.hours || 0),
-          start_time,
-          end_time,
+          // start_time,
+          // end_time,
           submitted: true,
         };
 
@@ -484,6 +491,8 @@ const TeamLeadDailyTimeSheetEntry = () => {
     for (let row of [...displayRows, ...newRows]) {
       const result = validateTimes(row);
       if (!result) return; // Stop if any row fails validation
+      const validation = validateRows(row);
+      if (!validation) return;
     }
     try {
       // ---------------- PATCH updated existing rows ----------------
@@ -491,6 +500,8 @@ const TeamLeadDailyTimeSheetEntry = () => {
         // const { start_time, end_time } = validateTimes(row);
         const result = validateTimes(row);
         if (!result) return; // Stop on any validation failure
+        const validation = validateRows(row);
+        if (!validation) return;
         const { start_time, end_time } = result;
         const payload = {
           employee: employee_id,
@@ -499,8 +510,8 @@ const TeamLeadDailyTimeSheetEntry = () => {
           building: row.building,
           task_assign: row.task_assign_id,
           task_hours: parseFloat(row.hours || 0),
-          start_time,
-          end_time,
+          // start_time,
+          // end_time,
         };
 
         const response = await fetch(
@@ -533,8 +544,8 @@ const TeamLeadDailyTimeSheetEntry = () => {
           building: row.building,
           task_assign: row.task_assign_id,
           task_hours: parseFloat(row.hours || 0),
-          start_time,
-          end_time,
+          // start_time,
+          // end_time,
         };
 
         const response = await fetch(`${config.apiBaseURL}/timesheet/`, {
@@ -565,16 +576,34 @@ const TeamLeadDailyTimeSheetEntry = () => {
     }
   };
 
+  const validateRows = (row) => {
+    if (!row.task_assign_id) {
+      showWarningToast("Task is required.");
+      return false;
+    } else if (!row.task) {
+      showWarningToast("Task is required.");
+      return false;
+    } else if (!row.building) {
+      showWarningToast("Building required.");
+      return false;
+    } else if (!row.project) {
+      showWarningToast("Project required.");
+      return false;
+    } else {
+      return true;
+    }
+  };
+
   const validateTimes = (row) => {
     const start = row.start_time;
     const end = row.end_time;
 
-    if (!start || !end) {
-      showWarningToast(
-        `Please enter both start and end time for task "${row.task}".`
-      );
-      return null;
-    }
+    // if (!start || !end) {
+    //   showWarningToast(
+    //     `Please enter both start and end time for task "${row.task}".`
+    //   );
+    //   return null;
+    // }
 
     const parseTime = (timeStr) => {
       const [hours = 0, minutes = 0] = timeStr.split(":").map(Number);
@@ -599,34 +628,40 @@ const TeamLeadDailyTimeSheetEntry = () => {
     const outtimeSeconds =
       (outtimeParts[0] || 0) * 3600 + (outtimeParts[1] || 0) * 60;
 
-    if (startSeconds < intimeSeconds) {
-      showWarningToast(
-        `Task "${row.task}" Start Time (${start}) cannot be before Intime (${attendanceDetails.in_time}).`
-      );
-      return null;
-    }
+    // if (startSeconds < intimeSeconds) {
+    //   showWarningToast(
+    //     `Task "${row.task}" Start Time (${start}) cannot be before Intime (${attendanceDetails.in_time}).`
+    //   );
+    //   return null;
+    // }
 
-    if (endSeconds <= startSeconds) {
-      showWarningToast(`Task "${row.task}" End Time must be after Start Time.`);
-      return null;
-    }
+    // if (endSeconds <= startSeconds) {
+    //   showWarningToast(`Task "${row.task}" End Time must be after Start Time.`);
+    //   return null;
+    // }
 
     if (!intimeParts[0]) {
       showWarningToast(`Task "${row.task}" No in Time present.`);
       return null;
     }
 
-    if (outtimeParts[0]) {
-      if (endSeconds > outtimeSeconds) {
-        showWarningToast(
-          `Task "${row.task}" End Time must be before Out Time.`
-        );
-        return null;
-      }
-    } else if (endSeconds > currentTimeSeconds) {
-      showWarningToast(
-        `Task "${row.task}" End Time must be before current Time.`
-      );
+    // if (outtimeParts[0]) {
+    //   if (endSeconds > outtimeSeconds) {
+    //     showWarningToast(
+    //       `Task "${row.task}" End Time must be before Out Time.`
+    //     );
+    //     return null;
+    //   }
+    // } else if (endSeconds > currentTimeSeconds) {
+    //   showWarningToast(
+    //     `Task "${row.task}" End Time must be before current Time.`
+    //   );
+    //   return null;
+    // }
+
+    const hours = parseFloat(row.hours);
+    if (isNaN(hours) || hours <= 0) {
+      showWarningToast(`Please enter valid hours for task "${row.task}".`);
       return null;
     }
 
@@ -654,6 +689,16 @@ const TeamLeadDailyTimeSheetEntry = () => {
     const start = attendanceDetails.in_time;
     const end = attendanceDetails.out_time;
 
+    const parseTime = (timeStr) => {
+      const [hours = 0, minutes = 0, seconds = 0] = timeStr
+        .split(":")
+        .map(Number);
+      return hours * 3600 + minutes * 60 + seconds;
+    };
+
+    const startSeconds = parseTime(start);
+    const endSeconds = parseTime(end);
+
     const currentTime = new Date();
 
     const currentTimeSeconds =
@@ -662,18 +707,11 @@ const TeamLeadDailyTimeSheetEntry = () => {
       (currentTime.getSeconds() || 0);
 
     if (start) {
-      const parseTime = (timeStr) => {
-        const [hours = 0, minutes = 0, seconds = 0] = timeStr
-          .split(":")
-          .map(Number);
-        return hours * 3600 + minutes * 60 + seconds;
-      };
-      const startSeconds = parseTime(start);
-      let endSeconds = 0;
+      let endSecondss = 0;
       let diffSeconds = 0;
-      if (end) {
-        endSeconds = parseTime(end);
-        diffSeconds = endSeconds - startSeconds;
+      if (endSeconds) {
+        endSecondss = endSeconds;
+        diffSeconds = endSecondss - startSeconds;
       } else {
         diffSeconds = currentTimeSeconds - startSeconds;
       }
@@ -685,6 +723,10 @@ const TeamLeadDailyTimeSheetEntry = () => {
     }
   };
   const maxAllowedHours = parseFloat(calculateHours() || 0);
+  // const maxAllowedHours = parseFloat(attendanceDetails.total_duration || 0);
+  const duration = parseFloat(attendanceDetails.total_duration);
+  // const maxAllowedHours = isNaN(duration) ? 0 : Math.min(duration, 8);
+
   const formatToHoursMinutes = (decimalHours) => {
     const hours = Math.floor(decimalHours);
     const minutes = Math.round((decimalHours - hours) * 60);
@@ -717,8 +759,8 @@ const TeamLeadDailyTimeSheetEntry = () => {
               <th>Project name</th>
               <th>Sub-Divisions</th>
               <th>Tasks</th>
-              <th>Start Time</th>
-              <th>End Time</th>
+              {/* <th>Start Time</th>
+              <th>End Time</th> */}
               <th>Hours</th>
               <th>Actions</th>
             </tr>
@@ -760,7 +802,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
                     // }
                   />
                 </td>
-                <td>
+                {/* <td>
                   <input
                     type="time"
                     value={row.start_time ? row.start_time.slice(0, 5) : ""}
@@ -781,8 +823,24 @@ const TeamLeadDailyTimeSheetEntry = () => {
                       handleDisplayRowChange(index, "end_time", e.target.value)
                     }
                   />
-                </td>
+                </td> */}
+
                 <td>
+                  <EditableTimeField
+                    value={formatToHoursMinutes(parseFloat(row.hours || 0))}
+                    onChange={(val) => {
+                      const [h, m] = val.split(":").map(Number);
+                      const decimal = h + m / 60;
+                      handleDisplayRowChange(
+                        index,
+                        "hours",
+                        decimal.toFixed(2)
+                      );
+                    }}
+                  />
+                </td>
+
+                {/* <td>
                   {row.formattedHours ? (
                     <input
                       type="text"
@@ -806,7 +864,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
                       style={{ backgroundColor: "#f9f9f9", border: "none" }}
                     />
                   )}
-                </td>
+                </td> */}
 
                 <td>
                   {/* <button
@@ -896,7 +954,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
                       )}
                   </select>
                 </td>
-                <td>
+                {/* <td>
                   <input
                     type="time"
                     value={row.start_time ? row.start_time.slice(0, 5) : ""}
@@ -913,9 +971,20 @@ const TeamLeadDailyTimeSheetEntry = () => {
                       handleNewRowChange(index, "end_time", e.target.value)
                     }
                   />
-                </td>
+                </td> */}
 
                 <td>
+                  <EditableTimeField
+                    value={formatToHoursMinutes(parseFloat(row.hours || 0))}
+                    onChange={(val) => {
+                      const [h, m] = val.split(":").map(Number);
+                      const decimal = h + m / 60;
+                      handleNewRowChange(index, "hours", decimal.toFixed(2));
+                    }}
+                  />
+                </td>
+
+                {/* <td>
                   {row.formattedHours ? (
                     <input
                       type="text"
@@ -939,7 +1008,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
                       style={{ backgroundColor: "#f9f9f9", border: "none" }}
                     />
                   )}
-                </td>
+                </td> */}
 
                 <td>
                   {/* <button

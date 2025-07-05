@@ -151,7 +151,7 @@ const HRSettings = () => {
 
   return (
     <div className="settings-container">
-      <h2>Settings</h2>
+      <h2>Comp off Settings</h2>
 
       {loading ? (
         <p>Loading...</p>
