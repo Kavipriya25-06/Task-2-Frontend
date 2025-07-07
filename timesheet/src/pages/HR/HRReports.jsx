@@ -34,7 +34,7 @@ const HRReports = () => {
       case "Leave Taken Report":
         return <LeaveTakenReport ref={reportRef} year={year} />;
       case "Leave Balance Report":
-        return <LeaveBalanceReport ref={reportRef} />;
+        return <LeaveBalanceReport ref={reportRef} year={year} />;
       case "LOP Report":
         return <LOPReport ref={reportRef} year={year} />;
     }

@@ -223,10 +223,10 @@ const HRAttendance = () => {
                   );
                 })}
                 <td>
-                    {totalHours[emp.employee_id]
-                      ? `${formatToHHMM(totalHours[emp.employee_id])} hrs`
-                      : "-"}
-                  </td>
+                  {totalHours[emp.employee_id]
+                    ? `${formatToHHMM(totalHours[emp.employee_id])} hrs`
+                    : "-"}
+                </td>
               </tr>
             ))}
           </tbody>
