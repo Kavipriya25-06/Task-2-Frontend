@@ -24,8 +24,11 @@ const EmployeeDailyTimeSheetEntry = () => {
   const [displayRows, setDisplayRows] = useState([]);
   const [newRows, setNewRows] = useState([]);
   const [updatedRows, setUpdatedRows] = useState([]);
-
+  const [tasks, setTasks] = useState([]);
+  const [defaultTasks, setDefaultTasks] = useState([]);
   const [taskOptions, setTaskOptions] = useState([]);
+  const [defaultTaskOptions, setDefaultTaskOptions] = useState([]);
+  const [buildingOptions, setBuildingOptions] = useState([]);
 
   const [rows, setRows] = useState([
     {
@@ -168,6 +171,10 @@ const EmployeeDailyTimeSheetEntry = () => {
   useEffect(() => {
     if (employee_id) {
       fetchTaskOptions();
+      fetchBuildingOptions();
+      fetchTasks();
+      fetchDefaultTasks();
+      fetchDefaultTaskOptions();
     }
   }, [employee_id]);
 
@@ -188,6 +195,7 @@ const EmployeeDailyTimeSheetEntry = () => {
           item.building_assign?.building?.building_title ||
           "Unassigned Building";
         const task = item.task?.task_title || "Untitled Task";
+        const task_id = item.task?.task_id || "Unknown Task";
 
         if (!structured[project]) structured[project] = {};
         if (!structured[project][building]) structured[project][building] = [];
@@ -195,6 +203,7 @@ const EmployeeDailyTimeSheetEntry = () => {
         structured[project][building].push({
           task_assign_id: item.task_assign_id,
           task_title: task,
+          task_id: task_id,
         });
       });
 
@@ -204,30 +213,113 @@ const EmployeeDailyTimeSheetEntry = () => {
     }
   };
 
+  const fetchDefaultTaskOptions = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/default-tasks-by-employee/`
+      );
+      const data = await response.json();
+
+      const structured = {};
+
+      data.forEach((item) => {
+        const project =
+          item.building_assign?.project_assign?.project?.project_title ||
+          "Unassigned Project";
+        const building =
+          item.building_assign?.building?.building_title ||
+          "Unassigned Building";
+        const task = item.task?.task_title || "Untitled Task";
+        const task_id = item.task?.task_id || "Unknown Task";
+
+        if (!structured[project]) structured[project] = {};
+        if (!structured[project][building]) structured[project][building] = [];
+
+        structured[project][building].push({
+          task_assign_id: item.task_assign_id,
+          task_title: task,
+          task_id: task_id,
+        });
+      });
+
+      setDefaultTaskOptions(structured);
+    } catch (error) {
+      console.error("Failed to load task options:", error);
+    }
+  };
+
+  const fetchDefaultTasks = async () => {
+    try {
+      const res = await fetch(`${config.apiBaseURL}/default-tasks/`);
+      const data = await res.json();
+      setDefaultTasks(data);
+    } catch (err) {
+      console.error("Error fetching tasks:", err);
+    }
+  };
+
+  const fetchTasks = async () => {
+    try {
+      const res = await fetch(`${config.apiBaseURL}/other-tasks/`);
+      const data = await res.json();
+      setTasks(data);
+    } catch (err) {
+      console.error("Error fetching tasks:", err);
+    }
+  };
+
+  const fetchBuildingOptions = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/buildings-by-employee/${employee_id}/`
+      );
+      const data = await response.json();
+
+      const structured = {};
+
+      data.forEach((item) => {
+        const projectObj = item.project_assign?.project || {};
+        const buildingObj = item.building || {};
+
+        const projectTitle = projectObj.project_title || "Unassigned Project";
+        const projectCode = projectObj.project_code || "UNKNOWN_PROJECT_CODE";
+
+        const buildingTitle =
+          buildingObj.building_title || "Unassigned Building";
+        const buildingCode =
+          buildingObj.building_code || "UNKNOWN_BUILDING_CODE";
+
+        // Use project_code and building_code for uniqueness
+        if (!structured[projectCode]) {
+          structured[projectCode] = {
+            title: projectTitle,
+            buildings: {},
+          };
+        }
+
+        if (!structured[projectCode].buildings[buildingCode]) {
+          structured[projectCode].buildings[buildingCode] = {
+            title: buildingTitle,
+            entries: [],
+          };
+        }
+
+        structured[projectCode].buildings[buildingCode].entries.push({
+          building_assign_id: item.building_assign_id,
+          // optionally include building/project IDs or hours if needed
+        });
+      });
+
+      setBuildingOptions(structured);
+      console.log("Structured building data with codes", structured);
+    } catch (error) {
+      console.error("Failed to load building options:", error);
+    }
+  };
+
   const handleDisplayRowChange = (index, field, value) => {
     const updated = [...displayRows];
     updated[index][field] = value;
-
-    // Auto-calculate hours if start_time or end_time changes
-    // if (field === "start_time" || field === "end_time") {
-    //   const start = updated[index].start_time;
-    //   const end = updated[index].end_time;
-
-    //   if (start && end) {
-    //     const parseTime = (timeStr) => {
-    //       const [hours = 0, minutes = 0] = timeStr.split(":").map(Number);
-    //       return hours * 3600 + minutes * 60;
-    //     };
-    //     const startSeconds = parseTime(start);
-    //     const endSeconds = parseTime(end);
-    //     let diffSeconds = endSeconds - startSeconds;
-    //     if (diffSeconds < 0) diffSeconds = 0;
-
-    //     const decimalHours = diffSeconds / 3600;
-    //     updated[index].hours = decimalHours.toFixed(2);
-    //     updated[index].formattedHours = formatToHoursMinutes(decimalHours);
-    //   }
-    // }
 
     setDisplayRows(updated);
     // console.log("display rows", updated);
@@ -242,56 +334,51 @@ const EmployeeDailyTimeSheetEntry = () => {
     const updated = [...newRows];
     updated[index][field] = value;
 
-    if (field === "project") {
+    if (field === "project_code") {
       // Reset building and task if project changes
-      updated[index].project = value;
+      updated[index].project_code = value;
+      updated[index].project =
+        buildingOptions?.[value]?.title || "Unassigned Project";
       updated[index].building = "";
       updated[index].task = "";
-      updated[index].task_assign_id = "";
+      // updated[index].task_assign_id = "";
     }
 
-    if (field === "building") {
-      // Reset task if building changes
-      updated[index].building = value;
+    if (field === "building_code") {
+      const projectCode = updated[index].project_code;
+      const buildingData = buildingOptions?.[projectCode]?.buildings?.[value];
+
+      if (buildingData) {
+        updated[index].building_code = value;
+        updated[index].building = buildingData?.title;
+        updated[index].building_assign_id =
+          buildingData?.entries[0]?.building_assign_id;
+      }
+
       updated[index].task = "";
-      updated[index].task_assign_id = "";
+      updated[index].task_id = "";
     }
 
-    if (field === "task") {
-      // const taskList = taskOptions[row.project]?.[row.building] || [];
-      const selected = taskOptions?.[updated[index].project]?.[
-        updated[index].building
-      ]?.find((t) => t.task_title === value);
+    if (field === "task_id") {
+      const selected = tasks?.find((t) => t.task_id === value);
+      const defaultSelected = defaultTasks?.find((t) => t.task_id === value);
       if (selected) {
         updated[index].task = selected.task_title;
-        updated[index].task_assign_id = selected.task_assign_id;
-        // updated[index].project = selected.project_title;
-        // updated[index].building = selected.building_title;
+        updated[index].task_id = selected.task_id;
+        updated[index].task_hours = selected.task_hours;
+        updated[index].priority = selected.priority;
+        updated[index].comments = selected.comments;
+      } else if (defaultSelected) {
+        updated[index].task = defaultSelected.task_title;
+        updated[index].task_id = defaultSelected.task_id;
+        updated[index].task_hours = defaultSelected.task_hours;
+        updated[index].priority = defaultSelected.priority;
+        updated[index].comments = defaultSelected.comments;
       }
     }
 
-    // Auto-calculate hours if start_time or end_time changes
-    // if (field === "start_time" || field === "end_time") {
-    //   const start = updated[index].start_time;
-    //   const end = updated[index].end_time;
-
-    //   if (start && end) {
-    //     const parseTime = (timeStr) => {
-    //       const [hours = 0, minutes = 0] = timeStr.split(":").map(Number);
-    //       return hours * 3600 + minutes * 60;
-    //     };
-    //     const startSeconds = parseTime(start);
-    //     const endSeconds = parseTime(end);
-    //     let diffSeconds = endSeconds - startSeconds;
-    //     if (diffSeconds < 0) diffSeconds = 0;
-    //     const decimalHours = diffSeconds / 3600;
-    //     updated[index].hours = decimalHours.toFixed(2);
-    //     updated[index].formattedHours = formatToHoursMinutes(decimalHours);
-    //   }
-    // }
-
     setNewRows(updated);
-    // console.log("new rows", updated);
+    console.log("new rows", updated);
   };
 
   // Row change handler
@@ -336,11 +423,11 @@ const EmployeeDailyTimeSheetEntry = () => {
     if (newRows.length > 0) {
       const lastRow = newRows[newRows.length - 1];
       if (
-        !lastRow.project?.trim() ||
-        !lastRow.building?.trim() ||
+        !lastRow.project_code?.trim() ||
+        !lastRow.building_code?.trim() ||
         !lastRow.task?.trim() ||
-        !lastRow.start_time?.trim() ||
-        !lastRow.end_time?.trim() ||
+        // !lastRow.start_time?.trim() ||
+        // !lastRow.end_time?.trim() ||
         !lastRow.hours
       ) {
         showInfoToast(
@@ -353,8 +440,8 @@ const EmployeeDailyTimeSheetEntry = () => {
     setNewRows([
       ...newRows,
       {
-        project: "",
-        building: "",
+        project_code: "",
+        building_code: "",
         task: "",
         hours: "",
         start_time: "",
@@ -539,29 +626,57 @@ const EmployeeDailyTimeSheetEntry = () => {
         // const { start_time, end_time } = validateTimes(row);
         const result = validateTimes(row);
         if (!result) return; // Stop on any validation failure
-        const { start_time, end_time } = result;
-        const payload = {
-          employee: employee_id,
+        const taskAssignPayload = {
+          employee: [employee_id],
           date: date,
-          project: row.project,
-          building: row.building,
-          task_assign: row.task_assign_id,
+          priority: row.priority,
+          comments: row.comments,
+          task: row.task_id,
           task_hours: parseFloat(row.hours || 0),
+          building_assign: row.building_assign_id,
           // start_time,
           // end_time,
         };
 
-        const response = await fetch(`${config.apiBaseURL}/timesheet/`, {
+        const taskPost = await fetch(`${config.apiBaseURL}/upsert-tasks/`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+          body: JSON.stringify(taskAssignPayload),
         });
 
-        if (!response.ok) {
-          const errorData = await response.json();
+        if (!taskPost.ok) {
+          const errorData = await taskPost.json();
           console.error("Failed to POST new row:", errorData);
           showErrorToast(`Failed to submit new task "${row.task}".`);
           return;
+        }
+
+        if (taskPost.ok) {
+          const postedTask = await taskPost.json();
+          console.log("Posted success tasks", postedTask);
+
+          const { start_time, end_time } = result;
+          const payload = {
+            employee: employee_id,
+            date: date,
+            project: row.project,
+            building: row.building,
+            task_assign: postedTask.task_assign_id,
+            task_hours: parseFloat(row.hours || 0),
+            // start_time,
+            // end_time,
+          };
+          const response = await fetch(`${config.apiBaseURL}/timesheet/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Failed to POST new row:", errorData);
+            showErrorToast(`Failed to submit new task "${row.task}".`);
+            return;
+          }
         }
       }
 
@@ -580,10 +695,7 @@ const EmployeeDailyTimeSheetEntry = () => {
   };
 
   const validateRows = (row) => {
-    if (!row.task_assign_id) {
-      showWarningToast("Task is required.");
-      return false;
-    } else if (!row.task) {
+    if (!row.task) {
       showWarningToast("Task is required.");
       return false;
     } else if (!row.building) {
@@ -899,50 +1011,49 @@ const EmployeeDailyTimeSheetEntry = () => {
               <tr key={"new-" + index}>
                 <td>
                   <select
-                    value={row.project}
+                    value={row.project_code}
                     onChange={(e) =>
-                      handleNewRowChange(index, "project", e.target.value)
+                      handleNewRowChange(index, "project_code", e.target.value)
                     }
                     className="task-select"
                   >
                     <option value="">Select project</option>
-                    {/* {projectOptions.map((proj, idx) => (
-                      <option key={idx} value={proj}>
-                        {proj} */}
-                    {Object.keys(taskOptions).map((projectTitle) => (
-                      <option key={projectTitle} value={projectTitle}>
-                        {projectTitle}
-                      </option>
-                    ))}
+                    {Object.entries(buildingOptions).map(
+                      ([projCode, projData]) => (
+                        <option key={projCode} value={projCode}>
+                          {projData?.title || ""}
+                        </option>
+                      )
+                    )}
                   </select>
                 </td>
 
                 <td>
                   <select
-                    value={row.building}
+                    value={row.building_code}
                     onChange={(e) =>
-                      handleNewRowChange(index, "building", e.target.value)
+                      handleNewRowChange(index, "building_code", e.target.value)
                     }
-                    disabled={!row.project}
+                    disabled={!row.project_code}
                     className="task-select"
                   >
                     <option value="">Select building</option>
-                    {row.project &&
-                      Object.keys(taskOptions[row.project] || {}).map(
-                        (buildingTitle) => (
-                          <option key={buildingTitle} value={buildingTitle}>
-                            {buildingTitle}
-                          </option>
-                        )
-                      )}
+                    {row.project_code &&
+                      Object.entries(
+                        buildingOptions[row.project_code].buildings || {}
+                      ).map(([buildingCode, buildingData]) => (
+                        <option key={buildingCode} value={buildingCode}>
+                          {buildingData?.title || ""}
+                        </option>
+                      ))}
                   </select>
                 </td>
 
                 <td>
                   <select
-                    value={row.task}
+                    value={row.task_id}
                     onChange={(e) =>
-                      handleNewRowChange(index, "task", e.target.value)
+                      handleNewRowChange(index, "task_id", e.target.value)
                     }
                     disabled={!row.building}
                     className="task-select"
@@ -950,16 +1061,15 @@ const EmployeeDailyTimeSheetEntry = () => {
                     <option value="">Select task</option>
                     {row.project &&
                       row.building &&
-                      (taskOptions[row.project]?.[row.building] || []).map(
-                        (task) => (
-                          <option
-                            key={task.task_assign_id}
-                            value={task.task_title}
-                          >
-                            {task.task_title}
-                          </option>
-                        )
-                      )}
+                      (
+                        defaultTaskOptions[row.project]?.[row.building] ||
+                        tasks ||
+                        []
+                      ).map((task) => (
+                        <option key={task.task_id} value={task.task_id}>
+                          {task.task_title}
+                        </option>
+                      ))}
                   </select>
                 </td>
                 {/* <td>
