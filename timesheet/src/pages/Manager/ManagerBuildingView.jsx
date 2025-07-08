@@ -239,7 +239,7 @@ const ManagerBuildingView = () => {
 
   const fetchTasks = async () => {
     try {
-      const res = await fetch(`${config.apiBaseURL}/tasks/`);
+      const res = await fetch(`${config.apiBaseURL}/other-tasks/`);
       const data = await res.json();
       setTasks(data);
     } catch (err) {
