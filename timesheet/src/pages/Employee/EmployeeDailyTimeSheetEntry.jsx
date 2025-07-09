@@ -506,30 +506,60 @@ const EmployeeDailyTimeSheetEntry = () => {
         // const { start_time, end_time } = validateTimes(row);
         const result = validateTimes(row);
         if (!result) return; // Stop on any validation failure
-        const { start_time, end_time } = result;
-        const payload = {
-          employee: employee_id,
+
+        const taskAssignPayload = {
+          employee: [employee_id],
           date: date,
-          project: row.project,
-          building: row.building,
-          task_assign: row.task_assign_id,
+          priority: row.priority,
+          comments: row.comments,
+          task: row.task_id,
           task_hours: parseFloat(row.hours || 0),
+          building_assign: row.building_assign_id,
           // start_time,
           // end_time,
-          submitted: true,
         };
 
-        const response = await fetch(`${config.apiBaseURL}/timesheet/`, {
+        const taskPost = await fetch(`${config.apiBaseURL}/upsert-tasks/`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+          body: JSON.stringify(taskAssignPayload),
         });
 
-        if (!response.ok) {
-          const errorData = await response.json();
+        if (!taskPost.ok) {
+          const errorData = await taskPost.json();
           console.error("Failed to POST new row:", errorData);
           showErrorToast(`Failed to submit new task "${row.task}".`);
           return;
+        }
+
+        if (taskPost.ok) {
+          const postedTask = await taskPost.json();
+          console.log("Posted success tasks", postedTask);
+          const { start_time, end_time } = result;
+          const payload = {
+            employee: employee_id,
+            date: date,
+            project: row.project,
+            building: row.building,
+            task_assign: postedTask.task_assign_id,
+            task_hours: parseFloat(row.hours || 0),
+            // start_time,
+            // end_time,
+            submitted: true,
+          };
+
+          const response = await fetch(`${config.apiBaseURL}/timesheet/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Failed to POST new row:", errorData);
+            showErrorToast(`Failed to submit new task "${row.task}".`);
+            return;
+          }
         }
       }
 
@@ -666,11 +696,13 @@ const EmployeeDailyTimeSheetEntry = () => {
             // start_time,
             // end_time,
           };
+
           const response = await fetch(`${config.apiBaseURL}/timesheet/`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
           });
+
           if (!response.ok) {
             const errorData = await response.json();
             console.error("Failed to POST new row:", errorData);
