@@ -49,10 +49,26 @@ const ManagerTaskCreate = () => {
         //   autoClose: 2000,
         //   hideProgressBar: true,
         // });
-        showSuccessToast("Task created successfully");
+        showSuccessToast("Task created successfully!");
       } else {
         console.error(data);
-        showErrorToast("Failed to create Task.");
+        // showErrorToast("Failed to create Task.");
+
+        const errorMessages =
+          data && typeof data === "object"
+            ? Object.entries(data)
+                .map(([field, messages]) => {
+                  if (Array.isArray(messages)) {
+                    return `${field}: ${messages.join(", ")}`;
+                  } else {
+                    return `${field}: ${messages}`;
+                  }
+                })
+                .join("\n")
+            : data?.error || "Unknown error occurred";
+
+        showErrorToast(errorMessages);
+        return;
       }
       setTimeout(() => navigate(`/manager/detail/projects/`), 3000);
     } catch (error) {
