@@ -1106,7 +1106,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
                     disabled={!row.project_code}
                     className="task-select"
                   >
-                    <option value="">Select building</option>
+                    <option value="">Select Sub-division</option>
                     {row.project_code &&
                       Object.entries(
                         buildingOptions[row.project_code].buildings || {}

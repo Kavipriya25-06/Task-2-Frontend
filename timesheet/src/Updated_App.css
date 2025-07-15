@@ -90,8 +90,6 @@
   transition: max-height 0.4s ease;
 }
 
-
-
 .timesheet-approve {
   padding: 8px 16px;
   background-color: #b6f0b6;
@@ -109,7 +107,6 @@
   font-weight: bold;
   cursor: pointer;
 }
-
 
 .button-container .timesheet-approve {
   background-color: rgb(222, 222, 222);
@@ -143,4 +140,3 @@
 .button-container .timesheet-reject:disabled:hover {
   background-color: rgb(222, 222, 222); /* or same as non-hover */
 }
-

@@ -100,7 +100,7 @@ const TeamLeadProjectView = () => {
       //   `Are you sure you want to remove building "${building?.building?.building_title}"?`
       // );
       const confirmDelete = await confirm({
-        message: `Are you sure you want to remove building "${building?.building?.building_title}"?`,
+        message: `Are you sure you want to remove Sub-division "${building?.building?.building_title}"?`,
       });
       if (!confirmDelete) return;
 

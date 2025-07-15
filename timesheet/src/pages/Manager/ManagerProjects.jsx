@@ -14,6 +14,7 @@ import {
   showWarningToast,
   ToastContainerComponent,
 } from "../../constants/Toastify";
+import confirm from "../../constants/ConfirmDialog";
 
 const ManagerProjects = () => {
   const { user } = useAuth();
@@ -56,7 +57,7 @@ const ManagerProjects = () => {
 
   const fetchBuildings = async () => {
     try {
-      const response = await fetch(`${config.apiBaseURL}/buildings/`);
+      const response = await fetch(`${config.apiBaseURL}/other-buildings/`);
       const data = await response.json();
       setBuildings(data);
       setFilteredBuildings(data);
@@ -67,7 +68,7 @@ const ManagerProjects = () => {
 
   const fetchTasks = async () => {
     try {
-      const response = await fetch(`${config.apiBaseURL}/tasks/`);
+      const response = await fetch(`${config.apiBaseURL}/other-tasks/`);
       const data = await response.json();
       setTasks(data);
     } catch (err) {
@@ -114,8 +115,38 @@ const ManagerProjects = () => {
     }
   };
 
-  const handleReportClick = () => {
-    fetchReports();
+  // const handleReportClick = () => {
+  //   fetchReports();
+  // };
+
+  const handleDeleteTask = async (task_id) => {
+    const confirmDelete = await confirm({
+      message: `Are you sure you want to delete this task?`,
+    });
+    if (!confirmDelete) return;
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/tasks/${task_id}/`, //  Match fetch URL
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        showSuccessToast("Task deleted successfully.");
+        fetchTasks();
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to delete:", errorData);
+        showErrorToast("Failed to delete the task.");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      showWarningToast("Something went wrong while deleting the project.");
+    }
   };
 
   const handleAddClick = () => {
@@ -483,6 +514,7 @@ const ManagerProjects = () => {
                     <th>Task Description</th>
                     {/* <th>Estimated hours</th> */}
                     <th>Priority</th>
+                    <th>Actions</th>
                     {/* <th>Status</th> */}
                   </tr>
                 </thead>
@@ -501,6 +533,15 @@ const ManagerProjects = () => {
                       <td>{task.task_title}</td>
                       <td>{task.task_description}</td>
                       <td>{task.priority}</td>
+                      <td>
+                        {
+                          <i
+                            onClick={() => handleDeleteTask(task.task_id)}
+                            className="fas fa-trash-alt"
+                            style={{ cursor: "pointer" }}
+                          />
+                        }
+                      </td>
                       {/* <td>{task.status ? "Completed" : "In progress"}</td> */}
                     </tr>
                   ))}
@@ -531,9 +572,9 @@ const ManagerProjects = () => {
             </button>
           ))}
         </div>
-        <button onClick={() => handleReportClick()} className="report-btn">
+        {/* <button onClick={() => handleReportClick()} className="report-btn">
           Download report
-        </button>
+        </button> */}
       </div>
       <div>{renderTabContent()}</div>
       <ToastContainerComponent />

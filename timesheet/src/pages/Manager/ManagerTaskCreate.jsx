@@ -70,7 +70,7 @@ const ManagerTaskCreate = () => {
         showErrorToast(errorMessages);
         return;
       }
-      setTimeout(() => navigate(`/manager/detail/projects/`), 3000);
+      setTimeout(() => navigate(`/manager/detail/projects/`), 1000);
     } catch (error) {
       console.error("Error:", error);
     }

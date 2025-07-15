@@ -271,7 +271,7 @@ const TeamLeadProjects = () => {
 
   const fetchBuildings = async () => {
     try {
-      const response = await fetch(`${config.apiBaseURL}/buildings/`);
+      const response = await fetch(`${config.apiBaseURL}/other-buildings/`);
       const data = await response.json();
       setBuildings(data);
       setFilteredBuildings(data);
@@ -282,7 +282,7 @@ const TeamLeadProjects = () => {
 
   const fetchTasks = async () => {
     try {
-      const response = await fetch(`${config.apiBaseURL}/tasks/`);
+      const response = await fetch(`${config.apiBaseURL}/other-tasks/`);
       const data = await response.json();
       setTasks(data);
     } catch (err) {

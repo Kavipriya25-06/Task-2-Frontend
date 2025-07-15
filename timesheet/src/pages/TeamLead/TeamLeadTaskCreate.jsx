@@ -59,7 +59,7 @@ const TeamLeadTaskCreate = () => {
         showErrorToast(errorMessages);
         return;
       }
-      setTimeout(() => navigate(`/teamlead/detail/projects/`), 3000);
+      setTimeout(() => navigate(`/teamlead/detail/projects/`), 1000);
     } catch (error) {
       console.error("Error:", error);
     }
