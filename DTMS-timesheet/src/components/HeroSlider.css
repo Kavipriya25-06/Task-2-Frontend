@@ -1,0 +1,90 @@
+/* src/components/HeroSlider.css */
+
+.hero-banner {
+  position: relative;
+  width: 100%;
+  height: 90vh;
+  overflow: hidden;
+}
+
+.hero-swiper,
+.hero-slide {
+  width: 100%;
+  height: 100%;
+}
+
+.hero-slide {
+  background-size: cover;
+  background-position: center;
+  /* animation: kenburns 20s ease-in-out infinite; */
+}
+
+.swiper-slide-active .hero-slide {
+  animation: kenburns 20s ease-in-out forwards;
+}
+
+.hero-slide.swiper-lazy {
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+@keyframes kenburns {
+  0% {
+    transform: scale(1) translate(0, 0);
+  }
+  100% {
+    transform: scale(1.1) translate(-2%, -2%);
+  }
+}
+
+.hero-content {
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  transform: translateY(-50%);
+  color: rgb(51, 46, 46);
+  z-index: 10;
+  max-width: 600px;
+}
+
+.hero-content h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  animation: fadeInUp 1s ease-in-out;
+}
+
+.hero-content p {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  animation: fadeInUp 1.5s ease-in-out;
+}
+
+.hero-content button {
+  animation: fadeInUp 1.5s ease-in-out;
+}
+
+.hero-button {
+  display: inline-block;
+  background-color: #0073e6;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background 0.3s;
+}
+
+.hero-button:hover {
+  background-color: #005bb5;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

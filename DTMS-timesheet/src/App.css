@@ -66,9 +66,10 @@
 }
 
 .logo {
-  width: 150px;
+  width: 85px;
   height: 30px;
   padding: 5px;
+  padding-left: 40px;
   border-radius: 10px;
 }
 
@@ -123,7 +124,7 @@
 
 .logo-c {
   width: 200px;
-  height: 100px;
+  height: 80px;
   /* background: #ff890a; */
   padding: 5px;
 }

@@ -194,7 +194,7 @@ const App = () => {
           {/* <NavLink to="/" style={{ textDecoration: "none", color: "inherit" }}>
             <img src="\src\assets\Logo.svg" alt="Arris Logo" className="logo" />
           </NavLink> */}
-          <img src="\logologin.svg" alt="Arris Logo" className="logo" />
+          <img src="\aero-360_logo.png" alt="Arris Logo" className="logo" />
 
           <div style={{ alignItems: "center", display: "flex" }}>
             {/* <NavLink
