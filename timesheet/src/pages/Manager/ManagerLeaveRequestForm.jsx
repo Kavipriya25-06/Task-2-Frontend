@@ -23,7 +23,12 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
   // );
   const [calendarData, setCalendarData] = useState([]);
   const [nonWorkingDates, setNonWorkingDates] = useState([]);
-
+  const [leaveSummary, setLeaveSummary] = useState({
+    sick_leave: 0,
+    casual_leave: 0,
+    comp_off: 0,
+    earned_leave: 0,
+  });
   const [formData, setFormData] = useState({
     leaveType: leaveType,
     startDate: "",
@@ -49,24 +54,25 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
   } = useAttachmentManager([]);
 
   useEffect(() => {
-    const fetchCalendar = async () => {
-      const year = new Date().getFullYear();
-      try {
-        const res = await fetch(`${config.apiBaseURL}/calendar/?year=${year}`);
-        const data = await res.json();
-        setCalendarData(data);
-
-        const nonWorking = data
-          .filter((d) => d.is_weekend || d.is_holiday)
-          .map((d) => new Date(d.date));
-        setNonWorkingDates(nonWorking);
-      } catch (err) {
-        console.error("Failed to fetch calendar", err);
-      }
-    };
-
     fetchCalendar();
+    fetchLeaveAvailability();
   }, []);
+
+  const fetchCalendar = async () => {
+    const year = new Date().getFullYear();
+    try {
+      const res = await fetch(`${config.apiBaseURL}/calendar/?year=${year}`);
+      const data = await res.json();
+      setCalendarData(data);
+
+      const nonWorking = data
+        .filter((d) => d.is_weekend || d.is_holiday)
+        .map((d) => new Date(d.date));
+      setNonWorkingDates(nonWorking);
+    } catch (err) {
+      console.error("Failed to fetch calendar", err);
+    }
+  };
 
   const calculateWorkingDays = (startDate, endDate, nonWorkingDates) => {
     let count = 0;
@@ -218,6 +224,22 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
     };
 
     const mappedLeaveType = leaveTypeMap[formData.leaveType] || "others";
+    // console.log("leave type", mappedLeaveType);
+    // console.log("leave summary", leaveSummary);
+
+    if (parseFloat(leaveSummary[mappedLeaveType]) <= 0) {
+      showWarningToast(`No leave balance available for ${formData.leaveType}`);
+      return;
+    }
+
+    if (
+      parseFloat(leaveSummary[mappedLeaveType]) < parseFloat(formData.duration)
+    ) {
+      showWarningToast(
+        `Leave duration exceeds leave balance for ${formData.leaveType}`
+      );
+      return;
+    }
 
     const data = new FormData();
 
@@ -276,8 +298,8 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
 
       if (response.ok) {
         const result = await response.json();
-        console.log("Leave submitted successfully:", result);
-        console.log("Leave taken id:", result.data.leave_taken_id);
+        // console.log("Leave submitted successfully:", result);
+        // console.log("Leave taken id:", result.data.leave_taken_id);
         showSuccessToast("Leave Request Submitted Successfully!");
         await patchLeaveAvailability(mappedLeaveType, formData.duration);
         await addAttachment(result.data.leave_taken_id);
@@ -293,6 +315,30 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
     } catch (error) {
       console.error("Error submitting leave request:", error);
       showErrorToast("An error occurred while submitting.");
+    }
+  };
+
+  const fetchLeaveAvailability = async () => {
+    const patchURL = `${config.apiBaseURL}/leaves-available/by_employee/${user.employee_id}/`;
+
+    try {
+      // Step 1: Fetch current available leave
+      const res = await fetch(patchURL);
+      const currentData = await res.json();
+
+      // Find summary for the logged-in employee
+      const employeeSummary = currentData;
+      // console.log("employee leave", employeeSummary);
+      if (employeeSummary) {
+        setLeaveSummary({
+          sick_leave: employeeSummary.sick_leave,
+          casual_leave: employeeSummary.casual_leave,
+          comp_off: employeeSummary.comp_off,
+          earned_leave: employeeSummary.earned_leave,
+        });
+      }
+    } catch (err) {
+      console.error("Error patching leave availability:", err);
     }
   };
 
