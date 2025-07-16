@@ -2338,6 +2338,7 @@ h3 {
 .hr-attendance-header {
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
   align-items: center; /* This centers all children horizontally */
   gap: 70px;
 }

@@ -5,9 +5,17 @@ import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate } from "react-router-dom";
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
 
 const HRAttendance = () => {
   const { user } = useAuth();
+  const [isSending, setIsSending] = useState(false);
   const [attendanceData, setAttendanceData] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -119,6 +127,25 @@ const HRAttendance = () => {
     setTotalHours(hours);
   };
 
+  const handleBiometricSync = async () => {
+    setIsSending(true);
+    try {
+      const response = await fetch(`${config.apiBaseURL}/sync-biometric/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+      showSuccessToast(data.message);
+    } catch (error) {
+      console.error("Sync failed", error);
+      showErrorToast("Failed to sync biometric data");
+    }
+    setIsSending(false);
+  };
+
   // Navigate to previous or next week
   const handleWeekChange = (direction) => {
     const newDate = new Date(currentWeek);
@@ -169,6 +196,19 @@ const HRAttendance = () => {
             }}
           />
         </div>
+        <button
+          onClick={() => handleBiometricSync()}
+          className="report-btn"
+          disabled={isSending}
+        >
+          {isSending ? (
+            <>
+              <span className="spinner-otp" /> Syncing...
+            </>
+          ) : (
+            "Sync Biometric"
+          )}
+        </button>
       </div>
 
       <div className="attendance-scroll-container">
@@ -259,6 +299,7 @@ const HRAttendance = () => {
           />
         </button>
       </div>
+      <ToastContainerComponent />
     </div>
   );
 };
