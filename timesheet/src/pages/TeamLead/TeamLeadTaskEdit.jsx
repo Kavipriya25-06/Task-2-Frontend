@@ -28,7 +28,7 @@ const TeamLeadTaskEdit = () => {
 
   const handleCancel = () => {
     setEditMode(false);
-    // navigate("/manager/detail/projects/");
+    // navigate("/teamlead/detail/projects/"); 
   };
 
   useEffect(() => {
@@ -64,7 +64,7 @@ const TeamLeadTaskEdit = () => {
       if (response.ok) {
         showSuccessToast("Task deleted successfully.");
         setTimeout(() => navigate(`/teamlead/detail/projects/`), 1000);
-        // navigate("/manager/detail/projects/");
+        // navigate("/teamlead/detail/projects/");
         // fetchTasks();
       } else {
         const errorData = await response.json();
@@ -111,7 +111,7 @@ const TeamLeadTaskEdit = () => {
         showErrorToast(errorMessages);
         return;
       }
-      // setTimeout(() => navigate(`/manager/detail/projects/`), 1000);
+      // setTimeout(() => navigate(`/teamlead/detail/projects/`), 1000);
       setEditMode(false);
     } catch (error) {
       console.error("Error:", error);

@@ -20,6 +20,7 @@ import LOPReport from "./Reports/LOPReport";
 const HRReports = () => {
   //new onee
   const [year, setYear] = useState(new Date().getFullYear());
+  const [employeeSearch, setEmployeeSearch] = useState("");
 
   const [selectedReport, setSelectedReport] = useState("Leave Taken Report");
   const handleReportChange = (e) => {
@@ -30,13 +31,14 @@ const HRReports = () => {
 
   const reportRef = useRef();
   const renderReportComponent = () => {
+    const commonProps = { ref: reportRef, year, employeeSearch };
     switch (selectedReport) {
       case "Leave Taken Report":
-        return <LeaveTakenReport ref={reportRef} year={year} />;
+        return <LeaveTakenReport {...commonProps} />;
       case "Leave Balance Report":
-        return <LeaveBalanceReport ref={reportRef} year={year} />;
+        return <LeaveBalanceReport {...commonProps} />;
       case "LOP Report":
-        return <LOPReport ref={reportRef} year={year} />;
+        return <LOPReport {...commonProps} />;
     }
   };
 
@@ -49,6 +51,19 @@ const HRReports = () => {
             <option value="Leave Balance Report">Leave Balance Report</option>
             <option value="LOP Report">LOP Report</option>
           </select>
+        </div>
+        <div style={{ margin: "10px 0", textAlign: "center" }}>
+          <input
+            type="text"
+            placeholder="Search employee by name or code..."
+            value={employeeSearch}
+            onChange={(e) => setEmployeeSearch(e.target.value)}
+            className="search-bar"
+            style={{
+              width: "300px",
+              fontSize: "14px",
+            }}
+          />
         </div>
         <div className="report-navigation">
           <div

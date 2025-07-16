@@ -9,7 +9,7 @@ import { saveAs } from "file-saver";
 import config from "../../../config";
 import { ToastContainerComponent } from "../../../constants/Toastify";
 
-const LeaveBalanceReport = forwardRef(({ year }, ref) => {
+const LeaveBalanceReport = forwardRef(({ year, employeeSearch }, ref) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -161,6 +161,13 @@ const LeaveBalanceReport = forwardRef(({ year }, ref) => {
                 //   (l) =>
                 //     new Date(l.employee.doj).getFullYear() === parseInt(year)
                 // )
+                .filter((l) => {
+                  const search = employeeSearch.toLowerCase();
+                  const name = l.employee?.employee_name?.toLowerCase() || "";
+                  const code = l.employee?.employee_code?.toLowerCase() || "";
+
+                  return name.includes(search) || code.includes(search);
+                })
                 .map((l, i) => (
                   <tr key={i}>
                     <td>{l.employee.employee_code}</td>

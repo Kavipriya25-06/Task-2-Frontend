@@ -100,7 +100,7 @@ const TeamLeadBuildingView = () => {
 
       if (response.ok) {
         showSuccessToast("Sub-division deleted successfully.");
-        setTimeout(() => navigate(`/manager/detail/projects/`), 1000);
+        setTimeout(() => navigate(`/teamlead/detail/projects/`), 1000);
       } else {
         const errorData = await response.json();
         console.error("Failed to delete:", errorData);

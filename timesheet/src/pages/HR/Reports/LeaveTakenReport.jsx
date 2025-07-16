@@ -9,7 +9,7 @@ import { saveAs } from "file-saver";
 import config from "../../../config";
 import { ToastContainerComponent } from "../../../constants/Toastify";
 
-const LeaveTakenReport = forwardRef(({ year }, ref) => {
+const LeaveTakenReport = forwardRef(({ year, employeeSearch }, ref) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -131,16 +131,26 @@ const LeaveTakenReport = forwardRef(({ year }, ref) => {
               </tr>
             </thead>
             <tbody>
-              {data.map((l, i) => (
-                <tr key={i}>
-                  <td>{l.employee.employee_code}</td>
-                  <td>{l.employee.employee_name}</td>
-                  <td>{new Date(l.start_date).toLocaleDateString("en-GB")}</td>
-                  <td>{new Date(l.end_date).toLocaleDateString("en-GB")}</td>
-                  <td>{parseFloat(l.duration)}</td>
-                  <td>{l.leave_type.replace("_", " ")}</td>
-                </tr>
-              ))}
+              {data
+                .filter((l) => {
+                  const search = employeeSearch.toLowerCase();
+                  const name = l.employee?.employee_name?.toLowerCase() || "";
+                  const code = l.employee?.employee_code?.toLowerCase() || "";
+
+                  return name.includes(search) || code.includes(search);
+                })
+                .map((l, i) => (
+                  <tr key={i}>
+                    <td>{l.employee.employee_code}</td>
+                    <td>{l.employee.employee_name}</td>
+                    <td>
+                      {new Date(l.start_date).toLocaleDateString("en-GB")}
+                    </td>
+                    <td>{new Date(l.end_date).toLocaleDateString("en-GB")}</td>
+                    <td>{parseFloat(l.duration)}</td>
+                    <td>{l.leave_type.replace("_", " ")}</td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         )}
