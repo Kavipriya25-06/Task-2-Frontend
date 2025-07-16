@@ -34,6 +34,9 @@ const ManagerBuildingView = () => {
   const [taskPopupVisible, setTaskPopupVisible] = useState(false);
   const [formData, setFormData] = useState({
     building_hours: "",
+    building_title: "",
+    building_description: "",
+    building_code: "",
   });
 
   const handleChange = (e) => {

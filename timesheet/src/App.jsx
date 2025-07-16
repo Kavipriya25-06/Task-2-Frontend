@@ -78,6 +78,7 @@ import ManagerProjects from "./pages/Manager/ManagerProjects.jsx";
 import ManagerProjectView from "./pages/Manager/ManagerProjectView.jsx";
 import ManagerBuildingView from "./pages/Manager/ManagerBuildingView.jsx";
 import ManagerTaskView from "./pages/Manager/ManagerTaskView.jsx";
+import ManagerTaskEdit from "./pages/Manager/ManagerTaskEdit.jsx";
 import ManagerTeamLeaders from "./pages/Manager/ManagerTeamLeaders.jsx";
 import ManagerTeamLeadersView from "./pages/Manager/ManagerTeamLeadersView.jsx";
 import ManagerProjectCreate from "./pages/Manager/ManagerProjectCreate.jsx";
@@ -384,6 +385,7 @@ const App = () => {
                   element={<Navigate to="/manager/detail/projects" replace />}
                 />
                 <Route path="tasks/create" element={<ManagerTaskCreate />} />
+                <Route path="tasks/:task_id" element={<ManagerTaskEdit />} />
                 <Route
                   path="projects/:project_id/buildings/:building_assign_id/tasks/"
                   element={<ManagerBuildingTaskRedirect />}

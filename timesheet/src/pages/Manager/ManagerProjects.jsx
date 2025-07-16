@@ -165,6 +165,10 @@ const ManagerProjects = () => {
     navigate(`${project_id}`);
   };
 
+  const handleTaskClick = (task_id) => {
+    navigate(`/manager/detail/tasks/${task_id}`);
+  };
+
   useEffect(() => {
     fetchProjects();
     fetchBuildings();
@@ -514,7 +518,7 @@ const ManagerProjects = () => {
                     <th>Task Description</th>
                     {/* <th>Estimated hours</th> */}
                     <th>Priority</th>
-                    <th>Actions</th>
+                    {/* <th>Actions</th> */}
                     {/* <th>Status</th> */}
                   </tr>
                 </thead>
@@ -522,18 +526,18 @@ const ManagerProjects = () => {
                   {filteredTask.slice(0, visibleTasks).map((task) => (
                     <tr key={task.task_id}>
                       <td
-                      // onClick={() => handleProjectClick(task.task_id)}
-                      // style={{
-                      //   cursor: "pointer",
-                      //   textDecoration: "underline",
-                      // }}
+                        onClick={() => handleTaskClick(task.task_id)}
+                        style={{
+                          cursor: "pointer",
+                          textDecoration: "underline",
+                        }}
                       >
                         {task.task_code}
                       </td>
                       <td>{task.task_title}</td>
                       <td>{task.task_description}</td>
                       <td>{task.priority}</td>
-                      <td>
+                      {/* <td>
                         {
                           <i
                             onClick={() => handleDeleteTask(task.task_id)}
@@ -541,7 +545,7 @@ const ManagerProjects = () => {
                             style={{ cursor: "pointer" }}
                           />
                         }
-                      </td>
+                      </td> */}
                       {/* <td>{task.status ? "Completed" : "In progress"}</td> */}
                     </tr>
                   ))}
