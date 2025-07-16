@@ -195,6 +195,7 @@ const ManagerProjects = () => {
       setFilteredProjects(filtered);
       setVisibleProjects(10);
       setHasMoreProjects(filtered.length > 10);
+      
       if (searchText && filtered.length === 0) {
         // toast.info("No users found", {
         //   className: "custom-toast",

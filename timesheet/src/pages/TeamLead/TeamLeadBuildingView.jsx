@@ -34,6 +34,10 @@ const TeamLeadBuildingView = () => {
   const [taskPopupVisible, setTaskPopupVisible] = useState(false);
   const [formData, setFormData] = useState({
     building_hours: "",
+    building_title: "",
+    building_description: "",
+    building_code: "",
+    building_id: "",
   });
 
   const handleChange = (e) => {
@@ -78,12 +82,74 @@ const TeamLeadBuildingView = () => {
     }
   };
 
+  const handleDeleteBuilding = async (building_id) => {
+    const confirmDelete = await confirm({
+      message: `Are you sure you want to delete this Sub-Division?`,
+    });
+    if (!confirmDelete) return;
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/buildings/${building_id}/`, //  Match fetch URL
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        showSuccessToast("Sub-division deleted successfully.");
+        setTimeout(() => navigate(`/manager/detail/projects/`), 1000);
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to delete:", errorData);
+        showErrorToast("Failed to delete Sub-division.");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      showWarningToast("Something went wrong while deleting the Sub-division.");
+    }
+  };
+
   const handleUpdate = async () => {
     const buildingAssignPayload = {
       building_hours: formData.building_hours,
       employee: availableTeamleadManager.map((e) => e.employee_id),
       status: "inprogress",
     };
+
+    const buildingPayload = {
+      // building_hours: formData.building_hours,
+      // employee: availableTeamleadManager.map((e) => e.employee_id),
+      // status: "inprogress",
+      building_title: formData.building_title,
+      building_description: formData.building_description,
+      building_code: formData.building_code,
+    };
+
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/buildings/${formData.building_id}/`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(buildingPayload),
+        }
+      );
+
+      if (response.ok) {
+        console.log("Building updated!");
+        // showSuccessToast("Sub-Division Updated");
+        // setEditMode(false);
+        // setSearchQuery("");
+      } else {
+        showErrorToast("Failed to update project");
+      }
+    } catch (err) {
+      console.error("Update error:", err);
+      showErrorToast(err);
+    }
 
     try {
       const response = await fetch(
@@ -213,7 +279,13 @@ const TeamLeadBuildingView = () => {
       );
       const data = await response.json();
       setBuildingsAssign(data);
-      setFormData({ building_hours: data.building_hours || "" });
+      setFormData({
+        building_hours: data.building_hours || "",
+        building_title: data.building?.building_title || "",
+        building_description: data.building?.building_description || "",
+        building_code: data.building?.building_code || "",
+        building_id: data.building?.building_id || "",
+      });
       setAvailableTeamleadManager(data.employee);
 
       // Merge existing tasks into selection state
@@ -341,17 +413,52 @@ const TeamLeadBuildingView = () => {
               </div>
               <div className="project-form-group">
                 <label>Sub-Division Code</label>
-                <p>{buildingsAssign.building?.building_code}</p>
+                {editMode ? (
+                  <input
+                    name="building_code"
+                    value={formData.building_code}
+                    onChange={handleChange}
+                    required
+                  />
+                ) : (
+                  <p className="view-data">
+                    {buildingsAssign.building?.building_code}
+                  </p>
+                )}
+                {/* <p>{buildingsAssign.building?.building_code}</p> */}
               </div>
               <div className="project-form-group">
                 <label>Sub-Division Title</label>
-                <p>{buildingsAssign.building?.building_title}</p>
+                {editMode ? (
+                  <input
+                    name="building_title"
+                    value={formData.building_title}
+                    onChange={handleChange}
+                    required
+                  />
+                ) : (
+                  <p className="view-data">
+                    {buildingsAssign.building?.building_title}
+                  </p>
+                )}
+                {/* <p>{buildingsAssign.building?.building_title}</p> */}
               </div>
             </div>
             <div className="left-form-second">
               <div className="project-form-group">
                 <label className="description">Sub-Division Description</label>
-                <p>{buildingsAssign.building?.building_description}</p>
+                {editMode ? (
+                  <textarea
+                    name="building_description"
+                    value={formData.building_description}
+                    onChange={handleChange}
+                  />
+                ) : (
+                  <p className="view-description">
+                    {buildingsAssign.building?.building_description}
+                  </p>
+                )}
+                {/* <p>{buildingsAssign.building?.building_description}</p> */}
               </div>
               <div className="project-form-group">
                 <label>Assign Task</label>
@@ -558,7 +665,17 @@ const TeamLeadBuildingView = () => {
         </div>
 
         <div className="form-buttons">
-          {editMode && (
+          {!editMode ? (
+            <>
+              <button
+                type="button"
+                onClick={() => handleDeleteBuilding(formData.building_id)}
+                className="btn-delete"
+              >
+                <i className="fas fa-trash-alt" /> Delete
+              </button>
+            </>
+          ) : (
             <>
               <button type="submit" onClick={handleUpdate} className="btn-save">
                 Save

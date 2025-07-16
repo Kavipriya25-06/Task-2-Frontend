@@ -26,6 +26,7 @@ const TeamLeadProjectView = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showAttachments, setShowAttachments] = useState(false);
   const [projectData, setProjectData] = useState(null);
+  const [projectStatus, setProjectStatus] = useState(false);
   const [buildings, setBuildings] = useState([]);
   const [discipline, setDiscipline] = useState([]);
   const [areas, setAreas] = useState([]);
@@ -582,6 +583,7 @@ const TeamLeadProjectView = () => {
       );
       const data = await response.json();
       setProjectData(data);
+      setProjectStatus(data.status);
       setAvailableBuildings(data.assigns[0].buildings);
       setAvailableTeamleadManager(data.assigns[0].employee);
       setVariations(data.variation);
@@ -635,6 +637,103 @@ const TeamLeadProjectView = () => {
       area_of_work: prevData.area_of_work.filter((name) => name !== areaName),
     }));
   };
+  // true - in progress
+    // false - completed
+    const handleProjectComplete = async () => {
+      const confirmDelete = await confirm({
+        message: `Are you sure you want to mark this project as completed?`,
+      });
+      if (!confirmDelete) return;
+      const update = {
+        status: false,
+      };
+      try {
+        const response = await fetch(
+          `${config.apiBaseURL}/projects/${project_id}/`, //  Match fetch URL
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(update),
+          }
+        );
+  
+        if (response.ok) {
+          showSuccessToast("Project completed successfully.");
+          fetchProjectData();
+        } else {
+          const errorData = await response.json();
+          console.error("Failed to change status:", errorData);
+          showErrorToast("Failed to change status for the project.");
+        }
+      } catch (error) {
+        console.error("Delete error:", error);
+        showWarningToast("Something went wrong while changing status.");
+      }
+    };
+  
+    const handleProjectInComplete = async () => {
+      const confirmDelete = await confirm({
+        message: `Are you sure you want to reopen this project?`,
+      });
+      if (!confirmDelete) return;
+      const update = {
+        status: true,
+      };
+      try {
+        const response = await fetch(
+          `${config.apiBaseURL}/projects/${project_id}/`, //  Match fetch URL
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(update),
+          }
+        );
+  
+        if (response.ok) {
+          showSuccessToast("Project reopened successfully.");
+          fetchProjectData();
+        } else {
+          const errorData = await response.json();
+          console.error("Failed to change status:", errorData);
+          showErrorToast("Failed to change status for the project.");
+        }
+      } catch (error) {
+        console.error("Delete error:", error);
+        showWarningToast("Something went wrong while changing status.");
+      }
+    };
+  
+    const handleDeleteProject = async () => {
+      const confirmDelete = await confirm({
+        message: `Are you sure you want to delete this project?`,
+      });
+      if (!confirmDelete) return;
+      try {
+        const response = await fetch(
+          `${config.apiBaseURL}/projects/${project_id}/`, //  Match fetch URL
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+  
+        if (response.ok) {
+          showSuccessToast("Project deleted successfully.");
+          setTimeout(() => {
+            navigate("/teamlead/detail/projects");
+          }, 2000);
+        } else {
+          const errorData = await response.json();
+          console.error("Failed to delete:", errorData);
+          showErrorToast("Failed to delete the project.");
+        }
+      } catch (error) {
+        console.error("Delete error:", error);
+        showWarningToast("Something went wrong while deleting the project.");
+      }
+    };
 
   if (!projectData) return <p>Loading...</p>;
 
@@ -1272,7 +1371,35 @@ const TeamLeadProjectView = () => {
           </div>
         </div>
         <div className="form-buttons">
-          {editMode && (
+          {!editMode ? (
+            <>
+              {projectStatus ? (
+                <button
+                  type="button"
+                  onClick={handleProjectComplete}
+                  className="btn-complete"
+                >
+                  <i className="fas fa-check" /> Mark as Completed
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleProjectInComplete}
+                  className="btn-complete"
+                >
+                  <i className="fas fa-folder-open" /> Reopen
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={handleDeleteProject}
+                className="btn-delete"
+              >
+                <i className="fas fa-trash-alt" /> Delete
+              </button>
+            </>
+          ) : (
             <>
               <button
                 type="submit"

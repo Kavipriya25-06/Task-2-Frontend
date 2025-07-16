@@ -107,6 +107,7 @@ import TeamLeadLeaveRequests from "./pages/TeamLead/TeamLeadLeaveRequests.jsx";
 import TeamLeadProjects from "./pages/TeamLead/TeamLeadProjects.jsx";
 import TeamLeadProjectView from "./pages/TeamLead/TeamLeadProjectView.jsx";
 import TeamLeadTaskView from "./pages/TeamLead/TeamLeadTaskView.jsx";
+import TeamLeadTaskEdit from "./pages/TeamLead/TeamLeadTaskEdit.jsx";
 import TeamLeadBuildingView from "./pages/TeamLead/TeamLeadBuildingView.jsx";
 import TeamLeadTimeSheetEntry from "./pages/TeamLead/TeamLeadTimeSheetEntry.jsx";
 import TeamLeadProjectCreate from "./pages/TeamLead/TeamLeadProjectCreate.jsx";
@@ -514,6 +515,7 @@ const App = () => {
                   element={<Navigate to="/teamlead/detail/projects" replace />}
                 />
                 <Route path="tasks/create" element={<TeamLeadTaskCreate />} />
+                <Route path="tasks/:task_id" element={<TeamLeadTaskEdit />} />
                 <Route
                   path="projects/:project_id/buildings/:building_assign_id/tasks/"
                   element={<TeamLeadBuildingTaskRedirect />}
