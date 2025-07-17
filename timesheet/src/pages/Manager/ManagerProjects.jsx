@@ -39,6 +39,7 @@ const ManagerProjects = () => {
   const [isLoadingMoreTasks, setIsLoadingMoreTasks] = useState(false);
   const [hasMoreTasks, setHasMoreTasks] = useState(true);
   const searchTimeout = useRef(null);
+  const [statusFilter, setStatusFilter] = useState(""); // "", "true", or "false"
 
   const tabLabels = ["Projects", "Sub-Division", "Tasks"];
 
@@ -71,6 +72,7 @@ const ManagerProjects = () => {
       const response = await fetch(`${config.apiBaseURL}/other-tasks/`);
       const data = await response.json();
       setTasks(data);
+      setFilteredTask(data);
     } catch (err) {
       console.log("Unable to fetch tasks", err);
     }
@@ -186,16 +188,28 @@ const ManagerProjects = () => {
         const code = u.project_code?.toLowerCase() || "";
         const name = u.project_title?.toLowerCase() || "";
         const discipline = u.discipline?.toLowerCase() || "";
-        return (
+        // const matchesStatus = String(u.status).toLowerCase() || "";
+        // return (
+        //   code.includes(lowerSearch) ||
+        //   name.includes(lowerSearch) ||
+        //   discipline.includes(lowerSearch) ||
+        //   matchesStatus.includes(statusFilter)
+        // );
+
+        const matchesSearch =
           code.includes(lowerSearch) ||
           name.includes(lowerSearch) ||
-          discipline.includes(lowerSearch)
-        );
+          discipline.includes(lowerSearch);
+
+        const matchesStatus =
+          statusFilter === "" || String(u.status) === statusFilter;
+
+        return matchesSearch && matchesStatus;
       });
       setFilteredProjects(filtered);
       setVisibleProjects(10);
       setHasMoreProjects(filtered.length > 10);
-      
+
       if (searchText && filtered.length === 0) {
         // toast.info("No users found", {
         //   className: "custom-toast",
@@ -206,11 +220,12 @@ const ManagerProjects = () => {
         //   hideProgressBar: true,
         // });
       }
-    }, 500);
+    }, 100);
 
     return () => clearTimeout(searchTimeout.current);
-  }, [searchText, projects]);
+  }, [searchText, projects, statusFilter]);
 
+  // console.log("status filter", statusFilter);
   useEffect(() => {
     if (searchTimeout.current) {
       clearTimeout(searchTimeout.current);
@@ -237,7 +252,7 @@ const ManagerProjects = () => {
         //   hideProgressBar: true,
         // });
       }
-    }, 500);
+    }, 100);
 
     return () => clearTimeout(searchTimeout.current);
   }, [searchBuild, buildings]);
@@ -273,7 +288,7 @@ const ManagerProjects = () => {
         //   hideProgressBar: true,
         // });
       }
-    }, 500);
+    }, 100);
 
     return () => clearTimeout(searchTimeout.current);
   }, [searchTask, tasks]);
@@ -321,7 +336,7 @@ const ManagerProjects = () => {
                       setVisibleProjects(nextVisible);
                     }
                     setIsLoadingMoreProjects(false);
-                  }, 1000); // Simulate 2 seconds loading
+                  }, 100); // Simulate 2 seconds loading
                 }
               }}
             >
@@ -335,7 +350,44 @@ const ManagerProjects = () => {
                     <th>Total hours</th>
                     <th>Consumed hours</th>
                     <th>Discipline</th>
-                    <th>Status</th>
+                    <th>
+                      Status&nbsp;
+                      <span
+                        onClick={() => {
+                          if (statusFilter === "") {
+                            setStatusFilter("true"); // In progress
+                          } else if (statusFilter === "true") {
+                            setStatusFilter("false"); // Completed
+                          } else {
+                            setStatusFilter(""); // All
+                          }
+                        }}
+                        style={{ cursor: "pointer" }}
+                        title={
+                          statusFilter === ""
+                            ? "Filter: All"
+                            : statusFilter === "true"
+                            ? "Filter: In progress"
+                            : "Filter: Completed"
+                        }
+                      >
+                        {statusFilter === "" && (
+                          <i className="fas fa-filter"></i>
+                        )}
+                        {statusFilter === "true" && (
+                          <i
+                            className="fas fa-play-circle"
+                            style={{ color: "orange" }}
+                          ></i>
+                        )}
+                        {statusFilter === "false" && (
+                          <i
+                            className="fas fa-check-circle"
+                            style={{ color: "green" }}
+                          ></i>
+                        )}
+                      </span>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -416,7 +468,7 @@ const ManagerProjects = () => {
                       setVisibleBuildings(nextVisible);
                     }
                     setIsLoadingMoreBuildings(false);
-                  }, 1000); // Simulate 2 seconds loading
+                  }, 100); // Simulate 2 seconds loading
                 }
               }}
             >
@@ -507,7 +559,7 @@ const ManagerProjects = () => {
                       setVisibleTasks(nextVisible);
                     }
                     setIsLoadingMoreTasks(false);
-                  }, 1000); // Simulate 2 seconds loading
+                  }, 100); // Simulate 2 seconds loading
                 }
               }}
             >
