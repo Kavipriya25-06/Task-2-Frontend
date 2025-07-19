@@ -207,6 +207,11 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
       return;
     }
 
+    if (!formData.duration) {
+      showWarningToast("Enter the Duration.");
+      return;
+    }
+
     if (formData.resumptionDate <= formData.endDate) {
       showWarningToast("Enter the Resumption date.");
       return;
@@ -351,6 +356,9 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
       const currentData = await res.json();
 
       const currentLeave = parseFloat(currentData[leaveTypeKey] || 0);
+      if (duration == null || isNaN(parseFloat(duration))) {
+        duration = 0;
+      }
       const newLeaveBalance = currentLeave - parseFloat(duration);
 
       // Step 2: Patch with updated value
