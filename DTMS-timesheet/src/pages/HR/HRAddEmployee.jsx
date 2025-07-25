@@ -436,43 +436,43 @@
 //                 placeholder="Father's Name"
 //               />
 //             </div>
-//             <div className="individual-tabs">
-//               <label>Gender</label>
-//               <select
-//                 name="gender"
-//                 value={formData.gender}
-//                 onChange={handleChange}
-//                 // placeholder="Gender"
-//               >
-//                 <option value="">Select Gender</option>
-//                 <option value="Male">Male</option>
-//                 <option value="Female">Female</option>
-//                 <option value="Others">Others</option>
-//               </select>
-//             </div>
-//             <div className="individual-tabs">
-//               <label>Date of Birth</label>
-//               <div className="date-input-container">
-//                 <DatePicker
-//                   selected={formData.dob}
-//                   onChange={(date) =>
-//                     setFormData({
-//                       ...formData,
-//                       dob: format(date, "yyyy-MM-dd"),
-//                     })
-//                   }
-//                   dateFormat="dd-MMM-yyyy"
-//                   placeholderText="dd-mm-yyyy"
-//                   className="input1"
-//                   showMonthDropdown
-//                   showYearDropdown
-//                   dropdownMode="select" // ensures dropdown shows on click, not scroll
-//                   maxDate={eighteenYearsAgo}
-//                 />
-//                 <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
-//                 {/* Font Awesome Calendar Icon */}
-//               </div>
-//             </div>
+// <div className="individual-tabs">
+//   <label>Gender</label>
+//   <select
+//     name="gender"
+//     value={formData.gender}
+//     onChange={handleChange}
+//     // placeholder="Gender"
+//   >
+//     <option value="">Select Gender</option>
+//     <option value="Male">Male</option>
+//     <option value="Female">Female</option>
+//     <option value="Others">Others</option>
+//   </select>
+// </div>
+// <div className="individual-tabs">
+//   <label>Date of Birth</label>
+//   <div className="date-input-container">
+//     <DatePicker
+//       selected={formData.dob}
+//       onChange={(date) =>
+//         setFormData({
+//           ...formData,
+//           dob: format(date, "yyyy-MM-dd"),
+//         })
+//       }
+//       dateFormat="dd-MMM-yyyy"
+//       placeholderText="dd-mm-yyyy"
+//       className="input1"
+//       showMonthDropdown
+//       showYearDropdown
+//       dropdownMode="select" // ensures dropdown shows on click, not scroll
+//       maxDate={eighteenYearsAgo}
+//     />
+//     <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+//     {/* Font Awesome Calendar Icon */}
+//   </div>
+// </div>
 // <div className="individual-tabs">
 //   <label>Date of joining</label>
 //   <div className="date-input-container">
@@ -495,134 +495,136 @@
 //     {/* Font Awesome Calendar Icon */}
 //   </div>
 // </div>
-//             <div className="individual-tabs">
-//               <label>
-//                 Personal Email <span className="required-star">*</span>
-//               </label>
-//               <input
-//                 name="personal_email"
-//                 value={formData.personal_email}
-//                 onChange={handleChange}
-//                 placeholder="Personal Email"
-//                 className={errors.personal_email ? "input-error" : ""}
-//               />
-//               {errors.personal_email && (
-//                 <span className="error-message">{errors.personal_email}</span>
-//               )}
-//             </div>
-//             <div className="individual-tabs">
-//               <label>Phone Number</label>
-//               <input
-//                 name="contact_number"
-//                 value={formData.contact_number}
-//                 onChange={handleChange}
-//                 placeholder="Phone Number"
-//                 className={errors.contact_number ? "input-error" : ""}
-//               />
-//               {errors.contact_number && (
-//                 <span className="error-message">{errors.contact_number}</span>
-//               )}
-//             </div>
-//             <div className="individual-tabs">
-//               <label>Aadhaar</label>
-//               <input
-//                 name="aadhaar_number"
-//                 value={formData.aadhaar_number}
-//                 onChange={handleChange}
-//                 placeholder="Aadhaar"
-//                 className={errors.aadhaar_number ? "input-error" : ""}
-//               />
-//               {errors.aadhaar_number && (
-//                 <span className="error-message">{errors.aadhaar_number}</span>
-//               )}
-//             </div>
-//             <div className="individual-tabs">
-//               <label>PAN Number</label>
-//               <input
-//                 name="PAN"
-//                 value={formData.PAN}
-//                 onChange={handleChange}
-//                 placeholder="PAN Number"
-//                 className={errors.PAN ? "input-error" : ""}
-//               />
-//               {errors.PAN && (
-//                 <span className="error-message">{errors.PAN}</span>
-//               )}
-//             </div>
-//             <div className="individual-tabs">
-//               <label>UAN</label>
-//               <input
-//                 name="UAN"
-//                 value={formData.UAN}
-//                 onChange={handleChange}
-//                 placeholder="UAN"
-//                 className={errors.UAN ? "input-error" : ""}
-//               />
-//               {errors.UAN && (
-//                 <span className="error-message">{errors.UAN}</span>
-//               )}
-//             </div>
-//             <div className="individual-tabs">
-//               <label>PF Number</label>
-//               <input
-//                 name="pf_number"
-//                 value={formData.pf_number}
-//                 onChange={handleChange}
-//                 placeholder="PF Number"
-//                 className={errors.pf_number ? "input-error" : ""}
-//               />
-//               {errors.pf_number && (
-//                 <span className="error-message">{errors.pf_number}</span>
-//               )}
-//             </div>
-//             <div className="individual-tabs">
-//               <label>ESI Number</label>
-//               <input
-//                 name="esi_number"
-//                 value={formData.esi_number}
-//                 onChange={handleChange}
-//                 placeholder="ESI Number"
-//                 className={errors.esi_number ? "input-error" : ""}
-//               />
-//               {errors.esi_number && (
-//                 <span className="error-message">{errors.esi_number}</span>
-//               )}
-//             </div>
-//             <div className="individual-tabs">
-//               <label>Passport Number</label>
-//               <input
-//                 name="passport_number"
-//                 value={formData.passport_number}
-//                 onChange={handleChange}
-//                 placeholder="Passport Number"
-//                 className={errors.passport_number ? "input-error" : ""}
-//               />
-//               {errors.passport_number && (
-//                 <span className="error-message">{errors.passport_number}</span>
-//               )}
-//             </div>
-//             <div className="individual-tabs">
-//               <label>Passport validity</label>
-//               <div className="date-input-container">
-//                 <DatePicker
-//                   selected={formData.passport_validity}
-//                   onChange={(date) =>
-//                     setFormData({
-//                       ...formData,
-//                       passport_validity: format(date, "yyyy-MM-dd"),
-//                     })
-//                   }
-//                   dateFormat="dd-MMM-yyyy"
-//                   placeholderText="dd-mm-yyyy"
-//                   className="input1"
-//                   showMonthDropdown
-//                   showYearDropdown
-//                   dropdownMode="select"
-//                 />
-//                 <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
-//                 {/* Font Awesome Calendar Icon */}
-//               </div>
-//             </div>
+// <div className="individual-tabs">
+//   <label>
+//     Personal Email <span className="required-star">*</span>
+//   </label>
+//   <input
+//     name="personal_email"
+//     value={formData.personal_email}
+//     onChange={handleChange}
+//     placeholder="Personal Email"
+//     className={errors.personal_email ? "input-error" : ""}
+//   />
+//   {errors.personal_email && (
+//     <span className="error-message">{errors.personal_email}</span>
+//   )}
+// </div>
+{
+  /* <div className="individual-tabs">
+  <label>Phone Number</label>
+  <input
+    name="contact_number"
+    value={formData.contact_number}
+    onChange={handleChange}
+    placeholder="Phone Number"
+    className={errors.contact_number ? "input-error" : ""}
+  />
+  {errors.contact_number && (
+    <span className="error-message">{errors.contact_number}</span>
+  )}
+</div> */
+}
+// <div className="individual-tabs">
+//   <label>Aadhaar</label>
+//   <input
+//     name="aadhaar_number"
+//     value={formData.aadhaar_number}
+//     onChange={handleChange}
+//     placeholder="Aadhaar"
+//     className={errors.aadhaar_number ? "input-error" : ""}
+//   />
+//   {errors.aadhaar_number && (
+//     <span className="error-message">{errors.aadhaar_number}</span>
+//   )}
+// </div>
+// <div className="individual-tabs">
+//   <label>PAN Number</label>
+//   <input
+//     name="PAN"
+//     value={formData.PAN}
+//     onChange={handleChange}
+//     placeholder="PAN Number"
+//     className={errors.PAN ? "input-error" : ""}
+//   />
+//   {errors.PAN && (
+//     <span className="error-message">{errors.PAN}</span>
+//   )}
+// </div>
+// <div className="individual-tabs">
+//   <label>UAN</label>
+//   <input
+//     name="UAN"
+//     value={formData.UAN}
+//     onChange={handleChange}
+//     placeholder="UAN"
+//     className={errors.UAN ? "input-error" : ""}
+//   />
+//   {errors.UAN && (
+//     <span className="error-message">{errors.UAN}</span>
+//   )}
+// </div>
+// <div className="individual-tabs">
+//   <label>PF Number</label>
+//   <input
+//     name="pf_number"
+//     value={formData.pf_number}
+//     onChange={handleChange}
+//     placeholder="PF Number"
+//     className={errors.pf_number ? "input-error" : ""}
+//   />
+//   {errors.pf_number && (
+//     <span className="error-message">{errors.pf_number}</span>
+//   )}
+// </div>
+// <div className="individual-tabs">
+//   <label>ESI Number</label>
+//   <input
+//     name="esi_number"
+//     value={formData.esi_number}
+//     onChange={handleChange}
+//     placeholder="ESI Number"
+//     className={errors.esi_number ? "input-error" : ""}
+//   />
+//   {errors.esi_number && (
+//     <span className="error-message">{errors.esi_number}</span>
+//   )}
+// </div>
+// <div className="individual-tabs">
+//   <label>Passport Number</label>
+//   <input
+//     name="passport_number"
+//     value={formData.passport_number}
+//     onChange={handleChange}
+//     placeholder="Passport Number"
+//     className={errors.passport_number ? "input-error" : ""}
+//   />
+//   {errors.passport_number && (
+//     <span className="error-message">{errors.passport_number}</span>
+//   )}
+// </div>
+// <div className="individual-tabs">
+//   <label>Passport validity</label>
+//   <div className="date-input-container">
+//     <DatePicker
+//       selected={formData.passport_validity}
+//       onChange={(date) =>
+//         setFormData({
+//           ...formData,
+//           passport_validity: format(date, "yyyy-MM-dd"),
+//         })
+//       }
+//       dateFormat="dd-MMM-yyyy"
+//       placeholderText="dd-mm-yyyy"
+//       className="input1"
+//       showMonthDropdown
+//       showYearDropdown
+//       dropdownMode="select"
+//     />
+//     <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+//     {/* Font Awesome Calendar Icon */}
+//   </div>
+// </div>
 // <div className="individual-tabs">
 //   <label>Status</label>
 //   <select
@@ -637,53 +639,53 @@
 //     <option value="resigned">Resigned</option>
 //   </select>
 // </div>
-//             <div className="individual-tabs">
-//               <label>Permanent Address</label>
-//               <textarea
-//                 name="permanent_address"
-//                 value={formData.permanent_address}
-//                 onChange={handleChange}
-//                 placeholder="Permanent Address"
-//               />
-//             </div>
-//             <div className="individual-tabs">
-//               <label>Local Address</label>
-//               <textarea
-//                 name="local_address"
-//                 value={formData.local_address}
-//                 onChange={handleChange}
-//                 placeholder="Current Address"
-//               />
-//             </div>
-//             <div className="individual-tabs">
-//               <label>Remarks</label>
-//               <textarea
-//                 name="remarks"
-//                 value={formData.remarks}
-//                 onChange={handleChange}
-//                 placeholder="Remarks"
-//               />
-//             </div>
+// <div className="individual-tabs">
+//   <label>Permanent Address</label>
+//   <textarea
+//     name="permanent_address"
+//     value={formData.permanent_address}
+//     onChange={handleChange}
+//     placeholder="Permanent Address"
+//   />
+// </div>
+// <div className="individual-tabs">
+//   <label>Local Address</label>
+//   <textarea
+//     name="local_address"
+//     value={formData.local_address}
+//     onChange={handleChange}
+//     placeholder="Current Address"
+//   />
+// </div>
+// <div className="individual-tabs">
+//   <label>Remarks</label>
+//   <textarea
+//     name="remarks"
+//     value={formData.remarks}
+//     onChange={handleChange}
+//     placeholder="Remarks"
+//   />
+// </div>
 //           </div>
 //         );
 //       case 1:
 //         return (
 //           <div className="tab-content">
-//             <div className="individual-tabs">
-//               <label>Employment Type</label>
-//               <select
-//                 name="employment_type"
-//                 value={formData.employment_type}
-//                 onChange={handleChange}
-//                 // placeholder="Employment Type"
-//               >
-//                 <option value="">Select Employment Type</option>
-//                 <option value="Fulltime">Full-Time</option>
-//                 <option value="Probation">Probation</option>
-//                 <option value="Internship">Internship</option>
-//                 <option value="Contract">Contract</option>
-//               </select>
-//             </div>
+// <div className="individual-tabs">
+//   <label>Employment Type</label>
+//   <select
+//     name="employment_type"
+//     value={formData.employment_type}
+//     onChange={handleChange}
+//     // placeholder="Employment Type"
+//   >
+//     <option value="">Select Employment Type</option>
+//     <option value="Fulltime">Full-Time</option>
+//     <option value="Probation">Probation</option>
+//     <option value="Internship">Internship</option>
+//     <option value="Contract">Contract</option>
+//   </select>
+// </div>
 // <div className="individual-tabs">
 //   <label>Designation</label>
 //   <input
@@ -898,102 +900,102 @@
 //       case 2:
 //         return (
 //           <div className="tab-content">
-//             <div className="individual-tabs">
-//               <label>Account Number</label>
-//               <input
-//                 name="account_number"
-//                 value={formData.account_number}
-//                 onChange={handleChange}
-//                 placeholder="Account Number"
-//               />
-//             </div>
-//             <div className="individual-tabs">
-//               <label>IFSC Code</label>
-//               <input
-//                 name="ifsc_code"
-//                 value={formData.ifsc_code}
-//                 onChange={handleChange}
-//                 placeholder="IFSC Code"
-//                 className={errors.ifsc_code ? "input-error" : ""}
-//               />
-//               {errors.ifsc_code && (
-//                 <span className="error-message">{errors.ifsc_code}</span>
-//               )}
-//             </div>
-//             <div className="individual-tabs">
-//               <label>Bank Name</label>
-//               <input
-//                 name="bank_name"
-//                 value={formData.bank_name}
-//                 onChange={handleChange}
-//                 placeholder="Bank Name"
-//               />
-//             </div>
-//             <div className="individual-tabs">
-//               <label>Branch Name</label>
-//               <input
-//                 name="bank_branch_name"
-//                 value={formData.bank_branch_name}
-//                 onChange={handleChange}
-//                 placeholder="Branch Name"
-//               />
-//             </div>
-//             <div className="individual-tabs">
-//               <label>Bank Address</label>
-//               <textarea
-//                 name="bank_address"
-//                 value={formData.bank_address}
-//                 onChange={handleChange}
-//                 placeholder="Bank Address"
-//               />
-//             </div>
+// <div className="individual-tabs">
+//   <label>Account Number</label>
+//   <input
+//     name="account_number"
+//     value={formData.account_number}
+//     onChange={handleChange}
+//     placeholder="Account Number"
+//   />
+// </div>
+// <div className="individual-tabs">
+//   <label>IFSC Code</label>
+//   <input
+//     name="ifsc_code"
+//     value={formData.ifsc_code}
+//     onChange={handleChange}
+//     placeholder="IFSC Code"
+//     className={errors.ifsc_code ? "input-error" : ""}
+//   />
+//   {errors.ifsc_code && (
+//     <span className="error-message">{errors.ifsc_code}</span>
+//   )}
+// </div>
+// <div className="individual-tabs">
+//   <label>Bank Name</label>
+//   <input
+//     name="bank_name"
+//     value={formData.bank_name}
+//     onChange={handleChange}
+//     placeholder="Bank Name"
+//   />
+// </div>
+// <div className="individual-tabs">
+//   <label>Branch Name</label>
+//   <input
+//     name="bank_branch_name"
+//     value={formData.bank_branch_name}
+//     onChange={handleChange}
+//     placeholder="Branch Name"
+//   />
+// </div>
+// <div className="individual-tabs">
+//   <label>Bank Address</label>
+//   <textarea
+//     name="bank_address"
+//     value={formData.bank_address}
+//     onChange={handleChange}
+//     placeholder="Bank Address"
+//   />
+// </div>
 //           </div>
 //         );
 //       case 3:
 //         return (
 //           <div className="tab-content">
-//             <div className="individual-tabs">
-//               <label>Emergency Contact Name</label>
-//               <input
-//                 name="emergency_contact_name"
-//                 value={formData.emergency_contact_name}
-//                 onChange={handleChange}
-//                 placeholder="Emergency Contact Name"
-//               />
-//             </div>
-//             <div className="individual-tabs">
-//               <label>Relationship</label>
-//               <input
-//                 name="emergency_contact_relationship"
-//                 value={formData.emergency_contact_relationship}
-//                 onChange={handleChange}
-//                 placeholder="Relationship"
-//               />
-//             </div>
-//             <div className="individual-tabs">
-//               <label>Emergency Contact Number</label>
-//               <input
-//                 name="emergency_contact_number"
-//                 value={formData.emergency_contact_number}
-//                 onChange={handleChange}
-//                 placeholder="Emergency Contact Number"
-//                 className={errors.emergency_contact_number ? "input-error" : ""}
-//               />
-//               {errors.emergency_contact_number && (
-//                 <span className="error-message">
-//                   {errors.emergency_contact_number}
-//                 </span>
-//               )}
-//             </div>
-//             <div className="individual-tabs">
-//               <label>Blood Group</label>
-//               <input
-//                 name="blood_group"
-//                 value={formData.blood_group}
-//                 onChange={handleChange}
-//                 placeholder="Blood Group"
-//               />
-//             </div>
+// <div className="individual-tabs">
+//   <label>Emergency Contact Name</label>
+//   <input
+//     name="emergency_contact_name"
+//     value={formData.emergency_contact_name}
+//     onChange={handleChange}
+//     placeholder="Emergency Contact Name"
+//   />
+// </div>
+// <div className="individual-tabs">
+//   <label>Relationship</label>
+//   <input
+//     name="emergency_contact_relationship"
+//     value={formData.emergency_contact_relationship}
+//     onChange={handleChange}
+//     placeholder="Relationship"
+//   />
+// </div>
+// <div className="individual-tabs">
+//   <label>Emergency Contact Number</label>
+//   <input
+//     name="emergency_contact_number"
+//     value={formData.emergency_contact_number}
+//     onChange={handleChange}
+//     placeholder="Emergency Contact Number"
+//     className={errors.emergency_contact_number ? "input-error" : ""}
+//   />
+//   {errors.emergency_contact_number && (
+//     <span className="error-message">
+//       {errors.emergency_contact_number}
+//     </span>
+//   )}
+// </div>
+// <div className="individual-tabs">
+//   <label>Blood Group</label>
+//   <input
+//     name="blood_group"
+//     value={formData.blood_group}
+//     onChange={handleChange}
+//     placeholder="Blood Group"
+//   />
+// </div>
 //           </div>
 //         );
 //       default:
@@ -1072,6 +1074,44 @@ const AddEmployee = () => {
   const { employee_id } = useParams();
   const navigate = useNavigate();
   const [managers, setManagers] = useState([]);
+
+  const [assets, setAssets] = useState([
+    {
+      type: "",
+      model: "",
+      serialnumber: "",
+      given_date: null,
+      return_date: null,
+    },
+  ]);
+  const [dependants, setDependants] = useState([
+    { name: "", relationship: "", date_of_birth: null, age: "" },
+  ]);
+  const [education, setEducation] = useState([
+    {
+      institution_name: "",
+      degree: "",
+      specialization: "",
+      date_of_completion: null,
+    },
+  ]);
+  const [workExperience, setWorkExperience] = useState([
+    { company_name: "", company_role: "", start_date: null, end_date: null },
+  ]);
+  const [languages, setLanguages] = useState([
+    { language: "", read: "", write: "", speak: "" },
+  ]);
+
+  const addRow = (stateSetter, defaultRow) =>
+    stateSetter((prev) => [...prev, defaultRow]);
+  const removeRow = (index, state, stateSetter) =>
+    stateSetter(state.filter((_, i) => i !== index));
+
+  const handleRowChange = (index, name, value, state, stateSetter) => {
+    const newRows = [...state];
+    newRows[index][name] = value;
+    stateSetter(newRows);
+  };
 
   const eighteenYearsAgo = new Date();
   eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
@@ -1190,13 +1230,58 @@ const AddEmployee = () => {
         body: formPayload,
       });
       const responseData = await response.json();
+      const employeeId = responseData.data.employee_id;
+      console.log("Received employee id is", employeeId);
+
+      // Assets
+      for (const a of assets) {
+        await fetch(`${config.apiBaseURL}/assets/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...a, employee: employeeId }),
+        });
+      }
+      // Dependants
+      for (const d of dependants) {
+        await fetch(`${config.apiBaseURL}/dependant/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...d, employee: employeeId }),
+        });
+      }
+      // Education
+      for (const edu of education) {
+        await fetch(`${config.apiBaseURL}/education/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...edu, employee: employeeId }),
+        });
+      }
+      // Work Experience
+      for (const w of workExperience) {
+        await fetch(`${config.apiBaseURL}/work-experience/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...w, employee: employeeId }),
+        });
+      }
+      // Languages
+      for (const l of languages) {
+        await fetch(`${config.apiBaseURL}/languages-known/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...l, employee: employeeId }),
+        });
+      }
 
       if (!response.ok) {
         showErrorToast(`Failed to add employee`);
         return;
       }
       showSuccessToast("Employee Details uploaded successfully");
-      navigate("/hr/detail/employee-details");
+      setTimeout(() => {
+        navigate("/hr/detail/employee-details");
+      }, 1000); // waits for 1 second (1000ms)
     } catch (error) {
       showErrorToast(`Failed to create user: ${error.message}`);
     }
@@ -1362,6 +1447,15 @@ const AddEmployee = () => {
             </select>
           </div>
           <div className="individual-tabs">
+            <label>Source of Hire</label>
+            <input
+              name="source_of_hire"
+              value={formData.source_of_hire}
+              onChange={handleChange}
+              placeholder="Source of Hire"
+            />
+          </div>
+          <div className="individual-tabs">
             <label>Reporting Manager</label>
             <select
               name="reporting_manager"
@@ -1380,12 +1474,12 @@ const AddEmployee = () => {
           <div className="individual-tabs">
             <label>Secondary Reporting Manager</label>
             <select
-              name="reporting_manager"
-              value={formData.reporting_manager}
+              name="second_reporting_manager"
+              value={formData.second_reporting_manager}
               onChange={handleChange}
               // placeholder="Reporting Manager"
             >
-              <option value="">Select Reporting Manager</option>
+              <option value="">Select Secondary Reporting Manager</option>
               {managers.map((manager) => (
                 <option key={manager.employee_id} value={manager.employee_id}>
                   {manager.employee_code} - {manager.employee_name}
@@ -1393,271 +1487,524 @@ const AddEmployee = () => {
               ))}
             </select>
           </div>
-          <input
-            name="secondary_reporting_to"
-            placeholder="Secondary Reporting to"
-            value={formData.secondary_reporting_to}
-            onChange={handleChange}
-          />
-          <input
-            name="source_of_hire"
-            placeholder="Source of Hire"
-            value={formData.source_of_hire}
-            onChange={handleChange}
-          />
-          <input
-            name="seating_location"
-            placeholder="Seating Location"
-            value={formData.seating_location}
-            onChange={handleChange}
-          />
-          <input
-            name="employee_type"
-            placeholder="Employee Type"
-            value={formData.employee_type}
-            onChange={handleChange}
-          />
-          <input
-            name="extension"
-            placeholder="Extension"
-            value={formData.extension}
-            onChange={handleChange}
-          />
-          <input
-            name="work_phone"
-            placeholder="Work Phone"
-            value={formData.work_phone}
-            onChange={handleChange}
-          />
+
+          <div className="individual-tabs">
+            <label>Seating Location</label>
+            <input
+              name="seating_location"
+              value={formData.seating_location}
+              onChange={handleChange}
+              placeholder="Seating Location"
+            />
+          </div>
+
+          <div className="individual-tabs">
+            <label>Employment Type</label>
+            <select
+              name="employment_type"
+              value={formData.employment_type}
+              onChange={handleChange}
+              // placeholder="Employment Type"
+            >
+              <option value="">Select Employment Type</option>
+              <option value="Fulltime">Full-Time</option>
+              <option value="Probation">Probation</option>
+              <option value="Internship">Internship</option>
+              <option value="Contract">Contract</option>
+            </select>
+          </div>
+          <div className="individual-tabs">
+            <label>Work Phone</label>
+            <input
+              pattern="[0-9+\-]{0,15}"
+              name="work_phone"
+              value={formData.work_phone}
+              onChange={handleChange}
+              placeholder="Work Phone"
+            />
+          </div>
+          <div className="individual-tabs">
+            <label>Extension</label>
+            <input
+              pattern="[0-9+\-]{0,15}"
+              name="extension"
+              value={formData.extension}
+              onChange={handleChange}
+              placeholder="Extension"
+            />
+          </div>
         </div>
 
         {/* === Personal Details === */}
         <h3 className="section-header">Personal Details</h3>
         <div className="tab-content">
-          <DatePicker
-            selected={formData.dob}
-            onChange={(date) =>
-              setFormData({ ...formData, dob: format(date, "yyyy-MM-dd") })
-            }
-            placeholderText="Date of Birth"
-          />
-          <input
+          <div className="individual-tabs">
+            <label>Date of Birth</label>
+            <div className="date-input-container">
+              <DatePicker
+                selected={formData.dob}
+                onChange={(date) =>
+                  setFormData({
+                    ...formData,
+                    dob: format(date, "yyyy-MM-dd"),
+                  })
+                }
+                dateFormat="dd-MMM-yyyy"
+                placeholderText="dd-mm-yyyy"
+                className="input1"
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select" // ensures dropdown shows on click, not scroll
+                maxDate={eighteenYearsAgo}
+              />
+              <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+              {/* Font Awesome Calendar Icon */}
+            </div>
+          </div>
+
+          {/* <input
             name="age"
             placeholder="Age"
             value={formData.age}
             onChange={handleChange}
-          />
-          <input
-            name="gender"
-            placeholder="Gender"
-            value={formData.gender}
-            onChange={handleChange}
-          />
-          <input
-            name="marital_status"
-            placeholder="Marital Status"
-            value={formData.marital_status}
-            onChange={handleChange}
-          />
-          <input
-            name="present_address"
-            placeholder="Present Address"
-            value={formData.present_address}
-            onChange={handleChange}
-          />
-          <input
-            name="permanent_address"
-            placeholder="Permanent Address"
-            value={formData.permanent_address}
-            onChange={handleChange}
-          />
-          <input
-            name="mobile_phone"
-            placeholder="Mobile Phone"
-            value={formData.mobile_phone}
-            onChange={handleChange}
-          />
-          <input
-            name="permanent_phone"
-            placeholder="Permanent Phone"
-            value={formData.permanent_phone}
-            onChange={handleChange}
-          />
-          <input
-            name="emergency_contact_person"
-            placeholder="Emergency Contact Person"
-            value={formData.emergency_contact_person}
-            onChange={handleChange}
-          />
-          <input
-            name="emergency_contact_number"
-            placeholder="Emergency Contact Number"
-            value={formData.emergency_contact_number}
-            onChange={handleChange}
-          />
-          <input
-            name="relationship"
-            placeholder="Relationship"
-            value={formData.relationship}
-            onChange={handleChange}
-          />
-          <input
-            name="personal_email"
-            placeholder="Personal Email"
-            value={formData.personal_email}
-            onChange={handleChange}
-          />
-          <input
-            name="identification_marks"
-            placeholder="Identification Marks"
-            value={formData.identification_marks}
-            onChange={handleChange}
-          />
-          <input
-            name="blood_group"
-            placeholder="Blood Group"
-            value={formData.blood_group}
-            onChange={handleChange}
-          />
-          <DatePicker
-            selected={formData.wedding_date}
-            onChange={(date) =>
-              setFormData({
-                ...formData,
-                wedding_date: format(date, "yyyy-MM-dd"),
-              })
-            }
-            placeholderText="Wedding Date"
-          />
+          /> */}
+          <div className="individual-tabs">
+            <label>Gender</label>
+            <select
+              name="gender"
+              value={formData.gender}
+              onChange={handleChange}
+              // placeholder="Gender"
+            >
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Others">Others</option>
+            </select>
+          </div>
+          <div className="individual-tabs">
+            <label>Marital Status</label>
+            <select
+              name="marital_status"
+              value={formData.marital_status}
+              onChange={handleChange}
+              // placeholder="Gender"
+            >
+              <option value="">Select Status</option>
+              <option value="Single">Single</option>
+              <option value="Married">Married</option>
+              <option value="Divorced">Divorced</option>
+              <option value="Widowed">Widowed</option>
+              <option value="Separated">Separated</option>
+            </select>
+          </div>
+
+          <div className="individual-tabs">
+            <label>Wedding Date</label>
+            <div className="date-input-container">
+              <DatePicker
+                selected={formData.wedding_date}
+                onChange={(date) =>
+                  setFormData({
+                    ...formData,
+                    wedding_date: format(date, "yyyy-MM-dd"),
+                  })
+                }
+                dateFormat="dd-MMM-yyyy"
+                placeholderText="dd-mm-yyyy"
+                className="input1"
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select" // ensures dropdown shows on click, not scroll
+              />
+              <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+              {/* Font Awesome Calendar Icon */}
+            </div>
+          </div>
+
+          <div className="individual-tabs">
+            <label>Permanent Address</label>
+            <textarea
+              name="permanent_address"
+              value={formData.permanent_address}
+              onChange={handleChange}
+              placeholder="Permanent Address"
+            />
+          </div>
+          <div className="individual-tabs">
+            <label>Current Address</label>
+            <textarea
+              name="local_address"
+              value={formData.local_address}
+              onChange={handleChange}
+              placeholder="Current Address"
+            />
+          </div>
+          <div className="individual-tabs">
+            <label>Mobile Phone</label>
+            <input
+              name="contact_number"
+              value={formData.contact_number}
+              onChange={handleChange}
+              placeholder="Mobile Phone"
+              className={errors.contact_number ? "input-error" : ""}
+            />
+            {errors.contact_number && (
+              <span className="error-message">{errors.contact_number}</span>
+            )}
+          </div>
+
+          <div className="individual-tabs">
+            <label>Emergency Contact Name</label>
+            <input
+              name="emergency_contact_name"
+              value={formData.emergency_contact_name}
+              onChange={handleChange}
+              placeholder="Emergency Contact Name"
+            />
+          </div>
+          <div className="individual-tabs">
+            <label>Relationship</label>
+            <input
+              name="emergency_contact_relationship"
+              value={formData.emergency_contact_relationship}
+              onChange={handleChange}
+              placeholder="Relationship"
+            />
+          </div>
+          <div className="individual-tabs">
+            <label>Emergency Contact Number</label>
+            <input
+              name="emergency_contact_number"
+              value={formData.emergency_contact_number}
+              onChange={handleChange}
+              placeholder="Emergency Contact Number"
+              className={errors.emergency_contact_number ? "input-error" : ""}
+            />
+            {errors.emergency_contact_number && (
+              <span className="error-message">
+                {errors.emergency_contact_number}
+              </span>
+            )}
+          </div>
+          <div className="individual-tabs">
+            <label>Blood Group</label>
+            <input
+              name="blood_group"
+              value={formData.blood_group}
+              onChange={handleChange}
+              placeholder="Blood Group"
+            />
+          </div>
+          <div className="individual-tabs">
+            <label>
+              Personal Email <span className="required-star">*</span>
+            </label>
+            <input
+              name="personal_email"
+              value={formData.personal_email}
+              onChange={handleChange}
+              placeholder="Personal Email"
+              className={errors.personal_email ? "input-error" : ""}
+            />
+            {errors.personal_email && (
+              <span className="error-message">{errors.personal_email}</span>
+            )}
+          </div>
+
+          <div className="individual-tabs">
+            <label>Identification Marks</label>
+            <textarea
+              name="identification_marks"
+              value={formData.identification_marks}
+              onChange={handleChange}
+              placeholder="Identification Marks"
+            />
+          </div>
         </div>
 
         {/* === Additional Details === */}
         <h3 className="section-header">Additional Details</h3>
         <div className="tab-content">
-          <input
-            name="aadhaar_number"
-            placeholder="Aadhaar Number"
-            value={formData.aadhaar_number}
-            onChange={handleChange}
-          />
-          <input
-            name="esi_number"
-            placeholder="ESI Number"
-            value={formData.esi_number}
-            onChange={handleChange}
-          />
-          <input
-            name="uan"
-            placeholder="UAN"
-            value={formData.uan}
-            onChange={handleChange}
-          />
-          <input
-            name="pf_number"
-            placeholder="PF Number"
-            value={formData.pf_number}
-            onChange={handleChange}
-          />
-          <input
-            name="pan_number"
-            placeholder="PAN Number"
-            value={formData.pan_number}
-            onChange={handleChange}
-          />
-          <input
-            name="passport_number"
-            placeholder="Passport Number"
-            value={formData.passport_number}
-            onChange={handleChange}
-          />
-          <DatePicker
-            selected={formData.passport_validity}
-            onChange={(date) =>
-              setFormData({
-                ...formData,
-                passport_validity: format(date, "yyyy-MM-dd"),
-              })
-            }
-            placeholderText="Passport Validity"
-          />
-          <input
-            name="bank_name"
-            placeholder="Bank Name"
-            value={formData.bank_name}
-            onChange={handleChange}
-          />
-          <input
-            name="bank_branch"
-            placeholder="Bank Branch"
-            value={formData.bank_branch}
-            onChange={handleChange}
-          />
-          <input
-            name="ifsc_code"
-            placeholder="IFSC Code"
-            value={formData.ifsc_code}
-            onChange={handleChange}
-          />
-          <input
-            name="bank_address"
-            placeholder="Bank Address"
-            value={formData.bank_address}
-            onChange={handleChange}
-          />
-          <input
-            name="remarks"
-            placeholder="Remarks"
-            value={formData.remarks}
-            onChange={handleChange}
-          />
-          <input
-            name="qualification"
-            placeholder="Qualification"
-            value={formData.qualification}
-            onChange={handleChange}
-          />
-          <input
-            name="year_of_passing"
-            placeholder="Year of Passing"
-            value={formData.year_of_passing}
-            onChange={handleChange}
-          />
+          <div className="individual-tabs">
+            <label>Aadhaar</label>
+            <input
+              name="aadhaar_number"
+              value={formData.aadhaar_number}
+              onChange={handleChange}
+              placeholder="Aadhaar"
+              className={errors.aadhaar_number ? "input-error" : ""}
+            />
+            {errors.aadhaar_number && (
+              <span className="error-message">{errors.aadhaar_number}</span>
+            )}
+          </div>
+          <div className="individual-tabs">
+            <label>PAN Number</label>
+            <input
+              name="PAN"
+              value={formData.PAN}
+              onChange={handleChange}
+              placeholder="PAN Number"
+              className={errors.PAN ? "input-error" : ""}
+            />
+            {errors.PAN && <span className="error-message">{errors.PAN}</span>}
+          </div>
+          <div className="individual-tabs">
+            <label>UAN</label>
+            <input
+              name="UAN"
+              value={formData.UAN}
+              onChange={handleChange}
+              placeholder="UAN"
+              className={errors.UAN ? "input-error" : ""}
+            />
+            {errors.UAN && <span className="error-message">{errors.UAN}</span>}
+          </div>
+          <div className="individual-tabs">
+            <label>PF Number</label>
+            <input
+              name="pf_number"
+              value={formData.pf_number}
+              onChange={handleChange}
+              placeholder="PF Number"
+              className={errors.pf_number ? "input-error" : ""}
+            />
+            {errors.pf_number && (
+              <span className="error-message">{errors.pf_number}</span>
+            )}
+          </div>
+          <div className="individual-tabs">
+            <label>ESI Number</label>
+            <input
+              name="esi_number"
+              value={formData.esi_number}
+              onChange={handleChange}
+              placeholder="ESI Number"
+              className={errors.esi_number ? "input-error" : ""}
+            />
+            {errors.esi_number && (
+              <span className="error-message">{errors.esi_number}</span>
+            )}
+          </div>
+          <div className="individual-tabs">
+            <label>Passport Number</label>
+            <input
+              name="passport_number"
+              value={formData.passport_number}
+              onChange={handleChange}
+              placeholder="Passport Number"
+              className={errors.passport_number ? "input-error" : ""}
+            />
+            {errors.passport_number && (
+              <span className="error-message">{errors.passport_number}</span>
+            )}
+          </div>
+          <div className="individual-tabs">
+            <label>Passport validity</label>
+            <div className="date-input-container">
+              <DatePicker
+                selected={formData.passport_validity}
+                onChange={(date) =>
+                  setFormData({
+                    ...formData,
+                    passport_validity: format(date, "yyyy-MM-dd"),
+                  })
+                }
+                dateFormat="dd-MMM-yyyy"
+                placeholderText="dd-mm-yyyy"
+                className="input1"
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
+              />
+              <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+              {/* Font Awesome Calendar Icon */}
+            </div>
+          </div>
+          <div className="individual-tabs">
+            <label>Remarks</label>
+            <input
+              name="remarks"
+              value={formData.remarks}
+              onChange={handleChange}
+              placeholder="Remarks"
+            />
+          </div>
+          <div className="individual-tabs">
+            <label>Account Number</label>
+            <input
+              name="account_number"
+              value={formData.account_number}
+              onChange={handleChange}
+              placeholder="Account Number"
+            />
+          </div>
+          <div className="individual-tabs">
+            <label>IFSC Code</label>
+            <input
+              name="ifsc_code"
+              value={formData.ifsc_code}
+              onChange={handleChange}
+              placeholder="IFSC Code"
+              className={errors.ifsc_code ? "input-error" : ""}
+            />
+            {errors.ifsc_code && (
+              <span className="error-message">{errors.ifsc_code}</span>
+            )}
+          </div>
+          <div className="individual-tabs">
+            <label>Bank Name</label>
+            <input
+              name="bank_name"
+              value={formData.bank_name}
+              onChange={handleChange}
+              placeholder="Bank Name"
+            />
+          </div>
+          <div className="individual-tabs">
+            <label>Branch Name</label>
+            <input
+              name="bank_branch_name"
+              value={formData.bank_branch_name}
+              onChange={handleChange}
+              placeholder="Branch Name"
+            />
+          </div>
+          <div className="individual-tabs">
+            <label>Bank Address</label>
+            <textarea
+              name="bank_address"
+              value={formData.bank_address}
+              onChange={handleChange}
+              placeholder="Bank Address"
+            />
+          </div>
         </div>
 
         {/* === Language Table === */}
-        <h3 className="section-header">Language</h3>
-        <table className="info-table">
-          <thead>
-            <tr>
-              <th>Language</th>
-              <th>Speak</th>
-              <th>Write</th>
-              <th>Read</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <input placeholder="Language" />
-              </td>
-              <td>
-                <select>
-                  <option>Naive</option>
-                </select>
-              </td>
-              <td>
-                <select>
-                  <option>Naive</option>
-                </select>
-              </td>
-              <td>
-                <select>
-                  <option>Naive</option>
-                </select>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+
+        <h3 className="section-header">Languages</h3>
+        <div>
+          <table className="info-table">
+            <thead>
+              <tr>
+                <th>Language</th>
+                <th>Speak</th>
+                <th>Write</th>
+                <th>Read</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {languages.map((l, i) => (
+                <tr key={i}>
+                  <td>
+                    <input
+                      placeholder="Language"
+                      value={l.language}
+                      onChange={(e) =>
+                        handleRowChange(
+                          i,
+                          "language",
+                          e.target.value,
+                          languages,
+                          setLanguages
+                        )
+                      }
+                    />
+                  </td>
+                  <td>
+                    <select
+                      value={l.read}
+                      onChange={(e) =>
+                        handleRowChange(
+                          i,
+                          "read",
+                          e.target.value,
+                          languages,
+                          setLanguages
+                        )
+                      }
+                    >
+                      <option value="">Select</option>
+                      <option>Native</option>
+                      <option>Fluent</option>
+                      <option>Proficient</option>
+                      <option>Basic</option>
+                      <option>Conversational</option>
+                    </select>
+                  </td>
+                  <td>
+                    <select
+                      value={l.write}
+                      onChange={(e) =>
+                        handleRowChange(
+                          i,
+                          "write",
+                          e.target.value,
+                          languages,
+                          setLanguages
+                        )
+                      }
+                    >
+                      <option value="">Select</option>
+                      <option>Native</option>
+                      <option>Fluent</option>
+                      <option>Proficient</option>
+                      <option>Basic</option>
+                      <option>Conversational</option>
+                    </select>
+                  </td>
+                  <td>
+                    <select
+                      value={l.speak}
+                      onChange={(e) =>
+                        handleRowChange(
+                          i,
+                          "speak",
+                          e.target.value,
+                          languages,
+                          setLanguages
+                        )
+                      }
+                    >
+                      <option value="">Select</option>
+                      <option>Native</option>
+                      <option>Fluent</option>
+                      <option>Proficient</option>
+                      <option>Basic</option>
+                      <option>Conversational</option>
+                    </select>
+                  </td>
+                  <td>
+                    <button
+                      className="employee-delete-button"
+                      type="button"
+                      onClick={() => removeRow(i, languages, setLanguages)}
+                    >
+                      X
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <button
+            className="employee-add-button"
+            type="button"
+            onClick={() =>
+              addRow(setLanguages, {
+                language: "",
+                read: "",
+                write: "",
+                speak: "",
+              })
+            }
+          >
+            +
+          </button>
+        </div>
 
         {/* === Dependent Table === */}
         <h3 className="section-header">Dependent</h3>

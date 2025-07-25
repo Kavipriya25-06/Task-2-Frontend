@@ -33,6 +33,16 @@ export const useEmployeeFormHandler = (initialFormData) => {
       }));
       return;
     }
+    if (name === "work_phone") {
+      const filteredValue = value.replace(/[^0-9+\-]/g, "").slice(0, 15);
+      setFormData((prev) => ({ ...prev, [name]: filteredValue }));
+      return;
+    }
+    if (name === "extension") {
+      const filteredValue = value.replace(/[^0-9+\-]/g, "").slice(0, 15);
+      setFormData((prev) => ({ ...prev, [name]: filteredValue }));
+      return;
+    }
 
     if (name === "personal_email") {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
