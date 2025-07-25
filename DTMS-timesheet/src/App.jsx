@@ -660,7 +660,7 @@ const App = () => {
 
         {/* Bottom Bar */}
         <footer className="bottom-bar">
-          <div>Your Partner in Engineering Excellence.</div>
+          <div>Design, Develop and manufacture drones in India</div>
         </footer>
       </div>
     </Router>

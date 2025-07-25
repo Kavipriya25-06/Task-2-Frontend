@@ -19,12 +19,11 @@ export default function HeroSlider() {
     <div style={{ padding: "20px" }}>
       {/* <h2>Welcome to Timesheet Management system</h2> */}
       <div className="hero-content">
-        <h2>Your Partner in Engineering Excellence.</h2>
+        <h2>Empower your missions</h2>
         <p>
-          ARRIS brings in integrated multi-disciplinary service to our
-          customers, ensuring quality and meeting the schedule requirements of
-          the project. We are an ISO 9001-2015 certified company with a
-          well-established Quality Management System.
+          <strong>Aero360 -</strong> from Dronix Technologies Pvt Ltd, designs
+          and builds indigenous high performance autonomous drones to enhance
+          aerial surveying, surveillance and monitoring operations
         </p>
 
         <button

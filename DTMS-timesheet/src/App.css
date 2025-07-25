@@ -3076,11 +3076,20 @@ h3 {
   padding: 8px;
 }
 
-.individual-tabs {
+/* .individual-tabs {
   display: flex;
   flex-direction: column;
   width: auto;
   flex-shrink: 0;
+} */
+
+.individual-tabs {
+  display: grid;
+  grid-template-columns: 35fr 65fr; /* Equal space for label and input */
+  /* align-items: center; */
+  vertical-align: middle;
+  gap: 10px;
+  margin-bottom: 15px;
 }
 
 .individual-tabs label {
