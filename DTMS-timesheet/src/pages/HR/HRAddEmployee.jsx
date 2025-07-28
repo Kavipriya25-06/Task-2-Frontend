@@ -1074,6 +1074,18 @@ const AddEmployee = () => {
   const { employee_id } = useParams();
   const navigate = useNavigate();
   const [managers, setManagers] = useState([]);
+  const [attachments, setAttachments] = useState([
+    { document_type: "PAN", file: null },
+    { document_type: "Aadhaar", file: null },
+    { document_type: "Bank Details", file: null },
+    { document_type: "Degree Certificate", file: null },
+    { document_type: "Mark Sheets", file: null },
+    { document_type: "Resume", file: null },
+    { document_type: "Signed Employment Letter", file: null },
+    { document_type: "Last Company Relieving Letter", file: null },
+    { document_type: "Last Company Payslip", file: null },
+    { document_type: "ID Proof/Driving ID/Voter ID", file: null },
+  ]);
 
   const [assets, setAssets] = useState([
     {
@@ -1085,7 +1097,7 @@ const AddEmployee = () => {
     },
   ]);
   const [dependants, setDependants] = useState([
-    { name: "", relationship: "", date_of_birth: null, age: "" },
+    { name: "", relationship: "", date_of_birth: null, age: null },
   ]);
   const [education, setEducation] = useState([
     {
@@ -1274,6 +1286,20 @@ const AddEmployee = () => {
         });
       }
 
+      // Attachments
+      for (const att of attachments) {
+        if (att.file) {
+          const form = new FormData();
+          form.append("file", att.file);
+          form.append("document_type", att.document_type);
+          form.append("employee", employeeId);
+          await fetch(`${config.apiBaseURL}/employee-attachment/`, {
+            method: "POST",
+            body: form,
+          });
+        }
+      }
+
       if (!response.ok) {
         showErrorToast(`Failed to add employee`);
         return;
@@ -1285,6 +1311,24 @@ const AddEmployee = () => {
     } catch (error) {
       showErrorToast(`Failed to create user: ${error.message}`);
     }
+  };
+
+  const calculateExactAge = (dob) => {
+    const today = new Date();
+    let years = today.getFullYear() - dob.getFullYear();
+    let months = today.getMonth() - dob.getMonth();
+    let days = today.getDate() - dob.getDate();
+
+    if (days < 0) {
+      months -= 1;
+      days += new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+    }
+    if (months < 0) {
+      years -= 1;
+      months += 12;
+    }
+
+    return years;
   };
 
   return (
@@ -1931,8 +1975,8 @@ const AddEmployee = () => {
                       <option>Native</option>
                       <option>Fluent</option>
                       <option>Proficient</option>
-                      <option>Basic</option>
                       <option>Conversational</option>
+                      <option>Basic</option>
                     </select>
                   </td>
                   <td>
@@ -1952,8 +1996,8 @@ const AddEmployee = () => {
                       <option>Native</option>
                       <option>Fluent</option>
                       <option>Proficient</option>
-                      <option>Basic</option>
                       <option>Conversational</option>
+                      <option>Basic</option>
                     </select>
                   </td>
                   <td>
@@ -1973,8 +2017,8 @@ const AddEmployee = () => {
                       <option>Native</option>
                       <option>Fluent</option>
                       <option>Proficient</option>
-                      <option>Basic</option>
                       <option>Conversational</option>
+                      <option>Basic</option>
                     </select>
                   </td>
                   <td>
@@ -2006,109 +2050,536 @@ const AddEmployee = () => {
           </button>
         </div>
 
-        {/* === Dependent Table === */}
-        <h3 className="section-header">Dependent</h3>
-        <table className="info-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Relationship</th>
-              <th>Date of Birth</th>
-              <th>Age</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <input placeholder="Name" />
-              </td>
-              <td>
-                <input placeholder="Relationship" />
-              </td>
-              <td>
-                <DatePicker placeholderText="DOB" />
-              </td>
-              <td>
-                <input placeholder="Age" />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <h3 className="section-header">Dependant</h3>
+        <div>
+          <table className="info-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Relationship</th>
+                <th>Date of Birth</th>
+                <th>Age</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {dependants.map((d, i) => (
+                <tr key={i}>
+                  <td>
+                    <input
+                      placeholder="Name"
+                      value={d.name}
+                      onChange={(e) =>
+                        handleRowChange(
+                          i,
+                          "name",
+                          e.target.value,
+                          dependants,
+                          setDependants
+                        )
+                      }
+                    />
+                  </td>
+                  <td>
+                    <input
+                      placeholder="Relationship"
+                      value={d.relationship}
+                      onChange={(e) =>
+                        handleRowChange(
+                          i,
+                          "relationship",
+                          e.target.value,
+                          dependants,
+                          setDependants
+                        )
+                      }
+                    />
+                  </td>
+
+                  <td>
+                    <div className="date-input-container-info">
+                      <DatePicker
+                        portalId="root-portal"
+                        selected={d.date_of_birth}
+                        onChange={(date) => {
+                          const age = date ? calculateExactAge(date) : "";
+                          handleRowChange(
+                            i,
+                            "date_of_birth",
+                            date,
+                            dependants,
+                            setDependants
+                          );
+                          handleRowChange(
+                            i,
+                            "age",
+                            age,
+                            dependants,
+                            setDependants
+                          );
+                        }}
+                        dateFormat="dd-MMM-yyyy"
+                        placeholderText="dd-mm-yyyy"
+                        showMonthDropdown
+                        showYearDropdown
+                        className="input-date"
+                        dropdownMode="select"
+                      />
+                      <i className="fas fa-calendar-alt calendar-icon"></i>
+                    </div>
+                  </td>
+
+                  <td>
+                    <input
+                      placeholder="Age"
+                      value={d.age}
+                      readOnly
+                      onChange={(e) =>
+                        handleRowChange(
+                          i,
+                          "age",
+                          e.target.value,
+                          dependants,
+                          setDependants
+                        )
+                      }
+                    />
+                  </td>
+                  <td>
+                    <button
+                      className="employee-delete-button"
+                      type="button"
+                      onClick={() =>
+                        setDependants(
+                          dependants.filter((_, index) => index !== i)
+                        )
+                      }
+                    >
+                      X
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <button
+            className="employee-add-button"
+            type="button"
+            onClick={() =>
+              setDependants([
+                ...dependants,
+                { name: "", relationship: "", date_of_birth: null, age: "" },
+              ])
+            }
+          >
+            +
+          </button>
+        </div>
 
         {/* === Work Experience Table === */}
+
         <h3 className="section-header">Work Experience</h3>
-        <table className="info-table">
-          <thead>
-            <tr>
-              <th>Previous Company Name</th>
-              <th>Job Title</th>
-              <th>From Date</th>
-              <th>Last Date</th>
-              <th>Skills</th>
-              <th>Relevance</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <input placeholder="Company" />
-              </td>
-              <td>
-                <input placeholder="Job Title" />
-              </td>
-              <td>
-                <DatePicker placeholderText="From Date" />
-              </td>
-              <td>
-                <DatePicker placeholderText="Last Date" />
-              </td>
-              <td>
-                <input placeholder="Skills" />
-              </td>
-              <td>
-                <input placeholder="Relevance" />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div>
+          <table className="info-table">
+            <thead>
+              <tr>
+                <th>Company Name</th>
+                <th>Role</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {workExperience.map((w, i) => (
+                <tr key={i}>
+                  <td>
+                    <input
+                      placeholder="Company Name"
+                      value={w.company_name}
+                      onChange={(ev) =>
+                        handleRowChange(
+                          i,
+                          "company_name",
+                          ev.target.value,
+                          workExperience,
+                          setWorkExperience
+                        )
+                      }
+                    />
+                  </td>
+                  <td>
+                    <input
+                      placeholder="Role"
+                      value={w.company_role}
+                      onChange={(ev) =>
+                        handleRowChange(
+                          i,
+                          "company_role",
+                          ev.target.value,
+                          workExperience,
+                          setWorkExperience
+                        )
+                      }
+                    />
+                  </td>
+                  <td>
+                    <div className="date-input-container-info">
+                      <DatePicker
+                        portalId="root-portal"
+                        selected={w.start_date}
+                        onChange={(date) =>
+                          handleRowChange(
+                            i,
+                            "start_date",
+                            date,
+                            workExperience,
+                            setWorkExperience
+                          )
+                        }
+                        dateFormat="dd-MMM-yyyy"
+                        placeholderText="dd-mm-yyyy"
+                        showMonthDropdown
+                        showYearDropdown
+                        className="input-date"
+                        dropdownMode="select"
+                      />
+                      <i className="fas fa-calendar-alt calendar-icon"></i>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="date-input-container-info">
+                      <DatePicker
+                        portalId="root-portal"
+                        selected={w.end_date}
+                        onChange={(date) =>
+                          handleRowChange(
+                            i,
+                            "end_date",
+                            date,
+                            workExperience,
+                            setWorkExperience
+                          )
+                        }
+                        dateFormat="dd-MMM-yyyy"
+                        placeholderText="dd-mm-yyyy"
+                        showMonthDropdown
+                        showYearDropdown
+                        className="input-date"
+                        dropdownMode="select"
+                      />
+                      <i className="fas fa-calendar-alt calendar-icon"></i>
+                    </div>
+                  </td>
+                  <td>
+                    <button
+                      className="employee-delete-button"
+                      type="button"
+                      onClick={() =>
+                        setWorkExperience(
+                          workExperience.filter((_, index) => index !== i)
+                        )
+                      }
+                    >
+                      X
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <button
+            className="employee-add-button"
+            type="button"
+            onClick={() =>
+              setWorkExperience([
+                ...workExperience,
+                {
+                  company_name: "",
+                  company_role: "",
+                  start_date: null,
+                  end_date: null,
+                },
+              ])
+            }
+          >
+            +
+          </button>
+        </div>
+
+        {/* === Education Table === */}
+        <h3 className="section-header">Education</h3>
+        <div>
+          <table className="info-table">
+            <thead>
+              <tr>
+                <th>Institution Name</th>
+                <th>Degree</th>
+                <th>Specialization</th>
+                <th>Date of Completion</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {education.map((e, i) => (
+                <tr key={i}>
+                  <td>
+                    <input
+                      placeholder="Institution Name"
+                      value={e.institution_name}
+                      onChange={(ev) =>
+                        handleRowChange(
+                          i,
+                          "institution_name",
+                          ev.target.value,
+                          education,
+                          setEducation
+                        )
+                      }
+                    />
+                  </td>
+                  <td>
+                    <input
+                      placeholder="Degree"
+                      value={e.degree}
+                      onChange={(ev) =>
+                        handleRowChange(
+                          i,
+                          "degree",
+                          ev.target.value,
+                          education,
+                          setEducation
+                        )
+                      }
+                    />
+                  </td>
+                  <td>
+                    <input
+                      placeholder="Specialization"
+                      value={e.specialization}
+                      onChange={(ev) =>
+                        handleRowChange(
+                          i,
+                          "specialization",
+                          ev.target.value,
+                          education,
+                          setEducation
+                        )
+                      }
+                    />
+                  </td>
+                  <td>
+                    <div className="date-input-container-info">
+                      <DatePicker
+                        portalId="root-portal"
+                        selected={e.date_of_completion}
+                        onChange={(date) =>
+                          handleRowChange(
+                            i,
+                            "date_of_completion",
+                            date,
+                            education,
+                            setEducation
+                          )
+                        }
+                        dateFormat="dd-MMM-yyyy"
+                        placeholderText="dd-mm-yyyy"
+                        showMonthDropdown
+                        showYearDropdown
+                        className="input-date"
+                        dropdownMode="select"
+                      />
+                      <i className="fas fa-calendar-alt calendar-icon"></i>
+                    </div>
+                  </td>
+                  <td>
+                    <button
+                      className="employee-delete-button"
+                      type="button"
+                      onClick={() =>
+                        setEducation(
+                          education.filter((_, index) => index !== i)
+                        )
+                      }
+                    >
+                      X
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <button
+            className="employee-add-button"
+            type="button"
+            onClick={() =>
+              setEducation([
+                ...education,
+                {
+                  institution_name: "",
+                  degree: "",
+                  specialization: "",
+                  date_of_completion: null,
+                },
+              ])
+            }
+          >
+            +
+          </button>
+        </div>
 
         {/* === Asset Table === */}
-        <h3 className="section-header">Asset Table</h3>
-        <table className="info-table">
-          <thead>
-            <tr>
-              <th>Type</th>
-              <th>Model</th>
-              <th>Serial No</th>
-              <th>Given Date</th>
-              <th>Return Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <select>
-                  <option>Select</option>
-                </select>
-              </td>
-              <td>
-                <input placeholder="Model" />
-              </td>
-              <td>
-                <input placeholder="Serial No" />
-              </td>
-              <td>
-                <DatePicker placeholderText="Given Date" />
-              </td>
-              <td>
-                <DatePicker placeholderText="Return Date" />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+
+        <h3 className="section-header">Employee Assets</h3>
+        <div>
+          <table className="info-table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Model</th>
+                <th>Serial Number</th>
+                <th>Given Date</th>
+                <th>Return Date</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {assets.map((a, i) => (
+                <tr key={i}>
+                  <td>
+                    <input
+                      placeholder="Type"
+                      value={a.type}
+                      onChange={(e) =>
+                        handleRowChange(
+                          i,
+                          "type",
+                          e.target.value,
+                          assets,
+                          setAssets
+                        )
+                      }
+                    />
+                  </td>
+                  <td>
+                    <input
+                      placeholder="Model"
+                      value={a.model}
+                      onChange={(e) =>
+                        handleRowChange(
+                          i,
+                          "model",
+                          e.target.value,
+                          assets,
+                          setAssets
+                        )
+                      }
+                    />
+                  </td>
+                  <td>
+                    <input
+                      placeholder="Serial Number"
+                      value={a.serialnumber}
+                      onChange={(e) =>
+                        handleRowChange(
+                          i,
+                          "serialnumber",
+                          e.target.value,
+                          assets,
+                          setAssets
+                        )
+                      }
+                    />
+                  </td>
+                  <td>
+                    <div className="date-input-container-info">
+                      <DatePicker
+                        portalId="root-portal"
+                        selected={a.given_date}
+                        onChange={(date) =>
+                          handleRowChange(
+                            i,
+                            "given_date",
+                            date,
+                            assets,
+                            setAssets
+                          )
+                        }
+                        dateFormat="dd-MMM-yyyy"
+                        placeholderText="dd-mm-yyyy"
+                        showMonthDropdown
+                        showYearDropdown
+                        className="input-date"
+                        dropdownMode="select"
+                      />
+                      <i className="fas fa-calendar-alt calendar-icon"></i>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="date-input-container-info">
+                      <DatePicker
+                        portalId="root-portal"
+                        selected={a.return_date}
+                        onChange={(date) =>
+                          handleRowChange(
+                            i,
+                            "return_date",
+                            date,
+                            assets,
+                            setAssets
+                          )
+                        }
+                        dateFormat="dd-MMM-yyyy"
+                        placeholderText="dd-mm-yyyy"
+                        showMonthDropdown
+                        showYearDropdown
+                        className="input-date"
+                        dropdownMode="select"
+                      />
+                      <i className="fas fa-calendar-alt calendar-icon"></i>
+                    </div>
+                  </td>
+                  <td>
+                    <button
+                      className="employee-delete-button"
+                      type="button"
+                      onClick={() =>
+                        setAssets(assets.filter((_, index) => index !== i))
+                      }
+                    >
+                      X
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <button
+            className="employee-add-button"
+            type="button"
+            onClick={() =>
+              setAssets([
+                ...assets,
+                {
+                  type: "",
+                  model: "",
+                  serialnumber: "",
+                  given_date: null,
+                  return_date: null,
+                },
+              ])
+            }
+          >
+            +
+          </button>
+        </div>
 
         {/* === Attachments === */}
-        <h3 className="section-header">Attachments</h3>
+        {/* <h3 className="section-header">Attachments</h3>
         <div className="tab-content">
           <input placeholder="PAN" />
           <input placeholder="Aadhaar" />
@@ -2120,6 +2591,39 @@ const AddEmployee = () => {
           <input placeholder="Last Company Relieving Letter" />
           <input placeholder="Last Company Payslip" />
           <input placeholder="ID Proof/Driving ID/Voter ID" />
+        </div> */}
+
+        <h3 className="section-header">Attachments</h3>
+        <div>
+          <table className="info-table">
+            <thead>
+              <tr>
+                <th>Document Type</th>
+                <th>File</th>
+                {/* <th></th> */}
+              </tr>
+            </thead>
+            <tbody>
+              {attachments.map((att, index) => (
+                <tr key={index}>
+                  <td>{att.document_type}</td>
+                  <td>
+                    <input
+                      type="file"
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        const updated = [...attachments];
+                        updated[index].file = file;
+                        setAttachments(updated);
+                      }}
+                    />
+                  </td>
+                  {/* <td>{att.file && <span>{att.file.name}</span>}</td> */}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
         <div className="form-buttons">
