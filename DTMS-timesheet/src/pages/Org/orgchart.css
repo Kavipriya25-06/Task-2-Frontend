@@ -1,0 +1,57 @@
+/* orgchart.css */
+.org-chart {
+  display: flex;
+  justify-content: center;
+}
+
+.org-node {
+  text-align: center;
+  margin: 10px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #f9f9f9;
+  display: inline-block;
+  min-width: 120px;
+}
+
+.org-children {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  position: relative;
+}
+
+.org-children::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 2px;
+  height: 10px;
+  background: #ccc;
+}
+
+.org-node-line {
+  position: relative;
+}
+
+.org-node-line::before,
+.org-node-line::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 10px;
+  border-top: 2px solid #ccc;
+}
+
+.org-node-line::before {
+  left: 0;
+  border-right: 2px solid #ccc;
+}
+
+.org-node-line::after {
+  right: 0;
+  border-left: 2px solid #ccc;
+}

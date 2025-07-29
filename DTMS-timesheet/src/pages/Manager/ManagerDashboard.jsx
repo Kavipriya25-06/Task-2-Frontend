@@ -10,6 +10,7 @@ import {
   useNavigate,
   useLocation,
 } from "react-router-dom";
+import ManagerHierarchyChart from "../Org/ManagerHierarchyChart";
 
 const ManagerDashboard = () => {
   const { user } = useAuth();
@@ -26,6 +27,7 @@ const ManagerDashboard = () => {
     { label: "Attendance", path: "detail/attendance" },
     { label: "Comp-off", path: "detail/Compoff" },
     { label: "Reports", path: "detail/reports" },
+    { label: "Org Chart", path: "detail/managerchart" },
   ];
 
   // Current tab from path name

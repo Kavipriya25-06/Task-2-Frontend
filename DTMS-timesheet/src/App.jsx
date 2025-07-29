@@ -89,6 +89,7 @@ import ManagerTimeSheetEntry from "./pages/Manager/ManagerTimeSheetEntry.jsx";
 import ManagerDailyTimeSheetEntry from "./pages/Manager/ManagerDailyTimeSheetEntry.jsx";
 import ManagerWeeklyTimeSheetEntry from "./pages/Manager/ManagerWeeklyTimeSheet.jsx";
 import ManagerBulkApprovalScreen from "./pages/Manager/ManagerBulkApprovalScreen.jsx";
+import ManagerHierarchyChart from "./pages/Org/ManagerHierarchyChart.jsx";
 
 import ManagerApprovalScreen from "./pages/Manager/ManagerApprovalScreen.jsx";
 import ManagerLeaveApplication from "./pages/Manager/ManagerLeaveApplication.jsx";
@@ -356,6 +357,10 @@ const App = () => {
               />
               <Route path="detail" element={<ManagerDetailView />}>
                 <Route path="projects" element={<ManagerProjects />} />
+                <Route
+                  path="managerchart"
+                  element={<ManagerHierarchyChart />}
+                />
                 <Route
                   path="projects/:project_id"
                   element={<ManagerProjectView />}
