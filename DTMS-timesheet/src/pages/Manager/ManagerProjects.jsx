@@ -70,56 +70,18 @@ const ManagerProjects = () => {
       const response = await fetch(`${config.apiBaseURL}/tasks/`);
       const data = await response.json();
       setTasks(data);
+      setFilteredTask(data);
     } catch (err) {
       console.log("Unable to fetch tasks", err);
     }
   };
 
-  const fetchReports = async () => {
-    try {
-      const response = await fetch(`${config.apiBaseURL}/export-report/`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "text/csv",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to download CSV");
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-
-      const link = document.createElement("a");
-      link.href = url;
-
-      // Set default filename (optional: you can get it from headers too)
-      const now = new Date();
-      const istNow = new Date(now.getTime() + 5.5 * 60 * 60 * 1000); // Add 5.5 hours
-      const formattedIST = istNow
-        .toISOString()
-        .slice(0, 19)
-        .replace("T", "_")
-        .replace(/:/g, "-");
-
-      link.download = `projects_report_${formattedIST}.csv`;
-
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Error downloading CSV:", error);
-    }
-  };
-
-  const handleReportClick = () => {
-    fetchReports();
-  };
-
   const handleAddClick = () => {
     navigate(`create`);
+  };
+
+  const handleTaskClick = (task_id) => {
+    navigate(`/manager/detail/tasks/${task_id}`);
   };
 
   const handleAddBuildingClick = () => {
@@ -160,6 +122,7 @@ const ManagerProjects = () => {
       setFilteredProjects(filtered);
       setVisibleProjects(10);
       setHasMoreProjects(filtered.length > 10);
+
       if (searchText && filtered.length === 0) {
         // toast.info("No users found", {
         //   className: "custom-toast",
@@ -320,7 +283,9 @@ const ManagerProjects = () => {
                       <td>{project.total_hours}</td>
                       <td>{project.consumed_hours}</td>
                       <td>{project.discipline}</td>
-                      <td>{project.status ? "In progress" : "Completed"}</td>
+                      <td>
+                        {project.completed_status ? "Completed" : "In progress"}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -490,11 +455,11 @@ const ManagerProjects = () => {
                   {filteredTask.slice(0, visibleTasks).map((task) => (
                     <tr key={task.task_id}>
                       <td
-                      // onClick={() => handleProjectClick(task.task_id)}
-                      // style={{
-                      //   cursor: "pointer",
-                      //   textDecoration: "underline",
-                      // }}
+                        onClick={() => handleTaskClick(task.task_id)}
+                        style={{
+                          cursor: "pointer",
+                          textDecoration: "underline",
+                        }}
                       >
                         {task.task_code}
                       </td>
@@ -531,9 +496,6 @@ const ManagerProjects = () => {
             </button>
           ))}
         </div>
-        <button onClick={() => handleReportClick()} className="report-btn">
-          Download report
-        </button>
       </div>
       <div>{renderTabContent()}</div>
       <ToastContainerComponent />

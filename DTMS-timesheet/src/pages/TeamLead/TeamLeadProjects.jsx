@@ -229,17 +229,24 @@ import config from "../../config";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
 
 const TeamLeadProjects = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(0);
   const [projects, setProjects] = useState([]);
-  const [buildings, setBuildings] = useState([]);
-  const [tasks, setTasks] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
   const [filteredBuildings, setFilteredBuildings] = useState([]);
   const [filteredTask, setFilteredTask] = useState([]);
+  const [buildings, setBuildings] = useState([]);
+  const [tasks, setTasks] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [searchBuild, setSearchBuild] = useState("");
   const [searchTask, setSearchTask] = useState("");
@@ -285,6 +292,7 @@ const TeamLeadProjects = () => {
       const response = await fetch(`${config.apiBaseURL}/tasks/`);
       const data = await response.json();
       setTasks(data);
+      setFilteredTask(data);
     } catch (err) {
       console.log("Unable to fetch tasks", err);
     }
@@ -292,6 +300,10 @@ const TeamLeadProjects = () => {
 
   const handleAddClick = () => {
     navigate(`create`);
+  };
+
+  const handleTaskClick = (task_id) => {
+    navigate(`/manager/detail/tasks/${task_id}`);
   };
 
   const handleAddBuildingClick = () => {
@@ -469,7 +481,7 @@ const TeamLeadProjects = () => {
                     <th>Project name</th>
                     {/* <th>Building</th> */}
 
-                    <th>Estimated hours</th>
+                    <th>Estd. hours</th>
                     <th>Variation hours</th>
                     <th>Total hours</th>
                     <th>Consumed hours</th>
@@ -496,7 +508,9 @@ const TeamLeadProjects = () => {
                       <td>{project.total_hours}</td>
                       <td>{project.consumed_hours}</td>
                       <td>{project.discipline}</td>
-                      <td>{project.status ? "Completed" : "In progress"}</td>
+                      <td>
+                        {project.completed_status ? "Completed" : "In progress"}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -534,6 +548,7 @@ const TeamLeadProjects = () => {
                 </button>
               </div> */}
             </div>
+
             <div
               className="table-wrapper"
               style={{ maxHeight: "400px" }}
@@ -666,11 +681,11 @@ const TeamLeadProjects = () => {
                   {filteredTask.slice(0, visibleTasks).map((task) => (
                     <tr key={task.task_id}>
                       <td
-                      // onClick={() => handleProjectClick(task.task_id)}
-                      // style={{
-                      //   cursor: "pointer",
-                      //   textDecoration: "underline",
-                      // }}
+                        onClick={() => handleTaskClick(task.task_id)}
+                        style={{
+                          cursor: "pointer",
+                          textDecoration: "underline",
+                        }}
                       >
                         {task.task_code}
                       </td>
@@ -709,6 +724,7 @@ const TeamLeadProjects = () => {
         ))}
       </div>
       <div>{renderTabContent()}</div>
+      <ToastContainerComponent />
     </div>
   );
 };

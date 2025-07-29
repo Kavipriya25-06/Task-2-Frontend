@@ -78,6 +78,7 @@ import ManagerProjects from "./pages/Manager/ManagerProjects.jsx";
 import ManagerProjectView from "./pages/Manager/ManagerProjectView.jsx";
 import ManagerBuildingView from "./pages/Manager/ManagerBuildingView.jsx";
 import ManagerTaskView from "./pages/Manager/ManagerTaskView.jsx";
+import ManagerTaskEdit from "./pages/Manager/ManagerTaskEdit.jsx";
 import ManagerTeamLeaders from "./pages/Manager/ManagerTeamLeaders.jsx";
 import ManagerTeamLeadersView from "./pages/Manager/ManagerTeamLeadersView.jsx";
 import ManagerProjectCreate from "./pages/Manager/ManagerProjectCreate.jsx";
@@ -111,6 +112,7 @@ import TeamLeadTimeSheetEntry from "./pages/TeamLead/TeamLeadTimeSheetEntry.jsx"
 import TeamLeadProjectCreate from "./pages/TeamLead/TeamLeadProjectCreate.jsx";
 import TeamLeadBuildingCreate from "./pages/TeamLead/TeamLeadBuildingCreate.jsx";
 import TeamLeadTaskCreate from "./pages/TeamLead/TeamLeadTaskCreate.jsx";
+import TeamLeadTaskEdit from "./pages/TeamLead/TeamLeadTaskEdit.jsx";
 import TeamLeadLeaveRequestForm from "./pages/TeamLead/TeamLeadLeaveRequestForm.jsx";
 import TeamLeadDailyTimeSheetEntry from "./pages/TeamLead/TeamLeadDailyTimeSheetEntry.jsx";
 import TeamLeadWeeklyTimeSheetEntry from "./pages/TeamLead/TeamLeadWeeklyTimeSheet.jsx";
@@ -383,6 +385,7 @@ const App = () => {
                   element={<Navigate to="/manager/detail/projects" replace />}
                 />
                 <Route path="tasks/create" element={<ManagerTaskCreate />} />
+                <Route path="tasks/:task_id" element={<ManagerTaskEdit />} />
                 <Route
                   path="projects/:project_id/buildings/:building_assign_id/tasks/"
                   element={<ManagerBuildingTaskRedirect />}
@@ -511,6 +514,7 @@ const App = () => {
                   element={<Navigate to="/teamlead/detail/projects" replace />}
                 />
                 <Route path="tasks/create" element={<TeamLeadTaskCreate />} />
+                <Route path="tasks/:task_id" element={<TeamLeadTaskEdit />} />
                 <Route
                   path="projects/:project_id/buildings/:building_assign_id/tasks/"
                   element={<TeamLeadBuildingTaskRedirect />}

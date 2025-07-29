@@ -33,6 +33,7 @@ const TeamLeadProjectCreate = () => {
     project_title: "",
     project_type: "",
     start_date: "",
+    due_date: "",
     estimated_hours: "",
     project_description: "",
     project_code: "",
@@ -141,11 +142,12 @@ const TeamLeadProjectCreate = () => {
 
       if (response.ok) {
         showSuccessToast("Project Created Successfully");
-        setSearchQuery("");
+
         navigate("/teamlead/detail/projects/");
       } else {
         showErrorToast("Failed to Create project " + data.error);
       }
+      setSearchQuery("");
     } catch (err) {
       console.error("Request error:", err);
     }
@@ -209,8 +211,7 @@ const TeamLeadProjectCreate = () => {
   };
 
   useEffect(() => {
-    if (!formData.discipline_code || !formData.start_date || !lastProjectCode)
-      return;
+    if (!formData.start_date || !lastProjectCode) return;
 
     const generateProjectCode = () => {
       const year = new Date(formData.start_date)
@@ -559,6 +560,27 @@ const TeamLeadProjectCreate = () => {
                       setFormData({
                         ...formData,
                         start_date: format(date, "yyyy-MM-dd"),
+                      })
+                    }
+                    dateFormat="dd-MMM-yyyy"
+                    placeholderText="dd-mm-yyyy"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
+                  />
+                  <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+                  {/* Font Awesome Calendar Icon */}
+                </div>
+              </div>
+              <div className="project-form-group-small">
+                <label>Due Date</label>
+                <div className="date-input-container">
+                  <DatePicker
+                    selected={formData.due_date}
+                    onChange={(date) =>
+                      setFormData({
+                        ...formData,
+                        due_date: format(date, "yyyy-MM-dd"),
                       })
                     }
                     dateFormat="dd-MMM-yyyy"

@@ -15,10 +15,13 @@ import {
   showInfoToast,
   ToastContainerComponent,
 } from "../../constants/Toastify";
+import confirm from "../../constants/ConfirmDialog";
 
 const ManagerTaskView = () => {
   const { user } = useAuth();
   const { task_assign_id } = useParams(); // from URL
+  const [taskId, setTaskId] = useState("");
+  const [taskStatus, setTaskStatus] = useState(false);
   const [editMode, setEditMode] = useState(false); //  Add this at the top
   const [teamleadManager, setTeamleadManager] = useState([]);
   const [additionalResources, setAdditionalResources] = useState([]);
@@ -36,6 +39,8 @@ const ManagerTaskView = () => {
     comments: "",
     start_date: "",
     end_date: "",
+    due_date: "",
+    completed_status: null,
   });
 
   const {
@@ -54,14 +59,101 @@ const ManagerTaskView = () => {
     console.log("Form data", formData);
   };
 
+  const handleTaskComplete = async () => {
+    const confirmDelete = await confirm({
+      message: `Are you sure you want to mark this Task as completed?`,
+    });
+    if (!confirmDelete) return;
+    const update = {
+      completed_status: true,
+    };
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/tasks/${taskId}/`, //  Match fetch URL
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(update),
+        }
+      );
+
+      if (response.ok) {
+        showSuccessToast("Task completed successfully.");
+        fetchTaskAssignment();
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to change status:", errorData);
+        showErrorToast("Failed to change status for the Task.");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      showWarningToast("Something went wrong while changing status.");
+    }
+  };
+
+  const handleTaskInComplete = async () => {
+    const confirmDelete = await confirm({
+      message: `Are you sure you want to reopen this Task?`,
+    });
+    if (!confirmDelete) return;
+    const update = {
+      completed_status: false,
+    };
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/tasks/${taskId}/`, //  Match fetch URL
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(update),
+        }
+      );
+
+      if (response.ok) {
+        showSuccessToast("Task reopened successfully.");
+        fetchTaskAssignment();
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to change status:", errorData);
+        showErrorToast("Failed to change status for the Task.");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      showWarningToast("Something went wrong while changing status.");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const taskPayload = {
+      start_date: formData.start_date,
+      due_date: formData.due_date,
+    };
 
     const payload = {
       ...formData,
       employee: formData.employee,
       status: "inprogress",
     };
+
+    try {
+      const response = await fetch(`${config.apiBaseURL}/tasks/${taskId}/`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(taskPayload),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        showSuccessToast("Task created successfully!");
+      } else {
+        console.error(data);
+        showErrorToast(" Failed to create Task");
+      }
+    } catch (err) {
+      console.error("Request error:", err);
+    }
 
     try {
       const response = await fetch(
@@ -155,6 +247,8 @@ const ManagerTaskView = () => {
       const data = await response.json();
       setTaskData(data);
       setAvailableEmployees(data.employee);
+      setTaskId(data.task?.task_id);
+      setTaskStatus(data.task?.completed_status);
 
       setFormData({
         employee: data.employee?.map((emp) => emp.employee_id) || [],
@@ -163,8 +257,10 @@ const ManagerTaskView = () => {
         status: data.status || "",
         priority: data.priority || "",
         comments: data.comments || "",
-        start_date: data.start_date || "",
+        start_date: data.task?.start_date || "",
+        due_date: data.task?.due_date || "",
         end_date: data.end_date || "",
+        completed_status: data.task?.completed_status || "",
       });
 
       setAttachments(data.attachments || []); // Set attachments here directly from task data
@@ -454,7 +550,7 @@ const ManagerTaskView = () => {
                   </div>
                 ) : attachments.length > 0 ? (
                   <>
-                    {/* 📎 Toggle View */}
+                    {/*  Toggle View */}
                     <a
                       href="#"
                       onClick={(e) => {
@@ -559,25 +655,25 @@ const ManagerTaskView = () => {
                   </div>
                 ) : (
                   <p className="view-date">
-                    {taskData?.start_date
-                      ? format(new Date(taskData.start_date), "dd-MMM-yyyy")
+                    {formData?.start_date
+                      ? format(new Date(formData.start_date), "dd-MMM-yyyy")
                       : ""}
                   </p>
                 )}
               </div>
 
               <div className="project-form-group-small">
-                <label>End Date</label>
+                <label>Due Date</label>
                 {editMode ? (
                   <div className="date-input-container">
                     <DatePicker
                       selected={
-                        formData.end_date ? new Date(formData.end_date) : null
+                        formData.due_date ? new Date(formData.due_date) : null
                       }
                       onChange={(date) =>
                         handleChange({
                           target: {
-                            name: "end_date",
+                            name: "due_date",
                             value: format(date, "yyyy-MM-dd"),
                           },
                         })
@@ -594,8 +690,8 @@ const ManagerTaskView = () => {
                   </div>
                 ) : (
                   <p className="view-date">
-                    {taskData?.end_date
-                      ? format(new Date(taskData.end_date), "dd-MMM-yyyy")
+                    {formData?.due_date
+                      ? format(new Date(formData.due_date), "dd-MMM-yyyy")
                       : ""}
                   </p>
                 )}
@@ -658,23 +754,45 @@ const ManagerTaskView = () => {
           </div>
         </div>
 
-        {editMode && (
-          <div className="form-buttons">
-            <button type="submit" className="btn-save">
-              Save
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setEditMode(false);
-                fetchTaskAssignment(); // Re-fetch to reset form
-              }}
-              className="btn-cancel"
-            >
-              Cancel
-            </button>
-          </div>
-        )}
+        <div className="form-buttons">
+          {!editMode ? (
+            <>
+              {!taskStatus ? (
+                <button
+                  type="button"
+                  onClick={handleTaskComplete}
+                  className="btn-complete"
+                >
+                  <i className="fas fa-check" /> Mark as Completed
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleTaskInComplete}
+                  className="btn-complete"
+                >
+                  <i className="fas fa-folder-open" /> Reopen
+                </button>
+              )}
+            </>
+          ) : (
+            <>
+              <button type="submit" className="btn-save">
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setEditMode(false);
+                  fetchTaskAssignment(); // Re-fetch to reset form
+                }}
+                className="btn-cancel"
+              >
+                Cancel
+              </button>
+            </>
+          )}
+        </div>
       </form>
       <ToastContainerComponent />
     </div>

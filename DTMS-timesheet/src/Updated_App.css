@@ -246,3 +246,14 @@
   margin-bottom: 1%;
   /* margin-top: 1%; */
 }
+
+.form-buttons .btn-complete {
+  color: #5e5e5e;
+  padding: 10px 20px;
+  background: #ccc; /* Added border color */
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border: none;
+}

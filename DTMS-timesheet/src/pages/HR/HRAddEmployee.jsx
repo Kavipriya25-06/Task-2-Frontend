@@ -1046,6 +1046,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import config from "../../config";
+import { useAuth } from "../../AuthContext";
 import { cleanFormData } from "../../utils/cleanFormData";
 import usePlaceholder from "/profile_icon.svg";
 import cameraIcon from "/camera.png";
@@ -1072,19 +1073,33 @@ import {
 
 const AddEmployee = () => {
   const { employee_id } = useParams();
+  const { user } = useAuth();
+  const managerId = user.employee_id;
   const navigate = useNavigate();
   const [managers, setManagers] = useState([]);
   const [attachments, setAttachments] = useState([
-    { document_type: "PAN", file: null },
-    { document_type: "Aadhaar", file: null },
-    { document_type: "Bank Details", file: null },
-    { document_type: "Degree Certificate", file: null },
-    { document_type: "Mark Sheets", file: null },
-    { document_type: "Resume", file: null },
-    { document_type: "Signed Employment Letter", file: null },
-    { document_type: "Last Company Relieving Letter", file: null },
-    { document_type: "Last Company Payslip", file: null },
-    { document_type: "ID Proof/Driving ID/Voter ID", file: null },
+    { document_type: "PAN", name: "PAN", file: null },
+    { document_type: "Aadhaar", name: "Aadhaar", file: null },
+    { document_type: "bank", name: "Bank Details", file: null },
+    { document_type: "Degree", name: "Degree Certificate", file: null },
+    { document_type: "marksheets", name: "Mark Sheets", file: null },
+    { document_type: "resume", name: "Resume", file: null },
+    {
+      document_type: "empletter",
+      name: "Signed Employment Letter",
+      file: null,
+    },
+    {
+      document_type: "relievingletter",
+      name: "Last Company Relieving Letter",
+      file: null,
+    },
+    { document_type: "payslip", name: "Last Company Payslip", file: null },
+    {
+      document_type: "idproof",
+      name: "ID Proof/Driving ID/Voter ID",
+      file: null,
+    },
   ]);
 
   const [assets, setAssets] = useState([
@@ -1299,6 +1314,14 @@ const AddEmployee = () => {
           });
         }
       }
+
+      // modifications
+
+      await fetch(`${config.apiBaseURL}/modifications/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ modified_by: managerId, employee: employeeId }),
+      });
 
       if (!response.ok) {
         showErrorToast(`Failed to add employee`);
@@ -2606,7 +2629,7 @@ const AddEmployee = () => {
             <tbody>
               {attachments.map((att, index) => (
                 <tr key={index}>
-                  <td>{att.document_type}</td>
+                  <td>{att.name}</td>
                   <td>
                     <input
                       type="file"

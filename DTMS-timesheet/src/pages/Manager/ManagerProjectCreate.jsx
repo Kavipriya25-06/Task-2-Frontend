@@ -33,6 +33,7 @@ const ManagerProjectCreate = () => {
     project_title: "",
     project_type: "",
     start_date: "",
+    due_date: "",
     estimated_hours: "",
     project_description: "",
     project_code: "",
@@ -141,6 +142,7 @@ const ManagerProjectCreate = () => {
 
       if (response.ok) {
         showSuccessToast("Project Created Successfully");
+       
         navigate("/manager/detail/projects/");
       } else {
         showErrorToast("Failed to Create project " + data.error);
@@ -562,6 +564,27 @@ const ManagerProjectCreate = () => {
                       setFormData({
                         ...formData,
                         start_date: format(date, "yyyy-MM-dd"),
+                      })
+                    }
+                    dateFormat="dd-MMM-yyyy"
+                    placeholderText="dd-mm-yyyy"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
+                  />
+                  <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+                  {/* Font Awesome Calendar Icon */}
+                </div>
+              </div>
+              <div className="project-form-group-small">
+                <label>Due Date</label>
+                <div className="date-input-container">
+                  <DatePicker
+                    selected={formData.due_date}
+                    onChange={(date) =>
+                      setFormData({
+                        ...formData,
+                        due_date: format(date, "yyyy-MM-dd"),
                       })
                     }
                     dateFormat="dd-MMM-yyyy"

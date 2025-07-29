@@ -25,6 +25,7 @@ const ManagerProjectView = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showAttachments, setShowAttachments] = useState(false);
   const [projectData, setProjectData] = useState(null);
+  const [projectStatus, setProjectStatus] = useState(false);
   const [buildings, setBuildings] = useState([]);
   const [discipline, setDiscipline] = useState([]);
   const [areas, setAreas] = useState([]);
@@ -35,6 +36,7 @@ const ManagerProjectView = () => {
     project_title: "",
     project_type: "",
     start_date: "",
+    due_date: "",
     estimated_hours: "",
     project_description: "",
     // project_code: "",
@@ -198,12 +200,79 @@ const ManagerProjectView = () => {
     }
   };
 
+  const handleProjectComplete = async () => {
+    const confirmDelete = await confirm({
+      message: `Are you sure you want to mark this project as completed?`,
+    });
+    if (!confirmDelete) return;
+    const update = {
+      completed_status: true,
+    };
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/projects/${project_id}/`, //  Match fetch URL
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(update),
+        }
+      );
+
+      if (response.ok) {
+        showSuccessToast("Project completed successfully.");
+        fetchProjectData();
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to change status:", errorData);
+        showErrorToast("Failed to change status for the project.");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      showWarningToast("Something went wrong while changing status.");
+    }
+  };
+
+  const handleProjectInComplete = async () => {
+    const confirmDelete = await confirm({
+      message: `Are you sure you want to reopen this project?`,
+    });
+    if (!confirmDelete) return;
+    const update = {
+      completed_status: false,
+    };
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/projects/${project_id}/`, //  Match fetch URL
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(update),
+        }
+      );
+
+      if (response.ok) {
+        showSuccessToast("Project reopened successfully.");
+        fetchProjectData();
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to change status:", errorData);
+        showErrorToast("Failed to change status for the project.");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      showWarningToast("Something went wrong while changing status.");
+    }
+  };
+
   const handleUpdate = async () => {
     // 1️ Update Project
     const payload = {
       ...formData,
       start_date: formData.start_date
         ? format(new Date(formData.start_date), "yyyy-MM-dd")
+        : null,
+      due_date: formData.due_date
+        ? format(new Date(formData.due_date), "yyyy-MM-dd")
         : null,
       area_of_work: formData.area_of_work,
       created_by: user.employee_id,
@@ -580,6 +649,7 @@ const ManagerProjectView = () => {
       );
       const data = await response.json();
       setProjectData(data);
+      setProjectStatus(data.completed_status);
       setAvailableBuildings(data.assigns[0].buildings);
       setAvailableTeamleadManager(data.assigns[0].employee);
       setVariations(data.variation);
@@ -1217,6 +1287,34 @@ const ManagerProjectView = () => {
                 )}
               </div>
               <div className="project-form-group-small">
+                <label>Due Date</label>
+                {editMode ? (
+                  <div className="date-input-container">
+                    <DatePicker
+                      selected={
+                        formData.due_date ? new Date(formData.due_date) : null
+                      }
+                      onChange={(date) =>
+                        handleChange({
+                          target: { name: "due_date", value: date },
+                        })
+                      }
+                      dateFormat="dd-MMM-yyyy"
+                      placeholderText="dd-mm-yyyy"
+                      showMonthDropdown
+                      showYearDropdown
+                      dropdownMode="select"
+                    />
+                    <i className="fas fa-calendar-alt calendar-icon"></i>
+                  </div>
+                ) : (
+                  <p className="view-date">
+                    {formData.due_date &&
+                      format(new Date(formData.due_date), "dd-MMM-yyyy")}
+                  </p>
+                )}
+              </div>
+              <div className="project-form-group-small">
                 <label>Estd. Hours</label>
                 {editMode ? (
                   <input
@@ -1250,7 +1348,27 @@ const ManagerProjectView = () => {
           </div>
         </div>
         <div className="form-buttons">
-          {editMode && (
+          {!editMode ? (
+            <>
+              {!projectStatus ? (
+                <button
+                  type="button"
+                  onClick={handleProjectComplete}
+                  className="btn-complete"
+                >
+                  <i className="fas fa-check" /> Mark as Completed
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleProjectInComplete}
+                  className="btn-complete"
+                >
+                  <i className="fas fa-folder-open" /> Reopen
+                </button>
+              )}
+            </>
+          ) : (
             <>
               <button
                 type="submit"

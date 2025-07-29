@@ -22,6 +22,8 @@ const TeamLeadBuildingView = () => {
   const navigate = useNavigate();
   const [editMode, setEditMode] = useState(false); //  Add this at the top
   const { building_assign_id } = useParams(); // from URL
+  const [buildingId, setBuildingId] = useState("");
+  const [buildingStatus, setBuildingStatus] = useState(false);
   const [teamleadManager, setTeamleadManager] = useState([]);
   const [availableTeamleadManager, setAvailableTeamleadManager] = useState([]);
   const [additionalResources, setAdditionalResources] = useState([]);
@@ -34,6 +36,12 @@ const TeamLeadBuildingView = () => {
   const [taskPopupVisible, setTaskPopupVisible] = useState(false);
   const [formData, setFormData] = useState({
     building_hours: "",
+    // building_title: "",
+    // building_description: "",
+    // building_code: "",
+    start_date: null,
+    due_date: null,
+    completed_status: null,
   });
 
   const handleChange = (e) => {
@@ -78,12 +86,111 @@ const TeamLeadBuildingView = () => {
     }
   };
 
+  const handleBuildingComplete = async () => {
+    const confirmDelete = await confirm({
+      message: `Are you sure you want to mark this sub-division as completed?`,
+    });
+    if (!confirmDelete) return;
+    const update = {
+      completed_status: true,
+    };
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/buildings/${buildingId}/`, //  Match fetch URL
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(update),
+        }
+      );
+
+      if (response.ok) {
+        showSuccessToast("Sub-division completed successfully.");
+        fetchBuildingsAssign();
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to change status:", errorData);
+        showErrorToast("Failed to change status for the subdivision.");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      showWarningToast("Something went wrong while changing status.");
+    }
+  };
+
+  const handleBuildingInComplete = async () => {
+    const confirmDelete = await confirm({
+      message: `Are you sure you want to reopen this subdivision?`,
+    });
+    if (!confirmDelete) return;
+    const update = {
+      completed_status: false,
+    };
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/buildings/${buildingId}/`, //  Match fetch URL
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(update),
+        }
+      );
+
+      if (response.ok) {
+        showSuccessToast("Sub-Division reopened successfully.");
+        fetchBuildingsAssign();
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to change status:", errorData);
+        showErrorToast("Failed to change status for the Sub-division.");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      showWarningToast("Something went wrong while changing status.");
+    }
+  };
+
   const handleUpdate = async () => {
+    const buildingPayload = {
+      // building_title: "",
+      // building_description: "",
+      // building_code: "",
+      completed_status: formData.completed_status,
+      start_date: formData.start_date
+        ? format(new Date(formData.start_date), "yyyy-MM-dd")
+        : null,
+      due_date: formData.due_date
+        ? format(new Date(formData.due_date), "yyyy-MM-dd")
+        : null,
+    };
     const buildingAssignPayload = {
       building_hours: formData.building_hours,
       employee: availableTeamleadManager.map((e) => e.employee_id),
       status: "inprogress",
     };
+
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/buildings/${buildingId}/`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(buildingPayload),
+        }
+      );
+
+      if (response.ok) {
+        console.log("Building updated!");
+        showSuccessToast("Sub-Division Updated");
+        setEditMode(false);
+        setSearchQuery("");
+      } else {
+        showErrorToast("Failed to update project");
+      }
+    } catch (err) {
+      console.error("Update error:", err);
+      showErrorToast(err);
+    }
 
     try {
       const response = await fetch(
@@ -213,7 +320,14 @@ const TeamLeadBuildingView = () => {
       );
       const data = await response.json();
       setBuildingsAssign(data);
-      setFormData({ building_hours: data.building_hours || "" });
+      setBuildingStatus(data.building?.completed_status);
+      setBuildingId(data.building?.building_id);
+      setFormData({
+        building_hours: data.building_hours || "",
+        start_date: data.building?.start_date || "",
+        due_date: data.building?.due_date || "",
+        completed_status: data.building?.completed_status || "",
+      });
       setAvailableTeamleadManager(data.employee);
 
       // Merge existing tasks into selection state
@@ -407,13 +521,85 @@ const TeamLeadBuildingView = () => {
           </div>
           <div className="right-form">
             <div className="right-form-first">
-              <div className="project-form-group-small">
+              {/* <div className="project-form-group-small">
                 <label>Start Date</label>
                 <p>
                   {project?.start_date
                     ? format(new Date(project.start_date), "dd-MMM-yyyy")
                     : ""}
                 </p>
+              </div>
+              <div className="project-form-group-small">
+                              <label>Due Date</label>
+                              <p>
+                                {project?.due_date
+                                  ? format(new Date(project.due_date), "dd-MMM-yyyy")
+                                  : ""}
+                              </p>
+                            </div> */}
+              <div className="project-form-group-small">
+                <label>Start Date</label>
+                {editMode ? (
+                  <div className="date-input-container">
+                    <DatePicker
+                      selected={
+                        formData.start_date
+                          ? new Date(formData.start_date)
+                          : null
+                      }
+                      onChange={(date) =>
+                        handleChange({
+                          target: { name: "start_date", value: date },
+                        })
+                      }
+                      dateFormat="dd-MMM-yyyy"
+                      placeholderText="dd-mm-yyyy"
+                      showMonthDropdown
+                      showYearDropdown
+                      dropdownMode="select"
+                    />
+                    <i className="fas fa-calendar-alt calendar-icon"></i>
+                  </div>
+                ) : (
+                  <p className="view-date">
+                    {buildingsAssign.building?.start_date &&
+                      format(
+                        new Date(buildingsAssign.building?.start_date),
+                        "dd-MMM-yyyy"
+                      )}
+                  </p>
+                )}
+              </div>
+              <div className="project-form-group-small">
+                <label>Due Date</label>
+                {editMode ? (
+                  <div className="date-input-container">
+                    <DatePicker
+                      selected={
+                        formData.due_date ? new Date(formData.due_date) : null
+                      }
+                      onChange={(date) =>
+                        handleChange({
+                          target: { name: "due_date", value: date },
+                        })
+                      }
+                      dateFormat="dd-MMM-yyyy"
+                      placeholderText="dd-mm-yyyy"
+                      showMonthDropdown
+                      showYearDropdown
+                      dropdownMode="select"
+                    />
+                    <i className="fas fa-calendar-alt calendar-icon"></i>
+                  </div>
+                ) : (
+                  <p className="view-date">
+                    {buildingsAssign.building?.due_date &&
+                      format(
+                        new Date(buildingsAssign.building?.due_date),
+                        "dd-MMM-yyyy"
+                      )}
+                  </p>
+                )}
               </div>
               <div className="project-form-group-small">
                 <label>Project Hours</label>
@@ -558,7 +744,27 @@ const TeamLeadBuildingView = () => {
         </div>
 
         <div className="form-buttons">
-          {editMode && (
+          {!editMode ? (
+            <>
+              {!buildingStatus ? (
+                <button
+                  type="button"
+                  onClick={handleBuildingComplete}
+                  className="btn-complete"
+                >
+                  <i className="fas fa-check" /> Mark as Completed
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleBuildingInComplete}
+                  className="btn-complete"
+                >
+                  <i className="fas fa-folder-open" /> Reopen
+                </button>
+              )}
+            </>
+          ) : (
             <>
               <button type="submit" onClick={handleUpdate} className="btn-save">
                 Save
