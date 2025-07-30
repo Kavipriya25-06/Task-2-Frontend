@@ -37,6 +37,7 @@ import {
 import RoleSwitcher from "./pages/RoleSwitcher.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import { isDev } from "./constants/devmode.js";
+import CompanyPolicy from "./constants/CompanyPolicy.jsx";
 
 // Admin pages
 import AdminDashboard from "./pages/Admin/AdminDashboard.jsx";
@@ -275,6 +276,10 @@ const App = () => {
                 element={<Navigate to="/admin" replace />}
               />
               <Route path="detail" element={<AdminDetailView />}>
+                <Route
+                  path="company-policy"
+                  element={<CompanyPolicy />}
+                ></Route>
                 <Route path="users" element={<UsersPage />}></Route>
                 <Route path="users/add-user" element={<AddUserForm />} />
                 <Route
@@ -307,6 +312,10 @@ const App = () => {
               <Route index element={<HRDashboard />} />
               <Route path="detail/" element={<Navigate to="/hr" replace />} />
               <Route path="detail" element={<HRDetailView />}>
+                <Route
+                  path="company-policy"
+                  element={<CompanyPolicy />}
+                ></Route>
                 <Route path="employee-details" element={<EmployeeList />} />
                 <Route path="holidays" element={<HRHolidayCalendar />} />
                 <Route
@@ -356,6 +365,10 @@ const App = () => {
                 element={<Navigate to="/manager" replace />}
               />
               <Route path="detail" element={<ManagerDetailView />}>
+                <Route
+                  path="company-policy"
+                  element={<CompanyPolicy />}
+                ></Route>
                 <Route path="projects" element={<ManagerProjects />} />
                 <Route
                   path="managerchart"
@@ -485,6 +498,10 @@ const App = () => {
                 element={<Navigate to="/teamlead" replace />}
               />
               <Route path="detail" element={<TeamLeadDetailView />}>
+                <Route
+                  path="company-policy"
+                  element={<CompanyPolicy />}
+                ></Route>
                 <Route path="projects" element={<TeamLeadProjects />} />
                 <Route
                   path="projects/:project_id"
@@ -617,6 +634,10 @@ const App = () => {
                 element={<Navigate to="/employee" replace />}
               />
               <Route path="detail" element={<EmployeeDetailView />}>
+                <Route
+                  path="company-policy"
+                  element={<CompanyPolicy />}
+                ></Route>
                 <Route
                   path="time-sheet-entry"
                   element={<EmployeeTimeSheetEntry />}

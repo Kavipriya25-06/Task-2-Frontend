@@ -31,7 +31,11 @@ const ManagerDetailView = () => {
     { label: "Attendance", path: "attendance", tabname: ["attendance"] },
     { label: "Comp-off", path: "Compoff", tabname: ["Compoff"] },
     { label: "Reports", path: "reports", tabname: ["reports"] },
-
+    {
+      label: "Company Policy",
+      path: "company-policy",
+      tabname: ["company-policy"],
+    },
   ];
 
   return (

@@ -23,7 +23,7 @@ const HRDashboard = () => {
     { label: "Leave requests", path: "detail/leave-requests" },
     { label: "Attendance", path: "detail/attendance" },
     { label: "Reports", path: "detail/reports" },
-
+    { label: "Company Policy", path: "detail/company-policy" },
   ];
 
   // Current tab from path name

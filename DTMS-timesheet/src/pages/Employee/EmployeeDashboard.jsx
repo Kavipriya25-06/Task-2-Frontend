@@ -21,6 +21,7 @@ const EmployeeDashboard = () => {
     { label: "Leave requests", path: "detail/leave-requests" },
     { label: "Tasks", path: "detail/tasks" },
     { label: "Comp-off Request", path: "detail/compoffrequest" },
+    { label: "Company Policy", path: "detail/company-policy" },
   ];
 
   // Current tab from path name

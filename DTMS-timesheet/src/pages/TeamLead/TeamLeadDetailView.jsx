@@ -41,6 +41,11 @@ const TeamLeadDetailView = () => {
       path: "compoffrequest",
       tabname: ["compoffrequest"],
     },
+    {
+      label: "Company Policy",
+      path: "company-policy",
+      tabname: ["company-policy"],
+    },
   ];
   return (
     <div className="admin-page">

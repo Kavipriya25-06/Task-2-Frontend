@@ -27,7 +27,7 @@ const ManagerDashboard = () => {
     { label: "Attendance", path: "detail/attendance" },
     { label: "Comp-off", path: "detail/Compoff" },
     { label: "Reports", path: "detail/reports" },
-    { label: "Org Chart", path: "detail/managerchart" },
+    { label: "Company Policy", path: "detail/company-policy" },
   ];
 
   // Current tab from path name

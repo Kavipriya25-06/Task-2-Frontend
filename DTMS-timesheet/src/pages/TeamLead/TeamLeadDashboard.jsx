@@ -23,6 +23,7 @@ const TeamLeadDashboard = () => {
     { label: "Leave requests", path: "detail/leave-requests" },
     { label: "Attendance", path: "detail/attendance" },
     { label: "Comp-off Request", path: "detail/compoffrequest" },
+    { label: "Company Policy", path: "detail/company-policy" },
   ];
 
   // Current tab from path name

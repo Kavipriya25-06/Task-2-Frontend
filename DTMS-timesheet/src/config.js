@@ -2,7 +2,9 @@
 import { isDev } from "./constants/devmode";
 
 const devApiBaseURL = "http://127.0.0.1:8000/api";
-const prodApiBaseURL = "http://192.168.0.209:8000/api";
+const prodApiBaseURL = "http://148.135.138.195:8001/api";
+
+// const prodApiBaseURL = "http://192.168.0.209:8000/api";
 
 const config = {
   apiBaseURL: isDev ? devApiBaseURL : prodApiBaseURL,
