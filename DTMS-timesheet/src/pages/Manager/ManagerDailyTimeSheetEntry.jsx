@@ -832,7 +832,7 @@ const ManagerDailyTimeSheetEntry = () => {
                     Delete
                   </button> */}
                   <img
-                    src="\reject.png"
+                    src="\DTMS\reject.png"
                     alt="reject button"
                     className="leavebuttons"
                     onClick={() =>
@@ -958,7 +958,7 @@ const ManagerDailyTimeSheetEntry = () => {
                   Delete
                 </button> */}
                   <img
-                    src="\reject.png"
+                    src="\DTMS\reject.png"
                     alt="reject button"
                     className="leavebuttons"
                     onClick={() => handleDeleteRow(index, "new")}

@@ -80,47 +80,43 @@ const EditEmployee = () => {
     },
   ]);
 
-  const [assets, setAssets] = useState([
-    {
-      type: "",
-      model: "",
-      serialnumber: "",
-      given_date: null,
-      return_date: null,
-    },
-  ]);
-  const [dependants, setDependants] = useState([
-    { name: "", relationship: "", date_of_birth: null, age: null },
-  ]);
-  const [education, setEducation] = useState([
-    {
-      institution_name: "",
-      degree: "",
-      specialization: "",
-      date_of_completion: null,
-    },
-  ]);
-  const [workExperience, setWorkExperience] = useState([
-    { company_name: "", company_role: "", start_date: null, end_date: null },
-  ]);
-  const [languages, setLanguages] = useState([
-    { language: "", read: "", write: "", speak: "" },
-  ]);
+  const [assets, setAssets] = useState([]);
+  const [dependants, setDependants] = useState([]);
+  const [education, setEducation] = useState([]);
+  const [workExperience, setWorkExperience] = useState([]);
+  const [languages, setLanguages] = useState([]);
   const [languagesKnown, setLanguagesKnown] = useState([]);
   const [dependantsKnown, setDependantsKnown] = useState([]);
   const [workExperienceKnown, setWorkExperienceKnown] = useState([]);
   const [educationKnown, setEducationKnown] = useState([]);
   const [assetsKnown, setAssetsKnown] = useState([]);
 
-  const addRow = (stateSetter, defaultRow) =>
-    stateSetter((prev) => [...prev, defaultRow]);
-  const removeRow = (index, state, stateSetter) =>
-    stateSetter(state.filter((_, i) => i !== index));
+  // const addRow = (stateSetter, defaultRow) =>
+  //   stateSetter((prev) => [...prev, defaultRow]);
+  // const removeRow = (index, state, stateSetter) =>
+  //   stateSetter(state.filter((_, i) => i !== index));
 
   const handleRowChange = (index, name, value, state, stateSetter) => {
     const newRows = [...state];
     newRows[index][name] = value;
     stateSetter(newRows);
+  };
+
+  const deleteKnownRow = async (id, endpoint, stateList, setStateList) => {
+    try {
+      await fetch(`${config.API_URL}/${endpoint}/${id}/`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`, // if auth needed
+          "Content-Type": "application/json",
+        },
+      });
+      setStateList(stateList.filter((row) => row.id !== id));
+      showSuccessToast("Deleted successfully");
+    } catch (error) {
+      console.error(error);
+      showErrorToast("Failed to delete row");
+    }
   };
 
   const eighteenYearsAgo = new Date();
@@ -166,10 +162,6 @@ const EditEmployee = () => {
     setProfilePictureBlob(blob);
     setShowCropper(false);
   };
-
-  useEffect(() => {
-    fetchManagers();
-  }, []);
 
   useEffect(() => {
     fetchEmployee();
@@ -266,16 +258,28 @@ const EditEmployee = () => {
     }
 
     try {
-      const response = await fetch(`${config.apiBaseURL}/employees/`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(cleanedData),
-      });
+      const response = await fetch(
+        `${config.apiBaseURL}/employees/${employee_id}/`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(cleanedData),
+        }
+      );
       const responseData = await response.json();
       const employeeId = responseData.data.employee_id;
       console.log("Received employee id is", employeeId);
 
       // Assets
+
+      for (const a of assetsKnown) {
+        await fetch(`${config.apiBaseURL}/assets/${a.id}/`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(a),
+        });
+      }
+
       for (const a of assets) {
         await fetch(`${config.apiBaseURL}/assets/`, {
           method: "POST",
@@ -284,6 +288,14 @@ const EditEmployee = () => {
         });
       }
       // Dependants
+      for (const d of dependantsKnown) {
+        await fetch(`${config.apiBaseURL}/dependant/${d.id}/`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(d),
+        });
+      }
+
       for (const d of dependants) {
         await fetch(`${config.apiBaseURL}/dependant/`, {
           method: "POST",
@@ -292,6 +304,14 @@ const EditEmployee = () => {
         });
       }
       // Education
+      for (const edu of educationKnown) {
+        await fetch(`${config.apiBaseURL}/education/${edu.id}/`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(edu),
+        });
+      }
+
       for (const edu of education) {
         await fetch(`${config.apiBaseURL}/education/`, {
           method: "POST",
@@ -300,6 +320,15 @@ const EditEmployee = () => {
         });
       }
       // Work Experience
+
+      for (const w of workExperienceKnown) {
+        await fetch(`${config.apiBaseURL}/work-experience/${w.id}/`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(w),
+        });
+      }
+
       for (const w of workExperience) {
         await fetch(`${config.apiBaseURL}/work-experience/`, {
           method: "POST",
@@ -308,6 +337,15 @@ const EditEmployee = () => {
         });
       }
       // Languages
+
+      for (const l of languagesKnown) {
+        await fetch(`${config.apiBaseURL}/languages-known/${l.id}/`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(l),
+        });
+      }
+
       for (const l of languages) {
         await fetch(`${config.apiBaseURL}/languages-known/`, {
           method: "POST",
@@ -344,6 +382,7 @@ const EditEmployee = () => {
       }
       showSuccessToast("Employee Details uploaded successfully");
       setEditMode(false);
+      fetchEmployee();
       // setTimeout(() => {
       //   navigate("/hr/detail/employee-details");
       // }, 1000); // waits for 1 second (1000ms)
@@ -377,7 +416,7 @@ const EditEmployee = () => {
         <input
           type={type}
           name={name}
-          value={formData[name] || ""}
+          value={formData[name] || "-"}
           onChange={handleChange}
           placeholder={label}
         />
@@ -393,7 +432,7 @@ const EditEmployee = () => {
       {editMode ? (
         <select
           name={name}
-          value={formData[name] || ""}
+          value={formData[name] || "-"}
           onChange={handleChange}
         >
           <option value="">Select {label}</option>
@@ -724,7 +763,7 @@ const EditEmployee = () => {
             {editMode ? (
               <select
                 name="reporting_manager"
-                value={formData.reporting_manager || ""}
+                value={formData.reporting_manager || "-"}
                 onChange={handleChange}
               >
                 <option value="">Select Reporting Manager</option>
@@ -746,7 +785,7 @@ const EditEmployee = () => {
             {editMode ? (
               <select
                 name="second_reporting_manager"
-                value={formData.second_reporting_manager || ""}
+                value={formData.second_reporting_manager || "-"}
                 onChange={handleChange}
               >
                 <option value="">Select Secondary Reporting Manager</option>
@@ -1181,9 +1220,104 @@ const EditEmployee = () => {
             </tr>
           </thead>
           <tbody>
-            {editMode
-              ? languages.map((l, i) => (
-                  <tr key={i}>
+            {editMode ? (
+              <>
+                {languagesKnown.map((l, i) => (
+                  <tr key={`known-${i}`}>
+                    <td>
+                      <input
+                        value={l.language}
+                        onChange={(e) =>
+                          handleRowChange(
+                            i,
+                            "language",
+                            e.target.value,
+                            languagesKnown,
+                            setLanguagesKnown
+                          )
+                        }
+                      />
+                    </td>
+                    <td>
+                      <select
+                        value={l.read}
+                        onChange={(e) =>
+                          handleRowChange(
+                            i,
+                            "read",
+                            e.target.value,
+                            languagesKnown,
+                            setLanguagesKnown
+                          )
+                        }
+                      >
+                        <option value="">Select</option>
+                        <option>Native</option>
+                        <option>Fluent</option>
+                        <option>Proficient</option>
+                        <option>Conversational</option>
+                        <option>Basic</option>
+                      </select>
+                    </td>
+                    <td>
+                      <select
+                        value={l.write}
+                        onChange={(e) =>
+                          handleRowChange(
+                            i,
+                            "write",
+                            e.target.value,
+                            languagesKnown,
+                            setLanguagesKnown
+                          )
+                        }
+                      >
+                        <option value="">Select</option>
+                        <option>Native</option>
+                        <option>Fluent</option>
+                        <option>Proficient</option>
+                        <option>Conversational</option>
+                        <option>Basic</option>
+                      </select>
+                    </td>
+                    <td>
+                      <select
+                        value={l.speak}
+                        onChange={(e) =>
+                          handleRowChange(
+                            i,
+                            "speak",
+                            e.target.value,
+                            languagesKnown,
+                            setLanguagesKnown
+                          )
+                        }
+                      >
+                        <option value="">Select</option>
+                        <option>Native</option>
+                        <option>Fluent</option>
+                        <option>Proficient</option>
+                        <option>Conversational</option>
+                        <option>Basic</option>
+                      </select>
+                    </td>
+                    <td>
+                      <button
+                        className="employee-delete-button"
+                        type="button"
+                        onClick={() =>
+                          setLanguagesKnown(
+                            languagesKnown.filter((_, index) => index !== i)
+                          )
+                        }
+                      >
+                        X
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                {languages.map((l, i) => (
+                  <tr key={`new-${i}`}>
                     <td>
                       <input
                         value={l.language}
@@ -1265,21 +1399,38 @@ const EditEmployee = () => {
                       <button
                         className="employee-delete-button"
                         type="button"
-                        onClick={() => removeRow(i, languages, setLanguages)}
+                        onClick={() =>
+                          setLanguages(
+                            languages.filter((_, index) => index !== i)
+                          )
+                        }
                       >
                         X
                       </button>
                     </td>
                   </tr>
-                ))
-              : languagesKnown.map((lang) => (
-                  <tr key={lang.id}>
-                    <td>{lang.language}</td>
-                    <td>{lang.read}</td>
-                    <td>{lang.write}</td>
-                    <td>{lang.speak}</td>
-                  </tr>
                 ))}
+              </>
+            ) : (
+              <>
+                {languagesKnown && languagesKnown.length > 0 ? (
+                  languagesKnown.map((lang) => (
+                    <tr key={lang.id}>
+                      <td>{lang.language || "-"}</td>
+                      <td>{lang.read || "-"}</td>
+                      <td>{lang.write || "-"}</td>
+                      <td>{lang.speak || "-"}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4" style={{ textAlign: "center" }}>
+                      No languages available
+                    </td>
+                  </tr>
+                )}
+              </>
+            )}
           </tbody>
         </table>
         {editMode && (
@@ -1287,12 +1438,15 @@ const EditEmployee = () => {
             className="employee-add-button"
             type="button"
             onClick={() =>
-              addRow(setLanguages, {
-                language: "",
-                read: "",
-                write: "",
-                speak: "",
-              })
+              setLanguages([
+                ...languages,
+                {
+                  language: "",
+                  read: "",
+                  write: "",
+                  speak: "",
+                },
+              ])
             }
           >
             +
@@ -1312,7 +1466,7 @@ const EditEmployee = () => {
               </tr>
             </thead>
             <tbody>
-              {editMode
+              {/* {editMode
                 ? dependants.map((d, i) => (
                     <tr key={i}>
                       <td>
@@ -1421,7 +1575,190 @@ const EditEmployee = () => {
                       </td>
                       <td>{d.age}</td>
                     </tr>
+                  ))} */}
+              {editMode ? (
+                <>
+                  {/* Existing Dependants */}
+                  {dependantsKnown.map((d, i) => (
+                    <tr key={`known-dep-${i}`}>
+                      <td>
+                        <input
+                          value={d.name}
+                          onChange={(e) =>
+                            handleRowChange(
+                              i,
+                              "name",
+                              e.target.value,
+                              dependantsKnown,
+                              setDependantsKnown
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <input
+                          value={d.relationship}
+                          onChange={(e) =>
+                            handleRowChange(
+                              i,
+                              "relationship",
+                              e.target.value,
+                              dependantsKnown,
+                              setDependantsKnown
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <div className="date-input-container-info">
+                          <DatePicker
+                            portalId="root-portal"
+                            selected={d.date_of_birth}
+                            onChange={(date) => {
+                              const age = date ? calculateExactAge(date) : "";
+                              handleRowChange(
+                                i,
+                                "date_of_birth",
+                                date,
+                                dependantsKnown,
+                                setDependantsKnown
+                              );
+                              handleRowChange(
+                                i,
+                                "age",
+                                age,
+                                dependantsKnown,
+                                setDependantsKnown
+                              );
+                            }}
+                            dateFormat="dd-MMM-yyyy"
+                            placeholderText="dd-mm-yyyy"
+                            showMonthDropdown
+                            showYearDropdown
+                            className="input-date"
+                            dropdownMode="select"
+                          />
+                          <i className="fas fa-calendar-alt calendar-icon"></i>
+                        </div>
+                      </td>
+                      <td>
+                        <input value={d.age} readOnly />
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setDependantsKnown(
+                              dependantsKnown.filter((_, idx) => idx !== i)
+                            )
+                          }
+                        >
+                          X
+                        </button>
+                      </td>
+                    </tr>
                   ))}
+                  {/* Newly Added Dependants */}
+                  {dependants.map((d, i) => (
+                    <tr key={`new-dep-${i}`}>
+                      <td>
+                        <input
+                          value={d.name}
+                          onChange={(e) =>
+                            handleRowChange(
+                              i,
+                              "name",
+                              e.target.value,
+                              dependants,
+                              setDependants
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <input
+                          value={d.relationship}
+                          onChange={(e) =>
+                            handleRowChange(
+                              i,
+                              "relationship",
+                              e.target.value,
+                              dependants,
+                              setDependants
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <div className="date-input-container-info">
+                          <DatePicker
+                            portalId="root-portal"
+                            selected={d.date_of_birth}
+                            onChange={(date) => {
+                              const age = date ? calculateExactAge(date) : "";
+                              handleRowChange(
+                                i,
+                                "date_of_birth",
+                                date,
+                                dependants,
+                                setDependants
+                              );
+                              handleRowChange(
+                                i,
+                                "age",
+                                age,
+                                dependants,
+                                setDependants
+                              );
+                            }}
+                            dateFormat="dd-MMM-yyyy"
+                            placeholderText="dd-mm-yyyy"
+                            showMonthDropdown
+                            showYearDropdown
+                            className="input-date"
+                            dropdownMode="select"
+                          />
+                          <i className="fas fa-calendar-alt calendar-icon"></i>
+                        </div>
+                      </td>
+                      <td>
+                        <input value={d.age} readOnly />
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setDependants(
+                              dependants.filter((_, idx) => idx !== i)
+                            )
+                          }
+                        >
+                          X
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </>
+              ) : dependantsKnown.length > 0 ? (
+                dependantsKnown.map((d) => (
+                  <tr key={d.id}>
+                    <td>{d.name}</td>
+                    <td>{d.relationship}</td>
+                    <td>
+                      {d.date_of_birth
+                        ? format(new Date(d.date_of_birth), "dd-MMM-yyyy")
+                        : "-"}
+                    </td>
+                    <td>{d.age}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" style={{ textAlign: "center" }}>
+                    No dependants available
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
 
@@ -1456,7 +1793,7 @@ const EditEmployee = () => {
               </tr>
             </thead>
             <tbody>
-              {editMode
+              {/* {editMode
                 ? workExperience.map((w, i) => (
                     <tr key={i}>
                       <td>
@@ -1567,7 +1904,178 @@ const EditEmployee = () => {
                           : "-"}
                       </td>
                     </tr>
+                  ))} */}
+              {editMode ? (
+                <>
+                  {workExperienceKnown.map((w, i) => (
+                    <tr key={`known-work-${i}`}>
+                      <td>
+                        <input
+                          value={w.company_name}
+                          onChange={(e) =>
+                            handleRowChange(
+                              i,
+                              "company_name",
+                              e.target.value,
+                              workExperienceKnown,
+                              setWorkExperienceKnown
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <input
+                          value={w.company_role}
+                          onChange={(e) =>
+                            handleRowChange(
+                              i,
+                              "company_role",
+                              e.target.value,
+                              workExperienceKnown,
+                              setWorkExperienceKnown
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <DatePicker
+                          selected={w.start_date}
+                          onChange={(date) =>
+                            handleRowChange(
+                              i,
+                              "start_date",
+                              date,
+                              workExperienceKnown,
+                              setWorkExperienceKnown
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <DatePicker
+                          selected={w.end_date}
+                          onChange={(date) =>
+                            handleRowChange(
+                              i,
+                              "end_date",
+                              date,
+                              workExperienceKnown,
+                              setWorkExperienceKnown
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setWorkExperienceKnown(
+                              workExperienceKnown.filter((_, idx) => idx !== i)
+                            )
+                          }
+                        >
+                          X
+                        </button>
+                      </td>
+                    </tr>
                   ))}
+                  {workExperience.map((w, i) => (
+                    <tr key={`new-work-${i}`}>
+                      <td>
+                        <input
+                          value={w.company_name}
+                          onChange={(e) =>
+                            handleRowChange(
+                              i,
+                              "company_name",
+                              e.target.value,
+                              workExperience,
+                              setWorkExperience
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <input
+                          value={w.company_role}
+                          onChange={(e) =>
+                            handleRowChange(
+                              i,
+                              "company_role",
+                              e.target.value,
+                              workExperience,
+                              setWorkExperience
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <DatePicker
+                          selected={w.start_date}
+                          onChange={(date) =>
+                            handleRowChange(
+                              i,
+                              "start_date",
+                              date,
+                              workExperience,
+                              setWorkExperience
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <DatePicker
+                          selected={w.end_date}
+                          onChange={(date) =>
+                            handleRowChange(
+                              i,
+                              "end_date",
+                              date,
+                              workExperience,
+                              setWorkExperience
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setWorkExperience(
+                              workExperience.filter((_, idx) => idx !== i)
+                            )
+                          }
+                        >
+                          X
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </>
+              ) : workExperienceKnown.length > 0 ? (
+                workExperienceKnown.map((w) => (
+                  <tr key={w.id}>
+                    <td>{w.company_name}</td>
+                    <td>{w.company_role}</td>
+                    <td>
+                      {w.start_date
+                        ? format(new Date(w.start_date), "dd-MMM-yyyy")
+                        : "-"}
+                    </td>
+                    <td>
+                      {w.end_date
+                        ? format(new Date(w.end_date), "dd-MMM-yyyy")
+                        : "-"}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" style={{ textAlign: "center" }}>
+                    No work experience available
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
 
@@ -1606,7 +2114,7 @@ const EditEmployee = () => {
               </tr>
             </thead>
             <tbody>
-              {editMode
+              {/* {editMode
                 ? education.map((e, i) => (
                     <tr key={i}>
                       <td>
@@ -1707,7 +2215,174 @@ const EditEmployee = () => {
                           : "-"}
                       </td>
                     </tr>
+                  ))} */}
+              {editMode ? (
+                <>
+                  {educationKnown.map((e, i) => (
+                    <tr key={`known-edu-${i}`}>
+                      <td>
+                        <input
+                          value={e.institution_name}
+                          onChange={(ev) =>
+                            handleRowChange(
+                              i,
+                              "institution_name",
+                              ev.target.value,
+                              educationKnown,
+                              setEducationKnown
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <input
+                          value={e.degree}
+                          onChange={(ev) =>
+                            handleRowChange(
+                              i,
+                              "degree",
+                              ev.target.value,
+                              educationKnown,
+                              setEducationKnown
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <input
+                          value={e.specialization}
+                          onChange={(ev) =>
+                            handleRowChange(
+                              i,
+                              "specialization",
+                              ev.target.value,
+                              educationKnown,
+                              setEducationKnown
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <DatePicker
+                          selected={e.date_of_completion}
+                          onChange={(date) =>
+                            handleRowChange(
+                              i,
+                              "date_of_completion",
+                              date,
+                              educationKnown,
+                              setEducationKnown
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setEducationKnown(
+                              educationKnown.filter((_, idx) => idx !== i)
+                            )
+                          }
+                        >
+                          X
+                        </button>
+                      </td>
+                    </tr>
                   ))}
+                  {education.map((e, i) => (
+                    <tr key={`new-edu-${i}`}>
+                      <td>
+                        <input
+                          value={e.institution_name}
+                          onChange={(ev) =>
+                            handleRowChange(
+                              i,
+                              "institution_name",
+                              ev.target.value,
+                              education,
+                              setEducation
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <input
+                          value={e.degree}
+                          onChange={(ev) =>
+                            handleRowChange(
+                              i,
+                              "degree",
+                              ev.target.value,
+                              education,
+                              setEducation
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <input
+                          value={e.specialization}
+                          onChange={(ev) =>
+                            handleRowChange(
+                              i,
+                              "specialization",
+                              ev.target.value,
+                              education,
+                              setEducation
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <DatePicker
+                          selected={e.date_of_completion}
+                          onChange={(date) =>
+                            handleRowChange(
+                              i,
+                              "date_of_completion",
+                              date,
+                              education,
+                              setEducation
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setEducation(
+                              education.filter((_, idx) => idx !== i)
+                            )
+                          }
+                        >
+                          X
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </>
+              ) : educationKnown.length > 0 ? (
+                educationKnown.map((e) => (
+                  <tr key={e.id}>
+                    <td>{e.institution_name}</td>
+                    <td>{e.degree}</td>
+                    <td>{e.specialization}</td>
+                    <td>
+                      {e.date_of_completion
+                        ? format(new Date(e.date_of_completion), "dd-MMM-yyyy")
+                        : "-"}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" style={{ textAlign: "center" }}>
+                    No education available
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
 
@@ -1748,7 +2423,7 @@ const EditEmployee = () => {
               </tr>
             </thead>
             <tbody>
-              {editMode
+              {/* {editMode
                 ? assets.map((a, i) => (
                     <tr key={i}>
                       <td>
@@ -1873,7 +2548,205 @@ const EditEmployee = () => {
                           : "-"}
                       </td>
                     </tr>
+                  ))} */}
+              {editMode ? (
+                <>
+                  {assetsKnown.map((a, i) => (
+                    <tr key={`known-asset-${i}`}>
+                      <td>
+                        <input
+                          value={a.type}
+                          onChange={(e) =>
+                            handleRowChange(
+                              i,
+                              "type",
+                              e.target.value,
+                              assetsKnown,
+                              setAssetsKnown
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <input
+                          value={a.model}
+                          onChange={(e) =>
+                            handleRowChange(
+                              i,
+                              "model",
+                              e.target.value,
+                              assetsKnown,
+                              setAssetsKnown
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <input
+                          value={a.serialnumber}
+                          onChange={(e) =>
+                            handleRowChange(
+                              i,
+                              "serialnumber",
+                              e.target.value,
+                              assetsKnown,
+                              setAssetsKnown
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <DatePicker
+                          selected={a.given_date}
+                          onChange={(date) =>
+                            handleRowChange(
+                              i,
+                              "given_date",
+                              date,
+                              assetsKnown,
+                              setAssetsKnown
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <DatePicker
+                          selected={a.return_date}
+                          onChange={(date) =>
+                            handleRowChange(
+                              i,
+                              "return_date",
+                              date,
+                              assetsKnown,
+                              setAssetsKnown
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setAssetsKnown(
+                              assetsKnown.filter((_, idx) => idx !== i)
+                            )
+                          }
+                        >
+                          X
+                        </button>
+                      </td>
+                    </tr>
                   ))}
+                  {assets.map((a, i) => (
+                    <tr key={`new-asset-${i}`}>
+                      <td>
+                        <input
+                          value={a.type}
+                          onChange={(e) =>
+                            handleRowChange(
+                              i,
+                              "type",
+                              e.target.value,
+                              assets,
+                              setAssets
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <input
+                          value={a.model}
+                          onChange={(e) =>
+                            handleRowChange(
+                              i,
+                              "model",
+                              e.target.value,
+                              assets,
+                              setAssets
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <input
+                          value={a.serialnumber}
+                          onChange={(e) =>
+                            handleRowChange(
+                              i,
+                              "serialnumber",
+                              e.target.value,
+                              assets,
+                              setAssets
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <DatePicker
+                          selected={a.given_date}
+                          onChange={(date) =>
+                            handleRowChange(
+                              i,
+                              "given_date",
+                              date,
+                              assets,
+                              setAssets
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <DatePicker
+                          selected={a.return_date}
+                          onChange={(date) =>
+                            handleRowChange(
+                              i,
+                              "return_date",
+                              date,
+                              assets,
+                              setAssets
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setAssets(assets.filter((_, idx) => idx !== i))
+                          }
+                        >
+                          X
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </>
+              ) : assetsKnown.length > 0 ? (
+                assetsKnown.map((a) => (
+                  <tr key={a.id}>
+                    <td>{a.type}</td>
+                    <td>{a.model}</td>
+                    <td>{a.serialnumber}</td>
+                    <td>
+                      {a.given_date
+                        ? format(new Date(a.given_date), "dd-MMM-yyyy")
+                        : "-"}
+                    </td>
+                    <td>
+                      {a.return_date
+                        ? format(new Date(a.return_date), "dd-MMM-yyyy")
+                        : "-"}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" style={{ textAlign: "center" }}>
+                    No assets available
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
 

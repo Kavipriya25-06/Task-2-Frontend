@@ -234,7 +234,7 @@ const TeamLeadAttendance = () => {
                             {attendance.modified_by && (
                               <div>
                                 <img
-                                  src="\info.png"
+                                  src="\DTMS\info.png"
                                   alt="info button"
                                   className="infoicon"
                                 />

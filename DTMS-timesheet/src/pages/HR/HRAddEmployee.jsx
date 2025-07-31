@@ -60,36 +60,37 @@ const AddEmployee = () => {
   ]);
 
   const [assets, setAssets] = useState([
-    {
-      type: "",
-      model: "",
-      serialnumber: "",
-      given_date: null,
-      return_date: null,
-    },
+    // {
+    //   type: "",
+    //   model: "",
+    //   serialnumber: "",
+    //   given_date: null,
+    //   return_date: null,
+    // },
   ]);
   const [dependants, setDependants] = useState([
-    { name: "", relationship: "", date_of_birth: null, age: null },
+    // { name: "", relationship: "", date_of_birth: null, age: null },
   ]);
   const [education, setEducation] = useState([
-    {
-      institution_name: "",
-      degree: "",
-      specialization: "",
-      date_of_completion: null,
-    },
+    // {
+    //   institution_name: "",
+    //   degree: "",
+    //   specialization: "",
+    //   date_of_completion: null,
+    // },
   ]);
   const [workExperience, setWorkExperience] = useState([
-    { company_name: "", company_role: "", start_date: null, end_date: null },
+    // { company_name: "", company_role: "", start_date: null, end_date: null },
   ]);
   const [languages, setLanguages] = useState([
-    { language: "", read: "", write: "", speak: "" },
+    // { language: "", read: "", write: "", speak: "" },
   ]);
 
-  const addRow = (stateSetter, defaultRow) =>
-    stateSetter((prev) => [...prev, defaultRow]);
-  const removeRow = (index, state, stateSetter) =>
-    stateSetter(state.filter((_, i) => i !== index));
+  // const addRow = (stateSetter, defaultRow) =>
+  //   stateSetter((prev) => [...prev, defaultRow]);
+
+  // const removeRow = (index, state, stateSetter) =>
+  //   stateSetter(state.filter((_, i) => i !== index));
 
   const handleRowChange = (index, name, value, state, stateSetter) => {
     const newRows = [...state];
@@ -1005,7 +1006,11 @@ const AddEmployee = () => {
                     <button
                       className="employee-delete-button"
                       type="button"
-                      onClick={() => removeRow(i, languages, setLanguages)}
+                      onClick={() =>
+                        setLanguages(
+                          languages.filter((_, index) => index !== i)
+                        )
+                      }
                     >
                       X
                     </button>
@@ -1018,12 +1023,15 @@ const AddEmployee = () => {
             className="employee-add-button"
             type="button"
             onClick={() =>
-              addRow(setLanguages, {
-                language: "",
-                read: "",
-                write: "",
-                speak: "",
-              })
+              setLanguages([
+                ...languages,
+                {
+                  language: "",
+                  read: "",
+                  write: "",
+                  speak: "",
+                },
+              ])
             }
           >
             +

@@ -231,7 +231,7 @@ const ManagerLeaveApplication = () => {
                 disabled={currentPage === 1}
               >
                 <img
-                  src="/left.png"
+                  src="\DTMS\left.png"
                   alt="Previous"
                   style={{ width: 10, height: 12 }}
                 />
@@ -246,7 +246,7 @@ const ManagerLeaveApplication = () => {
                 disabled={currentPage === totalPages}
               >
                 <img
-                  src="/right.png"
+                  src="\DTMS\right.png"
                   alt="Previous"
                   style={{ width: 10, height: 12 }}
                 />

@@ -191,14 +191,18 @@ const App = () => {
   }, [user]);
 
   return (
-    <Router>
+    <Router basename="/DTMS">
       <div className="app-layout">
         {/* Top Bar */}
         <header className="top-bar">
           {/* <NavLink to="/" style={{ textDecoration: "none", color: "inherit" }}>
             <img src="\src\assets\Logo.svg" alt="Arris Logo" className="logo" />
           </NavLink> */}
-          <img src="\aero-360_logo.png" alt="Arris Logo" className="logo" />
+          <img
+            src="\DTMS\aero-360_logo.png"
+            alt="Arris Logo"
+            className="logo"
+          />
 
           <div style={{ alignItems: "center", display: "flex" }}>
             {/* <NavLink
@@ -209,7 +213,7 @@ const App = () => {
               {!showLogoutPopup && user && (
                 <>
                   <img
-                    src="\user_icon.svg"
+                    src="\DTMS\user_icon.svg"
                     alt="User icon"
                     className="logoutbutton"
                   />

@@ -239,13 +239,13 @@ const ManagerLeaveRequests = () => {
                   {activeTab === 0 && (
                     <td>
                       <img
-                        src="/approve.png"
+                        src="\DTMS\approve.png"
                         alt="approve button"
                         className="leavebutton"
                         onClick={() => handleApprove(leave.leave_taken_id)}
                       />
                       <img
-                        src="/reject.png"
+                        src="\DTMS\reject.png"
                         alt="reject button"
                         className="leavebutton"
                         onClick={() =>
@@ -301,7 +301,7 @@ const ManagerLeaveRequests = () => {
           disabled={currentPage === 1}
         >
           <img
-            src="/left.png"
+            src="\DTMS\left.png"
             alt="Previous"
             style={{ width: 10, height: 12 }}
           />
@@ -316,7 +316,7 @@ const ManagerLeaveRequests = () => {
           disabled={currentPage === totalPages}
         >
           <img
-            src="/right.png"
+            src="\DTMS\right.png"
             alt="Previous"
             style={{ width: 10, height: 12 }}
           />
