@@ -91,11 +91,6 @@ const EditEmployee = () => {
   const [educationKnown, setEducationKnown] = useState([]);
   const [assetsKnown, setAssetsKnown] = useState([]);
 
-  // const addRow = (stateSetter, defaultRow) =>
-  //   stateSetter((prev) => [...prev, defaultRow]);
-  // const removeRow = (index, state, stateSetter) =>
-  //   stateSetter(state.filter((_, i) => i !== index));
-
   const handleRowChange = (index, name, value, state, stateSetter) => {
     const newRows = [...state];
     newRows[index][name] = value;
@@ -492,83 +487,6 @@ const EditEmployee = () => {
         {/* === Basic Info === */}
         <h3 className="section-header">Basic Info</h3>
         <div className="tab-content">
-          {/* <div className="individual-tabs">
-            {editMode ? (
-              <>
-                <label>
-                  Employee Code <span className="required-star">*</span>
-                </label>
-                <input
-                  name="employee_code"
-                  value={formData.employee_code}
-                  onChange={handleChange}
-                  placeholder="Employee Code"
-                  required
-                />
-              </>
-            ) : (
-              <>
-                <label>Employee Code</label>
-                <div className="uneditable">
-                  {formData.employee_code || "-"}
-                </div>
-              </>
-            )}
-          </div>
-          <div className="individual-tabs">
-            <label>
-              Official Email <span className="required-star">*</span>
-            </label>
-            <input
-              name="employee_email"
-              value={formData.employee_email}
-              onChange={handleChange}
-              placeholder="Official Email"
-              className={errors.employee_email ? "input-error" : ""}
-            />
-            {errors.employee_email && (
-              <span className="error-message">{errors.employee_email}</span>
-            )}
-          </div>
-          <div className="individual-tabs">
-            <label>
-              First Name <span className="required-star">*</span>
-            </label>
-            <input
-              name="employee_name"
-              value={formData.employee_name}
-              onChange={handleChange}
-              placeholder="First Name"
-              required
-            />
-          </div>
-          <div className="individual-tabs">
-            <label>Last Name</label>
-            <input
-              name="last_name"
-              value={formData.last_name}
-              onChange={handleChange}
-              placeholder="Last Name"
-            />
-          </div> */}
-          {/* <input
-            name="added_by"
-            placeholder="Added by"
-            value={formData.added_by}
-            onChange={handleChange}
-          />
-          <input
-            name="modified_by"
-            placeholder="Modified by"
-            value={formData.modified_by}
-            onChange={handleChange}
-          />
-          <input
-            name="status"
-            placeholder="Status"
-            value={formData.status}
-            onChange={handleChange}
-          /> */}
           {renderField("Employee Code", "employee_code")}
           {renderField("Official Email", "employee_email")}
           {renderField("First Name", "employee_name")}
@@ -578,175 +496,6 @@ const EditEmployee = () => {
         {/* === Work Info === */}
         <h3 className="section-header">Work</h3>
         <div className="tab-content">
-          {/* <div className="individual-tabs">
-            <label>Date of joining</label>
-            <div className="date-input-container">
-              <DatePicker
-                selected={formData.doj}
-                onChange={(date) =>
-                  setFormData({
-                    ...formData,
-                    doj: format(date, "yyyy-MM-dd"),
-                  })
-                }
-                dateFormat="dd-MMM-yyyy"
-                placeholderText="dd-mm-yyyy"
-                className="input1"
-                showMonthDropdown
-                showYearDropdown
-                dropdownMode="select"
-              />
-              <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
-            </div>
-          </div>
-
-          <div className="individual-tabs">
-            <label>Location</label>
-            <input
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              placeholder="Location"
-            />
-          </div>
-          <div className="individual-tabs">
-            <label>Title</label>
-            <input
-              name="designation"
-              value={formData.designation}
-              onChange={handleChange}
-              placeholder="Title"
-            />
-          </div>
-          {/* <input
-            name="role"
-            placeholder="Role"
-            value={formData.role}
-            onChange={handleChange}
-          /> */}
-          {/* <input
-            name="experience"
-            placeholder="Experience"
-            value={formData.experience}
-            onChange={handleChange}
-          />
-          <input
-            name="total_experience"
-            placeholder="Total Experience"
-            value={formData.total_experience}
-            onChange={handleChange}
-          /> */}
-          {/*
-          <div className="individual-tabs">
-            <label>Department</label>
-            <input
-              name="department"
-              value={formData.department}
-              onChange={handleChange}
-              placeholder="Department"
-            />
-          </div>
-          <div className="individual-tabs">
-            <label>Employee Status</label>
-            <select
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              placeholder="Employee Status"
-            >
-              <option value="">Select Status</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-              <option value="resigned">Resigned</option>
-            </select>
-          </div>
-          <div className="individual-tabs">
-            <label>Source of Hire</label>
-            <input
-              name="source_of_hire"
-              value={formData.source_of_hire}
-              onChange={handleChange}
-              placeholder="Source of Hire"
-            />
-          </div>
-          <div className="individual-tabs">
-            <label>Reporting Manager</label>
-            <select
-              name="reporting_manager"
-              value={formData.reporting_manager}
-              onChange={handleChange}
-              // placeholder="Reporting Manager"
-            >
-              <option value="">Select Reporting Manager</option>
-              {managers.map((manager) => (
-                <option key={manager.employee_id} value={manager.employee_id}>
-                  {manager.employee_code} - {manager.employee_name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="individual-tabs">
-            <label>Secondary Reporting Manager</label>
-            <select
-              name="second_reporting_manager"
-              value={formData.second_reporting_manager}
-              onChange={handleChange}
-              // placeholder="Reporting Manager"
-            >
-              <option value="">Select Secondary Reporting Manager</option>
-              {managers.map((manager) => (
-                <option key={manager.employee_id} value={manager.employee_id}>
-                  {manager.employee_code} - {manager.employee_name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="individual-tabs">
-            <label>Seating Location</label>
-            <input
-              name="seating_location"
-              value={formData.seating_location}
-              onChange={handleChange}
-              placeholder="Seating Location"
-            />
-          </div>
-
-          <div className="individual-tabs">
-            <label>Employment Type</label>
-            <select
-              name="employment_type"
-              value={formData.employment_type}
-              onChange={handleChange}
-              // placeholder="Employment Type"
-            >
-              <option value="">Select Employment Type</option>
-              <option value="Fulltime">Full-Time</option>
-              <option value="Probation">Probation</option>
-              <option value="Internship">Internship</option>
-              <option value="Contract">Contract</option>
-            </select>
-          </div>
-          <div className="individual-tabs">
-            <label>Work Phone</label>
-            <input
-              pattern="[0-9+\-]{0,15}"
-              name="work_phone"
-              value={formData.work_phone}
-              onChange={handleChange}
-              placeholder="Work Phone"
-            />
-          </div>
-          <div className="individual-tabs">
-            <label>Extension</label>
-            <input
-              pattern="[0-9+\-]{0,15}"
-              name="extension"
-              value={formData.extension}
-              onChange={handleChange}
-              placeholder="Extension"
-            />
-          </div> */}
           {renderDate("Date of Joining", "doj")}
           {renderField("Location", "location")}
           {renderField("Title", "designation")}
@@ -847,189 +596,6 @@ const EditEmployee = () => {
           {renderField("Blood Group", "blood_group")}
           {renderField("Personal Email", "personal_email")}
           {renderField("Identification Marks", "identification_marks")}
-          {/* <div className="individual-tabs">
-            <label>Date of Birth</label>
-            <div className="date-input-container">
-              <DatePicker
-                selected={formData.dob}
-                onChange={(date) =>
-                  setFormData({
-                    ...formData,
-                    dob: format(date, "yyyy-MM-dd"),
-                  })
-                }
-                dateFormat="dd-MMM-yyyy"
-                placeholderText="dd-mm-yyyy"
-                className="input1"
-                showMonthDropdown
-                showYearDropdown
-                dropdownMode="select" // ensures dropdown shows on click, not scroll
-                maxDate={eighteenYearsAgo}
-              />
-              <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
-           
-            </div>
-          </div> */}
-
-          {/* <input
-            name="age"
-            placeholder="Age"
-            value={formData.age}
-            onChange={handleChange}
-          /> */}
-          {/* <div className="individual-tabs">
-            <label>Gender</label>
-            <select
-              name="gender"
-              value={formData.gender}
-              onChange={handleChange}
-              // placeholder="Gender"
-            >
-              <option value="">Select Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Others">Others</option>
-            </select>
-          </div>
-          <div className="individual-tabs">
-            <label>Marital Status</label>
-            <select
-              name="marital_status"
-              value={formData.marital_status}
-              onChange={handleChange}
-              // placeholder="Gender"
-            >
-              <option value="">Select Status</option>
-              <option value="Single">Single</option>
-              <option value="Married">Married</option>
-              <option value="Divorced">Divorced</option>
-              <option value="Widowed">Widowed</option>
-              <option value="Separated">Separated</option>
-            </select>
-          </div>
-
-          <div className="individual-tabs">
-            <label>Wedding Date</label>
-            <div className="date-input-container">
-              <DatePicker
-                selected={formData.wedding_date}
-                onChange={(date) =>
-                  setFormData({
-                    ...formData,
-                    wedding_date: format(date, "yyyy-MM-dd"),
-                  })
-                }
-                dateFormat="dd-MMM-yyyy"
-                placeholderText="dd-mm-yyyy"
-                className="input1"
-                showMonthDropdown
-                showYearDropdown
-                dropdownMode="select" // ensures dropdown shows on click, not scroll
-              />
-              <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
-           
-            </div>
-          </div>
-
-          <div className="individual-tabs">
-            <label>Permanent Address</label>
-            <textarea
-              name="permanent_address"
-              value={formData.permanent_address}
-              onChange={handleChange}
-              placeholder="Permanent Address"
-            />
-          </div>
-          <div className="individual-tabs">
-            <label>Current Address</label>
-            <textarea
-              name="local_address"
-              value={formData.local_address}
-              onChange={handleChange}
-              placeholder="Current Address"
-            />
-          </div>
-          <div className="individual-tabs">
-            <label>Mobile Phone</label>
-            <input
-              name="contact_number"
-              value={formData.contact_number}
-              onChange={handleChange}
-              placeholder="Mobile Phone"
-              className={errors.contact_number ? "input-error" : ""}
-            />
-            {errors.contact_number && (
-              <span className="error-message">{errors.contact_number}</span>
-            )}
-          </div>
-
-          <div className="individual-tabs">
-            <label>Emergency Contact Name</label>
-            <input
-              name="emergency_contact_name"
-              value={formData.emergency_contact_name}
-              onChange={handleChange}
-              placeholder="Emergency Contact Name"
-            />
-          </div>
-          <div className="individual-tabs">
-            <label>Relationship</label>
-            <input
-              name="emergency_contact_relationship"
-              value={formData.emergency_contact_relationship}
-              onChange={handleChange}
-              placeholder="Relationship"
-            />
-          </div>
-          <div className="individual-tabs">
-            <label>Emergency Contact Number</label>
-            <input
-              name="emergency_contact_number"
-              value={formData.emergency_contact_number}
-              onChange={handleChange}
-              placeholder="Emergency Contact Number"
-              className={errors.emergency_contact_number ? "input-error" : ""}
-            />
-            {errors.emergency_contact_number && (
-              <span className="error-message">
-                {errors.emergency_contact_number}
-              </span>
-            )}
-          </div>
-          <div className="individual-tabs">
-            <label>Blood Group</label>
-            <input
-              name="blood_group"
-              value={formData.blood_group}
-              onChange={handleChange}
-              placeholder="Blood Group"
-            />
-          </div>
-          <div className="individual-tabs">
-            <label>
-              Personal Email <span className="required-star">*</span>
-            </label>
-            <input
-              name="personal_email"
-              value={formData.personal_email}
-              onChange={handleChange}
-              placeholder="Personal Email"
-              className={errors.personal_email ? "input-error" : ""}
-            />
-            {errors.personal_email && (
-              <span className="error-message">{errors.personal_email}</span>
-            )}
-          </div>
-
-          <div className="individual-tabs">
-            <label>Identification Marks</label>
-            <textarea
-              name="identification_marks"
-              value={formData.identification_marks}
-              onChange={handleChange}
-              placeholder="Identification Marks"
-            />
-          </div> */}
         </div>
 
         {/* === Additional Details === */}
@@ -1048,162 +614,6 @@ const EditEmployee = () => {
           {renderField("Bank Name", "bank_name")}
           {renderField("Branch Name", "bank_branch_name")}
           {renderField("Bank Address", "bank_address")}
-
-          {/* <div className="individual-tabs">
-            <label>Aadhaar</label>
-            <input
-              name="aadhaar_number"
-              value={formData.aadhaar_number}
-              onChange={handleChange}
-              placeholder="Aadhaar"
-              className={errors.aadhaar_number ? "input-error" : ""}
-            />
-            {errors.aadhaar_number && (
-              <span className="error-message">{errors.aadhaar_number}</span>
-            )}
-          </div>
-          <div className="individual-tabs">
-            <label>PAN Number</label>
-            <input
-              name="PAN"
-              value={formData.PAN}
-              onChange={handleChange}
-              placeholder="PAN Number"
-              className={errors.PAN ? "input-error" : ""}
-            />
-            {errors.PAN && <span className="error-message">{errors.PAN}</span>}
-          </div>
-          <div className="individual-tabs">
-            <label>UAN</label>
-            <input
-              name="UAN"
-              value={formData.UAN}
-              onChange={handleChange}
-              placeholder="UAN"
-              className={errors.UAN ? "input-error" : ""}
-            />
-            {errors.UAN && <span className="error-message">{errors.UAN}</span>}
-          </div>
-          <div className="individual-tabs">
-            <label>PF Number</label>
-            <input
-              name="pf_number"
-              value={formData.pf_number}
-              onChange={handleChange}
-              placeholder="PF Number"
-              className={errors.pf_number ? "input-error" : ""}
-            />
-            {errors.pf_number && (
-              <span className="error-message">{errors.pf_number}</span>
-            )}
-          </div>
-          <div className="individual-tabs">
-            <label>ESI Number</label>
-            <input
-              name="esi_number"
-              value={formData.esi_number}
-              onChange={handleChange}
-              placeholder="ESI Number"
-              className={errors.esi_number ? "input-error" : ""}
-            />
-            {errors.esi_number && (
-              <span className="error-message">{errors.esi_number}</span>
-            )}
-          </div>
-          <div className="individual-tabs">
-            <label>Passport Number</label>
-            <input
-              name="passport_number"
-              value={formData.passport_number}
-              onChange={handleChange}
-              placeholder="Passport Number"
-              className={errors.passport_number ? "input-error" : ""}
-            />
-            {errors.passport_number && (
-              <span className="error-message">{errors.passport_number}</span>
-            )}
-          </div>
-          <div className="individual-tabs">
-            <label>Passport validity</label>
-            <div className="date-input-container">
-              <DatePicker
-                selected={formData.passport_validity}
-                onChange={(date) =>
-                  setFormData({
-                    ...formData,
-                    passport_validity: format(date, "yyyy-MM-dd"),
-                  })
-                }
-                dateFormat="dd-MMM-yyyy"
-                placeholderText="dd-mm-yyyy"
-                className="input1"
-                showMonthDropdown
-                showYearDropdown
-                dropdownMode="select"
-              />
-              <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
-              {/* Font Awesome Calendar Icon */}
-          {/*
-            </div>
-          </div>
-          <div className="individual-tabs">
-            <label>Remarks</label>
-            <input
-              name="remarks"
-              value={formData.remarks}
-              onChange={handleChange}
-              placeholder="Remarks"
-            />
-          </div>
-          <div className="individual-tabs">
-            <label>Account Number</label>
-            <input
-              name="account_number"
-              value={formData.account_number}
-              onChange={handleChange}
-              placeholder="Account Number"
-            />
-          </div>
-          <div className="individual-tabs">
-            <label>IFSC Code</label>
-            <input
-              name="ifsc_code"
-              value={formData.ifsc_code}
-              onChange={handleChange}
-              placeholder="IFSC Code"
-              className={errors.ifsc_code ? "input-error" : ""}
-            />
-            {errors.ifsc_code && (
-              <span className="error-message">{errors.ifsc_code}</span>
-            )}
-          </div>
-          <div className="individual-tabs">
-            <label>Bank Name</label>
-            <input
-              name="bank_name"
-              value={formData.bank_name}
-              onChange={handleChange}
-              placeholder="Bank Name"
-            />
-          </div>
-          <div className="individual-tabs">
-            <label>Branch Name</label>
-            <input
-              name="bank_branch_name"
-              value={formData.bank_branch_name}
-              onChange={handleChange}
-              placeholder="Branch Name"
-            />
-          </div>
-          <div className="individual-tabs">
-            <label>Bank Address</label>
-            <textarea
-              name="bank_address"
-              value={formData.bank_address}
-              onChange={handleChange}
-              placeholder="Bank Address"
-            />
-          </div> */}
         </div>
 
         {/* === Language Table === */}
@@ -1306,8 +716,11 @@ const EditEmployee = () => {
                         className="employee-delete-button"
                         type="button"
                         onClick={() =>
-                          setLanguagesKnown(
-                            languagesKnown.filter((_, index) => index !== i)
+                          deleteKnownRow(
+                            l.id,
+                            "languages-known",
+                            languagesKnown,
+                            setLanguagesKnown
                           )
                         }
                       >
@@ -1466,116 +879,6 @@ const EditEmployee = () => {
               </tr>
             </thead>
             <tbody>
-              {/* {editMode
-                ? dependants.map((d, i) => (
-                    <tr key={i}>
-                      <td>
-                        <input
-                          placeholder="Name"
-                          value={d.name}
-                          onChange={(e) =>
-                            handleRowChange(
-                              i,
-                              "name",
-                              e.target.value,
-                              dependants,
-                              setDependants
-                            )
-                          }
-                        />
-                      </td>
-                      <td>
-                        <input
-                          placeholder="Relationship"
-                          value={d.relationship}
-                          onChange={(e) =>
-                            handleRowChange(
-                              i,
-                              "relationship",
-                              e.target.value,
-                              dependants,
-                              setDependants
-                            )
-                          }
-                        />
-                      </td>
-
-                      <td>
-                        <div className="date-input-container-info">
-                          <DatePicker
-                            portalId="root-portal"
-                            selected={d.date_of_birth}
-                            onChange={(date) => {
-                              const age = date ? calculateExactAge(date) : "";
-                              handleRowChange(
-                                i,
-                                "date_of_birth",
-                                date,
-                                dependants,
-                                setDependants
-                              );
-                              handleRowChange(
-                                i,
-                                "age",
-                                age,
-                                dependants,
-                                setDependants
-                              );
-                            }}
-                            dateFormat="dd-MMM-yyyy"
-                            placeholderText="dd-mm-yyyy"
-                            showMonthDropdown
-                            showYearDropdown
-                            className="input-date"
-                            dropdownMode="select"
-                          />
-                          <i className="fas fa-calendar-alt calendar-icon"></i>
-                        </div>
-                      </td>
-
-                      <td>
-                        <input
-                          placeholder="Age"
-                          value={d.age}
-                          readOnly
-                          onChange={(e) =>
-                            handleRowChange(
-                              i,
-                              "age",
-                              e.target.value,
-                              dependants,
-                              setDependants
-                            )
-                          }
-                        />
-                      </td>
-                      <td>
-                        <button
-                          className="employee-delete-button"
-                          type="button"
-                          onClick={() =>
-                            setDependants(
-                              dependants.filter((_, index) => index !== i)
-                            )
-                          }
-                        >
-                          X
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                : dependantsKnown.map((d) => (
-                    <tr key={d.id}>
-                      <td>{d.name}</td>
-                      <td>{d.relationship}</td>
-                      <td>
-                        {d.date_of_birth
-                          ? format(new Date(d.date_of_birth), "dd-MMM-yyyy")
-                          : "-"}
-                      </td>
-                      <td>{d.age}</td>
-                    </tr>
-                  ))} */}
               {editMode ? (
                 <>
                   {/* Existing Dependants */}
@@ -1646,10 +949,14 @@ const EditEmployee = () => {
                       </td>
                       <td>
                         <button
+                          className="employee-delete-button"
                           type="button"
                           onClick={() =>
-                            setDependantsKnown(
-                              dependantsKnown.filter((_, idx) => idx !== i)
+                            deleteKnownRow(
+                              d.id,
+                              "dependant",
+                              dependantsKnown,
+                              setDependantsKnown
                             )
                           }
                         >
@@ -1727,6 +1034,7 @@ const EditEmployee = () => {
                       <td>
                         <button
                           type="button"
+                          className="employee-delete-button"
                           onClick={() =>
                             setDependants(
                               dependants.filter((_, idx) => idx !== i)
@@ -1793,118 +1101,6 @@ const EditEmployee = () => {
               </tr>
             </thead>
             <tbody>
-              {/* {editMode
-                ? workExperience.map((w, i) => (
-                    <tr key={i}>
-                      <td>
-                        <input
-                          placeholder="Company Name"
-                          value={w.company_name}
-                          onChange={(ev) =>
-                            handleRowChange(
-                              i,
-                              "company_name",
-                              ev.target.value,
-                              workExperience,
-                              setWorkExperience
-                            )
-                          }
-                        />
-                      </td>
-                      <td>
-                        <input
-                          placeholder="Role"
-                          value={w.company_role}
-                          onChange={(ev) =>
-                            handleRowChange(
-                              i,
-                              "company_role",
-                              ev.target.value,
-                              workExperience,
-                              setWorkExperience
-                            )
-                          }
-                        />
-                      </td>
-                      <td>
-                        <div className="date-input-container-info">
-                          <DatePicker
-                            portalId="root-portal"
-                            selected={w.start_date}
-                            onChange={(date) =>
-                              handleRowChange(
-                                i,
-                                "start_date",
-                                date,
-                                workExperience,
-                                setWorkExperience
-                              )
-                            }
-                            dateFormat="dd-MMM-yyyy"
-                            placeholderText="dd-mm-yyyy"
-                            showMonthDropdown
-                            showYearDropdown
-                            className="input-date"
-                            dropdownMode="select"
-                          />
-                          <i className="fas fa-calendar-alt calendar-icon"></i>
-                        </div>
-                      </td>
-                      <td>
-                        <div className="date-input-container-info">
-                          <DatePicker
-                            portalId="root-portal"
-                            selected={w.end_date}
-                            onChange={(date) =>
-                              handleRowChange(
-                                i,
-                                "end_date",
-                                date,
-                                workExperience,
-                                setWorkExperience
-                              )
-                            }
-                            dateFormat="dd-MMM-yyyy"
-                            placeholderText="dd-mm-yyyy"
-                            showMonthDropdown
-                            showYearDropdown
-                            className="input-date"
-                            dropdownMode="select"
-                          />
-                          <i className="fas fa-calendar-alt calendar-icon"></i>
-                        </div>
-                      </td>
-                      <td>
-                        <button
-                          className="employee-delete-button"
-                          type="button"
-                          onClick={() =>
-                            setWorkExperience(
-                              workExperience.filter((_, index) => index !== i)
-                            )
-                          }
-                        >
-                          X
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                : workExperienceKnown.map((w) => (
-                    <tr key={w.id}>
-                      <td>{w.company_name}</td>
-                      <td>{w.company_role}</td>
-                      <td>
-                        {w.start_date
-                          ? format(new Date(w.start_date), "dd-MMM-yyyy")
-                          : "-"}
-                      </td>
-                      <td>
-                        {w.end_date
-                          ? format(new Date(w.end_date), "dd-MMM-yyyy")
-                          : "-"}
-                      </td>
-                    </tr>
-                  ))} */}
               {editMode ? (
                 <>
                   {workExperienceKnown.map((w, i) => (
@@ -1967,10 +1163,14 @@ const EditEmployee = () => {
                       </td>
                       <td>
                         <button
+                          className="employee-delete-button"
                           type="button"
                           onClick={() =>
-                            setWorkExperienceKnown(
-                              workExperienceKnown.filter((_, idx) => idx !== i)
+                            deleteKnownRow(
+                              w.id,
+                              "work-experience",
+                              workExperienceKnown,
+                              setWorkExperienceKnown
                             )
                           }
                         >
@@ -2040,6 +1240,7 @@ const EditEmployee = () => {
                       <td>
                         <button
                           type="button"
+                          className="employee-delete-button"
                           onClick={() =>
                             setWorkExperience(
                               workExperience.filter((_, idx) => idx !== i)
@@ -2114,108 +1315,6 @@ const EditEmployee = () => {
               </tr>
             </thead>
             <tbody>
-              {/* {editMode
-                ? education.map((e, i) => (
-                    <tr key={i}>
-                      <td>
-                        <input
-                          placeholder="Institution Name"
-                          value={e.institution_name}
-                          onChange={(ev) =>
-                            handleRowChange(
-                              i,
-                              "institution_name",
-                              ev.target.value,
-                              education,
-                              setEducation
-                            )
-                          }
-                        />
-                      </td>
-                      <td>
-                        <input
-                          placeholder="Degree"
-                          value={e.degree}
-                          onChange={(ev) =>
-                            handleRowChange(
-                              i,
-                              "degree",
-                              ev.target.value,
-                              education,
-                              setEducation
-                            )
-                          }
-                        />
-                      </td>
-                      <td>
-                        <input
-                          placeholder="Specialization"
-                          value={e.specialization}
-                          onChange={(ev) =>
-                            handleRowChange(
-                              i,
-                              "specialization",
-                              ev.target.value,
-                              education,
-                              setEducation
-                            )
-                          }
-                        />
-                      </td>
-                      <td>
-                        <div className="date-input-container-info">
-                          <DatePicker
-                            portalId="root-portal"
-                            selected={e.date_of_completion}
-                            onChange={(date) =>
-                              handleRowChange(
-                                i,
-                                "date_of_completion",
-                                date,
-                                education,
-                                setEducation
-                              )
-                            }
-                            dateFormat="dd-MMM-yyyy"
-                            placeholderText="dd-mm-yyyy"
-                            showMonthDropdown
-                            showYearDropdown
-                            className="input-date"
-                            dropdownMode="select"
-                          />
-                          <i className="fas fa-calendar-alt calendar-icon"></i>
-                        </div>
-                      </td>
-                      <td>
-                        <button
-                          className="employee-delete-button"
-                          type="button"
-                          onClick={() =>
-                            setEducation(
-                              education.filter((_, index) => index !== i)
-                            )
-                          }
-                        >
-                          X
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                : educationKnown.map((e) => (
-                    <tr key={e.id}>
-                      <td>{e.institution_name}</td>
-                      <td>{e.degree}</td>
-                      <td>{e.specialization}</td>
-                      <td>
-                        {e.date_of_completion
-                          ? format(
-                              new Date(e.date_of_completion),
-                              "dd-MMM-yyyy"
-                            )
-                          : "-"}
-                      </td>
-                    </tr>
-                  ))} */}
               {editMode ? (
                 <>
                   {educationKnown.map((e, i) => (
@@ -2278,10 +1377,14 @@ const EditEmployee = () => {
                       </td>
                       <td>
                         <button
+                          className="employee-delete-button"
                           type="button"
                           onClick={() =>
-                            setEducationKnown(
-                              educationKnown.filter((_, idx) => idx !== i)
+                            deleteKnownRow(
+                              e.id,
+                              "education",
+                              educationKnown,
+                              setEducationKnown
                             )
                           }
                         >
@@ -2351,6 +1454,7 @@ const EditEmployee = () => {
                       <td>
                         <button
                           type="button"
+                          className="employee-delete-button"
                           onClick={() =>
                             setEducation(
                               education.filter((_, idx) => idx !== i)
@@ -2423,132 +1527,6 @@ const EditEmployee = () => {
               </tr>
             </thead>
             <tbody>
-              {/* {editMode
-                ? assets.map((a, i) => (
-                    <tr key={i}>
-                      <td>
-                        <input
-                          placeholder="Type"
-                          value={a.type}
-                          onChange={(e) =>
-                            handleRowChange(
-                              i,
-                              "type",
-                              e.target.value,
-                              assets,
-                              setAssets
-                            )
-                          }
-                        />
-                      </td>
-                      <td>
-                        <input
-                          placeholder="Model"
-                          value={a.model}
-                          onChange={(e) =>
-                            handleRowChange(
-                              i,
-                              "model",
-                              e.target.value,
-                              assets,
-                              setAssets
-                            )
-                          }
-                        />
-                      </td>
-                      <td>
-                        <input
-                          placeholder="Serial Number"
-                          value={a.serialnumber}
-                          onChange={(e) =>
-                            handleRowChange(
-                              i,
-                              "serialnumber",
-                              e.target.value,
-                              assets,
-                              setAssets
-                            )
-                          }
-                        />
-                      </td>
-                      <td>
-                        <div className="date-input-container-info">
-                          <DatePicker
-                            portalId="root-portal"
-                            selected={a.given_date}
-                            onChange={(date) =>
-                              handleRowChange(
-                                i,
-                                "given_date",
-                                date,
-                                assets,
-                                setAssets
-                              )
-                            }
-                            dateFormat="dd-MMM-yyyy"
-                            placeholderText="dd-mm-yyyy"
-                            showMonthDropdown
-                            showYearDropdown
-                            className="input-date"
-                            dropdownMode="select"
-                          />
-                          <i className="fas fa-calendar-alt calendar-icon"></i>
-                        </div>
-                      </td>
-                      <td>
-                        <div className="date-input-container-info">
-                          <DatePicker
-                            portalId="root-portal"
-                            selected={a.return_date}
-                            onChange={(date) =>
-                              handleRowChange(
-                                i,
-                                "return_date",
-                                date,
-                                assets,
-                                setAssets
-                              )
-                            }
-                            dateFormat="dd-MMM-yyyy"
-                            placeholderText="dd-mm-yyyy"
-                            showMonthDropdown
-                            showYearDropdown
-                            className="input-date"
-                            dropdownMode="select"
-                          />
-                          <i className="fas fa-calendar-alt calendar-icon"></i>
-                        </div>
-                      </td>
-                      <td>
-                        <button
-                          className="employee-delete-button"
-                          type="button"
-                          onClick={() =>
-                            setAssets(assets.filter((_, index) => index !== i))
-                          }
-                        >
-                          X
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                : assetsKnown.map((a) => (
-                    <tr key={a.id}>
-                      <td>{a.type}</td>
-                      <td>{a.model}</td>
-                      <td>{a.serialnumber}</td>
-                      <td>
-                        {a.given_date
-                          ? format(new Date(a.given_date), "dd-MMM-yyyy")
-                          : "-"}
-                      </td>
-                      <td>
-                        {a.return_date
-                          ? format(new Date(a.return_date), "dd-MMM-yyyy")
-                          : "-"}
-                      </td>
-                    </tr>
-                  ))} */}
               {editMode ? (
                 <>
                   {assetsKnown.map((a, i) => (
@@ -2625,10 +1603,14 @@ const EditEmployee = () => {
                       </td>
                       <td>
                         <button
+                          className="employee-delete-button"
                           type="button"
                           onClick={() =>
-                            setAssetsKnown(
-                              assetsKnown.filter((_, idx) => idx !== i)
+                            deleteKnownRow(
+                              a.id,
+                              "assets",
+                              assetsKnown,
+                              setAssetsKnown
                             )
                           }
                         >
@@ -2711,6 +1693,7 @@ const EditEmployee = () => {
                       </td>
                       <td>
                         <button
+                          className="employee-delete-button"
                           type="button"
                           onClick={() =>
                             setAssets(assets.filter((_, idx) => idx !== i))
@@ -2773,52 +1756,7 @@ const EditEmployee = () => {
         </div>
 
         {/* === Attachments === */}
-        {/* <h3 className="section-header">Attachments</h3>
-        <div className="tab-content">
-          <input placeholder="PAN" />
-          <input placeholder="Aadhaar" />
-          <input placeholder="Bank Details" />
-          <input placeholder="Degree Certificate" />
-          <input placeholder="Mark Sheets" />
-          <input placeholder="Resume" />
-          <input placeholder="Signed Employment Letter" />
-          <input placeholder="Last Company Relieving Letter" />
-          <input placeholder="Last Company Payslip" />
-          <input placeholder="ID Proof/Driving ID/Voter ID" />
-        </div> */}
 
-        {/* <h3 className="section-header">Attachments</h3>
-        <div>
-          <table className="info-table">
-            <thead>
-              <tr>
-                <th>Document Type</th>
-                <th>File</th>
-             
-              </tr>
-            </thead>
-            <tbody>
-              {attachments.map((att, index) => (
-                <tr key={index}>
-                  <td>{att.name}</td>
-                  <td>
-                    <input
-                      type="file"
-                      accept=".pdf,.jpg,.jpeg,.png"
-                      onChange={(e) => {
-                        const file = e.target.files[0];
-                        const updated = [...attachments];
-                        updated[index].file = file;
-                        setAttachments(updated);
-                      }}
-                    />
-                  </td>
-             
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div> */}
         <h3 className="section-header">Attachments</h3>
         <div>
           {editMode ? (
@@ -2891,18 +1829,6 @@ const EditEmployee = () => {
           )}
         </div>
 
-        {/* <div className="form-buttons">
-          <button type="submit" className="btn-green">
-            Save
-          </button>
-          <button
-            type="button"
-            className="btn-red"
-            onClick={() => navigate("/hr/detail/employee-details")}
-          >
-            Cancel
-          </button>
-        </div> */}
         {editMode && (
           <div className="form-buttons">
             <button type="submit" className="btn-save">
