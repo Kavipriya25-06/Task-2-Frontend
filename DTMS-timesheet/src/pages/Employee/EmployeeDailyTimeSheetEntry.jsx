@@ -803,7 +803,7 @@ const EmployeeDailyTimeSheetEntry = () => {
                     Delete
                   </button> */}
                   <img
-                    src="\DTMS\reject.png"
+                    src="\app2\reject.png"
                     alt="reject button"
                     className="leavebuttons"
                     onClick={() =>
@@ -929,7 +929,7 @@ const EmployeeDailyTimeSheetEntry = () => {
                   Delete
                 </button> */}
                   <img
-                    src="\DTMS\reject.png"
+                    src="\app2\reject.png"
                     alt="reject button"
                     className="leavebuttons"
                     onClick={() => handleDeleteRow(index, "new")}

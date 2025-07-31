@@ -55,7 +55,7 @@ export default function LogoutPopup({ onClose }) {
           <div className="logout-section" onClick={handleLogout}>
             <button className="logout-button" onClick={onClose}>
               <span>
-                <img src="/DTMS/logouticon.svg" />
+                <img src="/app2/logouticon.svg" />
               </span>
               <span className="logout">Logout</span>
             </button>

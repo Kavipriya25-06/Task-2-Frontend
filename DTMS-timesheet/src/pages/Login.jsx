@@ -50,7 +50,7 @@ const Login = () => {
         <div className="logo-section">
           <div className="logo-container">
             <img
-              src="\DTMS\aero360_logo.png"
+              src="\app2\aero360_logo.png"
               // {\* src="src\assets\Logo.svg" *\}
               alt="Arris Logo"
               className="logo-c"

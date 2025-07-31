@@ -1141,7 +1141,7 @@ const ManagerProjectView = () => {
                       }}
                     >
                       <img
-                        src="\DTMS\pin_svg.svg"
+                        src="\app2\pin_svg.svg"
                         alt="Attachment"
                         style={{
                           width: "16px",
@@ -1177,7 +1177,7 @@ const ManagerProjectView = () => {
                                 className="view-attachment-link"
                               >
                                 <img
-                                  src="\DTMS\pin_svg.svg"
+                                  src="\app2\pin_svg.svg"
                                   alt="Attachment"
                                   style={{
                                     width: "16px",

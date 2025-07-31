@@ -260,7 +260,7 @@ const EmployeeLeaveRequests = () => {
                 disabled={currentPage === 1}
               >
                 <img
-                  src="/DTMS/left.png"
+                  src="/app2/left.png"
                   alt="Previous"
                   style={{ width: 10, height: 12 }}
                 />
@@ -275,7 +275,7 @@ const EmployeeLeaveRequests = () => {
                 disabled={currentPage === totalPages}
               >
                 <img
-                  src="/DTMS/right.png"
+                  src="/app2/right.png"
                   alt="Previous"
                   style={{ width: 10, height: 12 }}
                 />

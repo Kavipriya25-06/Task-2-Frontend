@@ -177,7 +177,7 @@ const ForgotPassword = () => {
         <div className="logo-section">
           <div className="logo-container">
             <img
-              src="\DTMS\arrislogo.png"
+              src="\app2\arrislogo.png"
               // {\* src="src\assets\Logo.svg" *\}
               alt="Arris Logo"
               className="logo-c"

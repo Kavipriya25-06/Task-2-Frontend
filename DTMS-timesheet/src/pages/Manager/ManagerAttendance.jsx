@@ -261,7 +261,7 @@ const ManagerAttendance = () => {
                             {attendance.modified_by && (
                               <div>
                                 <img
-                                  src="\DTMS\info.png"
+                                  src="\app2\info.png"
                                   alt="info button"
                                   className="infoicon"
                                 />
