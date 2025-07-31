@@ -1,4 +1,4 @@
-// OrgNode.js
+// src\pages\Org\OrgNode.jsx
 import React from "react";
 
 const OrgNode = ({ node }) => {

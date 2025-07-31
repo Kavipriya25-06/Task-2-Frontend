@@ -1,3 +1,5 @@
+// src\pages\Admin\AdminLayout.jsx
+
 import { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import Breadcrumbs from "../../components/Breadcrumbs";

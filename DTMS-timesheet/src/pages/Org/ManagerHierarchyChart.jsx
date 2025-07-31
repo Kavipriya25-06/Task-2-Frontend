@@ -1,4 +1,5 @@
-// ManagerHierarchyChart.js
+// src\pages\Org\ManagerHierarchyChart.jsx
+
 import React, { useEffect, useState } from "react";
 import OrgNode from "./OrgNode";
 import "./orgchart.css";

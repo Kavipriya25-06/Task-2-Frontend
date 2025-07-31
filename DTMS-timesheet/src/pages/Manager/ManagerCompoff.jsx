@@ -1,3 +1,5 @@
+// src\pages\Manager\ManagerCompoff.jsx
+
 import React, { useState, useEffect } from "react";
 import config from "../../config";
 import { format } from "date-fns";

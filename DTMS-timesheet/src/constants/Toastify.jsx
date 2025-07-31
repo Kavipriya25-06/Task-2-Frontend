@@ -1,4 +1,4 @@
-// src/utils/toast.js
+// src\constants\Toastify.jsx
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 

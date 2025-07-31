@@ -1,6 +1,5 @@
-// src\utils\useWorkingDays.js
+// src\constants\useWorkingDays.js
 
-// src/hooks/useWorkingDays.js
 import { useState, useEffect } from "react";
 import config from "../config";
 

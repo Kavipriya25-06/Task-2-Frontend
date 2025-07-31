@@ -1,4 +1,4 @@
-// // src\pages\Manager\ManagerAttendance.jsx
+// // src\pages\TeamLead\TeamLeadAttendanceAdmin.jsx
 
 import React, { useEffect, useState } from "react";
 import { FaEdit } from "react-icons/fa";

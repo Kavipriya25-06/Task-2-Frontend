@@ -1,4 +1,4 @@
-// src\pages\Admin\HolidayCalendar.jsx
+// src\pages\HR\HRHolidayCalendar.jsx
 
 import React, { useEffect, useState } from "react";
 import config from "../../config";

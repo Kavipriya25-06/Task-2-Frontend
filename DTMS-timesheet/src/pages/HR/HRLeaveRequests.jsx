@@ -1,4 +1,4 @@
-// src\pages\Manager\ManagerLeaveRequests.jsx
+// src\pages\HR\HRLeaveRequests.jsx
 
 import { useEffect, useState } from "react";
 import { FaEdit } from "react-icons/fa";

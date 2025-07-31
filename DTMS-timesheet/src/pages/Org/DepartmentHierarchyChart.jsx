@@ -1,4 +1,5 @@
-// DepartmentHierarchyChart.js
+// src\pages\Org\DepartmentHierarchyChart.jsx
+
 import React, { useEffect, useState } from "react";
 import OrgNode from "./OrgNode";
 import "./orgchart.css";
