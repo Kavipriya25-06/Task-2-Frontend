@@ -340,6 +340,7 @@ const AddEmployee = () => {
               value={formData.employee_email}
               onChange={handleChange}
               placeholder="Official Email"
+              required
               className={errors.employee_email ? "input-error" : ""}
             />
             {errors.employee_email && (
@@ -722,9 +723,7 @@ const AddEmployee = () => {
             />
           </div>
           <div className="individual-tabs">
-            <label>
-              Personal Email <span className="required-star">*</span>
-            </label>
+            <label>Personal Email</label>
             <input
               name="personal_email"
               value={formData.personal_email}

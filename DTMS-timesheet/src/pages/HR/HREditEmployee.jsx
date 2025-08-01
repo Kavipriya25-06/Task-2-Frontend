@@ -99,10 +99,9 @@ const EditEmployee = () => {
 
   const deleteKnownRow = async (id, endpoint, stateList, setStateList) => {
     try {
-      await fetch(`${config.API_URL}/${endpoint}/${id}/`, {
+      await fetch(`${config.apiBaseURL}/${endpoint}/${id}/`, {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${token}`, // if auth needed
           "Content-Type": "application/json",
         },
       });
@@ -184,6 +183,7 @@ const EditEmployee = () => {
     }
   };
 
+  console.log("Dependants", dependants);
   const fetchManagers = async () => {
     try {
       const response = await fetch(
@@ -411,7 +411,7 @@ const EditEmployee = () => {
         <input
           type={type}
           name={name}
-          value={formData[name] || "-"}
+          value={formData[name] || ""}
           onChange={handleChange}
           placeholder={label}
         />
@@ -427,7 +427,7 @@ const EditEmployee = () => {
       {editMode ? (
         <select
           name={name}
-          value={formData[name] || "-"}
+          value={formData[name] || ""}
           onChange={handleChange}
         >
           <option value="">Select {label}</option>
@@ -447,18 +447,22 @@ const EditEmployee = () => {
     <div className="individual-tabs">
       <label>{label}</label>
       {editMode ? (
-        <DatePicker
-          selected={formData[name]}
-          onChange={(date) =>
-            setFormData({ ...formData, [name]: format(date, "yyyy-MM-dd") })
-          }
-          dateFormat="dd-MMM-yyyy"
-          placeholderText="dd-mm-yyyy"
-          className="input1"
-          showMonthDropdown
-          showYearDropdown
-          dropdownMode="select"
-        />
+        <div className="date-input-container">
+          <DatePicker
+            selected={formData[name]}
+            onChange={(date) =>
+              setFormData({ ...formData, [name]: format(date, "yyyy-MM-dd") })
+            }
+            dateFormat="dd-MMM-yyyy"
+            placeholderText="dd-mm-yyyy"
+            className="input1"
+            showMonthDropdown
+            showYearDropdown
+            dropdownMode="select"
+            maxDate={name === "dob" ? eighteenYearsAgo : null}
+          />
+          <i className="fas fa-calendar-alt calendar-icon"></i>
+        </div>
       ) : (
         <div className="uneditable">
           {formData[name]
@@ -491,6 +495,18 @@ const EditEmployee = () => {
           {renderField("Official Email", "employee_email")}
           {renderField("First Name", "employee_name")}
           {renderField("Last Name", "last_name")}
+          <div className="individual-tabs">
+            <label>Added by</label>
+            <div className="uneditable">
+              {formData.added_by?.modified_by || "-"}
+            </div>
+          </div>
+          <div className="individual-tabs">
+            <label>Last Modified by</label>
+            <div className="uneditable">
+              {formData.last_modified_by?.modified_by || "-"}
+            </div>
+          </div>
         </div>
 
         {/* === Work Info === */}
@@ -512,7 +528,7 @@ const EditEmployee = () => {
             {editMode ? (
               <select
                 name="reporting_manager"
-                value={formData.reporting_manager || "-"}
+                value={formData.reporting_manager || ""}
                 onChange={handleChange}
               >
                 <option value="">Select Reporting Manager</option>
@@ -524,7 +540,14 @@ const EditEmployee = () => {
               </select>
             ) : (
               <div className="uneditable">
-                {formData.reporting_manager || "-"}
+                {(() => {
+                  const manager = managers.find(
+                    (m) => m.employee_id === formData.reporting_manager
+                  );
+                  return manager
+                    ? `${manager.employee_code} - ${manager.employee_name}`
+                    : "-";
+                })()}
               </div>
             )}
           </div>
@@ -534,7 +557,7 @@ const EditEmployee = () => {
             {editMode ? (
               <select
                 name="second_reporting_manager"
-                value={formData.second_reporting_manager || "-"}
+                value={formData.second_reporting_manager || ""}
                 onChange={handleChange}
               >
                 <option value="">Select Secondary Reporting Manager</option>
@@ -546,16 +569,14 @@ const EditEmployee = () => {
               </select>
             ) : (
               <div className="uneditable">
-                {managers.find(
-                  (m) => m.employee_id === formData.reporting_manager
-                )
-                  ? managers.find(
-                      (m) => m.employee_id === formData.reporting_manager
-                    ).employee_code -
-                    managers.find(
-                      (m) => m.employee_id === formData.reporting_manager
-                    ).employee_name
-                  : "-"}
+                {(() => {
+                  const manager = managers.find(
+                    (m) => m.employee_id === formData.second_reporting_manager
+                  );
+                  return manager
+                    ? `${manager.employee_code} - ${manager.employee_name}`
+                    : "-";
+                })()}
               </div>
             )}
           </div>
@@ -1759,16 +1780,18 @@ const EditEmployee = () => {
 
         <h3 className="section-header">Attachments</h3>
         <div>
-          {editMode ? (
-            <table className="info-table">
-              <thead>
-                <tr>
-                  <th>Document Type</th>
-                  <th>Upload New File</th>
-                </tr>
-              </thead>
-              <tbody>
-                {attachments.map((att, index) => (
+          <table className="info-table">
+            <thead>
+              <tr>
+                <th>Document Type</th>
+                <th>{editMode ? "Upload New File" : "File"}</th>
+                <th>{editMode ? "" : "Uploaded At"}</th>
+                {editMode && <th>Action</th>}
+              </tr>
+            </thead>
+            <tbody>
+              {editMode ? (
+                attachments.map((att, index) => (
                   <tr key={index}>
                     <td>{att.name || att.document_type}</td>
                     <td>
@@ -1783,51 +1806,165 @@ const EditEmployee = () => {
                         }}
                       />
                     </td>
+                    <td>-</td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <table className="info-table">
-              <thead>
-                <tr>
-                  <th>Document Type</th>
-                  <th>File</th>
-                  <th>Uploaded At</th>
-                </tr>
-              </thead>
-              <tbody>
-                {attachmentsKnown && attachmentsKnown.length > 0 ? (
-                  attachmentsKnown.map((att) => (
-                    <tr key={att.id}>
-                      <td>{att.document_type}</td>
-                      <td>
-                        <a
-                          href={`${config.apiBaseURL}${att.file}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          View
-                        </a>
-                      </td>
-                      <td>
-                        {att.uploaded_at
-                          ? new Date(att.uploaded_at).toLocaleString()
-                          : "-"}
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="3" style={{ textAlign: "center" }}>
-                      No attachments available
+                ))
+              ) : attachmentsKnown && attachmentsKnown.length > 0 ? (
+                attachmentsKnown.map((att) => (
+                  <tr key={att.id}>
+                    <td>{att.document_type}</td>
+                    <td>
+                      <a
+                        href={`${config.apiBaseURL}${att.file}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        View
+                      </a>
+                    </td>
+                    <td>
+                      {att.uploaded_at
+                        ? new Date(att.uploaded_at).toLocaleString()
+                        : "-"}
                     </td>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          )}
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="3" style={{ textAlign: "center" }}>
+                    No attachments available
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
+
+        {/* <h3 className="section-header">Attachments</h3>
+        <div>
+          <table className="info-table">
+            <thead>
+              <tr>
+                <th>Document Type</th>
+                <th>File</th>
+                <th>Uploaded At</th>
+                {editMode && <th>Action</th>}
+              </tr>
+            </thead>
+            <tbody>
+              {attachmentsKnown.map((file) => {
+                const fullFilename = file.file.split("/").pop();
+                const match = fullFilename.match(/^(.+?)_[a-zA-Z0-9]+\.(\w+)$/);
+                const filename = match
+                  ? `${match[1]}.${match[2]}`
+                  : fullFilename;
+
+                return (
+                  <tr key={file.id}>
+                    <td>{file.document_type || "-"}</td>
+                    <td>
+                      <a
+                        href={config.apiBaseURL + file.file}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {filename}
+                      </a>
+                    </td>
+                    <td>
+                      {file.uploaded_at
+                        ? new Date(file.uploaded_at).toLocaleString()
+                        : "-"}
+                    </td>
+                    {editMode && (
+                      <td>
+                        <button
+                          type="button"
+                          className="employee-delete-button"
+                          onClick={async () => {
+                            try {
+                              await fetch(
+                                `${config.apiBaseURL}/attachments/${file.id}/`,
+                                {
+                                  method: "DELETE",
+                                }
+                              );
+                              setAttachmentsKnown((prev) =>
+                                prev.filter((att) => att.id !== file.id)
+                              );
+                              showSuccessToast(
+                                "Attachment deleted successfully"
+                              );
+                            } catch (error) {
+                              console.error(
+                                "Failed to delete attachment:",
+                                error
+                              );
+                              showErrorToast("Failed to delete attachment");
+                            }
+                          }}
+                        >
+                          X
+                        </button>
+                      </td>
+                    )}
+                  </tr>
+                );
+              })}
+
+              {newAttachments.map((file, index) => (
+                <tr key={`new-${index}`}>
+                  <td>New Upload</td>
+                  <td>{file.name}</td>
+                  <td>-</td>
+                  {editMode && (
+                    <td>
+                      <button
+                        type="button"
+                        className="employee-delete-button"
+                        onClick={() => removeNewAttachment(index)}
+                      >
+                        X
+                      </button>
+                    </td>
+                  )}
+                </tr>
+              ))}
+
+              {attachmentsKnown.length === 0 && attachments.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={editMode ? 4 : 3}
+                    style={{ textAlign: "center" }}
+                  >
+                    No attachments available
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+
+          {editMode && (
+            <div
+              className="file-upload-container"
+              style={{ marginTop: "10px" }}
+            >
+              <input
+                type="file"
+                id="new-attachments-input"
+                multiple
+                style={{ display: "none" }}
+                onChange={handleAttachmentChange}
+              />
+              <label
+                htmlFor="new-attachments-input"
+                className="plus-upload-button"
+              >
+                + Add Attachments
+              </label>
+            </div>
+          )}
+        </div> */}
 
         {editMode && (
           <div className="form-buttons">
