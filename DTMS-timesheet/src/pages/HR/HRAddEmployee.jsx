@@ -35,27 +35,27 @@ const AddEmployee = () => {
   const navigate = useNavigate();
   const [managers, setManagers] = useState([]);
   const [attachments, setAttachments] = useState([
-    { document_type: "PAN", name: "PAN", file: null },
-    { document_type: "Aadhaar", name: "Aadhaar", file: null },
-    { document_type: "bank", name: "Bank Details", file: null },
-    { document_type: "Degree", name: "Degree Certificate", file: null },
-    { document_type: "marksheets", name: "Mark Sheets", file: null },
-    { document_type: "resume", name: "Resume", file: null },
+    { document_type: "PAN", name: "PAN", files: [] },
+    { document_type: "Aadhaar", name: "Aadhaar", files: [] },
+    { document_type: "bank", name: "Bank Details", files: [] },
+    { document_type: "Degree", name: "Degree Certificate", files: [] },
+    { document_type: "marksheets", name: "Mark Sheets", files: [] },
+    { document_type: "resume", name: "Resume", files: [] },
     {
       document_type: "empletter",
       name: "Signed Employment Letter",
-      file: null,
+      files: [],
     },
     {
       document_type: "relievingletter",
       name: "Last Company Relieving Letter",
-      file: null,
+      files: [],
     },
-    { document_type: "payslip", name: "Last Company Payslip", file: null },
+    { document_type: "payslip", name: "Last Company Payslip", files: [] },
     {
       document_type: "idproof",
       name: "ID Proof/Driving ID/Voter ID",
-      file: null,
+      files: [],
     },
   ]);
 
@@ -98,6 +98,12 @@ const AddEmployee = () => {
     stateSetter(newRows);
   };
 
+  const handleDateRowChange = (index, name, value, state, stateSetter) => {
+    const newRows = [...state];
+    newRows[index][name] = format(value, "yyyy-MM-dd");
+    stateSetter(newRows);
+  };
+
   const eighteenYearsAgo = new Date();
   eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
 
@@ -132,6 +138,28 @@ const AddEmployee = () => {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleFileAdd = (e, docIndex) => {
+    const files = Array.from(e.target.files).map((f) => ({
+      file: URL.createObjectURL(f), // for preview
+      name: f.name, // store original name
+      uploaded_at: new Date().toISOString(),
+      newFile: f,
+    }));
+    const updated = [...attachments];
+    updated[docIndex].files.push(...files);
+    setAttachments(updated);
+    e.target.value = "";
+  };
+
+  const fileName = (file) => {
+    if (!file.file) return "";
+    const fullFilename = file.file.split("/").pop();
+    const match = fullFilename.match(/^(.+?)_[a-zA-Z0-9]+\.(\w+)$/);
+    const filename = match ? `${match[1]}.${match[2]}` : fullFilename;
+
+    return filename;
   };
 
   const handleCropSave = async () => {
@@ -260,16 +288,19 @@ const AddEmployee = () => {
       }
 
       // Attachments
+      // Attachments
       for (const att of attachments) {
-        if (att.file) {
-          const form = new FormData();
-          form.append("file", att.file);
-          form.append("document_type", att.document_type);
-          form.append("employee", employeeId);
-          await fetch(`${config.apiBaseURL}/employee-attachment/`, {
-            method: "POST",
-            body: form,
-          });
+        for (const file of att.files) {
+          if (file.newFile) {
+            const form = new FormData();
+            form.append("file", file.newFile);
+            form.append("document_type", att.document_type);
+            form.append("employee", employeeId);
+            await fetch(`${config.apiBaseURL}/employee-attachment/`, {
+              method: "POST",
+              body: form,
+            });
+          }
         }
       }
 
@@ -1090,7 +1121,7 @@ const AddEmployee = () => {
                         selected={d.date_of_birth}
                         onChange={(date) => {
                           const age = date ? calculateExactAge(date) : "";
-                          handleRowChange(
+                          handleDateRowChange(
                             i,
                             "date_of_birth",
                             date,
@@ -1217,7 +1248,7 @@ const AddEmployee = () => {
                         portalId="root-portal"
                         selected={w.start_date}
                         onChange={(date) =>
-                          handleRowChange(
+                          handleDateRowChange(
                             i,
                             "start_date",
                             date,
@@ -1241,7 +1272,7 @@ const AddEmployee = () => {
                         portalId="root-portal"
                         selected={w.end_date}
                         onChange={(date) =>
-                          handleRowChange(
+                          handleDateRowChange(
                             i,
                             "end_date",
                             date,
@@ -1363,7 +1394,7 @@ const AddEmployee = () => {
                         portalId="root-portal"
                         selected={e.date_of_completion}
                         onChange={(date) =>
-                          handleRowChange(
+                          handleDateRowChange(
                             i,
                             "date_of_completion",
                             date,
@@ -1487,7 +1518,7 @@ const AddEmployee = () => {
                         portalId="root-portal"
                         selected={a.given_date}
                         onChange={(date) =>
-                          handleRowChange(
+                          handleDateRowChange(
                             i,
                             "given_date",
                             date,
@@ -1511,7 +1542,7 @@ const AddEmployee = () => {
                         portalId="root-portal"
                         selected={a.return_date}
                         onChange={(date) =>
-                          handleRowChange(
+                          handleDateRowChange(
                             i,
                             "return_date",
                             date,
@@ -1566,47 +1597,89 @@ const AddEmployee = () => {
         </div>
 
         {/* === Attachments === */}
-        {/* <h3 className="section-header">Attachments</h3>
-        <div className="tab-content">
-          <input placeholder="PAN" />
-          <input placeholder="Aadhaar" />
-          <input placeholder="Bank Details" />
-          <input placeholder="Degree Certificate" />
-          <input placeholder="Mark Sheets" />
-          <input placeholder="Resume" />
-          <input placeholder="Signed Employment Letter" />
-          <input placeholder="Last Company Relieving Letter" />
-          <input placeholder="Last Company Payslip" />
-          <input placeholder="ID Proof/Driving ID/Voter ID" />
-        </div> */}
 
         <h3 className="section-header">Attachments</h3>
         <div>
           <table className="info-table">
             <thead>
               <tr>
-                <th>Document Type</th>
-                <th>File</th>
-                {/* <th></th> */}
+                <th style={{ width: "30%" }}>Document Type</th>
+                <th>File(s)</th>
               </tr>
             </thead>
             <tbody>
-              {attachments.map((att, index) => (
-                <tr key={index}>
-                  <td>{att.name}</td>
+              {attachments.map((doc, docIndex) => (
+                <tr key={doc.document_type}>
+                  <td>{doc.name || doc.document_type}</td>
                   <td>
-                    <input
-                      type="file"
-                      accept=".pdf,.jpg,.jpeg,.png"
-                      onChange={(e) => {
-                        const file = e.target.files[0];
-                        const updated = [...attachments];
-                        updated[index].file = file;
-                        setAttachments(updated);
+                    <div
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "5px",
+                        alignItems: "center",
                       }}
-                    />
+                    >
+                      {doc.files.length > 0 ? (
+                        doc.files.map((file, fileIndex) => (
+                          <div
+                            key={file.id || fileIndex}
+                            className={`attachment-item ${
+                              file.newFile ? "unsaved" : ""
+                            }`}
+                            title={
+                              file.uploaded_at
+                                ? `Uploaded at ${new Date(
+                                    file.uploaded_at
+                                  ).toLocaleString()}`
+                                : "-"
+                            }
+                          >
+                            <a
+                              href={
+                                file.file.startsWith("blob")
+                                  ? file.file
+                                  : `${config.apiBaseURL}${file.file}`
+                              }
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {file.name || fileName(file) || ""}
+                            </a>
+                            <button
+                              type="button"
+                              className="remove-attachment"
+                              onClick={() => {
+                                const updated = [...attachments];
+                                updated[docIndex].files = updated[
+                                  docIndex
+                                ].files.filter((_, i) => i !== fileIndex);
+                                setAttachments(updated);
+                              }}
+                            >
+                              &times;
+                            </button>
+                          </div>
+                        ))
+                      ) : (
+                        <span>No file uploaded</span>
+                      )}
+                      <input
+                        type="file"
+                        id={`file-input-${docIndex}`}
+                        style={{ display: "none" }}
+                        multiple
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        onChange={(e) => handleFileAdd(e, docIndex)}
+                      />
+                      <label
+                        htmlFor={`file-input-${docIndex}`}
+                        className="plus-upload-button"
+                      >
+                        +
+                      </label>
+                    </div>
                   </td>
-                  {/* <td>{att.file && <span>{att.file.name}</span>}</td> */}
                 </tr>
               ))}
             </tbody>

@@ -35,7 +35,7 @@ import {
 const EditEmployee = () => {
   const { employee_id } = useParams();
   const { user } = useAuth();
-  const managerId = user.employee_id;
+  const managerId = user?.employee_id;
   const navigate = useNavigate();
 
   const [managers, setManagers] = useState([]);
@@ -43,27 +43,27 @@ const EditEmployee = () => {
   const [editMode, setEditMode] = useState(false);
   const [attachmentsKnown, setAttachmentsKnown] = useState([]);
   const [attachments, setAttachments] = useState([
-    { document_type: "PAN", name: "PAN", file: null },
-    { document_type: "Aadhaar", name: "Aadhaar", file: null },
-    { document_type: "bank", name: "Bank Details", file: null },
-    { document_type: "Degree", name: "Degree Certificate", file: null },
-    { document_type: "marksheets", name: "Mark Sheets", file: null },
-    { document_type: "resume", name: "Resume", file: null },
+    { document_type: "PAN", name: "PAN", files: [] },
+    { document_type: "Aadhaar", name: "Aadhaar", files: [] },
+    { document_type: "bank", name: "Bank Details", files: [] },
+    { document_type: "Degree", name: "Degree Certificate", files: [] },
+    { document_type: "marksheets", name: "Mark Sheets", files: [] },
+    { document_type: "resume", name: "Resume", files: [] },
     {
       document_type: "empletter",
       name: "Signed Employment Letter",
-      file: null,
+      files: [],
     },
     {
       document_type: "relievingletter",
       name: "Last Company Relieving Letter",
-      file: null,
+      files: [],
     },
-    { document_type: "payslip", name: "Last Company Payslip", file: null },
+    { document_type: "payslip", name: "Last Company Payslip", files: [] },
     {
       document_type: "idproof",
       name: "ID Proof/Driving ID/Voter ID",
-      file: null,
+      files: [],
     },
   ]);
 
@@ -147,6 +147,19 @@ const EditEmployee = () => {
     }
   };
 
+  const handleFileAdd = (e, docIndex) => {
+    const files = Array.from(e.target.files).map((f) => ({
+      file: URL.createObjectURL(f), // for preview
+      name: f.name, // store original name
+      uploaded_at: new Date().toISOString(),
+      newFile: f,
+    }));
+    const updated = [...attachments];
+    updated[docIndex].files.push(...files);
+    setAttachments(updated);
+    e.target.value = "";
+  };
+
   const handleCropSave = async () => {
     const blob = await getCroppedImg(originalImageSrc, croppedAreaPixels);
     const previewUrl = URL.createObjectURL(blob);
@@ -173,6 +186,14 @@ const EditEmployee = () => {
       setEducationKnown(data.education);
       setAssetsKnown(data.assets);
       setAttachmentsKnown(data.attachments);
+
+      const newAttachments = attachments.map((doc) => ({
+        ...doc,
+        files: data.attachments.filter(
+          (att) => att.document_type === doc.document_type
+        ),
+      }));
+      setAttachments(newAttachments);
       // setAttachments(data.attachments);
       // const updated = data.attachments.map((attachment) => {
       //   const match = attachments.find(
@@ -276,103 +297,38 @@ const EditEmployee = () => {
       const employeeId = responseData.data.employee_id;
       console.log("Received employee id is", employeeId);
 
-      // Assets
+      // === Common helper for PATCH & POST ===
+      const batchRequests = (items, endpoint, method, idKey) =>
+        items.map((item) =>
+          fetch(
+            `${config.apiBaseURL}/${endpoint}${
+              idKey ? `/${item[idKey]}/` : "/"
+            }`,
+            {
+              method,
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(
+                idKey ? item : { ...item, employee: employeeId }
+              ),
+            }
+          )
+        );
 
-      for (const a of assetsKnown) {
-        await fetch(`${config.apiBaseURL}/assets/${a.id}/`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(a),
-        });
-      }
-
-      for (const a of assets) {
-        await fetch(`${config.apiBaseURL}/assets/`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...a, employee: employeeId }),
-        });
-      }
-      // Dependants
-      for (const d of dependantsKnown) {
-        await fetch(`${config.apiBaseURL}/dependant/${d.id}/`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(d),
-        });
-      }
-
-      for (const d of dependants) {
-        await fetch(`${config.apiBaseURL}/dependant/`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...d, employee: employeeId }),
-        });
-      }
-      // Education
-      for (const edu of educationKnown) {
-        await fetch(`${config.apiBaseURL}/education/${edu.id}/`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(edu),
-        });
-      }
-
-      for (const edu of education) {
-        await fetch(`${config.apiBaseURL}/education/`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...edu, employee: employeeId }),
-        });
-      }
-      // Work Experience
-
-      for (const w of workExperienceKnown) {
-        await fetch(`${config.apiBaseURL}/work-experience/${w.id}/`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(w),
-        });
-      }
-
-      for (const w of workExperience) {
-        await fetch(`${config.apiBaseURL}/work-experience/`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...w, employee: employeeId }),
-        });
-      }
-      // Languages
-
-      for (const l of languagesKnown) {
-        await fetch(`${config.apiBaseURL}/languages-known/${l.id}/`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(l),
-        });
-      }
-
-      for (const l of languages) {
-        await fetch(`${config.apiBaseURL}/languages-known/`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...l, employee: employeeId }),
-        });
-      }
-
+      // === Execute all updates in parallel ===
+      await Promise.all([
+        ...batchRequests(assetsKnown, "assets", "PATCH", "id"),
+        ...batchRequests(assets, "assets", "POST"),
+        ...batchRequests(dependantsKnown, "dependant", "PATCH", "id"),
+        ...batchRequests(dependants, "dependant", "POST"),
+        ...batchRequests(educationKnown, "education", "PATCH", "id"),
+        ...batchRequests(education, "education", "POST"),
+        ...batchRequests(workExperienceKnown, "work-experience", "PATCH", "id"),
+        ...batchRequests(workExperience, "work-experience", "POST"),
+        ...batchRequests(languagesKnown, "languages-known", "PATCH", "id"),
+        ...batchRequests(languages, "languages-known", "POST"),
+      ]);
       // Attachments
-      for (const att of attachments) {
-        if (att.file) {
-          const form = new FormData();
-          form.append("file", att.file);
-          form.append("document_type", att.document_type);
-          form.append("employee", employeeId);
-          await fetch(`${config.apiBaseURL}/employee-attachment/`, {
-            method: "POST",
-            body: form,
-          });
-        }
-      }
+      await uploadNewAttachments(employeeId, attachments);
 
       // modifications
 
@@ -389,12 +345,49 @@ const EditEmployee = () => {
       showSuccessToast("Employee Details uploaded successfully");
       setEditMode(false);
       fetchEmployee();
-      // setTimeout(() => {
-      //   navigate("/hr/detail/employee-details");
-      // }, 1000); // waits for 1 second (1000ms)
     } catch (error) {
       showErrorToast(`Failed to create user: ${error.message}`);
     }
+  };
+
+  const uploadNewAttachments = async (employeeId, attachments) => {
+    const uploadPromises = [];
+
+    attachments.forEach((att) => {
+      att.files?.forEach((file) => {
+        if (file.newFile) {
+          const form = new FormData();
+          form.append("file", file.newFile);
+          form.append("document_type", att.document_type);
+          form.append("employee", employeeId);
+
+          uploadPromises.push(
+            fetch(`${config.apiBaseURL}/employee-attachment/`, {
+              method: "POST",
+              body: form,
+            })
+              .then((res) => {
+                if (!res.ok)
+                  throw new Error(`Failed to upload ${file.newFile.name}`);
+                return res.json();
+              })
+              .then((savedFile) => {
+                // Replace blob URL with actual API path
+                file.file = savedFile.file;
+                file.id = savedFile.id;
+                file.uploaded_at = savedFile.uploaded_at;
+                delete file.newFile;
+              })
+              .catch((err) => {
+                console.error("Upload failed:", err);
+                showErrorToast(`Failed to upload ${file.newFile.name}`);
+              })
+          );
+        }
+      });
+    });
+
+    await Promise.all(uploadPromises);
   };
 
   const calculateExactAge = (dob) => {
@@ -413,6 +406,15 @@ const EditEmployee = () => {
     }
 
     return years;
+  };
+
+  const fileName = (file) => {
+    if (!file.file) return "";
+    const fullFilename = file.file.split("/").pop();
+    const match = fullFilename.match(/^(.+?)_[a-zA-Z0-9]+\.(\w+)$/);
+    const filename = match ? `${match[1]}.${match[2]}` : fullFilename;
+
+    return filename;
   };
 
   const renderField = (label, name, type = "text") => (
@@ -952,7 +954,9 @@ const EditEmployee = () => {
                             portalId="root-portal"
                             selected={d.date_of_birth}
                             onChange={(date) => {
-                              const age = date ? calculateExactAge(date) : "";
+                              const age = date
+                                ? calculateExactAge(new Date(date))
+                                : "";
                               handleDateRowChange(
                                 i,
                                 "date_of_birth",
@@ -1036,7 +1040,9 @@ const EditEmployee = () => {
                             portalId="root-portal"
                             selected={d.date_of_birth}
                             onChange={(date) => {
-                              const age = date ? calculateExactAge(date) : "";
+                              const age = date
+                                ? calculateExactAge(new Date(date))
+                                : "";
                               handleDateRowChange(
                                 i,
                                 "date_of_birth",
@@ -1890,66 +1896,105 @@ const EditEmployee = () => {
         </div>
 
         {/* === Attachments === */}
-
+        {/* final attachments table */}
         <h3 className="section-header">Attachments</h3>
         <div>
           <table className="info-table">
             <thead>
               <tr>
-                <th>Document Type</th>
-                <th>{editMode ? "Upload New File" : "File"}</th>
-                <th>Uploaded At</th>
-                {editMode && <th>Action</th>}
+                <th style={{ width: "30%" }}>Document Type</th>
+                <th>File(s)</th>
               </tr>
             </thead>
             <tbody>
-              {editMode ? (
-                attachments.map((att, index) => (
-                  <tr key={index}>
-                    <td>{att.name || att.document_type}</td>
-                    <td>
-                      <input
-                        type="file"
-                        accept=".pdf,.jpg,.jpeg,.png"
-                        onChange={(e) => {
-                          const file = e.target.files[0];
-                          const updated = [...attachments];
-                          updated[index].file = file;
-                          setAttachments(updated);
-                        }}
-                      />
-                    </td>
-                    <td>-</td>
-                    <td>-</td>
-                  </tr>
-                ))
-              ) : attachmentsKnown && attachmentsKnown.length > 0 ? (
-                attachmentsKnown.map((att) => (
-                  <tr key={att.id}>
-                    <td>{att.document_type}</td>
-                    <td>
-                      <a
-                        href={`${config.apiBaseURL}${att.file}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        View
-                      </a>
-                    </td>
-                    <td>
-                      {att.uploaded_at
-                        ? new Date(att.uploaded_at).toLocaleString()
-                        : "-"}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="3" style={{ textAlign: "center" }}>
-                    No attachments available
+              {attachments.map((doc, docIndex) => (
+                <tr key={doc.document_type}>
+                  <td>{doc.name || doc.document_type}</td>
+                  <td>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "5px",
+                        alignItems: "center",
+                      }}
+                    >
+                      {doc.files.length > 0 ? (
+                        doc.files.map((file, fileIndex) => (
+                          <div
+                            key={file.id || fileIndex}
+                            className={`attachment-item ${
+                              file.newFile ? "unsaved" : ""
+                            }`}
+                            title={
+                              file.uploaded_at
+                                ? `Uploaded at ${new Date(
+                                    file.uploaded_at
+                                  ).toLocaleString()}`
+                                : "-"
+                            }
+                          >
+                            <a
+                              href={`${config.apiBaseURL}${file.file}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {file.name || fileName(file) || ""}
+                            </a>
+                            {editMode && (
+                              <button
+                                type="button"
+                                className="remove-attachment"
+                                onClick={() => {
+                                  fetch(
+                                    `${config.apiBaseURL}/employee-attachment/${file.id}/`,
+                                    { method: "DELETE" }
+                                  )
+                                    .then(() => {
+                                      const updated = [...attachments];
+                                      updated[docIndex].files = updated[
+                                        docIndex
+                                      ].files.filter((_, i) => i !== fileIndex);
+                                      setAttachments(updated);
+                                      showSuccessToast(
+                                        "Attachment deleted successfully"
+                                      );
+                                    })
+                                    .catch(() =>
+                                      showErrorToast("Failed to delete file")
+                                    );
+                                }}
+                              >
+                                &times;
+                              </button>
+                            )}
+                          </div>
+                        ))
+                      ) : (
+                        <span>No file uploaded</span>
+                      )}
+                      {editMode && (
+                        <>
+                          <input
+                            type="file"
+                            id={`file-input-${docIndex}`}
+                            style={{ display: "none" }}
+                            multiple
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            onChange={(e) => handleFileAdd(e, docIndex)}
+                          />
+                          <label
+                            htmlFor={`file-input-${docIndex}`}
+                            className="plus-upload-button"
+                          >
+                            +
+                          </label>
+                        </>
+                      )}
+                    </div>
                   </td>
                 </tr>
-              )}
+              ))}
             </tbody>
           </table>
         </div>
