@@ -5,9 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import config from "../../config";
 import { useAuth } from "../../AuthContext";
 import { cleanFormData } from "../../utils/cleanFormData";
-
 import { FaEdit } from "react-icons/fa";
-
 import { getCleanFilename } from "../../utils/filenameUtils";
 // import usePlaceholder from "/profile_icon.svg";
 import plusIcon from "../../assets/plus.png";
@@ -19,23 +17,12 @@ import getCroppedImg from "../../constants/cropimage"; // Path to the helper
 import Slider from "@mui/material/Slider";
 import Modal from "@mui/material/Modal";
 
-const tabLabels = [
-  "Employee details",
-  "Employment details",
-  "Bank details",
-  "Emergency contact",
-];
-
 import usePlaceholder from "/profile_icon.svg";
 import cameraIcon from "/camera.png";
 // import plusIcon from "/plus.png";
 import { useAttachmentManager } from "../../constants/useAttachmentManager";
 import { useEmployeeFormHandler } from "../../constants/useEmployeeFormHandler";
 import { defaultEmployeeFormData } from "../../constants/defaultEmployeeFormData";
-// import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-// import { format } from "date-fns";
-// import { getCleanFilename } from "../../utils/filenameUtils";
 
 import {
   showSuccessToast,
@@ -94,6 +81,17 @@ const EditEmployee = () => {
   const handleRowChange = (index, name, value, state, stateSetter) => {
     const newRows = [...state];
     newRows[index][name] = value;
+    stateSetter(newRows);
+  };
+
+  // selected={formData[name]}
+  //         onChange={(date) =>
+  //           setFormData({ ...formData, [name]: format(date, "yyyy-MM-dd") })
+  //         }
+
+  const handleDateRowChange = (index, name, value, state, stateSetter) => {
+    const newRows = [...state];
+    newRows[index][name] = format(value, "yyyy-MM-dd");
     stateSetter(newRows);
   };
 
@@ -175,6 +173,19 @@ const EditEmployee = () => {
       setEducationKnown(data.education);
       setAssetsKnown(data.assets);
       setAttachmentsKnown(data.attachments);
+      // setAttachments(data.attachments);
+      // const updated = data.attachments.map((attachment) => {
+      //   const match = attachments.find(
+      //     (doc) => doc.document_type === attachment.document_type
+      //   );
+      //   return {
+      //     ...attachment,
+      //     file: match ? match.file : null, // or match if you want to store whole object
+      //   };
+      // });
+
+      // setAttachments(updated);
+
       if (data.profile_picture)
         setProfilePictureUrl(config.apiBaseURL + data.profile_picture);
       // setLoading(false);
@@ -183,7 +194,7 @@ const EditEmployee = () => {
     }
   };
 
-  console.log("Dependants", dependants);
+  // console.log("Dependants", dependants);
   const fetchManagers = async () => {
     try {
       const response = await fetch(
@@ -498,13 +509,15 @@ const EditEmployee = () => {
           <div className="individual-tabs">
             <label>Added by</label>
             <div className="uneditable">
-              {formData.added_by?.modified_by || "-"}
+              {`${formData.added_by?.modified_by?.employee_code} - ${formData.added_by?.modified_by?.employee_name}` ||
+                "-"}
             </div>
           </div>
           <div className="individual-tabs">
             <label>Last Modified by</label>
             <div className="uneditable">
-              {formData.last_modified_by?.modified_by || "-"}
+              {`${formData.last_modified_by?.modified_by?.employee_code} - ${formData.last_modified_by?.modified_by?.employee_name}` ||
+                "-"}
             </div>
           </div>
         </div>
@@ -940,7 +953,7 @@ const EditEmployee = () => {
                             selected={d.date_of_birth}
                             onChange={(date) => {
                               const age = date ? calculateExactAge(date) : "";
-                              handleRowChange(
+                              handleDateRowChange(
                                 i,
                                 "date_of_birth",
                                 date,
@@ -1024,7 +1037,7 @@ const EditEmployee = () => {
                             selected={d.date_of_birth}
                             onChange={(date) => {
                               const age = date ? calculateExactAge(date) : "";
-                              handleRowChange(
+                              handleDateRowChange(
                                 i,
                                 "date_of_birth",
                                 date,
@@ -1155,32 +1168,52 @@ const EditEmployee = () => {
                         />
                       </td>
                       <td>
-                        <DatePicker
-                          selected={w.start_date}
-                          onChange={(date) =>
-                            handleRowChange(
-                              i,
-                              "start_date",
-                              date,
-                              workExperienceKnown,
-                              setWorkExperienceKnown
-                            )
-                          }
-                        />
+                        <div className="date-input-container-info">
+                          <DatePicker
+                            portalId="root-portal"
+                            selected={w.start_date}
+                            onChange={(date) =>
+                              handleDateRowChange(
+                                i,
+                                "start_date",
+                                date,
+                                workExperienceKnown,
+                                setWorkExperienceKnown
+                              )
+                            }
+                            dateFormat="dd-MMM-yyyy"
+                            placeholderText="dd-mm-yyyy"
+                            showMonthDropdown
+                            showYearDropdown
+                            className="input-date"
+                            dropdownMode="select"
+                          />
+                          <i className="fas fa-calendar-alt calendar-icon"></i>
+                        </div>
                       </td>
                       <td>
-                        <DatePicker
-                          selected={w.end_date}
-                          onChange={(date) =>
-                            handleRowChange(
-                              i,
-                              "end_date",
-                              date,
-                              workExperienceKnown,
-                              setWorkExperienceKnown
-                            )
-                          }
-                        />
+                        <div className="date-input-container-info">
+                          <DatePicker
+                            portalId="root-portal"
+                            selected={w.end_date}
+                            onChange={(date) =>
+                              handleDateRowChange(
+                                i,
+                                "end_date",
+                                date,
+                                workExperienceKnown,
+                                setWorkExperienceKnown
+                              )
+                            }
+                            dateFormat="dd-MMM-yyyy"
+                            placeholderText="dd-mm-yyyy"
+                            showMonthDropdown
+                            showYearDropdown
+                            className="input-date"
+                            dropdownMode="select"
+                          />
+                          <i className="fas fa-calendar-alt calendar-icon"></i>
+                        </div>
                       </td>
                       <td>
                         <button
@@ -1231,32 +1264,52 @@ const EditEmployee = () => {
                         />
                       </td>
                       <td>
-                        <DatePicker
-                          selected={w.start_date}
-                          onChange={(date) =>
-                            handleRowChange(
-                              i,
-                              "start_date",
-                              date,
-                              workExperience,
-                              setWorkExperience
-                            )
-                          }
-                        />
+                        <div className="date-input-container-info">
+                          <DatePicker
+                            portalId="root-portal"
+                            selected={w.start_date}
+                            onChange={(date) =>
+                              handleDateRowChange(
+                                i,
+                                "start_date",
+                                date,
+                                workExperience,
+                                setWorkExperience
+                              )
+                            }
+                            dateFormat="dd-MMM-yyyy"
+                            placeholderText="dd-mm-yyyy"
+                            showMonthDropdown
+                            showYearDropdown
+                            className="input-date"
+                            dropdownMode="select"
+                          />
+                          <i className="fas fa-calendar-alt calendar-icon"></i>
+                        </div>
                       </td>
                       <td>
-                        <DatePicker
-                          selected={w.end_date}
-                          onChange={(date) =>
-                            handleRowChange(
-                              i,
-                              "end_date",
-                              date,
-                              workExperience,
-                              setWorkExperience
-                            )
-                          }
-                        />
+                        <div className="date-input-container-info">
+                          <DatePicker
+                            portalId="root-portal"
+                            selected={w.end_date}
+                            onChange={(date) =>
+                              handleDateRowChange(
+                                i,
+                                "end_date",
+                                date,
+                                workExperience,
+                                setWorkExperience
+                              )
+                            }
+                            dateFormat="dd-MMM-yyyy"
+                            placeholderText="dd-mm-yyyy"
+                            showMonthDropdown
+                            showYearDropdown
+                            className="input-date"
+                            dropdownMode="select"
+                          />
+                          <i className="fas fa-calendar-alt calendar-icon"></i>
+                        </div>
                       </td>
                       <td>
                         <button
@@ -1383,18 +1436,28 @@ const EditEmployee = () => {
                         />
                       </td>
                       <td>
-                        <DatePicker
-                          selected={e.date_of_completion}
-                          onChange={(date) =>
-                            handleRowChange(
-                              i,
-                              "date_of_completion",
-                              date,
-                              educationKnown,
-                              setEducationKnown
-                            )
-                          }
-                        />
+                        <div className="date-input-container-info">
+                          <DatePicker
+                            portalId="root-portal"
+                            selected={e.date_of_completion}
+                            onChange={(date) =>
+                              handleDateRowChange(
+                                i,
+                                "date_of_completion",
+                                date,
+                                educationKnown,
+                                setEducationKnown
+                              )
+                            }
+                            dateFormat="dd-MMM-yyyy"
+                            placeholderText="dd-mm-yyyy"
+                            showMonthDropdown
+                            showYearDropdown
+                            className="input-date"
+                            dropdownMode="select"
+                          />
+                          <i className="fas fa-calendar-alt calendar-icon"></i>
+                        </div>
                       </td>
                       <td>
                         <button
@@ -1459,18 +1522,28 @@ const EditEmployee = () => {
                         />
                       </td>
                       <td>
-                        <DatePicker
-                          selected={e.date_of_completion}
-                          onChange={(date) =>
-                            handleRowChange(
-                              i,
-                              "date_of_completion",
-                              date,
-                              education,
-                              setEducation
-                            )
-                          }
-                        />
+                        <div className="date-input-container-info">
+                          <DatePicker
+                            portalId="root-portal"
+                            selected={e.date_of_completion}
+                            onChange={(date) =>
+                              handleDateRowChange(
+                                i,
+                                "date_of_completion",
+                                date,
+                                education,
+                                setEducation
+                              )
+                            }
+                            dateFormat="dd-MMM-yyyy"
+                            placeholderText="dd-mm-yyyy"
+                            showMonthDropdown
+                            showYearDropdown
+                            className="input-date"
+                            dropdownMode="select"
+                          />
+                          <i className="fas fa-calendar-alt calendar-icon"></i>
+                        </div>
                       </td>
                       <td>
                         <button
@@ -1595,32 +1668,52 @@ const EditEmployee = () => {
                         />
                       </td>
                       <td>
-                        <DatePicker
-                          selected={a.given_date}
-                          onChange={(date) =>
-                            handleRowChange(
-                              i,
-                              "given_date",
-                              date,
-                              assetsKnown,
-                              setAssetsKnown
-                            )
-                          }
-                        />
+                        <div className="date-input-container-info">
+                          <DatePicker
+                            portalId="root-portal"
+                            selected={a.given_date}
+                            onChange={(date) =>
+                              handleDateRowChange(
+                                i,
+                                "given_date",
+                                date,
+                                assetsKnown,
+                                setAssetsKnown
+                              )
+                            }
+                            dateFormat="dd-MMM-yyyy"
+                            placeholderText="dd-mm-yyyy"
+                            showMonthDropdown
+                            showYearDropdown
+                            className="input-date"
+                            dropdownMode="select"
+                          />
+                          <i className="fas fa-calendar-alt calendar-icon"></i>
+                        </div>
                       </td>
                       <td>
-                        <DatePicker
-                          selected={a.return_date}
-                          onChange={(date) =>
-                            handleRowChange(
-                              i,
-                              "return_date",
-                              date,
-                              assetsKnown,
-                              setAssetsKnown
-                            )
-                          }
-                        />
+                        <div className="date-input-container-info">
+                          <DatePicker
+                            portalId="root-portal"
+                            selected={a.return_date}
+                            onChange={(date) =>
+                              handleDateRowChange(
+                                i,
+                                "return_date",
+                                date,
+                                assetsKnown,
+                                setAssetsKnown
+                              )
+                            }
+                            dateFormat="dd-MMM-yyyy"
+                            placeholderText="dd-mm-yyyy"
+                            showMonthDropdown
+                            showYearDropdown
+                            className="input-date"
+                            dropdownMode="select"
+                          />
+                          <i className="fas fa-calendar-alt calendar-icon"></i>
+                        </div>
                       </td>
                       <td>
                         <button
@@ -1685,32 +1778,52 @@ const EditEmployee = () => {
                         />
                       </td>
                       <td>
-                        <DatePicker
-                          selected={a.given_date}
-                          onChange={(date) =>
-                            handleRowChange(
-                              i,
-                              "given_date",
-                              date,
-                              assets,
-                              setAssets
-                            )
-                          }
-                        />
+                        <div className="date-input-container-info">
+                          <DatePicker
+                            portalId="root-portal"
+                            selected={a.given_date}
+                            onChange={(date) =>
+                              handleDateRowChange(
+                                i,
+                                "given_date",
+                                date,
+                                assets,
+                                setAssets
+                              )
+                            }
+                            dateFormat="dd-MMM-yyyy"
+                            placeholderText="dd-mm-yyyy"
+                            showMonthDropdown
+                            showYearDropdown
+                            className="input-date"
+                            dropdownMode="select"
+                          />
+                          <i className="fas fa-calendar-alt calendar-icon"></i>
+                        </div>
                       </td>
                       <td>
-                        <DatePicker
-                          selected={a.return_date}
-                          onChange={(date) =>
-                            handleRowChange(
-                              i,
-                              "return_date",
-                              date,
-                              assets,
-                              setAssets
-                            )
-                          }
-                        />
+                        <div className="date-input-container-info">
+                          <DatePicker
+                            portalId="root-portal"
+                            selected={a.return_date}
+                            onChange={(date) =>
+                              handleDateRowChange(
+                                i,
+                                "return_date",
+                                date,
+                                assets,
+                                setAssets
+                              )
+                            }
+                            dateFormat="dd-MMM-yyyy"
+                            placeholderText="dd-mm-yyyy"
+                            showMonthDropdown
+                            showYearDropdown
+                            className="input-date"
+                            dropdownMode="select"
+                          />
+                          <i className="fas fa-calendar-alt calendar-icon"></i>
+                        </div>
                       </td>
                       <td>
                         <button
@@ -1785,7 +1898,7 @@ const EditEmployee = () => {
               <tr>
                 <th>Document Type</th>
                 <th>{editMode ? "Upload New File" : "File"}</th>
-                <th>{editMode ? "" : "Uploaded At"}</th>
+                <th>Uploaded At</th>
                 {editMode && <th>Action</th>}
               </tr>
             </thead>
@@ -1806,6 +1919,7 @@ const EditEmployee = () => {
                         }}
                       />
                     </td>
+                    <td>-</td>
                     <td>-</td>
                   </tr>
                 ))
