@@ -82,6 +82,7 @@ const TeamLeadProjectView = () => {
   const [availableAreas, setAvailableAreas] = useState([]);
   const { project_id } = useParams();
   const [editMode, setEditMode] = useState(false); //  Add this at the top
+  const [isSending, setIsSending] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -201,6 +202,7 @@ const TeamLeadProjectView = () => {
   };
 
   const handleUpdate = async () => {
+    setIsSending(true);
     // 1️ Update Project
     const payload = {
       ...formData,
@@ -363,6 +365,7 @@ const TeamLeadProjectView = () => {
     showSuccessToast("Project updated successfully!");
     setEditMode(false);
     setSearchQuery("");
+    setIsSending(false);
     fetchProjectData(); // refresh UI
   };
 
@@ -1405,8 +1408,15 @@ const TeamLeadProjectView = () => {
                 type="submit"
                 onClick={handleUpdate}
                 className="btn-green"
+                disabled={isSending}
               >
-                Save
+                {isSending ? (
+                  <>
+                    <span className="spinner-otp" /> Updating...
+                  </>
+                ) : (
+                  "Save"
+                )}
               </button>
               <button
                 type="reset"

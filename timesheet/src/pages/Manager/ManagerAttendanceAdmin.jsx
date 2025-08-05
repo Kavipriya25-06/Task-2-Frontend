@@ -26,6 +26,7 @@ const ManagerAttendanceAdmin = () => {
   const [currentWeek, setCurrentWeek] = useState(new Date()); // Start with current week
   const [totalHours, setTotalHours] = useState({});
   const [showAddPopup, setShowAddPopup] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const initialAttendanceState = {
     employee: "",
     shift: "",
@@ -141,6 +142,7 @@ const ManagerAttendanceAdmin = () => {
 
   const handleAddAttendance = async (e) => {
     e.preventDefault();
+    setIsSending(true);
 
     const payload = {
       ...newAttendance,
@@ -171,6 +173,8 @@ const ManagerAttendanceAdmin = () => {
       }
     } catch (err) {
       console.error("Error adding attendance:", err);
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -537,8 +541,14 @@ const ManagerAttendanceAdmin = () => {
                 }
               />
               <div className="btn-container">
-                <button type="submit" className="btn-save">
-                  Submit
+                <button type="submit" className="btn-save" disabled={isSending}>
+                  {isSending ? (
+                    <>
+                      <span className="spinner-otp" /> Updating...
+                    </>
+                  ) : (
+                    "Submit"
+                  )}
                 </button>
                 <button
                   onClick={() => setShowAddPopup(false)}

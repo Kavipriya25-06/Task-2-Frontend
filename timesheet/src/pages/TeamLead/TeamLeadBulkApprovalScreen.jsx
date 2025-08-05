@@ -32,7 +32,7 @@ const TeamLeadBulkApprovalScreen = () => {
     approved: false,
     rejected: false,
   });
-
+  const [isSending, setIsSending] = useState(false);
   console.log("Selected rows", selectedRows);
 
   useEffect(() => {
@@ -126,6 +126,7 @@ const TeamLeadBulkApprovalScreen = () => {
   };
 
   const handleApprove = async () => {
+    setIsSending(true);
     try {
       // const newApproved = !status.approved;
       const updatedRows = [...rows];
@@ -155,10 +156,13 @@ const TeamLeadBulkApprovalScreen = () => {
     } catch (err) {
       console.error("Error toggling approve", err);
       showErrorToast("Approval failed");
+    } finally {
+      setIsSending(false);
     }
   };
 
   const handleReject = async () => {
+    setIsSending(true);
     try {
       // const newRejected = !status.rejected;
       const updatedRows = [...rows];
@@ -187,6 +191,8 @@ const TeamLeadBulkApprovalScreen = () => {
     } catch (err) {
       console.error("Error toggling reject", err);
       showErrorToast("Approval failed");
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -353,14 +359,14 @@ const TeamLeadBulkApprovalScreen = () => {
             <button
               className="timesheet-approve"
               onClick={handleApprove}
-              disabled={selectedRows.length === 0}
+              disabled={selectedRows.length === 0 || isSending}
             >
               Approve
             </button>
             <button
               className="timesheet-reject"
               onClick={handleReject}
-              disabled={selectedRows.length === 0}
+              disabled={selectedRows.length === 0 || isSending}
             >
               Reject
             </button>

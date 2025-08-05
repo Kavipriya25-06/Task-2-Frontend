@@ -44,6 +44,7 @@ const TeamLeadProjectCreate = () => {
   const [showBuildingPopup, setShowBuildingPopup] = useState(false);
   const [buildingData, setBuildingData] = useState({});
   const [selectedBuildings, setSelectedBuildings] = useState([]);
+  const [isSending, setIsSending] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -67,6 +68,7 @@ const TeamLeadProjectCreate = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSending(true);
     console.log("Form data", formData);
     console.log("buildings data", selectedBuildings);
     console.log("teamleads data", selectedTeamleadManager);
@@ -162,6 +164,8 @@ const TeamLeadProjectCreate = () => {
       setSearchQuery("");
     } catch (err) {
       console.error("Request error:", err);
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -641,8 +645,14 @@ const TeamLeadProjectCreate = () => {
         </div>
 
         <div className="form-buttons">
-          <button type="submit" className="btn-green">
-            Create
+          <button type="submit" className="btn-green" disabled={isSending}>
+            {isSending ? (
+              <>
+                <span className="spinner-otp" /> Updating...
+              </>
+            ) : (
+              "Create"
+            )}
           </button>
           <button onClick={() => handleCancel()} className="btn-red">
             Cancel

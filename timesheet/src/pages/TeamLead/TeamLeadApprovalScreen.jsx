@@ -29,6 +29,7 @@ const TeamLeadApprovalScreen = () => {
     approved: false,
     rejected: false,
   });
+    const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
     fetchBiometricTaskData();
@@ -196,6 +197,7 @@ const TeamLeadApprovalScreen = () => {
   // };
 
   const handleApprove = async () => {
+     setIsSending(true);
     try {
       const newApproved = !status.approved;
 
@@ -244,10 +246,13 @@ const TeamLeadApprovalScreen = () => {
       }
     } catch (err) {
       console.error("Error toggling approve", err);
+    } finally {
+      setIsSending(false);
     }
   };
 
   const handleReject = async () => {
+    setIsSending(true);
     try {
       const newRejected = !status.rejected;
 
@@ -278,6 +283,8 @@ const TeamLeadApprovalScreen = () => {
       }
     } catch (err) {
       console.error("Error toggling reject", err);
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -414,21 +421,37 @@ const TeamLeadApprovalScreen = () => {
 
       <div className="button-container">
         {status.approved ? (
-          <button className="submit-button2" onClick={handleApprove}>
+          <button
+            className="submit-button2"
+            onClick={handleApprove}
+            disabled={isSending}
+          >
             Approved
           </button>
         ) : status.rejected ? (
-          <button className="save-button2" onClick={handleReject}>
+          <button
+            className="save-button2"
+            onClick={handleReject}
+            disabled={isSending}
+          >
             Rejected
           </button>
         ) : rows.length === 0 ? (
           <div></div>
         ) : (
           <>
-            <button className="submit-button2" onClick={handleApprove}>
+            <button
+              className="submit-button2"
+              onClick={handleApprove}
+              disabled={isSending}
+            >
               Approve
             </button>
-            <button className="save-button2" onClick={handleReject}>
+            <button
+              className="save-button2"
+              onClick={handleReject}
+              disabled={isSending}
+            >
               Reject
             </button>
           </>

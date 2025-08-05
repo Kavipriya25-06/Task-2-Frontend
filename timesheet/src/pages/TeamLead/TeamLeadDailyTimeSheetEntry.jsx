@@ -29,6 +29,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
   const [taskOptions, setTaskOptions] = useState([]);
   const [defaultTaskOptions, setDefaultTaskOptions] = useState([]);
   const [buildingOptions, setBuildingOptions] = useState([]);
+  const [isSending, setIsSending] = useState(false);
 
   const [rows, setRows] = useState([
     {
@@ -495,6 +496,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
   //  console.log("Task assign id",row.task_assign_id);
 
   const handleSubmit = async () => {
+    setIsSending(true);
     // Step 1: Validate everything first
     for (let row of [...displayRows, ...newRows]) {
       const result = validateTimes(row);
@@ -616,6 +618,8 @@ const TeamLeadDailyTimeSheetEntry = () => {
     } catch (error) {
       console.error("Submission failed:", error);
       showErrorToast(error);
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -647,6 +651,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
 
   const handleSave = async () => {
     // Step 1: Validate everything first
+    setIsSending(true);
     for (let row of [...displayRows, ...newRows]) {
       const result = validateTimes(row);
       if (!result) return; // Stop if any row fails validation
@@ -762,6 +767,8 @@ const TeamLeadDailyTimeSheetEntry = () => {
     } catch (error) {
       console.error("Submission failed:", error);
       showErrorToast(error);
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -1225,16 +1232,28 @@ const TeamLeadDailyTimeSheetEntry = () => {
         <button
           className="btn-cancel"
           onClick={handleSave}
-          // disabled={totalAssignedHours > maxAllowedHours}
+          disabled={isSending}
         >
-          Save
+          {isSending ? (
+            <>
+              <span className="spinner-otp" /> Updating...
+            </>
+          ) : (
+            "Save"
+          )}
         </button>
         <button
           className="btn-save"
           onClick={handleSubmit}
-          // disabled={totalAssignedHours > maxAllowedHours}
+          disabled={isSending}
         >
-          Submit
+          {isSending ? (
+            <>
+              <span className="spinner-otp" /> Updating...
+            </>
+          ) : (
+            "Submit"
+          )}
         </button>
       </div>
       <ToastContainerComponent />

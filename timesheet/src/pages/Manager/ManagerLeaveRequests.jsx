@@ -33,6 +33,7 @@ const ManagerLeaveRequests = () => {
   );
   const totalPages = Math.ceil(filteredLeaveRequests.length / rowsPerPage);
   const { attachments, setAttachments } = useAttachmentManager([]);
+  const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
     fetchLeaveRequests();
@@ -70,6 +71,7 @@ const ManagerLeaveRequests = () => {
       status: "approved",
       approved_by: user.employee_id,
     };
+    setIsSending(true);
 
     try {
       const response = await fetch(
@@ -91,6 +93,8 @@ const ManagerLeaveRequests = () => {
     } catch (error) {
       console.error("Error updating user", error);
       showErrorToast("Error updating user", error);
+    } finally {
+      setIsSending(false);
     }
   };
   const handleReject = async (
@@ -99,6 +103,7 @@ const ManagerLeaveRequests = () => {
     duration,
     employee_id
   ) => {
+    setIsSending(true);
     const leaveUpdate = {
       status: "rejected",
       approved_by: user.employee_id,
@@ -130,6 +135,8 @@ const ManagerLeaveRequests = () => {
     } catch (error) {
       console.error("Error rejecting leave", error);
       showErrorToast("Error rejecting leave", error);
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -243,6 +250,7 @@ const ManagerLeaveRequests = () => {
                         alt="approve button"
                         className="leavebutton"
                         onClick={() => handleApprove(leave.leave_taken_id)}
+                        disabled={isSending}
                       />
                       <img
                         src="/reject.png"
@@ -256,6 +264,7 @@ const ManagerLeaveRequests = () => {
                             leave.employee.employee_id
                           )
                         }
+                        disabled={isSending}
                       />
                     </td>
                   )}

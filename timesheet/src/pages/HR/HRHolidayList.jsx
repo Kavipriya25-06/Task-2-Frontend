@@ -21,6 +21,7 @@ const HolidayList = () => {
   const [selectedYear, setSelectedYear] = useState(parseInt(year));
   const [showPopup, setShowPopup] = useState(false);
   const [formData, setFormData] = useState({ date: "", notes: "" });
+  const [isSending, setIsSending] = useState(false);
 
   const fetchCalendarData = async (year) => {
     try {
@@ -65,6 +66,7 @@ const HolidayList = () => {
   console.log("the matching date", formData.date);
 
   const handlePatchHoliday = async () => {
+    setIsSending(true);
     try {
       const matchingDate = calendarData.find(
         (day) => day.date === formData.date
@@ -101,6 +103,8 @@ const HolidayList = () => {
       }
     } catch (err) {
       console.error("Patch error:", err);
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -256,7 +260,15 @@ const HolidayList = () => {
             />
 
             <div className="modal-buttons">
-              <button onClick={handlePatchHoliday}>Submit</button>
+              <button onClick={handlePatchHoliday} disabled={isSending}>
+                {isSending ? (
+                  <>
+                    <span className="spinner-otp" /> Updating...
+                  </>
+                ) : (
+                  "Submit"
+                )}
+              </button>
               <button
                 onClick={() => {
                   setShowPopup(false);

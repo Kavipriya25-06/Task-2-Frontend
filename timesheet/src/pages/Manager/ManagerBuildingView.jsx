@@ -32,6 +32,7 @@ const ManagerBuildingView = () => {
   const [tasks, setTasks] = useState([]);
   const [taskSelections, setTaskSelections] = useState([]);
   const [taskPopupVisible, setTaskPopupVisible] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const [formData, setFormData] = useState({
     building_hours: "",
     building_title: "",
@@ -113,6 +114,7 @@ const ManagerBuildingView = () => {
   };
 
   const handleUpdate = async () => {
+    setIsSending(true);
     const buildingAssignPayload = {
       building_hours: formData.building_hours,
       employee: availableTeamleadManager.map((e) => e.employee_id),
@@ -217,6 +219,7 @@ const ManagerBuildingView = () => {
         showErrorToast(err);
       }
     }
+    setIsSending(false);
     fetchBuildingsAssign(); // refresh state
   };
 
@@ -677,8 +680,19 @@ const ManagerBuildingView = () => {
             </>
           ) : (
             <>
-              <button type="submit" onClick={handleUpdate} className="btn-save">
-                Save
+              <button
+                type="submit"
+                onClick={handleUpdate}
+                className="btn-save"
+                disabled={isSending}
+              >
+                {isSending ? (
+                  <>
+                    <span className="spinner-otp" /> Updating...
+                  </>
+                ) : (
+                  "Save"
+                )}
               </button>
               <button onClick={() => setEditMode(false)} className="btn-cancel">
                 Cancel

@@ -24,6 +24,7 @@ const AddUserForm = ({ onCancel, onSave }) => {
   const [status, setStatus] = useState("");
   const [employeeOptions, setEmployeeOptions] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const navigate = useNavigate();
 
   const fetchEmployee = async () => {
@@ -44,6 +45,7 @@ const AddUserForm = ({ onCancel, onSave }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSending(true);
     const newUser = {
       employee_id: employeeID,
       role,
@@ -73,6 +75,8 @@ const AddUserForm = ({ onCancel, onSave }) => {
     } catch (error) {
       showErrorToast(`Failed to create user: ${error.message}`);
       console.error("Error adding user:", error);
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -180,9 +184,15 @@ const AddUserForm = ({ onCancel, onSave }) => {
           <button
             type="submit"
             className="btn-green"
-            disabled={!employeeID || !role || !email || !password}
+            disabled={!employeeID || !role || !email || !password || isSending}
           >
-            Save
+            {isSending ? (
+              <>
+                <span className="spinner-otp" /> Saving...
+              </>
+            ) : (
+              "Save"
+            )}
           </button>
 
           <button type="button" className="btn-red" onClick={handleCancel}>

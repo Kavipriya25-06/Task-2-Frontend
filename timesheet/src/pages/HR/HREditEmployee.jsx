@@ -45,6 +45,7 @@ const EditEmployee = () => {
   const [activeTab, setActiveTab] = useState(0);
 
   const [managers, setManagers] = useState([]);
+  const [isSending, setIsSending] = useState(false);
 
   const [editMode, setEditMode] = useState(false); //  Add this at the top
   const {
@@ -196,6 +197,7 @@ const EditEmployee = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!editMode) return;
+    setIsSending(true);
 
     const updatedEmployee = { ...formData };
     // delete updatedEmployee.profile_picture; // <- THIS IS IMPORTANT
@@ -332,6 +334,8 @@ const EditEmployee = () => {
     } catch (error) {
       showErrorToast(`Failed to Update Details: ${error.message}`);
       console.error("Error submitting employee data:", error);
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -1458,8 +1462,14 @@ const EditEmployee = () => {
         {renderTabContent()}
         {editMode && (
           <div className="form-buttons">
-            <button type="submit" className="btn-save">
-              Save
+            <button type="submit" className="btn-save" disabled={isSending}>
+              {isSending ? (
+                <>
+                  <span className="spinner-otp" /> Updating...
+                </>
+              ) : (
+                "Save"
+              )}
             </button>
             <button
               type="button"

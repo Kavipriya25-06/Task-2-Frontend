@@ -21,6 +21,7 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
   //   formData.startDate,
   //   formData.endDate
   // );
+  const [isSending, setIsSending] = useState(false);
   const [calendarData, setCalendarData] = useState([]);
   const [nonWorkingDates, setNonWorkingDates] = useState([]);
   const [leaveSummary, setLeaveSummary] = useState({
@@ -196,6 +197,7 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSending(true);
 
     if (!formData.startDate) {
       showWarningToast("Enter the Start date.");
@@ -320,6 +322,8 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
     } catch (error) {
       console.error("Error submitting leave request:", error);
       showErrorToast("An error occurred while submitting.");
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -631,8 +635,14 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
         </div>
 
         <div className="button-groups">
-          <button type="submit" className="btn-save">
-            Submit
+          <button type="submit" className="btn-save" disabled={isSending}>
+            {isSending ? (
+              <>
+                <span className="spinner-otp" /> Updating...
+              </>
+            ) : (
+              "Submit"
+            )}
           </button>
           <button type="button" onClick={onClose} className="btn-cancel">
             Cancel

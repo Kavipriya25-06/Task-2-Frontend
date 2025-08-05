@@ -47,6 +47,7 @@ const AddEmployee = () => {
     previous_years: "",
     previous_months: "",
   });
+  const [isSending, setIsSending] = useState(false);
 
   const eighteenYearsAgo = new Date();
   eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
@@ -107,6 +108,7 @@ const AddEmployee = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSending(true);
 
     const fieldsToNullify = [
       "dob",
@@ -249,6 +251,8 @@ const AddEmployee = () => {
         "Error during employee creation or attachment upload:",
         error
       );
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -1020,8 +1024,14 @@ const AddEmployee = () => {
         {renderTabContent()}
 
         <div className="form-buttons">
-          <button type="submit" className="btn-green">
-            Save
+          <button type="submit" className="btn-green" disabled={isSending}>
+            {isSending ? (
+              <>
+                <span className="spinner-otp" /> Updating...
+              </>
+            ) : (
+              "Save"
+            )}
           </button>
           <button
             type="button"
