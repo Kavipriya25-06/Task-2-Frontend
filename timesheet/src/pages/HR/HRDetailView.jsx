@@ -15,7 +15,7 @@ const HRDetailView = () => {
     { label: "Leave requests", path: "leave-requests" },
     { label: "Attendance", path: "attendance" },
     { label: "Reports", path: "reports" },
-
+    { label: "Leave Balance", path: "leave-balance" },
   ];
 
   return (

@@ -64,6 +64,7 @@ import HRHolidayList from "./pages/HR/HRHolidayList.jsx";
 import HRSettings from "./pages/HR/HRSettings.jsx";
 import HRAttendance from "./pages/HR/HRAttendance.jsx";
 import HRLeaveRequests from "./pages/HR/HRLeaveRequests.jsx";
+import HRLeaveBalanceEdit from "./pages/HR/HRLeaveBalanceEdit.jsx";
 import HRReports from "./pages/HR/HRReports.jsx";
 
 // Manager pages
@@ -332,6 +333,7 @@ const App = () => {
                   element={<EditEmployee />}
                 />
                 <Route path="leave-requests" element={<HRLeaveRequests />} />
+                <Route path="leave-balance" element={<HRLeaveBalanceEdit />} />
                 <Route path="attendance" element={<HRAttendance />} />
                 <Route path="settings" element={<HRSettings />} />
                 <Route path="reports" element={<HRReports />} />

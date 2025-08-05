@@ -39,6 +39,7 @@ const ManagerAttendanceAdmin = () => {
     total_duration: "",
     status: "Present",
     remarks: "",
+    holiday: false,
   };
 
   const [newAttendance, setNewAttendance] = useState(initialAttendanceState);
@@ -529,6 +530,33 @@ const ManagerAttendanceAdmin = () => {
                 <option value="OD">OD</option>
                 <option value="Deputation">Deputation</option>
               </select>
+
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  cursor: "pointer",
+                  marginBottom: "10px",
+                  marginTop: "20px",
+                }}
+              >
+                <span>Include Holidays</span>
+                <div className="toggle-switch">
+                  <input
+                    type="checkbox"
+                    checked={newAttendance.holiday}
+                    onChange={(e) =>
+                      setNewAttendance({
+                        ...newAttendance,
+                        holiday: e.target.checked,
+                      })
+                    }
+                    className="toggle-input"
+                  />
+                  <span className="toggle-slider" />
+                </div>
+              </label>
 
               <label>Remarks</label>
               <textarea
