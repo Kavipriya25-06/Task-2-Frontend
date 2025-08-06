@@ -285,6 +285,9 @@ const ManagerAttendanceAdmin = () => {
     <div className="attendance-container">
       <div className="attendance-header">
         <h2>Attendance Admin</h2>
+        <button onClick={() => setShowAddPopup(true)} className="btn-save">
+          + Add Attendance
+        </button>
       </div>
 
       <div>
@@ -588,10 +591,6 @@ const ManagerAttendanceAdmin = () => {
             </form>
           </div>
         )}
-
-        <button onClick={() => setShowAddPopup(true)} className="btn-save">
-          + Add Attendance
-        </button>
       </div>
       <ToastContainerComponent />
     </div>
