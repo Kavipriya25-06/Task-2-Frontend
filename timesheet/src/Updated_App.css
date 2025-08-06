@@ -177,7 +177,6 @@
   padding: 4px !important;
 }
 
-
 .toggle-switch {
   position: relative;
   width: 50px;
@@ -216,7 +215,7 @@
 
 /* When checked */
 .toggle-input:checked + .toggle-slider {
-  background-color: #e2a23a;
+  background-color: #f1890d;
 }
 
 .toggle-input:checked + .toggle-slider::before {
