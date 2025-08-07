@@ -46,7 +46,8 @@ const HRLeaveBalanceEdit = () => {
 
   const handleEdit = (index) => {
     setEditingRow(index);
-    setTempRow({ ...leaveData[index] });
+    // setTempRow({ ...leaveData[index] });
+    setTempRow(leaveData.find((item) => item.leave_avail_id === index));
   };
 
   const handleCancel = () => {
@@ -60,13 +61,21 @@ const HRLeaveBalanceEdit = () => {
 
   const handleSave = async (leaveId) => {
     setIsSending(true);
+
+    const rowIndex = leaveData.findIndex(
+      (item) => item.leave_avail_id === editingRow
+    ); // Capture current editing row
+    const rowData = { ...tempRow }; // Capture current data
+
+    const clamp = (val) => Math.min(365, Math.max(0, parseFloat(val || 0)));
+
     try {
       const patchData = {
-        casual_leave: tempRow.casual_leave || 0,
-        sick_leave: tempRow.sick_leave || 0,
-        earned_leave: tempRow.earned_leave || 0,
-        comp_off: tempRow.comp_off || 0,
-        lop: tempRow.lop || 0,
+        casual_leave: clamp(rowData.casual_leave),
+        sick_leave: clamp(rowData.sick_leave),
+        earned_leave: clamp(rowData.earned_leave),
+        comp_off: clamp(rowData.comp_off),
+        lop: clamp(rowData.lop),
       };
 
       await fetch(`${config.apiBaseURL}/leaves-available/${leaveId}/`, {
@@ -76,7 +85,7 @@ const HRLeaveBalanceEdit = () => {
       });
 
       const updated = [...leaveData];
-      updated[editingRow] = { ...tempRow };
+      updated[rowIndex] = { ...rowData };
       setLeaveData(updated);
       showSuccessToast("Leave balance updated successfully");
       setEditingRow(null);
@@ -134,14 +143,14 @@ const HRLeaveBalanceEdit = () => {
             <tbody>
               {leaveData
                 .filter((l) => {
-                  const search = employeeSearch.toLowerCase();
+                  const search = employeeSearch.trim().toLowerCase();
                   const name = l.employee?.employee_name?.toLowerCase() || "";
                   const code = l.employee?.employee_code?.toLowerCase() || "";
 
                   return name.includes(search) || code.includes(search);
                 })
                 .map((l, index) => {
-                  const isEditing = index === editingRow;
+                  const isEditing = l.leave_avail_id === editingRow;
                   const safeParse = (value) => parseFloat(value || 0);
                   const total =
                     safeParse(
@@ -158,16 +167,23 @@ const HRLeaveBalanceEdit = () => {
                       <td>{l.employee.employee_code}</td>
                       <td>{l.employee.employee_name}</td>
                       <td>
-                        {new Date(l.employee.doj).toLocaleDateString("en-GB")}
+                        {l.employee?.doj
+                          ? new Date(l.employee.doj).toLocaleDateString("en-GB")
+                          : "N/A"}
                       </td>
                       <td>{l.employee.status}</td>
                       <td>
                         {isEditing ? (
                           <input
+                            min={0}
+                            max={365}
                             type="number"
                             value={tempRow.casual_leave ?? 0}
                             onChange={(e) =>
-                              handleChange("casual_leave", e.target.value)
+                              handleChange(
+                                "casual_leave",
+                                parseFloat(e.target.value) || 0
+                              )
                             }
                           />
                         ) : (
@@ -177,10 +193,15 @@ const HRLeaveBalanceEdit = () => {
                       <td>
                         {isEditing ? (
                           <input
+                            min={0}
+                            max={365}
                             type="number"
                             value={tempRow.sick_leave ?? 0}
                             onChange={(e) =>
-                              handleChange("sick_leave", e.target.value)
+                              handleChange(
+                                "sick_leave",
+                                parseFloat(e.target.value) || 0
+                              )
                             }
                           />
                         ) : (
@@ -190,10 +211,15 @@ const HRLeaveBalanceEdit = () => {
                       <td>
                         {isEditing ? (
                           <input
+                            min={0}
+                            max={365}
                             type="number"
                             value={tempRow.earned_leave ?? 0}
                             onChange={(e) =>
-                              handleChange("earned_leave", e.target.value)
+                              handleChange(
+                                "earned_leave",
+                                parseFloat(e.target.value) || 0
+                              )
                             }
                           />
                         ) : (
@@ -203,10 +229,15 @@ const HRLeaveBalanceEdit = () => {
                       <td>
                         {isEditing ? (
                           <input
+                            min={0}
+                            max={365}
                             type="number"
                             value={tempRow.comp_off ?? 0}
                             onChange={(e) =>
-                              handleChange("comp_off", e.target.value)
+                              handleChange(
+                                "comp_off",
+                                parseFloat(e.target.value) || 0
+                              )
                             }
                           />
                         ) : (
@@ -218,27 +249,35 @@ const HRLeaveBalanceEdit = () => {
                       <td>
                         {isEditing ? (
                           <>
-                            <img
-                              src="/approve.png"
-                              alt="save"
-                              className="leavebutton"
+                            <button
                               onClick={() =>
                                 !isSending && handleSave(l.leave_avail_id)
                               }
                               disabled={isSending}
-                            />
-                            <img
-                              src="/reject.png"
-                              alt="cancel"
-                              className="leavebutton"
+                              className="saveleavebutton"
+                            >
+                              <img
+                                src="/approve.png"
+                                alt="save"
+                                className="saveleaveimg"
+                              />
+                            </button>
+                            <button
                               onClick={handleCancel}
                               disabled={isSending}
-                            />
+                              className="saveleavebutton"
+                            >
+                              <img
+                                src="/reject.png"
+                                alt="cancel"
+                                className="saveleaveimg"
+                              />
+                            </button>
                           </>
                         ) : (
                           <button
                             type="edit"
-                            onClick={() => handleEdit(index)}
+                            onClick={() => handleEdit(l.leave_avail_id)}
                             className="btn-leave"
                             title="Edit"
                           >

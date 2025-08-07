@@ -221,3 +221,37 @@
 .toggle-input:checked + .toggle-slider::before {
   transform: translateX(26px);
 }
+
+/* Container button for save and cancel */
+.saveleavebutton {
+  background-color: transparent;
+  border: none;
+  margin: 0 4px;
+  cursor: pointer;
+  padding: 4px;
+  transition: transform 0.2s ease;
+}
+
+.saveleavebutton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Approve and reject image icons */
+.saveleaveimg {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+.saveleavebutton:hover .saveleaveimg {
+  transform: scale(1.1);
+}
+
+/* Edit button */
+
+.btn-leave:hover {
+  background-color: #aaaaaa;
+  transform: scale(1.05);
+}
