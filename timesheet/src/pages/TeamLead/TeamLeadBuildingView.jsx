@@ -685,6 +685,7 @@ const TeamLeadBuildingView = () => {
                 onClick={handleUpdate}
                 className="btn-save"
                 disabled={isSending}
+                style={{ pointerEvents: isSending ? "none" : "auto" }}
               >
                 {isSending ? (
                   <>

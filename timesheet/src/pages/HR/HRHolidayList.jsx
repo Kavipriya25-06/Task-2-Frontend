@@ -260,7 +260,11 @@ const HolidayList = () => {
             />
 
             <div className="modal-buttons">
-              <button onClick={handlePatchHoliday} disabled={isSending}>
+              <button
+                onClick={handlePatchHoliday}
+                disabled={isSending}
+                style={{ pointerEvents: isSending ? "none" : "auto" }}
+              >
                 {isSending ? (
                   <>
                     <span className="spinner-otp" /> Updating...

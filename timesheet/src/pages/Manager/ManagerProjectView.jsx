@@ -1424,6 +1424,7 @@ const ManagerProjectView = () => {
                 onClick={handleUpdate}
                 className="btn-green"
                 disabled={isSending}
+                style={{ pointerEvents: isSending ? "none" : "auto" }}
               >
                 {isSending ? (
                   <>

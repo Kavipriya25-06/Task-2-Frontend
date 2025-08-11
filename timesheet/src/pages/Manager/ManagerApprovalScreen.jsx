@@ -425,6 +425,7 @@ const ManagerApprovalScreen = () => {
             className="submit-button2"
             onClick={handleApprove}
             disabled={isSending}
+            style={{ pointerEvents: isSending ? "none" : "auto" }}
           >
             Approved
           </button>
@@ -433,6 +434,7 @@ const ManagerApprovalScreen = () => {
             className="save-button2"
             onClick={handleReject}
             disabled={isSending}
+            style={{ pointerEvents: isSending ? "none" : "auto" }}
           >
             Rejected
           </button>
@@ -444,6 +446,7 @@ const ManagerApprovalScreen = () => {
               className="submit-button2"
               onClick={handleApprove}
               disabled={isSending}
+              style={{ pointerEvents: isSending ? "none" : "auto" }}
             >
               Approve
             </button>
@@ -451,6 +454,7 @@ const ManagerApprovalScreen = () => {
               className="save-button2"
               onClick={handleReject}
               disabled={isSending}
+              style={{ pointerEvents: isSending ? "none" : "auto" }}
             >
               Reject
             </button>

@@ -1462,7 +1462,12 @@ const EditEmployee = () => {
         {renderTabContent()}
         {editMode && (
           <div className="form-buttons">
-            <button type="submit" className="btn-save" disabled={isSending}>
+            <button
+              type="submit"
+              className="btn-save"
+              disabled={isSending}
+              style={{ pointerEvents: isSending ? "none" : "auto" }}
+            >
               {isSending ? (
                 <>
                   <span className="spinner-otp" /> Updating...

@@ -1233,6 +1233,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
           className="btn-cancel"
           onClick={handleSave}
           disabled={isSending}
+          style={{ pointerEvents: isSending ? "none" : "auto" }}
         >
           {isSending ? (
             <>
@@ -1246,6 +1247,7 @@ const TeamLeadDailyTimeSheetEntry = () => {
           className="btn-save"
           onClick={handleSubmit}
           disabled={isSending}
+          style={{ pointerEvents: isSending ? "none" : "auto" }}
         >
           {isSending ? (
             <>

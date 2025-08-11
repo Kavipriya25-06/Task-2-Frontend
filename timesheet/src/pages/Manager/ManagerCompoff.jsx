@@ -157,6 +157,7 @@ const ManagerCompoff = () => {
                             )
                           }
                           disabled={isSending}
+                          style={{ pointerEvents: isSending ? "none" : "auto" }}
                         >
                           {isSending ? (
                             <>
@@ -176,6 +177,7 @@ const ManagerCompoff = () => {
                             )
                           }
                           disabled={isSending}
+                          style={{ pointerEvents: isSending ? "none" : "auto" }}
                         >
                           {isSending ? (
                             <>

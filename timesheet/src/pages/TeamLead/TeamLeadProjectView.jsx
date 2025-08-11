@@ -641,102 +641,102 @@ const TeamLeadProjectView = () => {
     }));
   };
   // true - in progress
-    // false - completed
-    const handleProjectComplete = async () => {
-      const confirmDelete = await confirm({
-        message: `Are you sure you want to mark this project as completed?`,
-      });
-      if (!confirmDelete) return;
-      const update = {
-        status: false,
-      };
-      try {
-        const response = await fetch(
-          `${config.apiBaseURL}/projects/${project_id}/`, //  Match fetch URL
-          {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(update),
-          }
-        );
-  
-        if (response.ok) {
-          showSuccessToast("Project completed successfully.");
-          fetchProjectData();
-        } else {
-          const errorData = await response.json();
-          console.error("Failed to change status:", errorData);
-          showErrorToast("Failed to change status for the project.");
-        }
-      } catch (error) {
-        console.error("Delete error:", error);
-        showWarningToast("Something went wrong while changing status.");
-      }
+  // false - completed
+  const handleProjectComplete = async () => {
+    const confirmDelete = await confirm({
+      message: `Are you sure you want to mark this project as completed?`,
+    });
+    if (!confirmDelete) return;
+    const update = {
+      status: false,
     };
-  
-    const handleProjectInComplete = async () => {
-      const confirmDelete = await confirm({
-        message: `Are you sure you want to reopen this project?`,
-      });
-      if (!confirmDelete) return;
-      const update = {
-        status: true,
-      };
-      try {
-        const response = await fetch(
-          `${config.apiBaseURL}/projects/${project_id}/`, //  Match fetch URL
-          {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(update),
-          }
-        );
-  
-        if (response.ok) {
-          showSuccessToast("Project reopened successfully.");
-          fetchProjectData();
-        } else {
-          const errorData = await response.json();
-          console.error("Failed to change status:", errorData);
-          showErrorToast("Failed to change status for the project.");
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/projects/${project_id}/`, //  Match fetch URL
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(update),
         }
-      } catch (error) {
-        console.error("Delete error:", error);
-        showWarningToast("Something went wrong while changing status.");
+      );
+
+      if (response.ok) {
+        showSuccessToast("Project completed successfully.");
+        fetchProjectData();
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to change status:", errorData);
+        showErrorToast("Failed to change status for the project.");
       }
+    } catch (error) {
+      console.error("Delete error:", error);
+      showWarningToast("Something went wrong while changing status.");
+    }
+  };
+
+  const handleProjectInComplete = async () => {
+    const confirmDelete = await confirm({
+      message: `Are you sure you want to reopen this project?`,
+    });
+    if (!confirmDelete) return;
+    const update = {
+      status: true,
     };
-  
-    const handleDeleteProject = async () => {
-      const confirmDelete = await confirm({
-        message: `Are you sure you want to delete this project?`,
-      });
-      if (!confirmDelete) return;
-      try {
-        const response = await fetch(
-          `${config.apiBaseURL}/projects/${project_id}/`, //  Match fetch URL
-          {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-  
-        if (response.ok) {
-          showSuccessToast("Project deleted successfully.");
-          setTimeout(() => {
-            navigate("/teamlead/detail/projects");
-          }, 2000);
-        } else {
-          const errorData = await response.json();
-          console.error("Failed to delete:", errorData);
-          showErrorToast("Failed to delete the project.");
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/projects/${project_id}/`, //  Match fetch URL
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(update),
         }
-      } catch (error) {
-        console.error("Delete error:", error);
-        showWarningToast("Something went wrong while deleting the project.");
+      );
+
+      if (response.ok) {
+        showSuccessToast("Project reopened successfully.");
+        fetchProjectData();
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to change status:", errorData);
+        showErrorToast("Failed to change status for the project.");
       }
-    };
+    } catch (error) {
+      console.error("Delete error:", error);
+      showWarningToast("Something went wrong while changing status.");
+    }
+  };
+
+  const handleDeleteProject = async () => {
+    const confirmDelete = await confirm({
+      message: `Are you sure you want to delete this project?`,
+    });
+    if (!confirmDelete) return;
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/projects/${project_id}/`, //  Match fetch URL
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        showSuccessToast("Project deleted successfully.");
+        setTimeout(() => {
+          navigate("/teamlead/detail/projects");
+        }, 2000);
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to delete:", errorData);
+        showErrorToast("Failed to delete the project.");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      showWarningToast("Something went wrong while deleting the project.");
+    }
+  };
 
   if (!projectData) return <p>Loading...</p>;
 
@@ -1409,6 +1409,7 @@ const TeamLeadProjectView = () => {
                 onClick={handleUpdate}
                 className="btn-green"
                 disabled={isSending}
+                style={{ pointerEvents: isSending ? "none" : "auto" }}
               >
                 {isSending ? (
                   <>

@@ -105,6 +105,7 @@ const TeamLeadCompoffRequest = () => {
                       className="apply-button"
                       onClick={() => handleApply(entry.compoff_request_id)}
                       disabled={isSending}
+                      style={{ pointerEvents: isSending ? "none" : "auto" }}
                     >
                       {isSending ? (
                         <>

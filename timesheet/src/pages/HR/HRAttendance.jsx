@@ -200,6 +200,7 @@ const HRAttendance = () => {
           onClick={() => handleBiometricSync()}
           className="report-btn"
           disabled={isSending}
+          style={{ pointerEvents: isSending ? "none" : "auto" }}
         >
           {isSending ? (
             <>

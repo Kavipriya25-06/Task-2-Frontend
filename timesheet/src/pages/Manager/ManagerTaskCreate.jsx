@@ -133,7 +133,12 @@ const ManagerTaskCreate = () => {
           </div>
         </div>
         <div className="form-buttons">
-          <button type="submit" className="btn-green" disabled={isSending}>
+          <button
+            type="submit"
+            className="btn-green"
+            disabled={isSending}
+            style={{ pointerEvents: isSending ? "none" : "auto" }}
+          >
             {isSending ? (
               <>
                 <span className="spinner-otp" /> Updating...

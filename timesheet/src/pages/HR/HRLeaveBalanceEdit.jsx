@@ -254,6 +254,9 @@ const HRLeaveBalanceEdit = () => {
                                 !isSending && handleSave(l.leave_avail_id)
                               }
                               disabled={isSending}
+                              style={{
+                                pointerEvents: isSending ? "none" : "auto",
+                              }}
                               className="saveleavebutton"
                             >
                               <img
@@ -265,6 +268,9 @@ const HRLeaveBalanceEdit = () => {
                             <button
                               onClick={handleCancel}
                               disabled={isSending}
+                              style={{
+                                pointerEvents: isSending ? "none" : "auto",
+                              }}
                               className="saveleavebutton"
                             >
                               <img

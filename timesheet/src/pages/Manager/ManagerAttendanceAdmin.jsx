@@ -572,7 +572,12 @@ const ManagerAttendanceAdmin = () => {
                 }
               />
               <div className="btn-container">
-                <button type="submit" className="btn-save" disabled={isSending}>
+                <button
+                  type="submit"
+                  className="btn-save"
+                  disabled={isSending}
+                  style={{ pointerEvents: isSending ? "none" : "auto" }}
+                >
                   {isSending ? (
                     <>
                       <span className="spinner-otp" /> Updating...

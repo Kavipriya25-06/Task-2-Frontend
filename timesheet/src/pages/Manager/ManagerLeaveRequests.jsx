@@ -251,6 +251,7 @@ const ManagerLeaveRequests = () => {
                         className="leavebutton"
                         onClick={() => handleApprove(leave.leave_taken_id)}
                         disabled={isSending}
+                        style={{ pointerEvents: isSending ? "none" : "auto" }}
                       />
                       <img
                         src="/reject.png"
@@ -265,6 +266,7 @@ const ManagerLeaveRequests = () => {
                           )
                         }
                         disabled={isSending}
+                        style={{ pointerEvents: isSending ? "none" : "auto" }}
                       />
                     </td>
                   )}

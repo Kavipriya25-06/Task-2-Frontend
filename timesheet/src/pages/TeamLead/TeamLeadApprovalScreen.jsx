@@ -29,7 +29,7 @@ const TeamLeadApprovalScreen = () => {
     approved: false,
     rejected: false,
   });
-    const [isSending, setIsSending] = useState(false);
+  const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
     fetchBiometricTaskData();
@@ -197,7 +197,7 @@ const TeamLeadApprovalScreen = () => {
   // };
 
   const handleApprove = async () => {
-     setIsSending(true);
+    setIsSending(true);
     try {
       const newApproved = !status.approved;
 
@@ -425,6 +425,7 @@ const TeamLeadApprovalScreen = () => {
             className="submit-button2"
             onClick={handleApprove}
             disabled={isSending}
+            style={{ pointerEvents: isSending ? "none" : "auto" }}
           >
             Approved
           </button>
@@ -433,6 +434,7 @@ const TeamLeadApprovalScreen = () => {
             className="save-button2"
             onClick={handleReject}
             disabled={isSending}
+            style={{ pointerEvents: isSending ? "none" : "auto" }}
           >
             Rejected
           </button>
@@ -444,6 +446,7 @@ const TeamLeadApprovalScreen = () => {
               className="submit-button2"
               onClick={handleApprove}
               disabled={isSending}
+              style={{ pointerEvents: isSending ? "none" : "auto" }}
             >
               Approve
             </button>
@@ -451,6 +454,7 @@ const TeamLeadApprovalScreen = () => {
               className="save-button2"
               onClick={handleReject}
               disabled={isSending}
+              style={{ pointerEvents: isSending ? "none" : "auto" }}
             >
               Reject
             </button>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import DatePicker from "react-datepicker";
@@ -22,6 +22,7 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
   //   formData.endDate
   // );
   const [isSending, setIsSending] = useState(false);
+  const submittingRef = useRef(false); // hard guard
   const [calendarData, setCalendarData] = useState([]);
   const [nonWorkingDates, setNonWorkingDates] = useState([]);
   const [leaveSummary, setLeaveSummary] = useState({
@@ -197,29 +198,41 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // synchronous guard (blocks ultra-fast double clicks)
+    if (submittingRef.current) return;
+    submittingRef.current = true; // <— set immediately
     setIsSending(true);
 
+    const bail = (msg) => {
+      if (msg) showWarningToast(msg);
+      submittingRef.current = false; // release on any validation failure
+      setIsSending(false);
+    };
+
     if (!formData.startDate) {
-      showWarningToast("Enter the Start date.");
-      return;
+      return bail("Enter the Start date.");
+    }
+
+    if (!formData.endDate) {
+      return bail("Enter the End date.");
+    }
+
+    if (!formData.resumptionDate) {
+      return bail("Enter the Resumption date.");
     }
 
     if (formData.endDate < formData.startDate) {
-      showWarningToast("Enter the End date.");
-      return;
+      return bail("Enter the End date.");
     }
 
     if (!formData.duration) {
-      showWarningToast("Enter the Duration.");
-      return;
+      return bail("Enter the Duration.");
     }
 
     if (formData.resumptionDate <= formData.endDate) {
-      showWarningToast("Enter the Resumption date.");
-      return;
+      return bail("Enter the Resumption date.");
     }
-
-    const apiURL = `${config.apiBaseURL}/leaves-taken/`;
 
     const leaveTypeMap = {
       Sick: "sick_leave",
@@ -235,19 +248,28 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
     // console.log("leave summary", leaveSummary);
 
     if (parseFloat(leaveSummary[mappedLeaveType]) <= 0) {
-      showWarningToast(`No leave balance available for ${formData.leaveType}`);
-      return;
+      return bail(`No leave balance available for ${formData.leaveType}`);
     }
 
     if (
       parseFloat(leaveSummary[mappedLeaveType]) < parseFloat(formData.duration)
     ) {
-      showWarningToast(
+      return bail(
         `Leave duration exceeds leave balance for ${formData.leaveType}`
       );
-      return;
     }
 
+    if (mappedLeaveType === "comp_off" && !formData.compOffDate) {
+      return bail("Enter a Date for Comp off");
+    }
+
+    // ----- PASSED VALIDATION: flip guards -----
+    // submittingRef.current = true;
+    // if (isSending) return;
+    // if (submittingRef.current) return;
+    // setIsSending(true);
+
+    const apiURL = `${config.apiBaseURL}/leaves-taken/`;
     const data = new FormData();
 
     const addAttachment = async (leave_taken_id) => {
@@ -292,11 +314,6 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
     data.append("employee", user.employee_id); // Assuming employee_id like "EMP_00068"
     data.append("status", "pending"); // Default status when submitted
 
-    if (mappedLeaveType === "comp_off" && !formData.compOffDate) {
-      showWarningToast("Enter a Date for Comp off");
-      return;
-    }
-
     try {
       const response = await fetch(apiURL, {
         method: "POST",
@@ -325,6 +342,7 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
       showErrorToast("An error occurred while submitting.");
     } finally {
       setIsSending(false);
+      submittingRef.current = false; // ALWAYS release guard
     }
   };
 
@@ -387,7 +405,14 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
       <p className="form-subtitle1">
         Fill the required fields below to apply for annual leave.
       </p>
-      <form onSubmit={handleSubmit} className="form1">
+      <form
+        onSubmit={handleSubmit}
+        className="form1"
+        onKeyDown={(e) => {
+          if (isSending && e.key === "Enter") e.preventDefault();
+        }}
+        noValidate
+      >
         <div className="row1">
           <div className="form-group1">
             <label className="label1">Leave Type</label>
@@ -636,7 +661,12 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
         </div>
 
         <div className="button-groups">
-          <button type="submit" className="btn-save" disabled={isSending}>
+          <button
+            type="submit"
+            className="btn-save"
+            disabled={isSending}
+            style={{ pointerEvents: isSending ? "none" : "auto" }}
+          >
             {isSending ? (
               <>
                 <span className="spinner-otp" /> Updating...

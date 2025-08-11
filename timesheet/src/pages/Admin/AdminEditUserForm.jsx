@@ -268,6 +268,7 @@ const EditUserForm = () => {
               handleSubmit();
             }}
             disabled={isSending}
+            style={{ pointerEvents: isSending ? "none" : "auto" }}
           >
             {isSending ? (
               <>
