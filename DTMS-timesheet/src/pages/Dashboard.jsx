@@ -17,6 +17,7 @@ const Dashboard = () => {
 
   return (
     <div className="Dashboard">
+      {/* <img src="\app2\roadblock.png" alt="Denied" className="denied" /> */}
       <img src="\app2\Close_circle.png" alt="Denied" className="denied" />
       <h2>Access Denied</h2>
       {/* <img

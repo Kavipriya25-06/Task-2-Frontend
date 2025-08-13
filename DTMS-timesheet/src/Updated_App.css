@@ -257,3 +257,14 @@
   transition: background-color 0.2s ease;
   border: none;
 }
+
+.btn-back {
+  /* background-color: #d4d3d3; */
+  /* color: black; */
+  /* padding: 10px 20px; */
+  border: none;
+  border-radius: 500px;
+  /* font-weight: 500; */
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}

@@ -12,7 +12,12 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    // navigate("/"); // Redirect to login page
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -47,6 +52,23 @@ const Login = () => {
   return (
     <div className="container">
       <div className="login-box">
+        <div>
+          <button
+            className="btn-back"
+            onClick={() => {
+              handleLogout();
+              window.location.href = "http://148.135.138.195/";
+            }}
+          >
+            <img
+              src="\app2\Arrow_Left.png"
+              // {\* src="src\assets\Logo.svg" *\}
+              alt="Back"
+              className="logo-c"
+              style={{ width: "20px", height: "20px" }}
+            />
+          </button>
+        </div>
         <div className="logo-section">
           <div className="logo-container">
             <img
@@ -112,7 +134,7 @@ const Login = () => {
             Not a user?{" "}
             <a
               className="btn-contact"
-              href="mailto:hr@arrisltd.com?subject=Request%20for%20Login%20Credentials&body=Dear%20Team,%0A%0AI%20hope%20this%20message%20finds%20you%20well.%0A%0AI%20am%20writing%20to%20request%20login%20credentials%20for%20my%20account.%20Please%20provide%20me%20with%20the%20necessary%20access%20at%20your%20earliest%20convenience.%0A%0AThank%20you%20for%20your%20assistance.%0A%0ABest%20regards,%0A%5BYour%20Name%5D"
+              href="mailto:hr@aero360.co.in?subject=Request%20for%20Login%20Credentials&body=Dear%20Team,%0A%0AI%20hope%20this%20message%20finds%20you%20well.%0A%0AI%20am%20writing%20to%20request%20login%20credentials%20for%20my%20account.%20Please%20provide%20me%20with%20the%20necessary%20access%20at%20your%20earliest%20convenience.%0A%0AThank%20you%20for%20your%20assistance.%0A%0ABest%20regards,%0A%5BYour%20Name%5D"
             >
               Contact Admin
             </a>

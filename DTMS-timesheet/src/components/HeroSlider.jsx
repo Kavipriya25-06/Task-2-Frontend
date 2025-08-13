@@ -13,10 +13,27 @@ export default function HeroSlider() {
 
   const handleLogout = () => {
     logout();
-    navigate("/login"); // Redirect to login page
+    // navigate("/login"); // Redirect to login page
   };
   return (
     <div style={{ padding: "20px" }}>
+      <div>
+        <button
+          className="btn-back"
+          onClick={() => {
+            handleLogout();
+            window.location.href = "http://148.135.138.195/";
+          }}
+        >
+          <img
+            src="\app2\Arrow_Left.png"
+            // {\* src="src\assets\Logo.svg" *\}
+            alt="Back"
+            className="logo-c"
+            style={{ width: "20px", height: "20px" }}
+          />
+        </button>
+      </div>
       {/* <h2>Welcome to Timesheet Management system</h2> */}
       <div className="hero-content">
         <h2>Empower your missions</h2>
