@@ -96,8 +96,8 @@ const HRLeaveRequests = () => {
             <tbody>
               {currentRows.map((leave) => (
                 <tr key={leave.leave_taken_id}>
-                  <td>{leave.employee.employee_code}</td>
-                  <td>{leave.employee.employee_name}</td>
+                  <td>{leave.employee?.employee_code}</td>
+                  <td>{leave.employee?.employee_name}</td>
                   <td>{leave.duration}</td>
                   <td>
                     {leave.start_date
