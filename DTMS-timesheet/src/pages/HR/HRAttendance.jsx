@@ -12,9 +12,17 @@ import {
   showWarningToast,
   ToastContainerComponent,
 } from "../../constants/Toastify";
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../../constants/Toastify";
 
 const HRAttendance = () => {
   const { user } = useAuth();
+
   const [isSending, setIsSending] = useState(false);
   const [attendanceData, setAttendanceData] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
@@ -24,6 +32,7 @@ const HRAttendance = () => {
   const [employeeSearch, setEmployeeSearch] = useState("");
 
   const rowsPerPage = 15;
+
   const filteredEmployees = employeeData.filter((emp) =>
     emp.employee_name.toLowerCase().includes(employeeSearch.toLowerCase())
   );
@@ -146,6 +155,8 @@ const HRAttendance = () => {
     setIsSending(false);
   };
 
+
+
   // Navigate to previous or next week
   const handleWeekChange = (direction) => {
     const newDate = new Date(currentWeek);
@@ -172,6 +183,17 @@ const HRAttendance = () => {
     return `${hours}:${paddedMinutes}`;
   };
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [employeeSearch]);
+
+  // const formatToHHMM = (decimalHours) => {
+  //   const hours = Math.floor(decimalHours);
+  //   const minutes = Math.round((decimalHours - hours) * 60);
+  //   const paddedMinutes = minutes.toString().padStart(2, "0");
+  //   return `${hours}:${paddedMinutes}`;
+  // };
+
   return (
     <div className="attendance-container">
       <div className="hr-attendance-header">
@@ -196,10 +218,11 @@ const HRAttendance = () => {
             }}
           />
         </div>
-        {/* <button
+        <button
           onClick={() => handleBiometricSync()}
           className="report-btn"
           disabled={isSending}
+          style={{ pointerEvents: isSending ? "none" : "auto" }}
         >
           {isSending ? (
             <>
@@ -208,7 +231,7 @@ const HRAttendance = () => {
           ) : (
             "Sync Biometric"
           )}
-        </button> */}
+        </button>
       </div>
 
       <div className="attendance-scroll-container">
@@ -230,6 +253,45 @@ const HRAttendance = () => {
             </tr>
           </thead>
           <tbody>
+            {currentRows.map((emp) => (
+              <tr key={emp.employee_id}>
+                <td>{emp.employee_name}</td>
+                {weekDays.map((day) => {
+                  const attendance = attendanceData.find(
+                    (a) =>
+                      a.employee === emp.employee_id && a.date === day.mapdate
+                  );
+                  return (
+                    <td key={day.key}>
+                      {attendance ? (
+                        <div className="attendance-tile">
+                          <div>
+                            {attendance.in_time.slice(0, 5)} -{" "}
+                            {attendance.out_time?.slice(0, 5)}
+                            <div>
+                              <strong>Total:</strong>{" "}
+                              {attendance.total_duration
+                                ? formatToHHMM(
+                                    parseFloat(attendance.total_duration)
+                                  )
+                                : "00:00"}{" "}
+                              hrs
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="attendance-tile no-data">-</div>
+                      )}
+                    </td>
+                  );
+                })}
+                <td>
+                  {totalHours[emp.employee_id]
+                    ? `${formatToHHMM(totalHours[emp.employee_id])} hrs`
+                    : "-"}
+                </td>
+              </tr>
+            ))}
             {currentRows.map((emp) => (
               <tr key={emp.employee_id}>
                 <td>{emp.employee_name}</td>
@@ -299,6 +361,7 @@ const HRAttendance = () => {
           />
         </button>
       </div>
+      <ToastContainerComponent />
       <ToastContainerComponent />
     </div>
   );

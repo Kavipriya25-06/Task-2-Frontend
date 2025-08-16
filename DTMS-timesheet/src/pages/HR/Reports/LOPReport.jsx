@@ -11,7 +11,7 @@ import { saveAs } from "file-saver";
 import config from "../../../config";
 import { ToastContainerComponent } from "../../../constants/Toastify";
 
-const LOPReport = forwardRef(({ year }, ref) => {
+const LOPReport = forwardRef(({ year, employeeSearch }, ref) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -150,31 +150,39 @@ const LOPReport = forwardRef(({ year }, ref) => {
               </tr>
             </thead>
             <tbody>
-              {data.map((l, i) => {
-                const lopMap = {};
-                l.lop_by_month?.forEach((entry) => {
-                  lopMap[entry.month] = entry.days;
-                });
+              {data
+                .filter((l) => {
+                  const search = employeeSearch.toLowerCase();
+                  const name = l.employee_name?.toLowerCase() || "";
+                  const code = l.employee_code?.toLowerCase() || "";
 
-                return (
-                  <tr key={i}>
-                    <td>{l.employee_code}</td>
-                    <td>{l.employee_name}</td>
-                    <td>{new Date(l.doj).toLocaleDateString("en-GB")}</td>
-                    <td>{l.status}</td>
-                    <td>
-                      {l.resignation_date
-                        ? new Date(l.resignation_date).toLocaleDateString(
-                            "en-GB"
-                          )
-                        : "-"}
-                    </td>
-                    {months.map((m) => (
-                      <td key={m.key}>{lopMap[m.key] ?? 0}</td>
-                    ))}
-                  </tr>
-                );
-              })}
+                  return name.includes(search) || code.includes(search);
+                })
+                .map((l, i) => {
+                  const lopMap = {};
+                  l.lop_by_month?.forEach((entry) => {
+                    lopMap[entry.month] = entry.days;
+                  });
+
+                  return (
+                    <tr key={i}>
+                      <td>{l.employee_code}</td>
+                      <td>{l.employee_name}</td>
+                      <td>{new Date(l.doj).toLocaleDateString("en-GB")}</td>
+                      <td>{l.status}</td>
+                      <td>
+                        {l.resignation_date
+                          ? new Date(l.resignation_date).toLocaleDateString(
+                              "en-GB"
+                            )
+                          : "-"}
+                      </td>
+                      {months.map((m) => (
+                        <td key={m.key}>{lopMap[m.key] ?? 0}</td>
+                      ))}
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         )}

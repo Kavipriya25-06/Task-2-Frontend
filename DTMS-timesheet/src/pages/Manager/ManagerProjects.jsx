@@ -14,6 +14,7 @@ import {
   showWarningToast,
   ToastContainerComponent,
 } from "../../constants/Toastify";
+import confirm from "../../constants/ConfirmDialog";
 
 const ManagerProjects = () => {
   const { user } = useAuth();
@@ -38,6 +39,7 @@ const ManagerProjects = () => {
   const [isLoadingMoreTasks, setIsLoadingMoreTasks] = useState(false);
   const [hasMoreTasks, setHasMoreTasks] = useState(true);
   const searchTimeout = useRef(null);
+  const [statusFilter, setStatusFilter] = useState(""); // "", "true", or "false"
 
   const tabLabels = ["Projects", "Sub-Division", "Tasks"];
 
@@ -56,7 +58,7 @@ const ManagerProjects = () => {
 
   const fetchBuildings = async () => {
     try {
-      const response = await fetch(`${config.apiBaseURL}/buildings/`);
+      const response = await fetch(`${config.apiBaseURL}/other-buildings/`);
       const data = await response.json();
       setBuildings(data);
       setFilteredBuildings(data);
@@ -67,12 +69,85 @@ const ManagerProjects = () => {
 
   const fetchTasks = async () => {
     try {
-      const response = await fetch(`${config.apiBaseURL}/tasks/`);
+      const response = await fetch(`${config.apiBaseURL}/other-tasks/`);
       const data = await response.json();
       setTasks(data);
       setFilteredTask(data);
     } catch (err) {
       console.log("Unable to fetch tasks", err);
+    }
+  };
+
+  const fetchReports = async () => {
+    try {
+      const response = await fetch(`${config.apiBaseURL}/export-report/`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "text/csv",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to download CSV");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+
+      // Set default filename (optional: you can get it from headers too)
+      const now = new Date();
+      const istNow = new Date(now.getTime() + 5.5 * 60 * 60 * 1000); // Add 5.5 hours
+      const formattedIST = istNow
+        .toISOString()
+        .slice(0, 19)
+        .replace("T", "_")
+        .replace(/:/g, "-");
+
+      link.download = `projects_report_${formattedIST}.csv`;
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading CSV:", error);
+    }
+  };
+
+  // const handleReportClick = () => {
+  //   fetchReports();
+  // };
+
+  const handleDeleteTask = async (task_id) => {
+    const confirmDelete = await confirm({
+      message: `Are you sure you want to delete this task?`,
+    });
+    if (!confirmDelete) return;
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/tasks/${task_id}/`, //  Match fetch URL
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        showSuccessToast("Task deleted successfully.");
+        fetchTasks();
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to delete:", errorData);
+        showErrorToast("Failed to delete the task.");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      showWarningToast("Something went wrong while deleting the project.");
     }
   };
 
@@ -113,11 +188,23 @@ const ManagerProjects = () => {
         const code = u.project_code?.toLowerCase() || "";
         const name = u.project_title?.toLowerCase() || "";
         const discipline = u.discipline?.toLowerCase() || "";
-        return (
+        // const matchesStatus = String(u.status).toLowerCase() || "";
+        // return (
+        //   code.includes(lowerSearch) ||
+        //   name.includes(lowerSearch) ||
+        //   discipline.includes(lowerSearch) ||
+        //   matchesStatus.includes(statusFilter)
+        // );
+
+        const matchesSearch =
           code.includes(lowerSearch) ||
           name.includes(lowerSearch) ||
-          discipline.includes(lowerSearch)
-        );
+          discipline.includes(lowerSearch);
+
+        const matchesStatus =
+          statusFilter === "" || String(u.status) === statusFilter;
+
+        return matchesSearch && matchesStatus;
       });
       setFilteredProjects(filtered);
       setVisibleProjects(10);
@@ -133,11 +220,12 @@ const ManagerProjects = () => {
         //   hideProgressBar: true,
         // });
       }
-    }, 500);
+    }, 100);
 
     return () => clearTimeout(searchTimeout.current);
-  }, [searchText, projects]);
+  }, [searchText, projects, statusFilter]);
 
+  // console.log("status filter", statusFilter);
   useEffect(() => {
     if (searchTimeout.current) {
       clearTimeout(searchTimeout.current);
@@ -164,7 +252,7 @@ const ManagerProjects = () => {
         //   hideProgressBar: true,
         // });
       }
-    }, 500);
+    }, 100);
 
     return () => clearTimeout(searchTimeout.current);
   }, [searchBuild, buildings]);
@@ -200,7 +288,7 @@ const ManagerProjects = () => {
         //   hideProgressBar: true,
         // });
       }
-    }, 500);
+    }, 100);
 
     return () => clearTimeout(searchTimeout.current);
   }, [searchTask, tasks]);
@@ -248,7 +336,7 @@ const ManagerProjects = () => {
                       setVisibleProjects(nextVisible);
                     }
                     setIsLoadingMoreProjects(false);
-                  }, 1000); // Simulate 2 seconds loading
+                  }, 100); // Simulate 2 seconds loading
                 }
               }}
             >
@@ -262,7 +350,44 @@ const ManagerProjects = () => {
                     <th>Total hours</th>
                     <th>Consumed hours</th>
                     <th>Discipline</th>
-                    <th>Status</th>
+                    <th>
+                      Status&nbsp;
+                      <span
+                        onClick={() => {
+                          if (statusFilter === "") {
+                            setStatusFilter("true"); // In progress
+                          } else if (statusFilter === "true") {
+                            setStatusFilter("false"); // Completed
+                          } else {
+                            setStatusFilter(""); // All
+                          }
+                        }}
+                        style={{ cursor: "pointer" }}
+                        title={
+                          statusFilter === ""
+                            ? "Filter: All"
+                            : statusFilter === "true"
+                            ? "Filter: In progress"
+                            : "Filter: Completed"
+                        }
+                      >
+                        {statusFilter === "" && (
+                          <i className="fas fa-filter"></i>
+                        )}
+                        {statusFilter === "true" && (
+                          <i
+                            className="fas fa-play-circle"
+                            style={{ color: "orange" }}
+                          ></i>
+                        )}
+                        {statusFilter === "false" && (
+                          <i
+                            className="fas fa-check-circle"
+                            style={{ color: "green" }}
+                          ></i>
+                        )}
+                      </span>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -345,7 +470,7 @@ const ManagerProjects = () => {
                       setVisibleBuildings(nextVisible);
                     }
                     setIsLoadingMoreBuildings(false);
-                  }, 1000); // Simulate 2 seconds loading
+                  }, 100); // Simulate 2 seconds loading
                 }
               }}
             >
@@ -436,7 +561,7 @@ const ManagerProjects = () => {
                       setVisibleTasks(nextVisible);
                     }
                     setIsLoadingMoreTasks(false);
-                  }, 1000); // Simulate 2 seconds loading
+                  }, 100); // Simulate 2 seconds loading
                 }
               }}
             >
@@ -448,6 +573,7 @@ const ManagerProjects = () => {
                     <th>Task Description</th>
                     {/* <th>Estimated hours</th> */}
                     <th>Priority</th>
+                    {/* <th>Actions</th> */}
                     {/* <th>Status</th> */}
                   </tr>
                 </thead>
@@ -466,6 +592,15 @@ const ManagerProjects = () => {
                       <td>{task.task_title}</td>
                       <td>{task.task_description}</td>
                       <td>{task.priority}</td>
+                      {/* <td>
+                        {
+                          <i
+                            onClick={() => handleDeleteTask(task.task_id)}
+                            className="fas fa-trash-alt"
+                            style={{ cursor: "pointer" }}
+                          />
+                        }
+                      </td> */}
                       {/* <td>{task.status ? "Completed" : "In progress"}</td> */}
                     </tr>
                   ))}
@@ -496,6 +631,10 @@ const ManagerProjects = () => {
             </button>
           ))}
         </div>
+
+        {/* <button onClick={() => handleReportClick()} className="report-btn">
+          Download report
+        </button> */}
       </div>
       <div>{renderTabContent()}</div>
       <ToastContainerComponent />

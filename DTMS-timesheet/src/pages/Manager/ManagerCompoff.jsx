@@ -18,6 +18,7 @@ const ManagerCompoff = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [compOffRequests, setCompOffRequests] = useState([]);
   const [filteredRequests, setFilteredRequests] = useState([]);
+  const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
     if (user?.employee_id) {
@@ -50,6 +51,7 @@ const ManagerCompoff = () => {
   };
 
   const handleStatusUpdate = async (id, newStatus, employeeId) => {
+    setIsSending(true);
     try {
       // Step 1: PATCH status of comp-off request
       const statusResponse = await fetch(
@@ -94,6 +96,8 @@ const ManagerCompoff = () => {
     } catch (error) {
       console.error("Error updating comp-off status", error);
       alert("Something went wrong while updating status.");
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -154,8 +158,16 @@ const ManagerCompoff = () => {
                               req.employee?.employee_id
                             )
                           }
+                          disabled={isSending}
+                          style={{ pointerEvents: isSending ? "none" : "auto" }}
                         >
-                          Approve
+                          {isSending ? (
+                            <>
+                              <span className="spinner-otp" /> Updating...
+                            </>
+                          ) : (
+                            "Approve"
+                          )}
                         </button>
                         <button
                           className="btn-reject"
@@ -166,8 +178,16 @@ const ManagerCompoff = () => {
                               req.employee?.employee_id
                             )
                           }
+                          disabled={isSending}
+                          style={{ pointerEvents: isSending ? "none" : "auto" }}
                         >
-                          Reject
+                          {isSending ? (
+                            <>
+                              <span className="spinner-otp" /> Updating...
+                            </>
+                          ) : (
+                            "Reject"
+                          )}
                         </button>
                       </>
                     ) : (

@@ -26,6 +26,7 @@ const ManagerAttendanceAdmin = () => {
   const [currentWeek, setCurrentWeek] = useState(new Date()); // Start with current week
   const [totalHours, setTotalHours] = useState({});
   const [showAddPopup, setShowAddPopup] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const initialAttendanceState = {
     employee: "",
     shift: "",
@@ -38,6 +39,7 @@ const ManagerAttendanceAdmin = () => {
     total_duration: "",
     status: "Present",
     remarks: "",
+    holiday: false,
   };
 
   const [newAttendance, setNewAttendance] = useState(initialAttendanceState);
@@ -141,6 +143,7 @@ const ManagerAttendanceAdmin = () => {
 
   const handleAddAttendance = async (e) => {
     e.preventDefault();
+    setIsSending(true);
 
     const payload = {
       ...newAttendance,
@@ -171,6 +174,8 @@ const ManagerAttendanceAdmin = () => {
       }
     } catch (err) {
       console.error("Error adding attendance:", err);
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -280,6 +285,9 @@ const ManagerAttendanceAdmin = () => {
     <div className="attendance-container">
       <div className="attendance-header">
         <h2>Attendance Admin</h2>
+        <button onClick={() => setShowAddPopup(true)} className="btn-save">
+          + Add Attendance
+        </button>
       </div>
 
       <div>
@@ -526,6 +534,33 @@ const ManagerAttendanceAdmin = () => {
                 <option value="Deputation">Deputation</option>
               </select>
 
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  cursor: "pointer",
+                  marginBottom: "10px",
+                  marginTop: "20px",
+                }}
+              >
+                <span>Include Holidays</span>
+                <div className="toggle-switch">
+                  <input
+                    type="checkbox"
+                    checked={newAttendance.holiday}
+                    onChange={(e) =>
+                      setNewAttendance({
+                        ...newAttendance,
+                        holiday: e.target.checked,
+                      })
+                    }
+                    className="toggle-input"
+                  />
+                  <span className="toggle-slider" />
+                </div>
+              </label>
+
               <label>Remarks</label>
               <textarea
                 value={newAttendance.remarks}
@@ -537,8 +572,19 @@ const ManagerAttendanceAdmin = () => {
                 }
               />
               <div className="btn-container">
-                <button type="submit" className="btn-save">
-                  Submit
+                <button
+                  type="submit"
+                  className="btn-save"
+                  disabled={isSending}
+                  style={{ pointerEvents: isSending ? "none" : "auto" }}
+                >
+                  {isSending ? (
+                    <>
+                      <span className="spinner-otp" /> Updating...
+                    </>
+                  ) : (
+                    "Submit"
+                  )}
                 </button>
                 <button
                   onClick={() => setShowAddPopup(false)}
@@ -550,10 +596,6 @@ const ManagerAttendanceAdmin = () => {
             </form>
           </div>
         )}
-
-        <button onClick={() => setShowAddPopup(true)} className="btn-save">
-          + Add Attendance
-        </button>
       </div>
       <ToastContainerComponent />
     </div>

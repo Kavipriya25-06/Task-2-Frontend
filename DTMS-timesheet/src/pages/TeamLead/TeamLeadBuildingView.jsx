@@ -34,8 +34,13 @@ const TeamLeadBuildingView = () => {
   const [tasks, setTasks] = useState([]);
   const [taskSelections, setTaskSelections] = useState([]);
   const [taskPopupVisible, setTaskPopupVisible] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const [formData, setFormData] = useState({
     building_hours: "",
+    building_title: "",
+    building_description: "",
+    building_code: "",
+    building_id: "",
     // building_title: "",
     // building_description: "",
     // building_code: "",
@@ -83,6 +88,36 @@ const TeamLeadBuildingView = () => {
       setTaskSelections((prev) =>
         prev.filter((t) => t.task_id !== task.task_id)
       );
+    }
+  };
+
+  const handleDeleteBuilding = async (building_id) => {
+    const confirmDelete = await confirm({
+      message: `Are you sure you want to delete this Sub-Division?`,
+    });
+    if (!confirmDelete) return;
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/buildings/${building_id}/`, //  Match fetch URL
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        showSuccessToast("Sub-division deleted successfully.");
+        setTimeout(() => navigate(`/teamlead/detail/projects/`), 1000);
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to delete:", errorData);
+        showErrorToast("Failed to delete Sub-division.");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      showWarningToast("Something went wrong while deleting the Sub-division.");
     }
   };
 
@@ -151,6 +186,7 @@ const TeamLeadBuildingView = () => {
   };
 
   const handleUpdate = async () => {
+    setIsSending(true);
     const buildingPayload = {
       // building_title: "",
       // building_description: "",
@@ -168,29 +204,6 @@ const TeamLeadBuildingView = () => {
       employee: availableTeamleadManager.map((e) => e.employee_id),
       status: "inprogress",
     };
-
-    try {
-      const response = await fetch(
-        `${config.apiBaseURL}/buildings/${buildingId}/`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(buildingPayload),
-        }
-      );
-
-      if (response.ok) {
-        console.log("Building updated!");
-        showSuccessToast("Sub-Division Updated");
-        setEditMode(false);
-        setSearchQuery("");
-      } else {
-        showErrorToast("Failed to update project");
-      }
-    } catch (err) {
-      console.error("Update error:", err);
-      showErrorToast(err);
-    }
 
     try {
       const response = await fetch(
@@ -258,6 +271,7 @@ const TeamLeadBuildingView = () => {
         showErrorToast(err);
       }
     }
+    setIsSending(false);
     fetchBuildingsAssign(); // refresh state
   };
 
@@ -324,9 +338,10 @@ const TeamLeadBuildingView = () => {
       setBuildingId(data.building?.building_id);
       setFormData({
         building_hours: data.building_hours || "",
-        start_date: data.building?.start_date || "",
-        due_date: data.building?.due_date || "",
-        completed_status: data.building?.completed_status || "",
+        building_title: data.building?.building_title || "",
+        building_description: data.building?.building_description || "",
+        building_code: data.building?.building_code || "",
+        building_id: data.building?.building_id || "",
       });
       setAvailableTeamleadManager(data.employee);
 
@@ -353,7 +368,7 @@ const TeamLeadBuildingView = () => {
 
   const fetchTasks = async () => {
     try {
-      const res = await fetch(`${config.apiBaseURL}/tasks/`);
+      const res = await fetch(`${config.apiBaseURL}/other-tasks/`);
       const data = await res.json();
       setTasks(data);
     } catch (err) {
@@ -455,17 +470,52 @@ const TeamLeadBuildingView = () => {
               </div>
               <div className="project-form-group">
                 <label>Sub-Division Code</label>
-                <p>{buildingsAssign.building?.building_code}</p>
+                {editMode ? (
+                  <input
+                    name="building_code"
+                    value={formData.building_code}
+                    onChange={handleChange}
+                    required
+                  />
+                ) : (
+                  <p className="view-data">
+                    {buildingsAssign.building?.building_code}
+                  </p>
+                )}
+                {/* <p>{buildingsAssign.building?.building_code}</p> */}
               </div>
               <div className="project-form-group">
                 <label>Sub-Division Title</label>
-                <p>{buildingsAssign.building?.building_title}</p>
+                {editMode ? (
+                  <input
+                    name="building_title"
+                    value={formData.building_title}
+                    onChange={handleChange}
+                    required
+                  />
+                ) : (
+                  <p className="view-data">
+                    {buildingsAssign.building?.building_title}
+                  </p>
+                )}
+                {/* <p>{buildingsAssign.building?.building_title}</p> */}
               </div>
             </div>
             <div className="left-form-second">
               <div className="project-form-group">
                 <label className="description">Sub-Division Description</label>
-                <p>{buildingsAssign.building?.building_description}</p>
+                {editMode ? (
+                  <textarea
+                    name="building_description"
+                    value={formData.building_description}
+                    onChange={handleChange}
+                  />
+                ) : (
+                  <p className="view-description">
+                    {buildingsAssign.building?.building_description}
+                  </p>
+                )}
+                {/* <p>{buildingsAssign.building?.building_description}</p> */}
               </div>
               <div className="project-form-group">
                 <label>Assign Task</label>
@@ -504,7 +554,7 @@ const TeamLeadBuildingView = () => {
                     {buildingsAssign.tasks.map((t) => (
                       <div key={t.task_assign_id} className="task-tile">
                         <div
-                          onClick={() => taskClick(t.task_assign_id)}
+                          // onClick={() => taskClick(t.task_assign_id)}
                           className="building-tile-small"
                         >
                           {t.task.task_title}
@@ -746,28 +796,30 @@ const TeamLeadBuildingView = () => {
         <div className="form-buttons">
           {!editMode ? (
             <>
-              {!buildingStatus ? (
-                <button
-                  type="button"
-                  onClick={handleBuildingComplete}
-                  className="btn-complete"
-                >
-                  <i className="fas fa-check" /> Mark as Completed
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleBuildingInComplete}
-                  className="btn-complete"
-                >
-                  <i className="fas fa-folder-open" /> Reopen
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => handleDeleteBuilding(formData.building_id)}
+                className="btn-delete"
+              >
+                <i className="fas fa-trash-alt" /> Delete
+              </button>
             </>
           ) : (
             <>
-              <button type="submit" onClick={handleUpdate} className="btn-save">
-                Save
+              <button
+                type="submit"
+                onClick={handleUpdate}
+                className="btn-save"
+                disabled={isSending}
+                style={{ pointerEvents: isSending ? "none" : "auto" }}
+              >
+                {isSending ? (
+                  <>
+                    <span className="spinner-otp" /> Updating...
+                  </>
+                ) : (
+                  "Save"
+                )}
               </button>
               <button onClick={() => setEditMode(false)} className="btn-cancel">
                 Cancel
@@ -808,7 +860,7 @@ const TeamLeadBuildingView = () => {
                           alignItems: "center",
                         }}
                       >
-                        <div className="date-input-container">
+                        {/* <div className="date-input-container">
                           <DatePicker
                             selected={
                               selected.start_date
@@ -828,7 +880,6 @@ const TeamLeadBuildingView = () => {
                             dropdownMode="select"
                           />
                           <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
-                          {/* Font Awesome Calendar Icon */}
                         </div>
                         <div className="date-input-container">
                           <DatePicker
@@ -850,8 +901,7 @@ const TeamLeadBuildingView = () => {
                             dropdownMode="select"
                           />
                           <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
-                          {/* Font Awesome Calendar Icon */}
-                        </div>
+                        </div> */}
                       </div>
                     </>
                   )}

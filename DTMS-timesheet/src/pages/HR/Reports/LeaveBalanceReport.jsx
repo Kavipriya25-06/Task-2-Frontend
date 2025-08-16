@@ -11,13 +11,13 @@ import { saveAs } from "file-saver";
 import config from "../../../config";
 import { ToastContainerComponent } from "../../../constants/Toastify";
 
-const LeaveBalanceReport = forwardRef(({ year }, ref) => {
+const LeaveBalanceReport = forwardRef(({ year, employeeSearch }, ref) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${config.apiBaseURL}/leaves-available-report/`)
+    fetch(`${config.apiBaseURL}/leaves-available-report/?year=${year}`)
       .then((res) => res.json())
       .then((json) => {
         setData(json);
@@ -27,7 +27,7 @@ const LeaveBalanceReport = forwardRef(({ year }, ref) => {
         console.error("Leave fetch error:", err);
         setLoading(false);
       });
-  }, []);
+  }, [year]);
 
   useImperativeHandle(ref, () => ({
     downloadReport: async () => {
@@ -67,6 +67,7 @@ const LeaveBalanceReport = forwardRef(({ year }, ref) => {
           const sl = parseFloat(l.sick_leave || 0);
           const el = parseFloat(l.earned_leave || 0);
           const comp = parseFloat(l.comp_off || 0);
+          const lop = parseFloat(l.lop || 0);
           const totalLeaves = cl + sl + el + comp;
 
           worksheet.addRow([
@@ -79,7 +80,7 @@ const LeaveBalanceReport = forwardRef(({ year }, ref) => {
             sl,
             el,
             comp,
-            0, // LOP
+            lop, // LOP
             totalLeaves,
           ]);
         });
@@ -162,6 +163,13 @@ const LeaveBalanceReport = forwardRef(({ year }, ref) => {
                 //   (l) =>
                 //     new Date(l.employee.doj).getFullYear() === parseInt(year)
                 // )
+                .filter((l) => {
+                  const search = employeeSearch.toLowerCase();
+                  const name = l.employee?.employee_name?.toLowerCase() || "";
+                  const code = l.employee?.employee_code?.toLowerCase() || "";
+
+                  return name.includes(search) || code.includes(search);
+                })
                 .map((l, i) => (
                   <tr key={i}>
                     <td>{l.employee.employee_code}</td>
@@ -174,7 +182,7 @@ const LeaveBalanceReport = forwardRef(({ year }, ref) => {
                     <td>{parseFloat(l.sick_leave)}</td>
                     <td>{parseFloat(l.earned_leave)}</td>
                     <td>{parseFloat(l.comp_off)}</td>
-                    <td>0</td>
+                    <td>{parseFloat(l.lop)}</td>
                     <td>
                       {Math.max(
                         0,

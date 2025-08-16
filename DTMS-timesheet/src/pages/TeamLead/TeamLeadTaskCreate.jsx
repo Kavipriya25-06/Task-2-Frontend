@@ -15,6 +15,7 @@ import {
 
 const TeamLeadTaskCreate = () => {
   const [taskData, setTaskData] = useState({});
+  const [isSending, setIsSending] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -28,6 +29,7 @@ const TeamLeadTaskCreate = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSending(true);
 
     const payload = taskData;
 
@@ -43,11 +45,29 @@ const TeamLeadTaskCreate = () => {
         showSuccessToast("Task created successfully!");
       } else {
         console.error(data);
-        showErrorToast("Failed to create Task.");
+        // showErrorToast("Failed to create Task.");
+
+        const errorMessages =
+          data && typeof data === "object"
+            ? Object.entries(data)
+                .map(([field, messages]) => {
+                  if (Array.isArray(messages)) {
+                    return `${field}: ${messages.join(", ")}`;
+                  } else {
+                    return `${field}: ${messages}`;
+                  }
+                })
+                .join("\n")
+            : data?.error || "Unknown error occurred";
+
+        showErrorToast(errorMessages);
+        return;
       }
-      setTimeout(() => navigate(`/teamlead/detail/projects/`), 3000);
+      setTimeout(() => navigate(`/teamlead/detail/projects/`), 1000);
     } catch (error) {
       console.error("Error:", error);
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -104,8 +124,19 @@ const TeamLeadTaskCreate = () => {
           </div>
         </div>
         <div className="form-buttons">
-          <button type="submit" className="btn-green">
-            Create
+          <button
+            type="submit"
+            className="btn-green"
+            disabled={isSending}
+            style={{ pointerEvents: isSending ? "none" : "auto" }}
+          >
+            {isSending ? (
+              <>
+                <span className="spinner-otp" /> Updating...
+              </>
+            ) : (
+              "Create"
+            )}
           </button>
           <button
             type="reset"

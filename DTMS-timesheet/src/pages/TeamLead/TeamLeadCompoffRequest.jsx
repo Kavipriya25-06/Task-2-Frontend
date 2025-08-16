@@ -16,6 +16,7 @@ import {
 const TeamLeadCompoffRequest = () => {
   const { user } = useAuth(); //  Get employee_id
   const [compOffData, setCompOffData] = useState([]);
+  const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
     if (user?.employee_id) {
@@ -36,6 +37,7 @@ const TeamLeadCompoffRequest = () => {
   };
 
   const handleApply = async (id) => {
+    setIsSending(true);
     try {
       const response = await fetch(
         `${config.apiBaseURL}/comp-off-request/${id}/`,
@@ -54,6 +56,8 @@ const TeamLeadCompoffRequest = () => {
       fetchCompOffData(user.employee_id); // refresh
     } catch (error) {
       console.error("Error applying comp-off", error);
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -91,15 +95,27 @@ const TeamLeadCompoffRequest = () => {
                   {entry.timesheets?.[0]?.task_assign?.building_assign
                     ?.project_assign?.project?.project_title || "--"}
                 </td>
-                <td>{format(new Date(entry.expiry_date), "dd.MM.yyyy")}</td>
+                <td>
+                  {entry.expiry_date
+                    ? format(new Date(entry.expiry_date), "dd.MM.yyyy")
+                    : "-"}
+                </td>
                 <td>{entry.status}</td>
                 <td>
                   {entry.status.toLowerCase() === "eligible" && (
                     <button
                       className="apply-button"
                       onClick={() => handleApply(entry.compoff_request_id)}
+                      disabled={isSending}
+                      style={{ pointerEvents: isSending ? "none" : "auto" }}
                     >
-                      Apply
+                      {isSending ? (
+                        <>
+                          <span className="spinner-otp" /> Updating...
+                        </>
+                      ) : (
+                        "Apply"
+                      )}
                     </button>
                   )}
                 </td>
@@ -108,6 +124,7 @@ const TeamLeadCompoffRequest = () => {
           )}
         </tbody>
       </table>
+      <ToastContainerComponent />
     </div>
   );
 };

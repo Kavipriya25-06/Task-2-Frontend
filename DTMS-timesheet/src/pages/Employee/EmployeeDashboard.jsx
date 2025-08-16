@@ -19,7 +19,7 @@ const EmployeeDashboard = () => {
   const tiles = [
     { label: "Time Sheet Entry", path: "detail/time-sheet-entry" },
     { label: "Leave requests", path: "detail/leave-requests" },
-    { label: "Tasks", path: "detail/tasks" },
+    { label: "Attendance", path: "detail/attendance" },
     { label: "Comp-off Request", path: "detail/compoffrequest" },
     { label: "Company Policy", path: "detail/company-policy" },
   ];

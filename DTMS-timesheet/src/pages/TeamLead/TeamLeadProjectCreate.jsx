@@ -9,6 +9,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 import { toast, ToastContainer } from "react-toastify";
+import nextCode from "../../constants/nextCode";
 import "react-toastify/dist/ReactToastify.css";
 import { useAttachmentManager } from "../../constants/useAttachmentManager";
 import {
@@ -46,6 +47,7 @@ const TeamLeadProjectCreate = () => {
   const [showBuildingPopup, setShowBuildingPopup] = useState(false);
   const [buildingData, setBuildingData] = useState({});
   const [selectedBuildings, setSelectedBuildings] = useState([]);
+  const [isSending, setIsSending] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,6 +71,7 @@ const TeamLeadProjectCreate = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSending(true);
     console.log("Form data", formData);
     console.log("buildings data", selectedBuildings);
     console.log("teamleads data", selectedTeamleadManager);
@@ -92,14 +95,26 @@ const TeamLeadProjectCreate = () => {
         employee: selectedTeamleadManager,
         status: "pending",
       },
-      buildings: selectedBuildings.map((b) => ({
-        building_title: b.building_title,
-        building_description: b.building_description,
-        building_code: b.building_code,
-        employee: [],
-        building_hours: b.building_hours,
-        // status: "pending",
-      })),
+      buildings:
+        selectedBuildings.length > 0
+          ? selectedBuildings.map((b) => ({
+              building_title: b.building_title,
+              building_description: b.building_description,
+              building_code: b.building_code,
+              employee: [],
+              building_hours: b.building_hours,
+              // status: "pending",
+            }))
+          : [
+              {
+                building_title: "-",
+                building_description: "-",
+                building_code: "-",
+                employee: [],
+                building_hours: formData.estimated_hours,
+                // status: "pending",
+              },
+            ],
     };
     console.log("Final payload to send:", payload);
 
@@ -150,8 +165,11 @@ const TeamLeadProjectCreate = () => {
         showErrorToast("Failed to Create project " + data.error);
       }
       setSearchQuery("");
+      setSearchQuery("");
     } catch (err) {
       console.error("Request error:", err);
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -162,6 +180,9 @@ const TeamLeadProjectCreate = () => {
 
   const handleBuildingSubmit = (e) => {
     e.preventDefault();
+
+    const result = nextCode(selectedBuildings.at(-1)?.building_code);
+    console.log("Generated next building code", result);
 
     if (
       !buildingData.building_code ||
@@ -181,6 +202,7 @@ const TeamLeadProjectCreate = () => {
   const handleBuildingCancel = () => {
     setShowBuildingPopup(false);
     setBuildingData({});
+    generateBuildingCode();
   };
 
   useEffect(() => {
@@ -213,7 +235,8 @@ const TeamLeadProjectCreate = () => {
   };
 
   useEffect(() => {
-    if (!formData.start_date || !lastProjectCode) return;
+    if (!formData.discipline_code || !formData.start_date || !lastProjectCode)
+      return;
 
     const generateProjectCode = () => {
       const year = new Date(formData.start_date)
@@ -240,6 +263,26 @@ const TeamLeadProjectCreate = () => {
 
     generateProjectCode();
   }, [formData.discipline_code, lastProjectCode, formData.start_date]);
+
+  useEffect(() => {
+    generateBuildingCode();
+  }, [selectedBuildings]);
+
+  const generateBuildingCode = () => {
+    let code = selectedBuildings.at(-1)?.building_code;
+    let buildingCode = "";
+    if (code) {
+      buildingCode = code.trim().slice(-1);
+    }
+
+    let buildingLetter = buildingCode?.toUpperCase();
+    const result = nextCode(buildingLetter);
+
+    setBuildingData((prev) => ({
+      ...prev,
+      building_code: result,
+    }));
+  };
 
   const fetchTeamleadManager = async () => {
     try {
@@ -620,8 +663,19 @@ const TeamLeadProjectCreate = () => {
         </div>
 
         <div className="form-buttons">
-          <button type="submit" className="btn-green">
-            Create
+          <button
+            type="submit"
+            className="btn-green"
+            disabled={isSending}
+            style={{ pointerEvents: isSending ? "none" : "auto" }}
+          >
+            {isSending ? (
+              <>
+                <span className="spinner-otp" /> Updating...
+              </>
+            ) : (
+              "Create"
+            )}
           </button>
           <button onClick={() => handleCancel()} className="btn-red">
             Cancel
@@ -643,6 +697,7 @@ const TeamLeadProjectCreate = () => {
                       value={buildingData.building_code || ""}
                       onChange={handleBuildingChange}
                       className="bottom-inputs"
+                      readOnly
                     />
                   </div>
                   <div>

@@ -2339,6 +2339,7 @@ h3 {
 .hr-attendance-header {
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
   align-items: center; /* This centers all children horizontally */
   gap: 70px;
 }
@@ -2738,6 +2739,39 @@ h3 {
   transition: background-color 0.2s ease;
   border: none;
 }
+
+.form-buttons .btn-complete {
+  color: #5e5e5e;
+  padding: 10px 20px;
+  background: #ccc; /* Added border color */
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border: none;
+}
+
+.form-buttons .btn-delete {
+  color: #ffffff;
+  padding: 10px 20px;
+  background-color: #808080;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border: none;
+}
+
+/* .btn-delete-task {
+  color: #ffffff;
+  /* padding: 5px; */
+/* background-color: #808080;
+  border-radius: 8px; */
+/* font-weight: 500; */
+/* cursor: pointer;
+  transition: background-color 0.2s ease;
+  border: none;
+} */
 
 .form-buttons .btn-red:hover {
   background-color: #b6b4b2;
@@ -3608,6 +3642,68 @@ button.delete-building:hover {
   grid-template-rows: 1fr 2fr;
 }
 
+.edit-task-elements {
+  padding: 10px;
+  display: grid;
+  gap: 30px;
+  grid-template-rows: 1fr 2fr;
+}
+
+.edit-task-top-element {
+  padding: 0px;
+  display: flex;
+  /* grid-template: 1fr 1fr; */
+  gap: 130px;
+  width: 100%;
+}
+.edit-task-top-element input {
+  margin-top: 5px;
+  width: 100%;
+  box-sizing: unset;
+}
+
+.edit-task-bottom-element label {
+  font-weight: 500;
+  margin-bottom: 6px;
+  display: inline-block;
+}
+
+.edit-task-bottom-element {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 50px;
+  margin-top: 16px;
+  justify-content: flex-start; /* or space-between if needed */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.edit-task-bottom-element .textarea {
+  width: 400px;
+  min-width: 313px;
+  resize: vertical; /* allow user to resize vertically only */
+}
+
+.edit-task-bottom-element select {
+  width: 100%;
+  min-width: 310px;
+}
+
+.edit-task-uneditable {
+  padding: 0.5rem;
+  margin-bottom: 0%;
+  font-size: 14px;
+  color: rgb(138, 138, 138);
+  margin-top: -2%;
+}
+
+.edit-task-uneditable-textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f5f5f5;
+}
+
 .top-elements {
   padding: 0px;
   display: flex;
@@ -3824,6 +3920,11 @@ h4 {
 }
 
 .table-bottom-element select {
+  width: 100%;
+  min-width: 310px;
+}
+
+.table-bottom-element-input {
   width: 100%;
   min-width: 310px;
 }
@@ -5661,4 +5762,30 @@ table {
   flex-shrink: 0;
   font-size: 24px; /* or try 20px, 24px as per your UI */
   line-height: 1;
+}
+
+.project-footer {
+  position: relative;
+  height: 60px; /* Or enough space for the button */
+}
+
+.delete-project-button {
+  position: absolute;
+  bottom: -30px;
+  right: 10px;
+  padding: 8px 16px;
+  font-size: 15px;
+  border: none;
+  background-color: gray;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.delete-project-button i {
+  margin-right: 6px;
+}
+
+.delete-project-button:hover {
+  background-color: #ccc;
 }

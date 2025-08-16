@@ -12,8 +12,9 @@ const TeamLeadAttendance = () => {
   const [employeeData, setEmployeeData] = useState([]);
   const [currentWeek, setCurrentWeek] = useState(new Date()); // Start with current week
   const [totalHours, setTotalHours] = useState({});
-  const navigate = useNavigate();
   const [employeeSearch, setEmployeeSearch] = useState("");
+
+  const navigate = useNavigate();
 
   // Get the start and end date of the week
   const getWeekDates = (date) => {
@@ -123,6 +124,13 @@ const TeamLeadAttendance = () => {
     fetchEmployee();
   }, [user]);
 
+  const formatToHHMM = (decimalHours) => {
+    const hours = Math.floor(decimalHours);
+    const minutes = Math.round((decimalHours - hours) * 60);
+    const paddedMinutes = minutes.toString().padStart(2, "0");
+    return `${hours}:${paddedMinutes}`;
+  };
+
   return (
     <div className="attendance-container">
       <div className="hr-attendance-header">
@@ -157,8 +165,12 @@ const TeamLeadAttendance = () => {
               {weekDays.map((day) => (
                 <th
                   key={day.key}
+                  onClick={() => {
+                    navigate(`timesheetapproval/${day.mapdate}/`);
+                  }}
                   style={{
                     color: day.weekday === "Sun" ? "orange" : "inherit",
+                    cursor: "pointer",
                   }}
                 >
                   {day.weekday} ({day.date})
@@ -177,7 +189,6 @@ const TeamLeadAttendance = () => {
               .map((emp) => (
                 <tr key={emp.employee_id}>
                   <td>{emp.employee_name}</td>
-
                   {/* For each day of the week, check if attendance data exists */}
                   {weekDays.map((day) => {
                     // Find the attendance record for this employee on this specific day
@@ -228,7 +239,12 @@ const TeamLeadAttendance = () => {
                               </div>
                               <div>
                                 <strong>Total:</strong>{" "}
-                                {attendance.total_duration} hrs
+                                {attendance.total_duration
+                                  ? formatToHHMM(
+                                      parseFloat(attendance.total_duration)
+                                    )
+                                  : "00:00"}{" "}
+                                hrs
                               </div>
                             </div>
                             {attendance.modified_by && (
@@ -248,13 +264,10 @@ const TeamLeadAttendance = () => {
                     );
                   })}
 
-                  {/* );
-                                      })} */}
-
                   {/* Total Hours for that employee (from calculated object) */}
                   <td>
                     {totalHours[emp.employee_id]
-                      ? `${totalHours[emp.employee_id].toFixed(2)} hrs`
+                      ? `${formatToHHMM(totalHours[emp.employee_id])} hrs`
                       : "-"}
                   </td>
                 </tr>

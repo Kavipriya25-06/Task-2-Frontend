@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import config from "../../config";
 import { useAuth } from "../../AuthContext";
+import { FaEdit } from "react-icons/fa";
+import EditableTimeField from "../../constants/EditableTimeField";
 
 import {
   showSuccessToast,
@@ -24,8 +26,12 @@ const ManagerDailyTimeSheetEntry = () => {
   const [displayRows, setDisplayRows] = useState([]);
   const [newRows, setNewRows] = useState([]);
   const [updatedRows, setUpdatedRows] = useState([]);
-
+  const [tasks, setTasks] = useState([]);
+  const [defaultTasks, setDefaultTasks] = useState([]);
   const [taskOptions, setTaskOptions] = useState([]);
+  const [defaultTaskOptions, setDefaultTaskOptions] = useState([]);
+  const [buildingOptions, setBuildingOptions] = useState([]);
+  const [isSending, setIsSending] = useState(false);
   // const projectOptions = [
   //   ...new Set(taskOptions.map((t) => t.project_title).filter(Boolean)),
   // ];
@@ -117,6 +123,7 @@ const ManagerDailyTimeSheetEntry = () => {
             building:
               ts.task_assign?.building_assign?.building?.building_title || "",
             task: ts.task_assign?.task?.task_title || "",
+            task_assign_id: ts.task_assign?.task_assign_id || "",
             hours: parseFloat(ts.task_hours || "0").toString(),
             start_time: ts.start_time || "",
             end_time: ts.end_time || "",
@@ -200,6 +207,10 @@ const ManagerDailyTimeSheetEntry = () => {
   useEffect(() => {
     if (employee_id) {
       fetchTaskOptions();
+      fetchBuildingOptions();
+      fetchTasks();
+      fetchDefaultTasks();
+      fetchDefaultTaskOptions();
     }
   }, [employee_id]);
 
@@ -220,6 +231,7 @@ const ManagerDailyTimeSheetEntry = () => {
           item.building_assign?.building?.building_title ||
           "Unassigned Building";
         const task = item.task?.task_title || "Untitled Task";
+        const task_id = item.task?.task_id || "Unknown Task";
 
         if (!structured[project]) structured[project] = {};
         if (!structured[project][building]) structured[project][building] = [];
@@ -227,6 +239,7 @@ const ManagerDailyTimeSheetEntry = () => {
         structured[project][building].push({
           task_assign_id: item.task_assign_id,
           task_title: task,
+          task_id: task_id,
         });
       });
 
@@ -236,30 +249,134 @@ const ManagerDailyTimeSheetEntry = () => {
     }
   };
 
+  const fetchDefaultTaskOptions = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/default-tasks-by-employee/`
+      );
+      const data = await response.json();
+
+      const structured = {};
+
+      data.forEach((item) => {
+        const project =
+          item.building_assign?.project_assign?.project?.project_title ||
+          "Unassigned Project";
+        const building =
+          item.building_assign?.building?.building_title ||
+          "Unassigned Building";
+        const task = item.task?.task_title || "Untitled Task";
+        const task_id = item.task?.task_id || "Unknown Task";
+
+        if (!structured[project]) structured[project] = {};
+        if (!structured[project][building]) structured[project][building] = [];
+
+        structured[project][building].push({
+          task_assign_id: item.task_assign_id,
+          task_title: task,
+          task_id: task_id,
+        });
+      });
+
+      setDefaultTaskOptions(structured);
+    } catch (error) {
+      console.error("Failed to load task options:", error);
+    }
+  };
+
+  const fetchDefaultTasks = async () => {
+    try {
+      const res = await fetch(`${config.apiBaseURL}/default-tasks/`);
+      const data = await res.json();
+      setDefaultTasks(data);
+    } catch (err) {
+      console.error("Error fetching tasks:", err);
+    }
+  };
+
+  const fetchTasks = async () => {
+    try {
+      const res = await fetch(`${config.apiBaseURL}/other-tasks/`);
+      const data = await res.json();
+      setTasks(data);
+    } catch (err) {
+      console.error("Error fetching tasks:", err);
+    }
+  };
+
+  const fetchBuildingOptions = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/buildings-by-employee/${employee_id}/`
+      );
+      const data = await response.json();
+
+      const structured = {};
+
+      data.forEach((item) => {
+        const projectObj = item.project_assign?.project || {};
+        const buildingObj = item.building || {};
+
+        const projectTitle = projectObj.project_title || "Unassigned Project";
+        const projectCode = projectObj.project_code || "UNKNOWN_PROJECT_CODE";
+
+        const buildingTitle =
+          buildingObj.building_title || "Unassigned Building";
+        const buildingCode =
+          buildingObj.building_code || "UNKNOWN_BUILDING_CODE";
+
+        // Use project_code and building_code for uniqueness
+        if (!structured[projectCode]) {
+          structured[projectCode] = {
+            title: projectTitle,
+            buildings: {},
+          };
+        }
+
+        if (!structured[projectCode].buildings[buildingCode]) {
+          structured[projectCode].buildings[buildingCode] = {
+            title: buildingTitle,
+            entries: [],
+          };
+        }
+
+        structured[projectCode].buildings[buildingCode].entries.push({
+          building_assign_id: item.building_assign_id,
+          // optionally include building/project IDs or hours if needed
+        });
+      });
+
+      setBuildingOptions(structured);
+      console.log("Structured building data with codes", structured);
+    } catch (error) {
+      console.error("Failed to load building options:", error);
+    }
+  };
+
   const handleDisplayRowChange = (index, field, value) => {
     const updated = [...displayRows];
     updated[index][field] = value;
 
     // Auto-calculate hours if start_time or end_time changes
-    if (field === "start_time" || field === "end_time") {
-      const start = updated[index].start_time;
-      const end = updated[index].end_time;
+    // if (field === "start_time" || field === "end_time") {
+    //   const start = updated[index].start_time;
+    //   const end = updated[index].end_time;
 
-      if (start && end) {
-        const parseTime = (timeStr) => {
-          const [hours = 0, minutes = 0] = timeStr.split(":").map(Number);
-          return hours * 3600 + minutes * 60;
-        };
-        const startSeconds = parseTime(start);
-        const endSeconds = parseTime(end);
-        let diffSeconds = endSeconds - startSeconds;
-        if (diffSeconds < 0) diffSeconds = 0;
+    //   if (start && end) {
+    //     const parseTime = (timeStr) => {
+    //       const [hours = 0, minutes = 0] = timeStr.split(":").map(Number);
+    //       return hours * 3600 + minutes * 60;
+    //     };
+    //     const startSeconds = parseTime(start);
+    //     const endSeconds = parseTime(end);
+    //     let diffSeconds = endSeconds - startSeconds;
+    //     if (diffSeconds < 0) diffSeconds = 0;
 
-        const decimalHours = diffSeconds / 3600;
-        updated[index].hours = decimalHours.toFixed(2);
-        updated[index].formattedHours = formatHoursMinutes(decimalHours);
-      }
-    }
+    //     const decimalHours = diffSeconds / 3600;
+    //     updated[index].hours = decimalHours.toFixed(2);
+    //     updated[index].formattedHours = formatToHoursMinutes(decimalHours);
+    //   }
+    // }
 
     setDisplayRows(updated);
     // console.log("display rows", updated);
@@ -274,53 +391,69 @@ const ManagerDailyTimeSheetEntry = () => {
     const updated = [...newRows];
     updated[index][field] = value;
 
-    if (field === "project") {
+    if (field === "project_code") {
       // Reset building and task if project changes
-      updated[index].project = value;
+      updated[index].project_code = value;
+      updated[index].project =
+        buildingOptions?.[value]?.title || "Unassigned Project";
       updated[index].building = "";
       updated[index].task = "";
-      updated[index].task_assign_id = "";
+      // updated[index].task_assign_id = "";
     }
 
-    if (field === "building") {
+    if (field === "building_code") {
       // Reset task if building changes
-      updated[index].building = value;
+      const projectCode = updated[index].project_code;
+      const buildingData = buildingOptions?.[projectCode]?.buildings?.[value];
+
+      if (buildingData) {
+        updated[index].building_code = value;
+        updated[index].building = buildingData?.title;
+        updated[index].building_assign_id =
+          buildingData?.entries[0]?.building_assign_id;
+      }
+
       updated[index].task = "";
-      updated[index].task_assign_id = "";
+      updated[index].task_id = "";
     }
 
-    if (field === "task") {
-      // const taskList = taskOptions[row.project]?.[row.building] || [];
-      const selected = taskOptions?.[updated[index].project]?.[
-        updated[index].building
-      ]?.find((t) => t.task_title === value);
+    if (field === "task_id") {
+      const selected = tasks?.find((t) => t.task_id === value);
+      const defaultSelected = defaultTasks?.find((t) => t.task_id === value);
       if (selected) {
         updated[index].task = selected.task_title;
-        updated[index].task_assign_id = selected.task_assign_id;
-        // updated[index].project = selected.project_title;
-        // updated[index].building = selected.building_title;
+        updated[index].task_id = selected.task_id;
+        updated[index].task_hours = selected.task_hours;
+        updated[index].priority = selected.priority;
+        updated[index].comments = selected.comments;
+      } else if (defaultSelected) {
+        updated[index].task = defaultSelected.task_title;
+        updated[index].task_id = defaultSelected.task_id;
+        updated[index].task_hours = defaultSelected.task_hours;
+        updated[index].priority = defaultSelected.priority;
+        updated[index].comments = defaultSelected.comments;
       }
     }
 
     // Auto-calculate hours if start_time or end_time changes
-    if (field === "start_time" || field === "end_time") {
-      const start = updated[index].start_time;
-      const end = updated[index].end_time;
+    // if (field === "start_time" || field === "end_time") {
+    //   const start = updated[index].start_time;
+    //   const end = updated[index].end_time;
 
-      if (start && end) {
-        const parseTime = (timeStr) => {
-          const [hours = 0, minutes = 0] = timeStr.split(":").map(Number);
-          return hours * 3600 + minutes * 60;
-        };
-        const startSeconds = parseTime(start);
-        const endSeconds = parseTime(end);
-        let diffSeconds = endSeconds - startSeconds;
-        if (diffSeconds < 0) diffSeconds = 0;
-        const decimalHours = diffSeconds / 3600;
-        updated[index].hours = decimalHours.toFixed(2);
-        updated[index].formattedHours = formatHoursMinutes(decimalHours);
-      }
-    }
+    //   if (start && end) {
+    //     const parseTime = (timeStr) => {
+    //       const [hours = 0, minutes = 0] = timeStr.split(":").map(Number);
+    //       return hours * 3600 + minutes * 60;
+    //     };
+    //     const startSeconds = parseTime(start);
+    //     const endSeconds = parseTime(end);
+    //     let diffSeconds = endSeconds - startSeconds;
+    //     if (diffSeconds < 0) diffSeconds = 0;
+    //     const decimalHours = diffSeconds / 3600;
+    //     updated[index].hours = decimalHours.toFixed(2);
+    //     updated[index].formattedHours = formatToHoursMinutes(decimalHours);
+    //   }
+    // }
 
     setNewRows(updated);
     // console.log("new rows", updated);
@@ -368,11 +501,11 @@ const ManagerDailyTimeSheetEntry = () => {
     if (newRows.length > 0) {
       const lastRow = newRows[newRows.length - 1];
       if (
-        !lastRow.project?.trim() ||
-        !lastRow.building?.trim() ||
+        !lastRow.project_code?.trim() ||
+        !lastRow.building_code?.trim() ||
         !lastRow.task?.trim() ||
-        !lastRow.start_time?.trim() ||
-        !lastRow.end_time?.trim() ||
+        // !lastRow.start_time?.trim() ||
+        // !lastRow.end_time?.trim() ||
         !lastRow.hours
       ) {
         showInfoToast(
@@ -385,8 +518,8 @@ const ManagerDailyTimeSheetEntry = () => {
     setNewRows([
       ...newRows,
       {
-        project: "",
-        building: "",
+        project_code: "",
+        building_code: "",
         task: "",
         hours: "",
         start_time: "",
@@ -398,10 +531,13 @@ const ManagerDailyTimeSheetEntry = () => {
   //  console.log("Task assign id",row.task_assign_id);
 
   const handleSubmit = async () => {
+    setIsSending(true);
     // Step 1: Validate everything first
     for (let row of [...displayRows, ...newRows]) {
       const result = validateTimes(row);
       console.log("result", result);
+      const validation = validateRows(row);
+      if (!validation) return;
       if (!result) return; // Stop if any row fails validation
     }
     try {
@@ -411,6 +547,8 @@ const ManagerDailyTimeSheetEntry = () => {
         // const { start_time, end_time } = validateTimes(row);
         const result = validateTimes(row);
         if (!result) return; // Stop on any validation failure
+        const validation = validateRows(row);
+        if (!validation) return;
         const { start_time, end_time } = result;
         const payload = {
           employee: employee_id,
@@ -419,8 +557,8 @@ const ManagerDailyTimeSheetEntry = () => {
           building: row.building,
           task_assign: row.task_assign_id,
           task_hours: parseFloat(row.hours || 0),
-          start_time,
-          end_time,
+          // start_time,
+          // end_time,
           submitted: true,
         };
 
@@ -447,36 +585,66 @@ const ManagerDailyTimeSheetEntry = () => {
         // const { start_time, end_time } = validateTimes(row);
         const result = validateTimes(row);
         if (!result) return; // Stop on any validation failure
-        const { start_time, end_time } = result;
-        const payload = {
-          employee: employee_id,
+
+        const taskAssignPayload = {
+          employee: [employee_id],
           date: date,
-          project: row.project,
-          building: row.building,
-          task_assign: row.task_assign_id,
+          priority: row.priority,
+          comments: row.comments,
+          task: row.task_id,
           task_hours: parseFloat(row.hours || 0),
-          start_time,
-          end_time,
-          submitted: true,
+          building_assign: row.building_assign_id,
+          // start_time,
+          // end_time,
         };
 
-        const response = await fetch(`${config.apiBaseURL}/timesheet/`, {
+        const taskPost = await fetch(`${config.apiBaseURL}/upsert-tasks/`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+          body: JSON.stringify(taskAssignPayload),
         });
 
-        if (!response.ok) {
-          const errorData = await response.json();
+        if (!taskPost.ok) {
+          const errorData = await taskPost.json();
           console.error("Failed to POST new row:", errorData);
           showErrorToast(`Failed to submit new task "${row.task}".`);
           return;
+        }
+
+        if (taskPost.ok) {
+          const postedTask = await taskPost.json();
+          console.log("Posted success tasks", postedTask);
+          const { start_time, end_time } = result;
+          const payload = {
+            employee: employee_id,
+            date: date,
+            project: row.project,
+            building: row.building,
+            task_assign: postedTask.task_assign_id,
+            task_hours: parseFloat(row.hours || 0),
+            // start_time,
+            // end_time,
+            submitted: true,
+          };
+
+          const response = await fetch(`${config.apiBaseURL}/timesheet/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Failed to POST new row:", errorData);
+            showErrorToast(`Failed to submit new task "${row.task}".`);
+            return;
+          }
         }
       }
 
       setNewRows([]);
       // if (newRows.length === 0) {
-      //   showWarningToast("Please enter some fieldsds before saving.");
+      //   showWarningToast("Please enter some fields before saving.");
       //   return;
       // }
       showSuccessToast("All timesheet rows submitted successfully!");
@@ -485,6 +653,8 @@ const ManagerDailyTimeSheetEntry = () => {
     } catch (error) {
       console.error("Submission failed:", error);
       showErrorToast(error);
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -516,9 +686,12 @@ const ManagerDailyTimeSheetEntry = () => {
 
   const handleSave = async () => {
     // Step 1: Validate everything first
+    setIsSending(true);
     for (let row of [...displayRows, ...newRows]) {
       const result = validateTimes(row);
       if (!result) return; // Stop if any row fails validation
+      const validation = validateRows(row);
+      if (!validation) return;
     }
     try {
       // ---------------- PATCH updated existing rows ----------------
@@ -526,6 +699,8 @@ const ManagerDailyTimeSheetEntry = () => {
         // const { start_time, end_time } = validateTimes(row);
         const result = validateTimes(row);
         if (!result) return; // Stop on any validation failure
+        const validation = validateRows(row);
+        if (!validation) return;
         const { start_time, end_time } = result;
         const payload = {
           employee: employee_id,
@@ -534,8 +709,8 @@ const ManagerDailyTimeSheetEntry = () => {
           building: row.building,
           task_assign: row.task_assign_id,
           task_hours: parseFloat(row.hours || 0),
-          start_time,
-          end_time,
+          // start_time,
+          // end_time,
         };
 
         const response = await fetch(
@@ -560,29 +735,59 @@ const ManagerDailyTimeSheetEntry = () => {
         // const { start_time, end_time } = validateTimes(row);
         const result = validateTimes(row);
         if (!result) return; // Stop on any validation failure
-        const { start_time, end_time } = result;
-        const payload = {
-          employee: employee_id,
+        const taskAssignPayload = {
+          employee: [employee_id],
           date: date,
-          project: row.project,
-          building: row.building,
-          task_assign: row.task_assign_id,
+          priority: row.priority,
+          comments: row.comments,
+          task: row.task_id,
           task_hours: parseFloat(row.hours || 0),
-          start_time,
-          end_time,
+          building_assign: row.building_assign_id,
+          // start_time,
+          // end_time,
         };
 
-        const response = await fetch(`${config.apiBaseURL}/timesheet/`, {
+        const taskPost = await fetch(`${config.apiBaseURL}/upsert-tasks/`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+          body: JSON.stringify(taskAssignPayload),
         });
 
-        if (!response.ok) {
-          const errorData = await response.json();
+        if (!taskPost.ok) {
+          const errorData = await taskPost.json();
           console.error("Failed to POST new row:", errorData);
           showErrorToast(`Failed to submit new task "${row.task}".`);
           return;
+        }
+
+        if (taskPost.ok) {
+          const postedTask = await taskPost.json();
+          console.log("Posted success tasks", postedTask);
+
+          const { start_time, end_time } = result;
+          const payload = {
+            employee: employee_id,
+            date: date,
+            project: row.project,
+            building: row.building,
+            task_assign: postedTask.task_assign_id,
+            task_hours: parseFloat(row.hours || 0),
+            // start_time,
+            // end_time,
+          };
+
+          const response = await fetch(`${config.apiBaseURL}/timesheet/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Failed to POST new row:", errorData);
+            showErrorToast(`Failed to submit new task "${row.task}".`);
+            return;
+          }
         }
       }
 
@@ -597,6 +802,23 @@ const ManagerDailyTimeSheetEntry = () => {
     } catch (error) {
       console.error("Submission failed:", error);
       showErrorToast(error);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const validateRows = (row) => {
+    if (!row.task) {
+      showWarningToast("Task is required.");
+      return false;
+    } else if (!row.building) {
+      showWarningToast("Building required.");
+      return false;
+    } else if (!row.project) {
+      showWarningToast("Project required.");
+      return false;
+    } else {
+      return true;
     }
   };
 
@@ -604,12 +826,12 @@ const ManagerDailyTimeSheetEntry = () => {
     const start = row.start_time;
     const end = row.end_time;
 
-    if (!start || !end) {
-      showWarningToast(
-        `Please enter both start and end time for task "${row.task}".`
-      );
-      return null;
-    }
+    // if (!start || !end) {
+    //   showWarningToast(
+    //     `Please enter both start and end time for task "${row.task}".`
+    //   );
+    //   return null;
+    // }
 
     const parseTime = (timeStr) => {
       const [hours = 0, minutes = 0] = timeStr.split(":").map(Number);
@@ -634,34 +856,40 @@ const ManagerDailyTimeSheetEntry = () => {
     const outtimeSeconds =
       (outtimeParts[0] || 0) * 3600 + (outtimeParts[1] || 0) * 60;
 
-    if (startSeconds < intimeSeconds) {
-      showWarningToast(
-        `Task "${row.task}" Start Time (${start}) cannot be before Intime (${attendanceDetails.in_time}).`
-      );
-      return null;
-    }
+    // if (startSeconds < intimeSeconds) {
+    //   showWarningToast(
+    //     `Task "${row.task}" Start Time (${start}) cannot be before Intime (${attendanceDetails.in_time}).`
+    //   );
+    //   return null;
+    // }
 
-    if (endSeconds <= startSeconds) {
-      showWarningToast(`Task "${row.task}" End Time must be after Start Time.`);
-      return null;
-    }
+    // if (endSeconds <= startSeconds) {
+    //   showWarningToast(`Task "${row.task}" End Time must be after Start Time.`);
+    //   return null;
+    // }
 
     if (!intimeParts[0]) {
       showWarningToast(`Task "${row.task}" No in Time present.`);
       return null;
     }
 
-    if (outtimeParts[0]) {
-      if (endSeconds > outtimeSeconds) {
-        showWarningToast(
-          `Task "${row.task}" End Time must be before Out Time.`
-        );
-        return null;
-      }
-    } else if (endSeconds > currentTimeSeconds) {
-      showWarningToast(
-        `Task "${row.task}" End Time must be before current Time.`
-      );
+    // if (outtimeParts[0]) {
+    //   if (endSeconds > outtimeSeconds) {
+    //     showWarningToast(
+    //       `Task "${row.task}" End Time must be before Out Time.`
+    //     );
+    //     return null;
+    //   }
+    // } else if (endSeconds > currentTimeSeconds) {
+    //   showWarningToast(
+    //     `Task "${row.task}" End Time must be before current Time.`
+    //   );
+    //   return null;
+    // }
+
+    const hours = parseFloat(row.hours);
+    if (isNaN(hours) || hours <= 0) {
+      showWarningToast(`Please enter valid hours for task "${row.task}".`);
       return null;
     }
 
@@ -689,6 +917,16 @@ const ManagerDailyTimeSheetEntry = () => {
     const start = attendanceDetails.in_time;
     const end = attendanceDetails.out_time;
 
+    const parseTime = (timeStr) => {
+      const [hours = 0, minutes = 0, seconds = 0] = timeStr
+        .split(":")
+        .map(Number);
+      return hours * 3600 + minutes * 60 + seconds;
+    };
+
+    const startSeconds = parseTime(start);
+    const endSeconds = parseTime(end);
+
     const currentTime = new Date();
 
     const currentTimeSeconds =
@@ -697,18 +935,11 @@ const ManagerDailyTimeSheetEntry = () => {
       (currentTime.getSeconds() || 0);
 
     if (start) {
-      const parseTime = (timeStr) => {
-        const [hours = 0, minutes = 0, seconds = 0] = timeStr
-          .split(":")
-          .map(Number);
-        return hours * 3600 + minutes * 60 + seconds;
-      };
-      const startSeconds = parseTime(start);
-      let endSeconds = 0;
+      let endSecondss = 0;
       let diffSeconds = 0;
-      if (end) {
-        endSeconds = parseTime(end);
-        diffSeconds = endSeconds - startSeconds;
+      if (endSeconds) {
+        endSecondss = endSeconds;
+        diffSeconds = endSecondss - startSeconds;
       } else {
         diffSeconds = currentTimeSeconds - startSeconds;
       }
@@ -720,6 +951,17 @@ const ManagerDailyTimeSheetEntry = () => {
     }
   };
   const maxAllowedHours = parseFloat(calculateHours() || 0);
+  // const maxAllowedHours = parseFloat(attendanceDetails.total_duration || 0);
+  const duration = parseFloat(attendanceDetails.total_duration);
+  // const maxAllowedHours = isNaN(duration) ? 0 : Math.min(duration, 8);
+
+  const formatToHoursMinutes = (decimalHours) => {
+    const hours = Math.floor(decimalHours);
+    const minutes = Math.round((decimalHours - hours) * 60);
+    const paddedHours = hours.toString().padStart(2, "0");
+    const paddedMinutes = minutes.toString().padStart(2, "0");
+    return `${paddedHours}:${paddedMinutes}`;
+  };
 
   return (
     <div className="daily-timesheet-container">
@@ -728,7 +970,13 @@ const ManagerDailyTimeSheetEntry = () => {
         <p>Date: {formatDate(date)}</p>
         <p>Intime: {attendanceDetails.in_time}</p>
         <p>Outtime: {attendanceDetails.out_time}</p>
-        <p>Total logged hours: {attendanceDetails.total_duration}</p>
+        <p>
+          Total logged hours:{" "}
+          {attendanceDetails.total_duration
+            ? formatToHoursMinutes(parseFloat(attendanceDetails.total_duration))
+            : "-"}{" "}
+          hrs
+        </p>
       </div>
 
       {/* Timesheet Entry Table */}
@@ -739,8 +987,8 @@ const ManagerDailyTimeSheetEntry = () => {
               <th>Project name</th>
               <th>Sub-Divisions</th>
               <th>Tasks</th>
-              <th>Start Time</th>
-              <th>End Time</th>
+              {/* <th>Start Time</th>
+              <th>End Time</th> */}
               <th>Hours</th>
               <th>Actions</th>
             </tr>
@@ -782,7 +1030,7 @@ const ManagerDailyTimeSheetEntry = () => {
                     // }
                   />
                 </td>
-                <td>
+                {/* <td>
                   <input
                     type="time"
                     value={row.start_time ? row.start_time.slice(0, 5) : ""}
@@ -803,25 +1051,48 @@ const ManagerDailyTimeSheetEntry = () => {
                       handleDisplayRowChange(index, "end_time", e.target.value)
                     }
                   />
-                </td>
+                </td> */}
+
                 <td>
+                  <EditableTimeField
+                    value={formatToHoursMinutes(parseFloat(row.hours || 0))}
+                    onChange={(val) => {
+                      const [h, m] = val.split(":").map(Number);
+                      const decimal = h + m / 60;
+                      handleDisplayRowChange(
+                        index,
+                        "hours",
+                        decimal.toFixed(2)
+                      );
+                    }}
+                  />
+                </td>
+
+                {/* <td>
                   {row.formattedHours ? (
                     <input
                       type="text"
                       readOnly
-                      value={row.formattedHours}
+                      value={`${formatToHoursMinutes(
+                        parseFloat(row.hours)
+                      )} hrs`}
                       style={{ backgroundColor: "#f9f9f9", border: "none" }}
                     />
                   ) : (
                     <input
-                      type="number"
-                      placeholder="Hours"
-                      value={row.hours}
+                      type="text"
                       readOnly
+                      value={
+                        row.formattedHours
+                          ? `${row.formattedHours} hrs`
+                          : row.hours
+                          ? `${formatToHoursMinutes(parseFloat(row.hours))} hrs`
+                          : ""
+                      }
                       style={{ backgroundColor: "#f9f9f9", border: "none" }}
                     />
                   )}
-                </td>
+                </td> */}
 
                 <td>
                   {/* <button
@@ -848,9 +1119,9 @@ const ManagerDailyTimeSheetEntry = () => {
               <tr key={"new-" + index}>
                 <td>
                   <select
-                    value={row.project}
+                    value={row.project_code}
                     onChange={(e) =>
-                      handleNewRowChange(index, "project", e.target.value)
+                      handleNewRowChange(index, "project_code", e.target.value)
                     }
                     className="task-select"
                   >
@@ -858,40 +1129,42 @@ const ManagerDailyTimeSheetEntry = () => {
                     {/* {projectOptions.map((proj, idx) => (
                       <option key={idx} value={proj}>
                         {proj} */}
-                    {Object.keys(taskOptions).map((projectTitle) => (
-                      <option key={projectTitle} value={projectTitle}>
-                        {projectTitle}
-                      </option>
-                    ))}
+                    {Object.entries(buildingOptions).map(
+                      ([projCode, projData]) => (
+                        <option key={projCode} value={projCode}>
+                          {projData?.title || ""}
+                        </option>
+                      )
+                    )}
                   </select>
                 </td>
 
                 <td>
                   <select
-                    value={row.building}
+                    value={row.building_code}
                     onChange={(e) =>
-                      handleNewRowChange(index, "building", e.target.value)
+                      handleNewRowChange(index, "building_code", e.target.value)
                     }
-                    disabled={!row.project}
+                    disabled={!row.project_code}
                     className="task-select"
                   >
-                    <option value="">Select building</option>
-                    {row.project &&
-                      Object.keys(taskOptions[row.project] || {}).map(
-                        (buildingTitle) => (
-                          <option key={buildingTitle} value={buildingTitle}>
-                            {buildingTitle}
-                          </option>
-                        )
-                      )}
+                    <option value="">Select Sub-division</option>
+                    {row.project_code &&
+                      Object.entries(
+                        buildingOptions[row.project_code].buildings || {}
+                      ).map(([buildingCode, buildingData]) => (
+                        <option key={buildingCode} value={buildingCode}>
+                          {buildingData?.title || ""}
+                        </option>
+                      ))}
                   </select>
                 </td>
 
                 <td>
                   <select
-                    value={row.task}
+                    value={row.task_id}
                     onChange={(e) =>
-                      handleNewRowChange(index, "task", e.target.value)
+                      handleNewRowChange(index, "task_id", e.target.value)
                     }
                     disabled={!row.building}
                     className="task-select"
@@ -899,19 +1172,18 @@ const ManagerDailyTimeSheetEntry = () => {
                     <option value="">Select task</option>
                     {row.project &&
                       row.building &&
-                      (taskOptions[row.project]?.[row.building] || []).map(
-                        (task) => (
-                          <option
-                            key={task.task_assign_id}
-                            value={task.task_title}
-                          >
-                            {task.task_title}
-                          </option>
-                        )
-                      )}
+                      (
+                        defaultTaskOptions[row.project]?.[row.building] ||
+                        tasks ||
+                        []
+                      ).map((task) => (
+                        <option key={task.task_id} value={task.task_id}>
+                          {task.task_title}
+                        </option>
+                      ))}
                   </select>
                 </td>
-                <td>
+                {/* <td>
                   <input
                     type="time"
                     value={row.start_time ? row.start_time.slice(0, 5) : ""}
@@ -928,26 +1200,44 @@ const ManagerDailyTimeSheetEntry = () => {
                       handleNewRowChange(index, "end_time", e.target.value)
                     }
                   />
-                </td>
+                </td> */}
 
                 <td>
+                  <EditableTimeField
+                    value={formatToHoursMinutes(parseFloat(row.hours || 0))}
+                    onChange={(val) => {
+                      const [h, m] = val.split(":").map(Number);
+                      const decimal = h + m / 60;
+                      handleNewRowChange(index, "hours", decimal.toFixed(2));
+                    }}
+                  />
+                </td>
+
+                {/* <td>
                   {row.formattedHours ? (
                     <input
                       type="text"
                       readOnly
-                      value={row.formattedHours}
-                      style={{ width: `${row.formattedHours.length + 0.4}ch` }}
+                      value={`${formatToHoursMinutes(
+                        parseFloat(row.hours)
+                      )} hrs`}
+                      style={{ backgroundColor: "#f9f9f9", border: "none" }}
                     />
                   ) : (
                     <input
-                      type="number"
-                      placeholder="Hours"
-                      value={row.hours}
+                      type="text"
                       readOnly
+                      value={
+                        row.formattedHours
+                          ? `${row.formattedHours} hrs`
+                          : row.hours
+                          ? `${formatToHoursMinutes(parseFloat(row.hours))} hrs`
+                          : ""
+                      }
                       style={{ backgroundColor: "#f9f9f9", border: "none" }}
                     />
                   )}
-                </td>
+                </td> */}
 
                 <td>
                   {/* <button
@@ -977,16 +1267,30 @@ const ManagerDailyTimeSheetEntry = () => {
         <button
           className="btn-cancel"
           onClick={handleSave}
-          // disabled={totalAssignedHours > maxAllowedHours}
+          disabled={isSending}
+          style={{ pointerEvents: isSending ? "none" : "auto" }}
         >
-          Save
+          {isSending ? (
+            <>
+              <span className="spinner-otp" /> Updating...
+            </>
+          ) : (
+            "Save"
+          )}
         </button>
         <button
           className="btn-save"
           onClick={handleSubmit}
-          // disabled={totalAssignedHours > maxAllowedHours}
+          disabled={isSending}
+          style={{ pointerEvents: isSending ? "none" : "auto" }}
         >
-          Submit
+          {isSending ? (
+            <>
+              <span className="spinner-otp" /> Updating...
+            </>
+          ) : (
+            "Submit"
+          )}
         </button>
       </div>
       <ToastContainerComponent />

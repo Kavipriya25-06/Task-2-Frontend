@@ -47,6 +47,13 @@
   flex-direction: column;
   align-items: center;
   margin: 0 10px;
+  padding: 10px;
+}
+
+.column .ghost {
+  color: #aaa;
+  font-size: 16px;
+  padding: 5px;
 }
 
 /* .column input {
@@ -64,7 +71,8 @@
   width: 60px;
   text-align: center;
   border: none;
-  border-bottom: 2.5px solid #000; /* Flat line */
+  border-bottom: 2.5px solid #777777; /* Flat line */
+  border-top: 2.5px solid #777777; /* Flat line */
   margin: 4px 0;
   outline: none;
   background: transparent;

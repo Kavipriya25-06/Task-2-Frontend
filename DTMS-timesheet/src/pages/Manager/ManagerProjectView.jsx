@@ -5,6 +5,7 @@ import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate, useParams } from "react-router-dom";
+import nextCode from "../../constants/nextCode";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
@@ -26,6 +27,7 @@ const ManagerProjectView = () => {
   const [showAttachments, setShowAttachments] = useState(false);
   const [projectData, setProjectData] = useState(null);
   const [projectStatus, setProjectStatus] = useState(false);
+
   const [buildings, setBuildings] = useState([]);
   const [discipline, setDiscipline] = useState([]);
   const [areas, setAreas] = useState([]);
@@ -82,6 +84,7 @@ const ManagerProjectView = () => {
   const [availableAreas, setAvailableAreas] = useState([]);
   const { project_id } = useParams();
   const [editMode, setEditMode] = useState(false); //  Add this at the top
+  const [isSending, setIsSending] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -101,7 +104,7 @@ const ManagerProjectView = () => {
       //   `Are you sure you want to remove building "${building?.building?.building_title}"?`
       // );
       const confirmDelete = await confirm({
-        message: `Are you sure you want to remove building "${building?.building?.building_title}"?`,
+        message: `Are you sure you want to remove Sub-division "${building?.building?.building_title}"?`,
       });
       if (!confirmDelete) return;
 
@@ -265,6 +268,7 @@ const ManagerProjectView = () => {
   };
 
   const handleUpdate = async () => {
+    setIsSending(true);
     // 1️ Update Project
     const payload = {
       ...formData,
@@ -430,6 +434,7 @@ const ManagerProjectView = () => {
     showSuccessToast("Project updated successfully!");
     setEditMode(false);
     setSearchQuery("");
+    setIsSending(false);
     fetchProjectData(); // refresh UI
   };
 
@@ -557,6 +562,7 @@ const ManagerProjectView = () => {
   const handleBuildingCancel = () => {
     setShowBuildingPopup(false);
     setBuildingData({});
+    generateBuildingCode();
   };
 
   useEffect(() => {
@@ -671,6 +677,26 @@ const ManagerProjectView = () => {
     }
   };
 
+  useEffect(() => {
+    generateBuildingCode();
+  }, [availableBuildings]);
+
+  const generateBuildingCode = () => {
+    let code = availableBuildings?.at(-1)?.building?.building_code;
+    let buildingCode = "";
+    if (code) {
+      buildingCode = code.trim().slice(-1);
+    }
+
+    let buildingLetter = buildingCode?.toUpperCase();
+    const result = nextCode(buildingLetter);
+
+    setBuildingData((prev) => ({
+      ...prev,
+      building_code: result,
+    }));
+  };
+
   // const handleRemoveBuilding = (indexToRemove) => {
   //   setAvailableBuildings((prev) =>
   //     prev.filter((_, index) => index !== indexToRemove)
@@ -682,6 +708,103 @@ const ManagerProjectView = () => {
       ...prevData,
       area_of_work: prevData.area_of_work.filter((name) => name !== areaName),
     }));
+  };
+  // true - in progress
+  // false - completed
+  // const handleProjectComplete = async () => {
+  //   const confirmDelete = await confirm({
+  //     message: `Are you sure you want to mark this project as completed?`,
+  //   });
+  //   if (!confirmDelete) return;
+  //   const update = {
+  //     status: false,
+  //   };
+  //   try {
+  //     const response = await fetch(
+  //       `${config.apiBaseURL}/projects/${project_id}/`, //  Match fetch URL
+  //       {
+  //         method: "PATCH",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify(update),
+  //       }
+  //     );
+
+  //     if (response.ok) {
+  //       showSuccessToast("Project completed successfully.");
+  //       fetchProjectData();
+  //     } else {
+  //       const errorData = await response.json();
+  //       console.error("Failed to change status:", errorData);
+  //       showErrorToast("Failed to change status for the project.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Delete error:", error);
+  //     showWarningToast("Something went wrong while changing status.");
+  //   }
+  // };
+
+  // const handleProjectInComplete = async () => {
+  //   const confirmDelete = await confirm({
+  //     message: `Are you sure you want to reopen this project?`,
+  //   });
+  //   if (!confirmDelete) return;
+  //   const update = {
+  //     status: true,
+  //   };
+  //   try {
+  //     const response = await fetch(
+  //       `${config.apiBaseURL}/projects/${project_id}/`, //  Match fetch URL
+  //       {
+  //         method: "PATCH",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify(update),
+  //       }
+  //     );
+
+  //     if (response.ok) {
+  //       showSuccessToast("Project reopened successfully.");
+  //       fetchProjectData();
+  //     } else {
+  //       const errorData = await response.json();
+  //       console.error("Failed to change status:", errorData);
+  //       showErrorToast("Failed to change status for the project.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Delete error:", error);
+  //     showWarningToast("Something went wrong while changing status.");
+  //   }
+  // };
+
+  const handleDeleteProject = async () => {
+    const confirmDelete = await confirm({
+      message: `Are you sure you want to delete this project?`,
+    });
+    if (!confirmDelete) return;
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/projects/${project_id}/`, //  Match fetch URL
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        showSuccessToast("Project deleted successfully.");
+        setTimeout(() => {
+          navigate("/manager/detail/projects");
+        }, 2000);
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to delete:", errorData);
+        showErrorToast("Failed to delete the project.");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      showWarningToast("Something went wrong while deleting the project.");
+    }
   };
 
   if (!projectData) return <p>Loading...</p>;
@@ -1347,10 +1470,25 @@ const ManagerProjectView = () => {
             </div>
           </div>
         </div>
+        {/* <div className="project-footer">
+          {!editMode ? (
+            <button
+              type="button"
+              onClick={handleDeleteProject}
+              className="btn-red delete-project-button"
+              title="Delete Project"
+            >
+              <i className="fas fa-trash-alt" /> Delete
+            </button>
+          ) : (
+            <div></div>
+          )}
+        </div> */}
+
         <div className="form-buttons">
           {!editMode ? (
             <>
-              {!projectStatus ? (
+              {projectStatus ? (
                 <button
                   type="button"
                   onClick={handleProjectComplete}
@@ -1367,6 +1505,14 @@ const ManagerProjectView = () => {
                   <i className="fas fa-folder-open" /> Reopen
                 </button>
               )}
+
+              <button
+                type="button"
+                onClick={handleDeleteProject}
+                className="btn-delete"
+              >
+                <i className="fas fa-trash-alt" /> Delete
+              </button>
             </>
           ) : (
             <>
@@ -1374,8 +1520,16 @@ const ManagerProjectView = () => {
                 type="submit"
                 onClick={handleUpdate}
                 className="btn-green"
+                disabled={isSending}
+                style={{ pointerEvents: isSending ? "none" : "auto" }}
               >
-                Save
+                {isSending ? (
+                  <>
+                    <span className="spinner-otp" /> Updating...
+                  </>
+                ) : (
+                  "Save"
+                )}
               </button>
               <button
                 type="reset"
@@ -1388,7 +1542,7 @@ const ManagerProjectView = () => {
           )}
         </div>
         {showBuildingPopup && (
-          <div className="popup" ref={buildingPopupRef}>
+          <div className="building-popup" ref={buildingPopupRef}>
             <div className="create-building-container">
               <h2>Create Sub-Division</h2>
               <form onSubmit={handleBuildingSubmit}>
@@ -1402,6 +1556,7 @@ const ManagerProjectView = () => {
                         value={buildingData.building_code || ""}
                         onChange={handleBuildingChange}
                         className="bottom-inputs"
+                        readOnly
                       />
                     </div>
                     <div>
@@ -1431,10 +1586,11 @@ const ManagerProjectView = () => {
                       <label>Sub-Division Hours</label>
                       <br />
                       <input
+                        type="number"
                         name="building_hours"
                         value={buildingData.building_hours || ""}
                         onChange={handleBuildingChange}
-                        className="bottom-inputs"
+                        className="sub-division-hours"
                       />
                     </div>
                   </div>

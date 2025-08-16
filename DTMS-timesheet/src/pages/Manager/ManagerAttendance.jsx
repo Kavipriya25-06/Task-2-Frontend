@@ -128,6 +128,13 @@ const ManagerAttendance = () => {
     fetchEmployee();
   }, [user]);
 
+  const formatToHHMM = (decimalHours) => {
+    const hours = Math.floor(decimalHours);
+    const minutes = Math.round((decimalHours - hours) * 60);
+    const paddedMinutes = minutes.toString().padStart(2, "0");
+    return `${hours}:${paddedMinutes}`;
+  };
+
   return (
     <div className="attendance-container">
       <div className="attendance-header">
@@ -255,7 +262,12 @@ const ManagerAttendance = () => {
                               </div>
                               <div>
                                 <strong>Total:</strong>{" "}
-                                {attendance.total_duration} hrs
+                                {attendance.total_duration
+                                  ? formatToHHMM(
+                                      parseFloat(attendance.total_duration)
+                                    )
+                                  : "00:00"}{" "}
+                                hrs
                               </div>
                             </div>
                             {attendance.modified_by && (
@@ -278,7 +290,7 @@ const ManagerAttendance = () => {
                   {/* Total Hours for that employee (from calculated object) */}
                   <td>
                     {totalHours[emp.employee_id]
-                      ? `${totalHours[emp.employee_id].toFixed(2)} hrs`
+                      ? `${formatToHHMM(totalHours[emp.employee_id])} hrs`
                       : "-"}
                   </td>
                 </tr>

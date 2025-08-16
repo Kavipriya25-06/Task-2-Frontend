@@ -1,5 +1,3 @@
-// src\pages\Manager\ManagerBulkApprovalScreen.jsx
-
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import config from "../../config";
@@ -12,7 +10,7 @@ import {
   ToastContainerComponent,
 } from "../../constants/Toastify";
 
-const ManagerBulkApprovalScreen = () => {
+const TeamLeadBulkApprovalScreen = () => {
   const { date, employee_id } = useParams();
   const { user } = useAuth();
   const [rows, setRows] = useState([]);
@@ -380,4 +378,4 @@ const ManagerBulkApprovalScreen = () => {
   );
 };
 
-export default ManagerBulkApprovalScreen;
+export default TeamLeadBulkApprovalScreen;

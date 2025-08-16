@@ -65,6 +65,7 @@ import HRHolidayList from "./pages/HR/HRHolidayList.jsx";
 import HRSettings from "./pages/HR/HRSettings.jsx";
 import HRAttendance from "./pages/HR/HRAttendance.jsx";
 import HRLeaveRequests from "./pages/HR/HRLeaveRequests.jsx";
+import HRLeaveBalanceEdit from "./pages/HR/HRLeaveBalanceEdit.jsx";
 import HRReports from "./pages/HR/HRReports.jsx";
 
 // Manager pages
@@ -109,6 +110,7 @@ import TeamLeadLeaveRequests from "./pages/TeamLead/TeamLeadLeaveRequests.jsx";
 import TeamLeadProjects from "./pages/TeamLead/TeamLeadProjects.jsx";
 import TeamLeadProjectView from "./pages/TeamLead/TeamLeadProjectView.jsx";
 import TeamLeadTaskView from "./pages/TeamLead/TeamLeadTaskView.jsx";
+import TeamLeadTaskEdit from "./pages/TeamLead/TeamLeadTaskEdit.jsx";
 import TeamLeadBuildingView from "./pages/TeamLead/TeamLeadBuildingView.jsx";
 import TeamLeadTimeSheetEntry from "./pages/TeamLead/TeamLeadTimeSheetEntry.jsx";
 import TeamLeadProjectCreate from "./pages/TeamLead/TeamLeadProjectCreate.jsx";
@@ -118,6 +120,7 @@ import TeamLeadTaskEdit from "./pages/TeamLead/TeamLeadTaskEdit.jsx";
 import TeamLeadLeaveRequestForm from "./pages/TeamLead/TeamLeadLeaveRequestForm.jsx";
 import TeamLeadDailyTimeSheetEntry from "./pages/TeamLead/TeamLeadDailyTimeSheetEntry.jsx";
 import TeamLeadWeeklyTimeSheetEntry from "./pages/TeamLead/TeamLeadWeeklyTimeSheet.jsx";
+import TeamLeadBulkApprovalScreen from "./pages/TeamLead/TeamLeadBulkApprovalScreen.jsx";
 import TeamLeadApprovalScreen from "./pages/TeamLead/TeamLeadApprovalScreen.jsx";
 import TeamLeadCompoffRequest from "./pages/TeamLead/TeamLeadCompoffRequest.jsx";
 
@@ -132,8 +135,8 @@ import EmployeeTaskDetail from "./pages/Employee/EmployeeTaskDetail.jsx";
 import EmployeeDailyTimeSheetEntry from "./pages/Employee/EmployeeDailyTimeSheetEntry.jsx";
 import EmployeeWeeklyTimeSheetEntry from "./pages/Employee/EmployeeWeeklyTimeSheetEntry.jsx";
 import EmployeeLeaveRequestForm from "./pages/Employee/EmployeeLeaveRequestForm.jsx";
-
 import EmployeeCompoffRequest from "./pages/Employee/EmployeeCompoffRequest.jsx";
+import EmployeeAttendance from "./pages/Employee/EmployeeAttendance.jsx";
 
 const App = () => {
   const { user } = useAuth();
@@ -345,6 +348,7 @@ const App = () => {
                   element={<EditEmployee />}
                 />
                 <Route path="leave-requests" element={<HRLeaveRequests />} />
+                <Route path="leave-balance" element={<HRLeaveBalanceEdit />} />
                 <Route path="attendance" element={<HRAttendance />} />
                 <Route path="settings" element={<HRSettings />} />
                 <Route path="reports" element={<HRReports />} />
@@ -605,6 +609,10 @@ const App = () => {
                   }
                 />
                 <Route
+                  path="attendance/timesheetapproval/:date/"
+                  element={<TeamLeadBulkApprovalScreen />}
+                />
+                <Route
                   path="attendance/timesheetapproval/:employee_id/"
                   element={
                     <Navigate to="/teamlead/detail/attendance" replace />
@@ -684,6 +692,7 @@ const App = () => {
                   path="compoffrequest"
                   element={<EmployeeCompoffRequest />}
                 />
+                <Route path="attendance" element={<EmployeeAttendance />} />
                 <Route path="*" element={<Navigate to="/404" replace />} />
               </Route>
               <Route path="*" element={<Navigate to="/404" replace />} />

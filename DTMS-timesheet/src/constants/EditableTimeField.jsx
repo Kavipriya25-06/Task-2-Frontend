@@ -19,6 +19,12 @@ const EditableTimeField = ({ value, onChange }) => {
     setPickerOpen(true);
   };
 
+  const clampValue = (val, max) => {
+    if (val > max) return 0;
+    if (val < 0) return max;
+    return val;
+  };
+
   const updateValue = (setter, value, max, dir) => {
     const newVal =
       dir === "up"
@@ -32,7 +38,7 @@ const EditableTimeField = ({ value, onChange }) => {
   };
 
   const handleWheel = (e, type) => {
-    e.preventDefault();
+    // e.preventDefault();
     const dir = e.deltaY < 0 ? "up" : "down";
     if (type === "hour") updateValue(setTempHours, tempHours, 23, dir);
     else updateValue(setTempMinutes, tempMinutes, 59, dir);
@@ -64,18 +70,28 @@ const EditableTimeField = ({ value, onChange }) => {
           <div className="picker-modal" onClick={(e) => e.stopPropagation()}>
             <div className="picker-title">Time Duration</div>
             <div className="picker-content">
-              <div className="column">
+              <div
+                className="column"
+                onWheelCapture={(e) => handleWheel(e, "hour")}
+                onKeyDown={(e) => handleKeyDown(e, "hour")}
+              >
                 <button
                   onClick={() => updateValue(setTempHours, tempHours, 23, "up")}
                 >
                   ▲
                 </button>
+                <div className="ghost">
+                  {pad(clampValue(tempHours + 1, 23))}
+                </div>
                 <input
                   value={pad(tempHours)}
                   readOnly
-                  onWheel={(e) => handleWheel(e, "hour")}
+                  onWheelCapture={(e) => handleWheel(e, "hour")}
                   onKeyDown={(e) => handleKeyDown(e, "hour")}
                 />
+                <div className="ghost">
+                  {pad(clampValue(tempHours - 1, 23))}
+                </div>
                 <button
                   onClick={() =>
                     updateValue(setTempHours, tempHours, 23, "down")
@@ -85,7 +101,11 @@ const EditableTimeField = ({ value, onChange }) => {
                 </button>
               </div>
               <div className="colon">:</div>
-              <div className="column">
+              <div
+                className="column"
+                onWheelCapture={(e) => handleWheel(e, "minute")}
+                onKeyDown={(e) => handleKeyDown(e, "minute")}
+              >
                 <button
                   onClick={() =>
                     updateValue(setTempMinutes, tempMinutes, 59, "up")
@@ -93,12 +113,18 @@ const EditableTimeField = ({ value, onChange }) => {
                 >
                   ▲
                 </button>
+                <div className="ghost">
+                  {pad(clampValue(tempMinutes + 1, 59))}
+                </div>
                 <input
                   value={pad(tempMinutes)}
                   readOnly
-                  onWheel={(e) => handleWheel(e, "minute")}
+                  onWheelCapture={(e) => handleWheel(e, "minute")}
                   onKeyDown={(e) => handleKeyDown(e, "minute")}
                 />
+                <div className="ghost">
+                  {pad(clampValue(tempMinutes - 1, 59))}
+                </div>
                 <button
                   onClick={() =>
                     updateValue(setTempMinutes, tempMinutes, 59, "down")

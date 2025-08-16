@@ -15,6 +15,7 @@ const TeamLeadLeaveRequests = () => {
     casual: 0,
     compOff: 0,
     earned: 0,
+    lop: 0,
   });
   const [leaveRequests, setLeaveRequests] = useState([]);
   const [selectedLeaveType, setSelectedLeaveType] = useState(null);
@@ -35,9 +36,10 @@ const TeamLeadLeaveRequests = () => {
   }, []);
 
   const fetchLeaveSummary = async () => {
+     const year = new Date().getFullYear();
     try {
       const response = await fetch(
-        `${config.apiBaseURL}/leaves-available/by_employee/${user.employee_id}/`
+        `${config.apiBaseURL}/leaves-available-lop/${user.employee_id}/?year=${year}`
       );
       const data = await response.json();
 
@@ -50,6 +52,7 @@ const TeamLeadLeaveRequests = () => {
           casual: employeeSummary.casual_leave,
           compOff: employeeSummary.comp_off,
           earned: employeeSummary.earned_leave,
+          lop: employeeSummary.lop,
         });
       }
     } catch (err) {
@@ -99,6 +102,7 @@ const TeamLeadLeaveRequests = () => {
     Casual: "casual",
     "Comp off": "compOff",
     Earned: "earned",
+    LOP: "lop",
   };
 
   return (
@@ -111,22 +115,24 @@ const TeamLeadLeaveRequests = () => {
           <>
             {/* Leave Summary Boxes */}
             <div className="leave-summary-container">
-              {["Sick", "Casual", "Comp off", "Earned"].map((type, idx) => {
-                const key = keyMap[type];
-                return (
-                  <div
-                    key={idx}
-                    className="leave-summary-box"
-                    onClick={() => setSelectedLeaveType(type)} // Set clicked leave type
-                    style={{ cursor: "pointer" }}
-                  >
-                    <div>{type}</div>
-                    <div className="leave-summary-count">
-                      {leaveSummary[key] ?? 0}
+              {["Sick", "Casual", "Comp off", "Earned", "LOP"].map(
+                (type, idx) => {
+                  const key = keyMap[type];
+                  return (
+                    <div
+                      key={idx}
+                      className="leave-summary-box"
+                      onClick={() => setSelectedLeaveType(type)} // Set clicked leave type
+                      style={{ cursor: "pointer" }}
+                    >
+                      <div>{type}</div>
+                      <div className="leave-summary-count">
+                        {parseFloat(leaveSummary[key]).toFixed(1) ?? 0}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                }
+              )}
             </div>
 
             {/* Leave Requests Table */}
@@ -229,6 +235,7 @@ const TeamLeadLeaveRequests = () => {
                             }
                             target="_blank"
                             rel="noopener noreferrer"
+                            className="attachment-items"
                             style={{ color: "black" }}
                           >
                             {(() => {
@@ -241,7 +248,7 @@ const TeamLeadLeaveRequests = () => {
                               return match
                                 ? `${match[1]}.${match[2]}`
                                 : fullFilename;
-                            })()}{" "}
+                            })()}
                           </a>
                         </div>
                       ) : (

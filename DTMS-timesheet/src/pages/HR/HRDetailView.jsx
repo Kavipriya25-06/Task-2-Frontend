@@ -16,6 +16,7 @@ const HRDetailView = () => {
     { label: "Attendance", path: "attendance" },
     { label: "Reports", path: "reports" },
     { label: "Company Policy", path: "company-policy" },
+    { label: "Leave Balance", path: "leave-balance" },
   ];
 
   return (

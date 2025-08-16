@@ -1,6 +1,4 @@
-// src\pages\Employee\EmployeeLeaveRequestForm.jsx
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import DatePicker from "react-datepicker";
@@ -8,7 +6,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import { format, differenceInCalendarDays } from "date-fns";
 import { useAttachmentManager } from "../../constants/useAttachmentManager";
 import useWorkingDays from "../../constants/useWorkingDays";
-
 import {
   showSuccessToast,
   showErrorToast,
@@ -24,9 +21,16 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
   //   formData.startDate,
   //   formData.endDate
   // );
+  const [isSending, setIsSending] = useState(false);
+  const submittingRef = useRef(false); // hard guard
   const [calendarData, setCalendarData] = useState([]);
   const [nonWorkingDates, setNonWorkingDates] = useState([]);
-
+  const [leaveSummary, setLeaveSummary] = useState({
+    sick_leave: 0,
+    casual_leave: 0,
+    comp_off: 0,
+    earned_leave: 0,
+  });
   const [formData, setFormData] = useState({
     leaveType: leaveType,
     startDate: "",
@@ -52,24 +56,25 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
   } = useAttachmentManager([]);
 
   useEffect(() => {
-    const fetchCalendar = async () => {
-      const year = new Date().getFullYear();
-      try {
-        const res = await fetch(`${config.apiBaseURL}/calendar/?year=${year}`);
-        const data = await res.json();
-        setCalendarData(data);
-
-        const nonWorking = data
-          .filter((d) => d.is_weekend || d.is_holiday)
-          .map((d) => new Date(d.date));
-        setNonWorkingDates(nonWorking);
-      } catch (err) {
-        console.error("Failed to fetch calendar", err);
-      }
-    };
-
     fetchCalendar();
+    fetchLeaveAvailability();
   }, []);
+
+  const fetchCalendar = async () => {
+    const year = new Date().getFullYear();
+    try {
+      const res = await fetch(`${config.apiBaseURL}/calendar/?year=${year}`);
+      const data = await res.json();
+      setCalendarData(data);
+
+      const nonWorking = data
+        .filter((d) => d.is_weekend || d.is_holiday)
+        .map((d) => new Date(d.date));
+      setNonWorkingDates(nonWorking);
+    } catch (err) {
+      console.error("Failed to fetch calendar", err);
+    }
+  };
 
   const calculateWorkingDays = (startDate, endDate, nonWorkingDates) => {
     let count = 0;
@@ -194,22 +199,40 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // synchronous guard (blocks ultra-fast double clicks)
+    if (submittingRef.current) return;
+    submittingRef.current = true; // <— set immediately
+    setIsSending(true);
+
+    const bail = (msg) => {
+      if (msg) showWarningToast(msg);
+      submittingRef.current = false; // release on any validation failure
+      setIsSending(false);
+    };
+
     if (!formData.startDate) {
-      showWarningToast("Enter the Start date.");
-      return;
+      return bail("Enter the Start date.");
+    }
+
+    if (!formData.endDate) {
+      return bail("Enter the End date.");
+    }
+
+    if (!formData.resumptionDate) {
+      return bail("Enter the Resumption date.");
     }
 
     if (formData.endDate < formData.startDate) {
-      showWarningToast("Enter the End date.");
-      return;
+      return bail("Enter the End date.");
+    }
+
+    if (!formData.duration) {
+      return bail("Enter the Duration.");
     }
 
     if (formData.resumptionDate <= formData.endDate) {
-      showWarningToast("Enter the Resumption date.");
-      return;
+      return bail("Enter the Resumption date.");
     }
-
-    const apiURL = `${config.apiBaseURL}/leaves-taken/`;
 
     const leaveTypeMap = {
       Sick: "sick_leave",
@@ -221,7 +244,32 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
     };
 
     const mappedLeaveType = leaveTypeMap[formData.leaveType] || "others";
+    // console.log("leave type", mappedLeaveType);
+    // console.log("leave summary", leaveSummary);
 
+    if (parseFloat(leaveSummary[mappedLeaveType]) <= 0) {
+      return bail(`No leave balance available for ${formData.leaveType}`);
+    }
+
+    if (
+      parseFloat(leaveSummary[mappedLeaveType]) < parseFloat(formData.duration)
+    ) {
+      return bail(
+        `Leave duration exceeds leave balance for ${formData.leaveType}`
+      );
+    }
+
+    if (mappedLeaveType === "comp_off" && !formData.compOffDate) {
+      return bail("Enter a Date for Comp off");
+    }
+
+    // ----- PASSED VALIDATION: flip guards -----
+    // submittingRef.current = true;
+    // if (isSending) return;
+    // if (submittingRef.current) return;
+    // setIsSending(true);
+
+    const apiURL = `${config.apiBaseURL}/leaves-taken/`;
     const data = new FormData();
 
     const addAttachment = async (leave_taken_id) => {
@@ -266,11 +314,6 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
     data.append("employee", user.employee_id); // Assuming employee_id like "EMP_00068"
     data.append("status", "pending"); // Default status when submitted
 
-    if (mappedLeaveType === "comp_off" && !formData.compOffDate) {
-      showInfoToast("Enter a Date for Comp off");
-      return;
-    }
-
     try {
       const response = await fetch(apiURL, {
         method: "POST",
@@ -279,8 +322,8 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
 
       if (response.ok) {
         const result = await response.json();
-        console.log("Leave submitted successfully:", result);
-        console.log("Leave taken id:", result.data.leave_taken_id);
+        // console.log("Leave submitted successfully:", result);
+        // console.log("Leave taken id:", result.data.leave_taken_id);
         showSuccessToast("Leave Request Submitted Successfully!");
         await patchLeaveAvailability(mappedLeaveType, formData.duration);
         await addAttachment(result.data.leave_taken_id);
@@ -297,6 +340,33 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
     } catch (error) {
       console.error("Error submitting leave request:", error);
       showErrorToast("An error occurred while submitting.");
+    } finally {
+      setIsSending(false);
+      submittingRef.current = false; // ALWAYS release guard
+    }
+  };
+
+  const fetchLeaveAvailability = async () => {
+    const patchURL = `${config.apiBaseURL}/leaves-available/by_employee/${user.employee_id}/`;
+
+    try {
+      // Step 1: Fetch current available leave
+      const res = await fetch(patchURL);
+      const currentData = await res.json();
+
+      // Find summary for the logged-in employee
+      const employeeSummary = currentData;
+      // console.log("employee leave", employeeSummary);
+      if (employeeSummary) {
+        setLeaveSummary({
+          sick_leave: employeeSummary.sick_leave,
+          casual_leave: employeeSummary.casual_leave,
+          comp_off: employeeSummary.comp_off,
+          earned_leave: employeeSummary.earned_leave,
+        });
+      }
+    } catch (err) {
+      console.error("Error patching leave availability:", err);
     }
   };
 
@@ -309,6 +379,9 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
       const currentData = await res.json();
 
       const currentLeave = parseFloat(currentData[leaveTypeKey] || 0);
+      if (duration == null || isNaN(parseFloat(duration))) {
+        duration = 0;
+      }
       const newLeaveBalance = currentLeave - parseFloat(duration);
 
       // Step 2: Patch with updated value
@@ -332,7 +405,14 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
       <p className="form-subtitle1">
         Fill the required fields below to apply for annual leave.
       </p>
-      <form onSubmit={handleSubmit} className="form1">
+      <form
+        onSubmit={handleSubmit}
+        className="form1"
+        onKeyDown={(e) => {
+          if (isSending && e.key === "Enter") e.preventDefault();
+        }}
+        noValidate
+      >
         <div className="row1">
           <div className="form-group1">
             <label className="label1">Leave Type</label>
@@ -399,8 +479,8 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
                 className="date1"
                 showMonthDropdown
                 showYearDropdown
-                excludeDates={nonWorkingDates}
                 dropdownMode="select"
+                excludeDates={nonWorkingDates}
               />
               <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
               {/* Font Awesome Calendar Icon */}
@@ -581,8 +661,19 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
         </div>
 
         <div className="button-groups">
-          <button type="submit" className="btn-save">
-            Submit
+          <button
+            type="submit"
+            className="btn-save"
+            disabled={isSending}
+            style={{ pointerEvents: isSending ? "none" : "auto" }}
+          >
+            {isSending ? (
+              <>
+                <span className="spinner-otp" /> Updating...
+              </>
+            ) : (
+              "Submit"
+            )}
           </button>
           <button type="button" onClick={onClose} className="btn-cancel">
             Cancel
