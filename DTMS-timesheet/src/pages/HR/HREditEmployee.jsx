@@ -368,7 +368,9 @@ const EditEmployee = () => {
             })
               .then((res) => {
                 if (!res.ok)
-                  throw new Error(`Failed to upload ${file.newFile.name}`);
+                  throw new Error(
+                    `Failed to upload ${file.newFile.name || "file"}`
+                  );
                 return res.json();
               })
               .then((savedFile) => {
@@ -380,7 +382,9 @@ const EditEmployee = () => {
               })
               .catch((err) => {
                 console.error("Upload failed:", err);
-                showErrorToast(`Failed to upload ${file.newFile.name}`);
+                showErrorToast(
+                  `Failed to upload ${file.newFile.name || "file"}`
+                );
               })
           );
         }
@@ -464,7 +468,11 @@ const EditEmployee = () => {
           <DatePicker
             selected={formData[name]}
             onChange={(date) =>
-              setFormData({ ...formData, [name]: format(date, "yyyy-MM-dd") })
+              // setFormData({ ...prev, [name]: format(date, "yyyy-MM-dd") })
+              setFormData((prev) => ({
+                ...prev,
+                [name]: format(date, "yyyy-MM-dd"),
+              }))
             }
             dateFormat="dd-MMM-yyyy"
             placeholderText="dd-mm-yyyy"
@@ -1998,132 +2006,6 @@ const EditEmployee = () => {
             </tbody>
           </table>
         </div>
-
-        {/* <h3 className="section-header">Attachments</h3>
-        <div>
-          <table className="info-table">
-            <thead>
-              <tr>
-                <th>Document Type</th>
-                <th>File</th>
-                <th>Uploaded At</th>
-                {editMode && <th>Action</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {attachmentsKnown.map((file) => {
-                const fullFilename = file.file.split("/").pop();
-                const match = fullFilename.match(/^(.+?)_[a-zA-Z0-9]+\.(\w+)$/);
-                const filename = match
-                  ? `${match[1]}.${match[2]}`
-                  : fullFilename;
-
-                return (
-                  <tr key={file.id}>
-                    <td>{file.document_type || "-"}</td>
-                    <td>
-                      <a
-                        href={config.apiBaseURL + file.file}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {filename}
-                      </a>
-                    </td>
-                    <td>
-                      {file.uploaded_at
-                        ? new Date(file.uploaded_at).toLocaleString()
-                        : "-"}
-                    </td>
-                    {editMode && (
-                      <td>
-                        <button
-                          type="button"
-                          className="employee-delete-button"
-                          onClick={async () => {
-                            try {
-                              await fetch(
-                                `${config.apiBaseURL}/attachments/${file.id}/`,
-                                {
-                                  method: "DELETE",
-                                }
-                              );
-                              setAttachmentsKnown((prev) =>
-                                prev.filter((att) => att.id !== file.id)
-                              );
-                              showSuccessToast(
-                                "Attachment deleted successfully"
-                              );
-                            } catch (error) {
-                              console.error(
-                                "Failed to delete attachment:",
-                                error
-                              );
-                              showErrorToast("Failed to delete attachment");
-                            }
-                          }}
-                        >
-                          X
-                        </button>
-                      </td>
-                    )}
-                  </tr>
-                );
-              })}
-
-              {newAttachments.map((file, index) => (
-                <tr key={`new-${index}`}>
-                  <td>New Upload</td>
-                  <td>{file.name}</td>
-                  <td>-</td>
-                  {editMode && (
-                    <td>
-                      <button
-                        type="button"
-                        className="employee-delete-button"
-                        onClick={() => removeNewAttachment(index)}
-                      >
-                        X
-                      </button>
-                    </td>
-                  )}
-                </tr>
-              ))}
-
-              {attachmentsKnown.length === 0 && attachments.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={editMode ? 4 : 3}
-                    style={{ textAlign: "center" }}
-                  >
-                    No attachments available
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-
-          {editMode && (
-            <div
-              className="file-upload-container"
-              style={{ marginTop: "10px" }}
-            >
-              <input
-                type="file"
-                id="new-attachments-input"
-                multiple
-                style={{ display: "none" }}
-                onChange={handleAttachmentChange}
-              />
-              <label
-                htmlFor="new-attachments-input"
-                className="plus-upload-button"
-              >
-                + Add Attachments
-              </label>
-            </div>
-          )}
-        </div> */}
 
         {editMode && (
           <div className="form-buttons">

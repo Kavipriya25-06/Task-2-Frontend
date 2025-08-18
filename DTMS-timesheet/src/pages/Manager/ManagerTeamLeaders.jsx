@@ -57,23 +57,31 @@ const ManagerTeamLeaders = () => {
     <div className="manager-team-leads">
       {/* <h2>Team Leads under Manager: {managerName}</h2> */}
       <div className="team-leads-container">
-        {teamLeads.map((teamlead) => (
-          <div className="teamlead-card" key={teamlead.teamlead_id}>
-            <h3>{teamlead.teamlead_name}</h3>
-            <div className="teamlead-stats">
-              <div className="projects-container">
-                <div className="projects">
-                  <span>Projects: {teamlead.total_projects}</span>
+        {teamLeads.length === 0 ? (
+          <div>
+            <div style={{ textAlign: "center" }}>
+              No Team Leaders available.
+            </div>
+          </div>
+        ) : (
+          teamLeads.map((teamlead) => (
+            <div className="teamlead-card" key={teamlead.teamlead_id}>
+              <h3>{teamlead.teamlead_name}</h3>
+              <div className="teamlead-stats">
+                <div className="projects-container">
+                  <div className="projects">
+                    <span>Projects: {teamlead.total_projects}</span>
+                  </div>
                 </div>
-              </div>
-              <div className="employees-container">
-                <div className="employees">
-                  <span>Employees: {teamlead.total_employees}</span>
+                <div className="employees-container">
+                  <div className="employees">
+                    <span>Employees: {teamlead.total_employees}</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );

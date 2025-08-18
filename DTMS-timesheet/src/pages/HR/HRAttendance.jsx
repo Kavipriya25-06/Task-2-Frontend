@@ -5,13 +5,7 @@ import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../../AuthContext";
 import config from "../../config";
 import { useNavigate } from "react-router-dom";
-import {
-  showSuccessToast,
-  showErrorToast,
-  showInfoToast,
-  showWarningToast,
-  ToastContainerComponent,
-} from "../../constants/Toastify";
+
 import {
   showSuccessToast,
   showErrorToast,
@@ -154,8 +148,6 @@ const HRAttendance = () => {
     }
     setIsSending(false);
   };
-
-
 
   // Navigate to previous or next week
   const handleWeekChange = (direction) => {

@@ -1,6 +1,7 @@
 // src\pages\Manager\ManagerCompoff.jsx
 
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import config from "../../config";
 import { format } from "date-fns";
 import { useAuth } from "../../AuthContext";
@@ -19,6 +20,7 @@ const ManagerCompoff = () => {
   const [compOffRequests, setCompOffRequests] = useState([]);
   const [filteredRequests, setFilteredRequests] = useState([]);
   const [isSending, setIsSending] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user?.employee_id) {
@@ -50,7 +52,7 @@ const ManagerCompoff = () => {
     setFilteredRequests(filtered);
   };
 
-  const handleStatusUpdate = async (id, newStatus, employeeId) => {
+  const handleStatusUpdate = async (id, newStatus, employeeId, strduration) => {
     setIsSending(true);
     try {
       // Step 1: PATCH status of comp-off request
@@ -71,13 +73,14 @@ const ManagerCompoff = () => {
       // Step 2: If approved, also update comp_off leave
       if (newStatus.toLowerCase() === "approved") {
         const leaveURL = `${config.apiBaseURL}/leaves-available/by_employee/${employeeId}/`;
+        const duration = parseFloat(strduration || 0);
 
         // Fetch current leave availability
         const leaveRes = await fetch(leaveURL);
         const leaveData = await leaveRes.json();
 
         const currentCompOff = parseFloat(leaveData.comp_off || 0);
-        const updatedCompOff = currentCompOff + 1;
+        const updatedCompOff = currentCompOff + duration;
 
         // PATCH with updated comp_off
         await fetch(leaveURL, {
@@ -104,6 +107,14 @@ const ManagerCompoff = () => {
   return (
     <div className="leaves-container">
       {/* Tabs */}
+      <div className="leave-application-topbar">
+        <button
+          onClick={() => navigate("compoffrequest")}
+          className="leave-application-button"
+        >
+          Comp-off Request
+        </button>
+      </div>
       <div className="leaves-tab">
         {tabLabels.map((label, index) => (
           <button
@@ -155,7 +166,8 @@ const ManagerCompoff = () => {
                             handleStatusUpdate(
                               req.compoff_request_id,
                               "approved",
-                              req.employee?.employee_id
+                              req.employee?.employee_id,
+                              req.duration
                             )
                           }
                           disabled={isSending}
@@ -175,7 +187,8 @@ const ManagerCompoff = () => {
                             handleStatusUpdate(
                               req.compoff_request_id,
                               "rejected",
-                              req.employee?.employee_id
+                              req.employee?.employee_id,
+                              req.duration
                             )
                           }
                           disabled={isSending}

@@ -98,6 +98,7 @@ import ManagerLeaveApplication from "./pages/Manager/ManagerLeaveApplication.jsx
 import ManagerLeaveRequestForm from "./pages/Manager/ManagerLeaveRequestForm.jsx";
 
 import ManagerCompoff from "./pages/Manager/ManagerCompoff.jsx";
+import ManagerCompoffRequest from "./pages/Manager/ManagerCompoffRequest.jsx";
 
 // Team Lead pages
 import TeamLeadDashboard from "./pages/TeamLead/TeamLeadDashboard.jsx";
@@ -110,7 +111,7 @@ import TeamLeadLeaveRequests from "./pages/TeamLead/TeamLeadLeaveRequests.jsx";
 import TeamLeadProjects from "./pages/TeamLead/TeamLeadProjects.jsx";
 import TeamLeadProjectView from "./pages/TeamLead/TeamLeadProjectView.jsx";
 import TeamLeadTaskView from "./pages/TeamLead/TeamLeadTaskView.jsx";
-import TeamLeadTaskEdit from "./pages/TeamLead/TeamLeadTaskEdit.jsx";
+
 import TeamLeadBuildingView from "./pages/TeamLead/TeamLeadBuildingView.jsx";
 import TeamLeadTimeSheetEntry from "./pages/TeamLead/TeamLeadTimeSheetEntry.jsx";
 import TeamLeadProjectCreate from "./pages/TeamLead/TeamLeadProjectCreate.jsx";
@@ -486,6 +487,10 @@ const App = () => {
                 <Route path="reports" element={<ManagerReports />} />
 
                 <Route path="Compoff" element={<ManagerCompoff />} />
+                <Route
+                  path="Compoff/compoffrequest"
+                  element={<ManagerCompoffRequest />}
+                />
                 <Route path="*" element={<Navigate to="/404" replace />} />
               </Route>
               <Route path="*" element={<Navigate to="/404" replace />} />

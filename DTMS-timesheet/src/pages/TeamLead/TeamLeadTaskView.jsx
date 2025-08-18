@@ -664,7 +664,7 @@ const TeamLeadTaskView = () => {
               </div>
 
               <div className="project-form-group-small">
-                <label>Due Date</label>
+                <label>End Date</label>
                 {editMode ? (
                   <div className="date-input-container">
                     <DatePicker

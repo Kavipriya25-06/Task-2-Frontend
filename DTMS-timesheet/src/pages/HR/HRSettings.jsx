@@ -18,11 +18,19 @@ const HRSettings = () => {
     half_day: { min_hours: "", max_hours: "" },
     full_day: { min_hours: "", max_hours: "" },
   });
+  const [compOffExpiry, setCompOffExpiry] = useState({
+    id: "",
+    days_to_expire: "",
+    name: "",
+  });
   const [loading, setLoading] = useState(true);
 
   const fetchCompOffSettings = async () => {
     try {
       const response = await fetch(`${config.apiBaseURL}/comp-off/`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch with status ${response.status}`);
+      }
       const data = await response.json();
 
       const formatDecimalToTime = (dec) => {
@@ -57,9 +65,31 @@ const HRSettings = () => {
     }
   };
 
+  const fetchCompOffExpiry = async () => {
+    try {
+      const response = await fetch(`${config.apiBaseURL}/comp-off-expiry/`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch with status ${response.status}`);
+      }
+      const data = await response.json();
+      let expiry = data.find((d) => d.name === "expiry");
+      setCompOffExpiry(expiry);
+      // console.log("Comp off expiry", expiry);
+    } catch (error) {
+      console.error("Error fetching comp-off settings", error);
+    }
+  };
+
   useEffect(() => {
     fetchCompOffSettings();
+    fetchCompOffExpiry();
   }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setCompOffExpiry((prev) => ({ ...prev, [name]: value }));
+    // console.log("Form data", compOffExpiry);
+  };
 
   const handleInputChange = (type, field, value) => {
     setCompOffData((prev) => ({
@@ -83,6 +113,7 @@ const HRSettings = () => {
       const halfMax = timeToDecimal(compOffData.half_day.max_hours);
       const fullMin = timeToDecimal(compOffData.full_day.min_hours);
       const fullMax = timeToDecimal(compOffData.full_day.max_hours);
+      const expiry_days = parseFloat(compOffExpiry.days_to_expire || 0);
 
       if (halfMin >= halfMax) {
         showErrorToast(
@@ -118,6 +149,11 @@ const HRSettings = () => {
         max_hours: fullMax,
       };
 
+      const expiryPayload = {
+        days_to_expire: expiry_days,
+        name: "expiry",
+      };
+
       // Half Day
       const halfDayMethod = compOffData.half_day.id ? "PATCH" : "POST";
       const halfDayURL = compOffData.half_day.id
@@ -142,10 +178,22 @@ const HRSettings = () => {
         body: JSON.stringify(fullDayPayload),
       });
 
+      // Expiry Day
+      const expiryMethod = compOffExpiry.id ? "PATCH" : "POST";
+      const expiryURL = compOffExpiry.id
+        ? `${config.apiBaseURL}/comp-off-expiry/${compOffExpiry.id}/`
+        : `${config.apiBaseURL}/comp-off-expiry/`;
+
+      await fetch(expiryURL, {
+        method: expiryMethod,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(expiryPayload),
+      });
+
       showSuccessToast("Comp Off timings updated successfully!");
     } catch (err) {
       console.error("Error saving comp-off timings", err);
-      showSuccessToast("Failed to update comp-off timings.");
+      showErrorToast("Failed to update comp-off timings.");
     }
   };
 
@@ -156,59 +204,77 @@ const HRSettings = () => {
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <table className="comp-off-table">
-          <thead>
-            <tr>
-              <th>Leave Type</th>
-              <th>Minimum Hours</th>
-              <th>Maximum Hours</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Half Day</td>
-              <td>
-                <EditableTimeField
-                  value={compOffData.half_day.min_hours}
-                  onChange={(val) =>
-                    handleInputChange("half_day", "min_hours", val)
-                  }
-                />
-              </td>
-              <td>
-                <EditableTimeField
-                  value={compOffData.half_day.max_hours}
-                  onChange={(val) =>
-                    handleInputChange("half_day", "max_hours", val)
-                  }
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>Full Day</td>
-              <td>
-                <EditableTimeField
-                  value={compOffData.full_day.min_hours}
-                  onChange={(val) =>
-                    handleInputChange("full_day", "min_hours", val)
-                  }
-                />
-              </td>
-              <td>
-                <EditableTimeField
-                  value={compOffData.full_day.max_hours}
-                  onChange={(val) =>
-                    handleInputChange("full_day", "max_hours", val)
-                  }
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div>
+          <table className="comp-off-table">
+            <thead>
+              <tr>
+                <th>Leave Type</th>
+                <th>Minimum Hours</th>
+                <th>Maximum Hours</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Half Day</td>
+                <td>
+                  <EditableTimeField
+                    value={compOffData.half_day.min_hours}
+                    onChange={(val) =>
+                      handleInputChange("half_day", "min_hours", val)
+                    }
+                  />
+                </td>
+                <td>
+                  <EditableTimeField
+                    value={compOffData.half_day.max_hours}
+                    onChange={(val) =>
+                      handleInputChange("half_day", "max_hours", val)
+                    }
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>Full Day</td>
+                <td>
+                  <EditableTimeField
+                    value={compOffData.full_day.min_hours}
+                    onChange={(val) =>
+                      handleInputChange("full_day", "min_hours", val)
+                    }
+                  />
+                </td>
+                <td>
+                  <EditableTimeField
+                    value={compOffData.full_day.max_hours}
+                    onChange={(val) =>
+                      handleInputChange("full_day", "max_hours", val)
+                    }
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div
+            className="project-form-group-small"
+            style={{ marginTop: "40px", marginBottom: "40px" }}
+          >
+            <label>Days to expire</label>
+            <input
+              type="number"
+              min="1"
+              name="days_to_expire"
+              className="estd"
+              style={{ width: "20%", marginTop: "10px" }}
+              value={compOffExpiry.days_to_expire}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
       )}
 
       <button className="delete-btn" onClick={handleSubmit}>
-        Save Timings
+        Save
+        {/* Timings */}
       </button>
       <ToastContainerComponent />
     </div>

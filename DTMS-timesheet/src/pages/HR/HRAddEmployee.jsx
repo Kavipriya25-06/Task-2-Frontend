@@ -428,10 +428,14 @@ const AddEmployee = () => {
               <DatePicker
                 selected={formData.doj}
                 onChange={(date) =>
-                  setFormData({
-                    ...formData,
+                  // setFormData({
+                  //   ...prev,
+                  //   doj: format(date, "yyyy-MM-dd"),
+                  // })
+                  setFormData((prev) => ({
+                    ...prev,
                     doj: format(date, "yyyy-MM-dd"),
-                  })
+                  }))
                 }
                 dateFormat="dd-MMM-yyyy"
                 placeholderText="dd-mm-yyyy"
@@ -601,10 +605,14 @@ const AddEmployee = () => {
               <DatePicker
                 selected={formData.dob}
                 onChange={(date) =>
-                  setFormData({
-                    ...formData,
+                  // setFormData({
+                  //   ...prev,
+                  //   dob: format(date, "yyyy-MM-dd"),
+                  // })
+                  setFormData((prev) => ({
+                    ...prev,
                     dob: format(date, "yyyy-MM-dd"),
-                  })
+                  }))
                 }
                 dateFormat="dd-MMM-yyyy"
                 placeholderText="dd-mm-yyyy"
@@ -662,10 +670,14 @@ const AddEmployee = () => {
               <DatePicker
                 selected={formData.wedding_date}
                 onChange={(date) =>
-                  setFormData({
-                    ...formData,
+                  // setFormData({
+                  //   ...prev,
+                  //   wedding_date: format(date, "yyyy-MM-dd"),
+                  // })
+                  setFormData((prev) => ({
+                    ...prev,
                     wedding_date: format(date, "yyyy-MM-dd"),
-                  })
+                  }))
                 }
                 dateFormat="dd-MMM-yyyy"
                 placeholderText="dd-mm-yyyy"
@@ -861,10 +873,14 @@ const AddEmployee = () => {
               <DatePicker
                 selected={formData.passport_validity}
                 onChange={(date) =>
-                  setFormData({
-                    ...formData,
+                  // setFormData({
+                  //   ...prev,
+                  //   passport_validity: format(date, "yyyy-MM-dd"),
+                  // })
+                  setFormData((prev) => ({
+                    ...prev,
                     passport_validity: format(date, "yyyy-MM-dd"),
-                  })
+                  }))
                 }
                 dateFormat="dd-MMM-yyyy"
                 placeholderText="dd-mm-yyyy"

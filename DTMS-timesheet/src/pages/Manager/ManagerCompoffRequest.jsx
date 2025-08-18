@@ -1,4 +1,4 @@
-// src\pages\Employee\EmployeeCompoffRequest.jsx
+// src\pages\Manager\ManagerCompoffRequest.jsx
 
 import React, { useEffect, useState } from "react";
 import config from "../../config";
@@ -13,7 +13,7 @@ import {
   ToastContainerComponent,
 } from "../../constants/Toastify";
 
-const EmployeeCompoffRequest = () => {
+const ManagerCompoffRequest = () => {
   const { user } = useAuth(); //  Get employee_id
   const [compOffData, setCompOffData] = useState([]);
   const [isSending, setIsSending] = useState(false);
@@ -129,4 +129,4 @@ const EmployeeCompoffRequest = () => {
   );
 };
 
-export default EmployeeCompoffRequest;
+export default ManagerCompoffRequest;

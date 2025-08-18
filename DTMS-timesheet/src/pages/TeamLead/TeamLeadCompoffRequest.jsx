@@ -52,7 +52,7 @@ const TeamLeadCompoffRequest = () => {
         throw new Error("Failed to apply comp-off");
       }
 
-      showSuccessToast("Comp-off for " + user.date + " appiled successfully");
+      showSuccessToast("Comp-off for " + user.date + " applied successfully");
       fetchCompOffData(user.employee_id); // refresh
     } catch (error) {
       console.error("Error applying comp-off", error);

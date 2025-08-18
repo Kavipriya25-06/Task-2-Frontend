@@ -618,7 +618,7 @@ const TeamLeadProjectCreate = () => {
                 </div>
               </div>
               <div className="project-form-group-small">
-                <label>Due Date</label>
+                <label>End Date</label>
                 <div className="date-input-container">
                   <DatePicker
                     selected={formData.due_date}
