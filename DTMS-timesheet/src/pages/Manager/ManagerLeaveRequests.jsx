@@ -214,94 +214,105 @@ const ManagerLeaveRequests = () => {
               </tr>
             </thead>
             <tbody>
-              {currentRows.map((leave) => (
-                <tr key={leave.leave_taken_id}>
-                  <td>{leave.employee.employee_code}</td>
-                  <td>{leave.employee.employee_name}</td>
-                  <td>{leave.duration}</td>
-                  <td>
-                    {leave.start_date
-                      ? format(new Date(leave.start_date), "dd-MMM-yyyy")
-                      : ""}
-                  </td>
-                  <td>
-                    {leave.end_date
-                      ? format(new Date(leave.end_date), "dd-MMM-yyyy")
-                      : ""}
-                  </td>
-                  <td>
-                    {leave.leave_type === "earned_leave"
-                      ? "Earned Leave"
-                      : leave.leave_type === "comp_off"
-                      ? "Comp Off"
-                      : leave.leave_type === "casual_leave"
-                      ? "Casual Leave"
-                      : leave.leave_type === "sick_leave"
-                      ? "Sick Leave"
-                      : leave.leave_type === "lop"
-                      ? "LOP"
-                      : ""}
-                  </td>
-                  <td>{leave.reason}</td>
-                  {activeTab === 0 && (
-                    <td>
-                      <img
-                        src="\app2\approve.png"
-                        alt="approve button"
-                        className="leavebutton"
-                        onClick={() => handleApprove(leave.leave_taken_id)}
-                        disabled={isSending}
-                        style={{ pointerEvents: isSending ? "none" : "auto" }}
-                      />
-                      <img
-                        src="\app2\reject.png"
-                        alt="reject button"
-                        className="leavebutton"
-                        onClick={() =>
-                          handleReject(
-                            leave.leave_taken_id,
-                            leave.leave_type,
-                            leave.duration,
-                            leave.employee.employee_id
-                          )
-                        }
-                        disabled={isSending}
-                        style={{ pointerEvents: isSending ? "none" : "auto" }}
-                      />
-                    </td>
-                  )}
-                  <td>
-                    <ul className="attachments-list">
-                      {/* Existing attachments */}
-                      {leave.attachments && leave.attachments.length > 0 ? (
-                        leave.attachments?.map((file) => {
-                          const fullFilename = file.file.split("/").pop();
-                          const match = fullFilename.match(
-                            /^(.+?)_[a-zA-Z0-9]+\.(\w+)$/
-                          );
-                          const filename = match
-                            ? `${match[1]}.${match[2]}`
-                            : fullFilename;
-
-                          return (
-                            <li key={file.id} className="attachment-item">
-                              <a
-                                href={config.apiBaseURL + file.file}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                {filename}
-                              </a>
-                            </li>
-                          );
-                        })
-                      ) : (
-                        <li className="no-attachment">No attachments</li>
-                      )}
-                    </ul>
+              {currentRows.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={activeTab === 0 ? "9" : "8"}
+                    style={{ textAlign: "center" }}
+                  >
+                    No {tabLabels[activeTab]} Leave records available.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                currentRows.map((leave) => (
+                  <tr key={leave.leave_taken_id}>
+                    <td>{leave.employee?.employee_code}</td>
+                    <td>{leave.employee?.employee_name}</td>
+                    <td>{leave.duration}</td>
+                    <td>
+                      {leave.start_date
+                        ? format(new Date(leave.start_date), "dd-MMM-yyyy")
+                        : ""}
+                    </td>
+                    <td>
+                      {leave.end_date
+                        ? format(new Date(leave.end_date), "dd-MMM-yyyy")
+                        : ""}
+                    </td>
+                    <td>
+                      {leave.leave_type === "earned_leave"
+                        ? "Earned Leave"
+                        : leave.leave_type === "comp_off"
+                        ? "Comp Off"
+                        : leave.leave_type === "casual_leave"
+                        ? "Casual Leave"
+                        : leave.leave_type === "sick_leave"
+                        ? "Sick Leave"
+                        : leave.leave_type === "lop"
+                        ? "LOP"
+                        : ""}
+                    </td>
+                    <td>{leave.reason}</td>
+                    {activeTab === 0 && (
+                      <td>
+                        <img
+                          src="\app2\approve.png"
+                          alt="approve button"
+                          className="leavebutton"
+                          onClick={() => handleApprove(leave.leave_taken_id)}
+                          disabled={isSending}
+                          style={{ pointerEvents: isSending ? "none" : "auto" }}
+                        />
+                        <img
+                          src="\app2\reject.png"
+                          alt="reject button"
+                          className="leavebutton"
+                          onClick={() =>
+                            handleReject(
+                              leave.leave_taken_id,
+                              leave.leave_type,
+                              leave.duration,
+                              leave.employee.employee_id
+                            )
+                          }
+                          disabled={isSending}
+                          style={{ pointerEvents: isSending ? "none" : "auto" }}
+                        />
+                      </td>
+                    )}
+                    <td>
+                      <ul className="attachments-list">
+                        {/* Existing attachments */}
+                        {leave.attachments && leave.attachments.length > 0 ? (
+                          leave.attachments?.map((file) => {
+                            const fullFilename = file.file.split("/").pop();
+                            const match = fullFilename.match(
+                              /^(.+?)_[a-zA-Z0-9]+\.(\w+)$/
+                            );
+                            const filename = match
+                              ? `${match[1]}.${match[2]}`
+                              : fullFilename;
+
+                            return (
+                              <li key={file.id} className="attachment-item">
+                                <a
+                                  href={config.apiBaseURL + file.file}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  {filename}
+                                </a>
+                              </li>
+                            );
+                          })
+                        ) : (
+                          <li className="no-attachment">No attachments</li>
+                        )}
+                      </ul>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

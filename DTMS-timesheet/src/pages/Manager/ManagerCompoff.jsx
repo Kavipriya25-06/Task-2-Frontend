@@ -15,12 +15,18 @@ import {
 
 const ManagerCompoff = () => {
   const { user } = useAuth(); // Get logged-in manager details
-  const tabLabels = ["Applied", "Approved", "Rejected"];
-  const [activeTab, setActiveTab] = useState(0);
   const [compOffRequests, setCompOffRequests] = useState([]);
   const [filteredRequests, setFilteredRequests] = useState([]);
-  const [isSending, setIsSending] = useState(false);
+  const tabLabels = ["Applied", "Approved", "Rejected"];
+  const [activeTab, setActiveTab] = useState(0);
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 10;
+  const indexOfLastRow = currentPage * rowsPerPage;
+  const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+  const currentRows = filteredRequests.slice(indexOfFirstRow, indexOfLastRow);
+  const totalPages = Math.ceil(filteredRequests.length / rowsPerPage);
+  const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
     if (user?.employee_id) {
@@ -46,10 +52,11 @@ const ManagerCompoff = () => {
 
   const filterRequests = () => {
     const statusFilter = tabLabels[activeTab].toLowerCase();
-    const filtered = compOffRequests.filter(
-      (req) => req.status.toLowerCase() === statusFilter
-    );
+    const filtered = compOffRequests
+      .filter((req) => req.status.toLowerCase() === statusFilter)
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
     setFilteredRequests(filtered);
+    setCurrentPage(1);
   };
 
   const handleStatusUpdate = async (id, newStatus, employeeId, strduration) => {
@@ -61,7 +68,10 @@ const ManagerCompoff = () => {
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ status: newStatus }),
+          body: JSON.stringify({
+            status: newStatus,
+            approved_by: user.employee_id,
+          }),
         }
       );
 
@@ -129,89 +139,122 @@ const ManagerCompoff = () => {
 
       {/* Table */}
       <div>
-        <table className="leaves-table">
-          <thead>
-            <tr>
-              <th>Employee Code</th>
-              <th>Employee Name</th>
-              <th>Date</th>
-              <th>Number of Tasks</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredRequests.length === 0 ? (
+        <div className="leaves-table-container">
+          <table className="leaves-table">
+            <thead>
               <tr>
-                <td colSpan="5" style={{ textAlign: "center" }}>
-                  No {tabLabels[activeTab]} comp-off requests.
-                </td>
+                <th>Employee Code</th>
+                <th>Employee Name</th>
+                <th>Date</th>
+                <th>Number of Tasks</th>
+                {activeTab === 0 && <th>Actions</th>}
               </tr>
-            ) : (
-              filteredRequests.map((req) => (
-                <tr key={req.compoff_request_id}>
-                  <td>{req.employee?.employee_code || "--"}</td>
-                  <td>{req.employee?.employee_name || "--"}</td>
-                  <td>
-                    {req.date
-                      ? format(new Date(req.date), "dd-MMM-yyyy")
-                      : "--"}
-                  </td>
-                  <td>{req.timesheet_count}</td>
-                  <td>
-                    {req.status.toLowerCase() === "applied" ? (
-                      <>
-                        <button
-                          className="btn-approve"
-                          onClick={() =>
-                            handleStatusUpdate(
-                              req.compoff_request_id,
-                              "approved",
-                              req.employee?.employee_id,
-                              req.duration
-                            )
-                          }
-                          disabled={isSending}
-                          style={{ pointerEvents: isSending ? "none" : "auto" }}
-                        >
-                          {isSending ? (
-                            <>
-                              <span className="spinner-otp" /> Updating...
-                            </>
-                          ) : (
-                            "Approve"
-                          )}
-                        </button>
-                        <button
-                          className="btn-reject"
-                          onClick={() =>
-                            handleStatusUpdate(
-                              req.compoff_request_id,
-                              "rejected",
-                              req.employee?.employee_id,
-                              req.duration
-                            )
-                          }
-                          disabled={isSending}
-                          style={{ pointerEvents: isSending ? "none" : "auto" }}
-                        >
-                          {isSending ? (
-                            <>
-                              <span className="spinner-otp" /> Updating...
-                            </>
-                          ) : (
-                            "Reject"
-                          )}
-                        </button>
-                      </>
-                    ) : (
-                      req.status
-                    )}
+            </thead>
+            <tbody>
+              {currentRows.length === 0 ? (
+                <tr>
+                  <td colSpan="5" style={{ textAlign: "center" }}>
+                    No {tabLabels[activeTab]} comp-off requests.
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                currentRows.map((req) => (
+                  <tr key={req.compoff_request_id}>
+                    <td>{req.employee?.employee_code || "--"}</td>
+                    <td>{req.employee?.employee_name || "--"}</td>
+                    <td>
+                      {req.date
+                        ? format(new Date(req.date), "dd-MMM-yyyy")
+                        : "--"}
+                    </td>
+                    <td>{req.timesheet_count}</td>
+                    {activeTab === 0 && (
+                      <td>
+                        {req.status.toLowerCase() === "applied" && (
+                          <>
+                            <button
+                              className="btn-approve"
+                              onClick={() =>
+                                handleStatusUpdate(
+                                  req.compoff_request_id,
+                                  "approved",
+                                  req.employee?.employee_id,
+                                  req.duration
+                                )
+                              }
+                              disabled={isSending}
+                              style={{
+                                pointerEvents: isSending ? "none" : "auto",
+                              }}
+                            >
+                              {isSending ? (
+                                <>
+                                  <span className="spinner-otp" /> Updating...
+                                </>
+                              ) : (
+                                "Approve"
+                              )}
+                            </button>
+                            <button
+                              className="btn-reject"
+                              onClick={() =>
+                                handleStatusUpdate(
+                                  req.compoff_request_id,
+                                  "rejected",
+                                  req.employee?.employee_id,
+                                  req.duration
+                                )
+                              }
+                              disabled={isSending}
+                              style={{
+                                pointerEvents: isSending ? "none" : "auto",
+                              }}
+                            >
+                              {isSending ? (
+                                <>
+                                  <span className="spinner-otp" /> Updating...
+                                </>
+                              ) : (
+                                "Reject"
+                              )}
+                            </button>
+                          </>
+                        )}
+                      </td>
+                    )}
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div className="pagination-controls">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          <img
+            src="\app2\left.png"
+            alt="Previous"
+            style={{ width: 10, height: 12 }}
+          />
+        </button>
+        <span>
+          {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
+          disabled={currentPage === totalPages}
+        >
+          <img
+            src="\app2\right.png"
+            alt="Previous"
+            style={{ width: 10, height: 12 }}
+          />
+        </button>
       </div>
       <ToastContainerComponent />
     </div>

@@ -1186,6 +1186,13 @@ const EmployeeDailyTimeSheetEntry = () => {
                 </td>
               </tr>
             ))}
+            {displayRows.length === 0 && newRows.length === 0 && (
+              <tr>
+                <td colSpan="5" style={{ textAlign: "center" }}>
+                  No Timesheet entries.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

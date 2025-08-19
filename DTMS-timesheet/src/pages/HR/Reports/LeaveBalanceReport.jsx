@@ -172,12 +172,12 @@ const LeaveBalanceReport = forwardRef(({ year, employeeSearch }, ref) => {
                 })
                 .map((l, i) => (
                   <tr key={i}>
-                    <td>{l.employee.employee_code}</td>
-                    <td>{l.employee.employee_name}</td>
+                    <td>{l.employee?.employee_code || "-"}</td>
+                    <td>{l.employee?.employee_name || "-"}</td>
                     <td>
-                      {new Date(l.employee.doj).toLocaleDateString("en-GB")}
+                      {new Date(l.employee?.doj).toLocaleDateString("en-GB")}
                     </td>
-                    <td>{l.employee.status}</td>
+                    <td>{l.employee?.status}</td>
                     <td>{parseFloat(l.casual_leave)}</td>
                     <td>{parseFloat(l.sick_leave)}</td>
                     <td>{parseFloat(l.earned_leave)}</td>

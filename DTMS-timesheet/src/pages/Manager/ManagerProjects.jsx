@@ -14,6 +14,7 @@ import {
   showWarningToast,
   ToastContainerComponent,
 } from "../../constants/Toastify";
+
 import confirm from "../../constants/ConfirmDialog";
 
 const ManagerProjects = () => {
@@ -391,28 +392,42 @@ const ManagerProjects = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredProjects.slice(0, visibleProjects).map((project) => (
-                    <tr key={project.project_id}>
-                      <td
-                        onClick={() => handleProjectClick(project.project_id)}
-                        style={{
-                          cursor: "pointer",
-                          textDecoration: "underline",
-                        }}
-                      >
-                        {project.project_code}
-                      </td>
-                      <td>{project.project_title}</td>
-                      <td>{project.estimated_hours}</td>
-                      <td>{project.variation_hours}</td>
-                      <td>{project.total_hours}</td>
-                      <td>{project.consumed_hours}</td>
-                      <td>{project.discipline}</td>
-                      <td>
-                        {project.completed_status ? "Completed" : "In progress"}
+                  {filteredProjects.length === 0 ? (
+                    <tr>
+                      <td colSpan="8" style={{ textAlign: "center" }}>
+                        No Projects available.
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    filteredProjects
+                      .slice(0, visibleProjects)
+                      .map((project) => (
+                        <tr key={project.project_id}>
+                          <td
+                            onClick={() =>
+                              handleProjectClick(project.project_id)
+                            }
+                            style={{
+                              cursor: "pointer",
+                              textDecoration: "underline",
+                            }}
+                          >
+                            {project.project_code}
+                          </td>
+                          <td>{project.project_title}</td>
+                          <td>{project.estimated_hours}</td>
+                          <td>{project.variation_hours}</td>
+                          <td>{project.total_hours}</td>
+                          <td>{project.consumed_hours}</td>
+                          <td>{project.discipline}</td>
+                          <td>
+                            {project.completed_status
+                              ? "Completed"
+                              : "In progress"}
+                          </td>
+                        </tr>
+                      ))
+                  )}
                 </tbody>
               </table>
               {isLoadingMoreProjects && (
@@ -487,27 +502,35 @@ const ManagerProjects = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredBuildings
-                    .slice(0, visibleBuildings)
-                    .map((building) => (
-                      <tr key={building.building_id}>
-                        <td
-                        // onClick={() => handleProjectClick(building.building_id)}
-                        // style={{
-                        //   cursor: "pointer",
-                        //   textDecoration: "underline",
-                        // }}
-                        >
-                          {building.building_code}
-                        </td>
-                        <td>{building.building_title}</td>
-                        <td>{building.building_description}</td>
-                        {/* <td>-</td>
+                  {filteredBuildings.length === 0 ? (
+                    <tr>
+                      <td colSpan="3" style={{ textAlign: "center" }}>
+                        No Areas of work available.
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredBuildings
+                      .slice(0, visibleBuildings)
+                      .map((building) => (
+                        <tr key={building.building_id}>
+                          <td
+                          // onClick={() => handleProjectClick(building.building_id)}
+                          // style={{
+                          //   cursor: "pointer",
+                          //   textDecoration: "underline",
+                          // }}
+                          >
+                            {building.building_code}
+                          </td>
+                          <td>{building.building_title}</td>
+                          <td>{building.building_description}</td>
+                          {/* <td>-</td>
                     <td>{building.estimated_hours?.estimated_hours || "-"}</td>
                     <td>{building.discipline?.discipline || "-"}</td>
                     <td>{building.status ? "Completed" : "In progress"}</td> */}
-                      </tr>
-                    ))}
+                        </tr>
+                      ))
+                  )}
                 </tbody>
               </table>
               {isLoadingMoreBuildings && (
@@ -578,21 +601,28 @@ const ManagerProjects = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredTask.slice(0, visibleTasks).map((task) => (
-                    <tr key={task.task_id}>
-                      <td
-                        onClick={() => handleTaskClick(task.task_id)}
-                        style={{
-                          cursor: "pointer",
-                          textDecoration: "underline",
-                        }}
-                      >
-                        {task.task_code}
+                  {filteredTask.length === 0 ? (
+                    <tr>
+                      <td colSpan="4" style={{ textAlign: "center" }}>
+                        No Tasks available.
                       </td>
-                      <td>{task.task_title}</td>
-                      <td>{task.task_description}</td>
-                      <td>{task.priority}</td>
-                      {/* <td>
+                    </tr>
+                  ) : (
+                    filteredTask.slice(0, visibleTasks).map((task) => (
+                      <tr key={task.task_id}>
+                        <td
+                          onClick={() => handleTaskClick(task.task_id)}
+                          style={{
+                            cursor: "pointer",
+                            textDecoration: "underline",
+                          }}
+                        >
+                          {task.task_code}
+                        </td>
+                        <td>{task.task_title}</td>
+                        <td>{task.task_description}</td>
+                        <td>{task.priority}</td>
+                        {/* <td>
                         {
                           <i
                             onClick={() => handleDeleteTask(task.task_id)}
@@ -601,9 +631,10 @@ const ManagerProjects = () => {
                           />
                         }
                       </td> */}
-                      {/* <td>{task.status ? "Completed" : "In progress"}</td> */}
-                    </tr>
-                  ))}
+                        {/* <td>{task.status ? "Completed" : "In progress"}</td> */}
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
               {isLoadingMoreTasks && (

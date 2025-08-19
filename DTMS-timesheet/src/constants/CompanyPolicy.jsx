@@ -3,12 +3,31 @@
 import React, { useEffect, useState } from "react";
 // import config from "../../config"; // update path as per your project
 import config from "../config";
+import { useAuth } from "../AuthContext";
 
 import { useAttachmentManager } from "./useAttachmentManager";
+
+const getFileIcon = (filename) => {
+  const ext = filename.split(".").pop().toLowerCase();
+  switch (ext) {
+    case "pdf":
+      return <i className="fas fa-file-pdf" style={{ color: "red" }} />;
+    case "doc":
+    case "docx":
+      return <i className="fas fa-file-word" style={{ color: "blue" }} />;
+    case "xls":
+    case "xlsx":
+      return <i className="fas fa-file-excel" style={{ color: "green" }} />;
+    default:
+      return <i className="fas fa-file" />;
+  }
+};
 
 const CompanyPolicy = () => {
   const [policies, setPolicies] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const selectedRole = user?.role;
   const {
     attachments,
     setAttachments,
@@ -55,25 +74,39 @@ const CompanyPolicy = () => {
             <tr>
               <th>Document Name</th>
               <th>Uploaded At</th>
-              <th>View</th>
-              <th>Download</th>
+              <th>Uploaded By</th>
+              {/* {selectedRole === "hr" && <th>Modify</th>} */}
+              {/* <th>View</th> */}
+              {/* <th>Download</th> */}
             </tr>
           </thead>
           <tbody>
             {policies.map((policy) => (
               <tr key={policy.id}>
-                <td>{policy.document_name}</td>
-                <td>{new Date(policy.uploaded_at).toLocaleString()}</td>
+                {/* <td>{getFileIcon(policy.file)}</td> */}
                 <td>
                   <a
                     href={config.apiBaseURL + policy.file}
                     target="_blank"
                     rel="noopener noreferrer"
+                    title={"Open " + policy.document_name}
+                    style={{ marginRight: "10px" }}
                   >
-                    View
+                    {policy.document_name}
                   </a>
                 </td>
-                <td>
+                <td>{new Date(policy.uploaded_at).toLocaleString()}</td>
+                <td>{policy.uploaded_by || "-"}</td>
+                {/*<td>
+                   <a
+                    href={config.apiBaseURL + policy.file}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View
+                  </a> 
+                </td>*/}
+                {/* <td>
                   <button
                     className="download-button"
                     onClick={() =>
@@ -82,7 +115,7 @@ const CompanyPolicy = () => {
                   >
                     Download
                   </button>
-                </td>
+                </td> */}
               </tr>
             ))}
           </tbody>

@@ -284,45 +284,6 @@ const HRAttendance = () => {
                 </td>
               </tr>
             ))}
-            {currentRows.map((emp) => (
-              <tr key={emp.employee_id}>
-                <td>{emp.employee_name}</td>
-                {weekDays.map((day) => {
-                  const attendance = attendanceData.find(
-                    (a) =>
-                      a.employee === emp.employee_id && a.date === day.mapdate
-                  );
-                  return (
-                    <td key={day.key}>
-                      {attendance ? (
-                        <div className="attendance-tile">
-                          <div>
-                            {attendance.in_time.slice(0, 5)} -{" "}
-                            {attendance.out_time?.slice(0, 5)}
-                            <div>
-                              <strong>Total:</strong>{" "}
-                              {attendance.total_duration
-                                ? formatToHHMM(
-                                    parseFloat(attendance.total_duration)
-                                  )
-                                : "00:00"}{" "}
-                              hrs
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="attendance-tile no-data">-</div>
-                      )}
-                    </td>
-                  );
-                })}
-                <td>
-                  {totalHours[emp.employee_id]
-                    ? `${formatToHHMM(totalHours[emp.employee_id])} hrs`
-                    : "-"}
-                </td>
-              </tr>
-            ))}
           </tbody>
         </table>
       </div>
@@ -353,7 +314,6 @@ const HRAttendance = () => {
           />
         </button>
       </div>
-      <ToastContainerComponent />
       <ToastContainerComponent />
     </div>
   );

@@ -64,6 +64,16 @@ const HRLeaveRequests = () => {
 
   return (
     <div className="leaves-container">
+      {/* Leave Application Button - Top Right */}
+      <div className="leave-application-topbar">
+        <button
+          onClick={() => navigate("Leaveapplication")}
+          className="leave-application-button"
+        >
+          Leave Application
+        </button>
+      </div>
+
       <div className="leaves-tab">
         {tabLabels.map((label, index) => (
           <button
@@ -94,66 +104,76 @@ const HRLeaveRequests = () => {
               </tr>
             </thead>
             <tbody>
-              {currentRows.map((leave) => (
-                <tr key={leave.leave_taken_id}>
-                  <td>{leave.employee?.employee_code}</td>
-                  <td>{leave.employee?.employee_name}</td>
-                  <td>{leave.duration}</td>
-                  <td>
-                    {leave.start_date
-                      ? format(new Date(leave.start_date), "dd-MMM-yyyy")
-                      : ""}
-                  </td>
-                  <td>
-                    {leave.end_date
-                      ? format(new Date(leave.end_date), "dd-MMM-yyyy")
-                      : ""}
-                  </td>
-                  <td>
-                    {leave.leave_type === "earned_leave"
-                      ? "Earned Leave"
-                      : leave.leave_type === "comp_off"
-                      ? "Comp Off"
-                      : leave.leave_type === "casual_leave"
-                      ? "Casual Leave"
-                      : leave.leave_type === "sick_leave"
-                      ? "Sick Leave"
-                      : ""}
-                  </td>
-                  <td>{leave.reason}</td>
-
-                  <td>
-                    <ul className="attachments-list">
-                      {/* Existing attachments */}
-                      {leave.attachments && leave.attachments.length > 0 ? (
-                        leave.attachments?.map((file) => {
-                          const fullFilename = file.file.split("/").pop();
-                          const match = fullFilename.match(
-                            /^(.+?)_[a-zA-Z0-9]+\.(\w+)$/
-                          );
-                          const filename = match
-                            ? `${match[1]}.${match[2]}`
-                            : fullFilename;
-
-                          return (
-                            <li key={file.id} className="attachment-item">
-                              <a
-                                href={config.apiBaseURL + file.file}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                {filename}
-                              </a>
-                            </li>
-                          );
-                        })
-                      ) : (
-                        <li className="no-attachment">No attachments</li>
-                      )}
-                    </ul>
+              {currentRows.length === 0 ? (
+                <tr>
+                  <td colSpan="8" style={{ textAlign: "center" }}>
+                    No {tabLabels[activeTab]} Leave records available.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                currentRows.map((leave) => (
+                  <tr key={leave.leave_taken_id}>
+                    <td>{leave.employee?.employee_code}</td>
+                    <td>{leave.employee?.employee_name}</td>
+                    <td>{leave.duration}</td>
+                    <td>
+                      {leave.start_date
+                        ? format(new Date(leave.start_date), "dd-MMM-yyyy")
+                        : ""}
+                    </td>
+                    <td>
+                      {leave.end_date
+                        ? format(new Date(leave.end_date), "dd-MMM-yyyy")
+                        : ""}
+                    </td>
+                    <td>
+                      {leave.leave_type === "earned_leave"
+                        ? "Earned Leave"
+                        : leave.leave_type === "comp_off"
+                        ? "Comp Off"
+                        : leave.leave_type === "casual_leave"
+                        ? "Casual Leave"
+                        : leave.leave_type === "sick_leave"
+                        ? "Sick Leave"
+                        : leave.leave_type === "lop"
+                        ? "LOP"
+                        : ""}
+                    </td>
+                    <td>{leave.reason}</td>
+
+                    <td>
+                      <ul className="attachments-list">
+                        {/* Existing attachments */}
+                        {leave.attachments && leave.attachments.length > 0 ? (
+                          leave.attachments?.map((file) => {
+                            const fullFilename = file.file.split("/").pop();
+                            const match = fullFilename.match(
+                              /^(.+?)_[a-zA-Z0-9]+\.(\w+)$/
+                            );
+                            const filename = match
+                              ? `${match[1]}.${match[2]}`
+                              : fullFilename;
+
+                            return (
+                              <li key={file.id} className="attachment-item">
+                                <a
+                                  href={config.apiBaseURL + file.file}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  {filename}
+                                </a>
+                              </li>
+                            );
+                          })
+                        ) : (
+                          <li className="no-attachment">No attachments</li>
+                        )}
+                      </ul>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

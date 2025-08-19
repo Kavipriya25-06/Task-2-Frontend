@@ -65,7 +65,7 @@ const HolidayList = () => {
   }, [selectedYear]);
 
   const holidayData = calendarData.filter((day) => day.is_holiday);
-  console.log("the matching date", formData.date);
+  // console.log("the matching date", formData.date);
 
   const handlePatchHoliday = async () => {
     setIsSending(true);
@@ -151,24 +151,34 @@ const HolidayList = () => {
           </tr>
         </thead>
         <tbody>
-          {holidayData.map((entry) => (
-            <tr key={entry.calendar_id}>
-              <td>
-                {entry.date ? format(new Date(entry.date), "dd-MMM-yyyy") : ""}
-              </td>
-              <td>{entry.month_name}</td>
-              <td>{entry.day_name}</td>
-              <td>{entry.notes || "Weekend"}</td>
-              <td>
-                <button
-                  className="delete-btn"
-                  onClick={() => handleDelete(entry.calendar_id)}
-                >
-                  Delete
-                </button>
+          {holidayData.length === 0 ? (
+            <tr>
+              <td colSpan="5" style={{ textAlign: "center" }}>
+                No Holidays available.
               </td>
             </tr>
-          ))}
+          ) : (
+            holidayData.map((entry) => (
+              <tr key={entry.calendar_id}>
+                <td>
+                  {entry.date
+                    ? format(new Date(entry.date), "dd-MMM-yyyy")
+                    : ""}
+                </td>
+                <td>{entry.month_name}</td>
+                <td>{entry.day_name}</td>
+                <td>{entry.notes || "Weekend"}</td>
+                <td>
+                  <button
+                    className="delete-btn"
+                    onClick={() => handleDelete(entry.calendar_id)}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
       <button

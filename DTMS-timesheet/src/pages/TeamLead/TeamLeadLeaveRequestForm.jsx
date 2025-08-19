@@ -31,7 +31,7 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
     sick_leave: 0,
     casual_leave: 0,
     comp_off: 0,
-    earned_leave: 0,
+    // earned_leave: 0,
   });
   const [formData, setFormData] = useState({
     leaveType: leaveType,
@@ -240,7 +240,7 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
       Sick: "sick_leave",
       Casual: "casual_leave",
       "Comp off": "comp_off",
-      Earned: "earned_leave",
+      // Earned: "earned_leave",
       LOP: "lop",
       "": "others", // Default if no match
     };
@@ -364,7 +364,7 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
           sick_leave: employeeSummary.sick_leave,
           casual_leave: employeeSummary.casual_leave,
           comp_off: employeeSummary.comp_off,
-          earned_leave: employeeSummary.earned_leave,
+          // earned_leave: employeeSummary.earned_leave,
         });
       }
     } catch (err) {
@@ -427,7 +427,7 @@ const TeamLeadLeaveRequestForm = ({ leaveType, onClose }) => {
               <option value="Sick">Sick</option>
               <option value="Casual">Casual</option>
               <option value="Comp off">Comp off</option>
-              <option value="Earned">Earned</option>
+              {/* <option value="Earned">Earned</option> */}
               <option value="LOP">LOP</option>
               <option value="">Others</option>
             </select>
