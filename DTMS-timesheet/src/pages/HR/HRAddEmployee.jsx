@@ -34,6 +34,8 @@ const AddEmployee = () => {
   const managerId = user.employee_id;
   const navigate = useNavigate();
   const [managers, setManagers] = useState([]);
+  const [lastEmployee, setLastEmployee] = useState({});
+  const [lastEmployeeCode, setLastEmployeeCode] = useState("");
   const [attachments, setAttachments] = useState([
     { document_type: "PAN", name: "PAN", files: [] },
     { document_type: "Aadhaar", name: "Aadhaar", files: [] },
@@ -172,6 +174,7 @@ const AddEmployee = () => {
 
   useEffect(() => {
     fetchManagers();
+    fetchLastEmployee();
   }, []);
 
   const fetchManagers = async () => {
@@ -184,6 +187,47 @@ const AddEmployee = () => {
     } catch (error) {
       console.error("Error fetching managers:", error);
     }
+  };
+
+  //  Fetch the last employee from the backend
+  const fetchLastEmployee = async () => {
+    try {
+      const res = await fetch(`${config.apiBaseURL}/last-employee/`);
+      const data = await res.json();
+
+      if (res.ok && data?.employee_code) {
+        setLastEmployee(data);
+        setLastEmployeeCode(data.employee_code);
+      } else {
+        // No last employee found — set defaults
+        setLastEmployee(null);
+        setLastEmployeeCode(null);
+      }
+    } catch (error) {
+      console.error("Error fetching last employee:", error);
+    }
+  };
+
+  //  useEffect to trigger code generation when lastEmployeeCode updates
+  useEffect(() => {
+    generateEmployeeCode();
+  }, [lastEmployeeCode]);
+
+  //  Generate new employee code
+  const generateEmployeeCode = () => {
+    let nextEmployeeCode = "DA0001"; // Default starting code
+
+    if (lastEmployeeCode && lastEmployeeCode.startsWith("DA")) {
+      const oldNumeric = parseInt(lastEmployeeCode.slice(2), 10);
+      const newCode = oldNumeric + 1;
+      const nextSerial = String(newCode).padStart(4, "0");
+      nextEmployeeCode = `DA${nextSerial}`;
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      employee_code: nextEmployeeCode,
+    }));
   };
 
   const handleSubmit = async (e) => {

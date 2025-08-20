@@ -14,6 +14,8 @@ const HRDetailView = () => {
     { label: "Settings", path: "settings" },
     { label: "Leave requests", path: "leave-requests" },
     { label: "Attendance", path: "attendance" },
+    { label: "Time Sheet Entry", path: "time-sheet-entry" },
+    { label: "Comp-off Request", path: "compoffrequest" },
     { label: "Reports", path: "reports" },
     { label: "Company Policy", path: "company-policy" },
     { label: "Leave Balance", path: "leave-balance" },

@@ -67,6 +67,12 @@ import HRAttendance from "./pages/HR/HRAttendance.jsx";
 import HRLeaveRequests from "./pages/HR/HRLeaveRequests.jsx";
 import HRLeaveBalanceEdit from "./pages/HR/HRLeaveBalanceEdit.jsx";
 import HRReports from "./pages/HR/HRReports.jsx";
+import HRCompoffRequest from "./pages/HR/HRCompoffRequest.jsx";
+import HRDailyTimeSheetEntry from "./pages/HR/HRDailyTimeSheetEntry.jsx";
+import HRLeaveRequestForm from "./pages/HR/HRLeaveRequestForm.jsx";
+import HRLeaveRequestsList from "./pages/HR/HRLeaveRequestsList.jsx";
+import HRTimeSheetEntry from "./pages/HR/HRTimeSheetEntry.jsx";
+import HRWeeklyTimeSheetEntry from "./pages/HR/HRWeeklyTimeSheetEntry.jsx";
 
 // Manager pages
 import ManagerDashboard from "./pages/Manager/ManagerDashboard.jsx";
@@ -353,6 +359,36 @@ const App = () => {
                 <Route path="attendance" element={<HRAttendance />} />
                 <Route path="settings" element={<HRSettings />} />
                 <Route path="reports" element={<HRReports />} />
+                <Route path="compoffrequest" element={<HRCompoffRequest />} />
+                <Route
+                  path="leave-requests/Leaveapplication"
+                  element={<HRLeaveRequestsList />}
+                />
+                <Route
+                  path="leave-requests/create"
+                  element={<HRLeaveRequestForm />}
+                />
+                <Route path="time-sheet-entry" element={<HRTimeSheetEntry />} />
+                <Route
+                  path="time-sheet-entry/createdaily/"
+                  element={
+                    <Navigate to="/hr/detail/time-sheet-entry" replace />
+                  }
+                />
+                <Route
+                  path="time-sheet-entry/createdaily/:date"
+                  element={<HRDailyTimeSheetEntry />}
+                />
+                <Route
+                  path="time-sheet-entry/createweekly/"
+                  element={
+                    <Navigate to="/hr/detail/time-sheet-entry" replace />
+                  }
+                />
+                <Route
+                  path="time-sheet-entry/createweekly/:date"
+                  element={<HRWeeklyTimeSheetEntry />}
+                />
 
                 <Route path="*" element={<Navigate to="/404" replace />} />
               </Route>

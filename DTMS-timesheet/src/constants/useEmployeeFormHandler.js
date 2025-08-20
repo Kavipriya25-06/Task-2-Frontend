@@ -178,8 +178,8 @@ export const useEmployeeFormHandler = (initialFormData) => {
     }
 
     setFormData((prev) => ({ ...prev, [name]: value }));
-    console.log("changed");
-    console.log("form data", formData);
+    // console.log("changed");
+    // console.log("form data", formData);
   };
 
   return {

@@ -22,6 +22,8 @@ const HRDashboard = () => {
     { label: "Settings", path: "detail/settings" },
     { label: "Leave requests", path: "detail/leave-requests" },
     { label: "Attendance", path: "detail/attendance" },
+    { label: "Time Sheet Entry", path: "detail/time-sheet-entry" },
+    { label: "Comp-off Request", path: "detail/compoffrequest" },
     { label: "Reports", path: "detail/reports" },
     { label: "Company Policy", path: "detail/company-policy" },
     { label: "Leave Balance", path: "detail/leave-balance" },
