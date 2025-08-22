@@ -38,6 +38,7 @@ import RoleSwitcher from "./pages/RoleSwitcher.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import { isDev } from "./constants/devmode.js";
 import CompanyPolicy from "./constants/CompanyPolicy.jsx";
+import RootHomePage from "./pages/RootHomePage.jsx";
 
 // Admin pages
 import AdminDashboard from "./pages/Admin/AdminDashboard.jsx";
@@ -210,9 +211,15 @@ const App = () => {
           </NavLink> */}
           <img
             src="\app2\aero-360_logo.png"
-            alt="Arris Logo"
+            alt="Aero360 Logo"
             className="logo"
           />
+          {/* {isDev && (
+            <div className="tooltip">
+              <i className="fa-solid fa-code" style={{ color: "#ffffff" }}></i>
+              <span className="tooltiptext">You are currently in Dev mode</span>
+            </div>
+          )} */}
 
           <div style={{ alignItems: "center", display: "flex" }}>
             {/* <NavLink
@@ -258,6 +265,7 @@ const App = () => {
             <Route path="/forgotpassword" element={<ForgotPassword />} />
             <Route path="/403" element={<Dashboard />} />
             <Route path="/404" element={<NotFound />} />
+            <Route path="/503" element={<RootHomePage />} />
             <Route
               path="/home/*"
               element={

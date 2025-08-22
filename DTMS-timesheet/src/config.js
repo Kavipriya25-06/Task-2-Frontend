@@ -4,12 +4,16 @@ import { isDev } from "./constants/devmode";
 const devApiBaseURL = "http://127.0.0.1:8000/api";
 const prodApiBaseURL = "http://148.135.138.195:9000/api";
 
+const devHomeURL = "503";
+const prodHomeURL = "http://148.135.138.195/";
+
 // const prodApiBaseURL = "http://dms.aero360.co.in:9000/api";
 
 // const prodApiBaseURL = "http://192.168.0.209:8000/api";
 
 const config = {
   apiBaseURL: isDev ? devApiBaseURL : prodApiBaseURL,
+  homeURL: isDev ? devHomeURL : prodHomeURL,
 };
 
 export default config;

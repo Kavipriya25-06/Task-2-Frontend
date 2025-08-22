@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import "../App.css";
 import { showErrorToast, ToastContainerComponent } from "../constants/Toastify";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import config from "../config";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -57,7 +58,7 @@ const Login = () => {
             className="btn-back"
             onClick={() => {
               handleLogout();
-              window.location.href = "http://148.135.138.195/";
+              window.location.href = config.homeURL;
             }}
           >
             <img

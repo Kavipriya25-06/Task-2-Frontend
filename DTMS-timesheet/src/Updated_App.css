@@ -383,3 +383,112 @@
   background-color: #aaaaaa;
   transform: scale(1.05);
 }
+
+.th-sortable {
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+}
+.th-with-filter {
+  position: relative;
+  white-space: nowrap;
+}
+.th-label {
+  display: inline-block;
+  margin-right: 6px;
+}
+.th-filter-btn {
+  border: 1px solid #ccc;
+  background: #f7f7f7;
+  font-size: 12px;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.th-chip {
+  margin-left: 8px;
+  font-size: 10px;
+  background: #eee;
+  border-radius: 10px;
+  padding: 2px 6px;
+  vertical-align: middle;
+}
+.th-popover {
+  position: absolute;
+  top: 36px; /* drop below headers */
+  left: 16px;
+  z-index: 10;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  padding: 10px;
+  min-width: 260px;
+}
+
+.th-popover-content {
+  font-size: 13px;
+}
+.th-popover-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.th-popover-row {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.th-popover-row > span {
+  width: 44px;
+  color: #555;
+}
+.th-popover-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+.th-popover-actions button {
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #fafafa;
+  cursor: pointer;
+}
+
+.th-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+/* Popover container look */
+
+/* Compact list */
+.th-checkbox-list {
+  max-height: 200px;
+  overflow: auto;
+  padding: 4px 0;
+  min-width: 0;
+}
+
+.th-popover .th-checkbox-item {
+  display: flex; /* ensures input & text sit next to each other */
+  align-items: center;
+  justify-content: flex-start; /* avoid space-between from any global styles */
+  gap: 8px;
+  margin: 4px 0;
+  width: auto; /* don't stretch to full width */
+}
+
+.th-popover .th-checkbox-item input {
+  margin: 0;
+  width: 30%;
+}
+.th-popover .th-checkbox-item span {
+  white-space: nowrap;
+} /* keep "sick leave" tight */

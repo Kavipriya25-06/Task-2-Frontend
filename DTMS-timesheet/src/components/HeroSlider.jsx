@@ -5,6 +5,7 @@ import "swiper/css/effect-fade";
 import "./HeroSlider.css"; // custom styles
 import { useAuth } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
+import config from "../config";
 
 export default function HeroSlider() {
   const { user } = useAuth();
@@ -22,7 +23,7 @@ export default function HeroSlider() {
           className="btn-back"
           onClick={() => {
             handleLogout();
-            window.location.href = "http://148.135.138.195/";
+            window.location.href = config.homeURL;
           }}
         >
           <img

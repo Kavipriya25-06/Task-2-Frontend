@@ -168,7 +168,11 @@ const LOPReport = forwardRef(({ year, employeeSearch }, ref) => {
                     <tr key={i}>
                       <td>{l.employee_code}</td>
                       <td>{l.employee_name}</td>
-                      <td>{new Date(l.doj).toLocaleDateString("en-GB")}</td>
+                      <td>
+                        {(l.doj &&
+                          new Date(l.doj).toLocaleDateString("en-GB")) ||
+                          "-"}
+                      </td>
                       <td>{l.status}</td>
                       <td>
                         {l.resignation_date

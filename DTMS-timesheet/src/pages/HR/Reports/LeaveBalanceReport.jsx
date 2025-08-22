@@ -54,7 +54,7 @@ const LeaveBalanceReport = forwardRef(({ year, employeeSearch }, ref) => {
           "Present Status",
           "CL",
           "SL",
-          "EL",
+          // "EL",
           "Comp-off",
           "LOP",
           "Total Leaves Available",
@@ -65,10 +65,11 @@ const LeaveBalanceReport = forwardRef(({ year, employeeSearch }, ref) => {
         filtered.forEach((l, index) => {
           const cl = parseFloat(l.casual_leave || 0);
           const sl = parseFloat(l.sick_leave || 0);
-          const el = parseFloat(l.earned_leave || 0);
+          // const el = parseFloat(l.earned_leave || 0);
           const comp = parseFloat(l.comp_off || 0);
           const lop = parseFloat(l.lop || 0);
-          const totalLeaves = cl + sl + el + comp;
+          // const totalLeaves = cl + sl + el + comp;
+          const totalLeaves = cl + sl + comp;
 
           worksheet.addRow([
             index + 1,
@@ -78,7 +79,7 @@ const LeaveBalanceReport = forwardRef(({ year, employeeSearch }, ref) => {
             l.employee?.status || "",
             cl,
             sl,
-            el,
+            // el,
             comp,
             lop, // LOP
             totalLeaves,
@@ -151,7 +152,7 @@ const LeaveBalanceReport = forwardRef(({ year, employeeSearch }, ref) => {
                 <th>Present Status</th>
                 <th>CL</th>
                 <th>SL</th>
-                <th>EL</th>
+                {/* <th>EL</th> */}
                 <th>Comp-off</th>
                 <th>LOP</th>
                 <th>Total Leaves Available</th>
@@ -180,7 +181,7 @@ const LeaveBalanceReport = forwardRef(({ year, employeeSearch }, ref) => {
                     <td>{l.employee?.status}</td>
                     <td>{parseFloat(l.casual_leave)}</td>
                     <td>{parseFloat(l.sick_leave)}</td>
-                    <td>{parseFloat(l.earned_leave)}</td>
+                    {/* <td>{parseFloat(l.earned_leave)}</td> */}
                     <td>{parseFloat(l.comp_off)}</td>
                     <td>{parseFloat(l.lop)}</td>
                     <td>
@@ -188,7 +189,7 @@ const LeaveBalanceReport = forwardRef(({ year, employeeSearch }, ref) => {
                         0,
                         parseFloat(l.casual_leave || 0) +
                           parseFloat(l.sick_leave || 0) +
-                          parseFloat(l.earned_leave || 0) +
+                          // parseFloat(l.earned_leave || 0) +
                           parseFloat(l.comp_off || 0)
                       )}
                     </td>

@@ -73,7 +73,7 @@ const HRLeaveBalanceEdit = () => {
       const patchData = {
         casual_leave: clamp(rowData.casual_leave),
         sick_leave: clamp(rowData.sick_leave),
-        earned_leave: clamp(rowData.earned_leave),
+        // earned_leave: clamp(rowData.earned_leave),
         comp_off: clamp(rowData.comp_off),
         lop: clamp(rowData.lop),
       };
@@ -133,7 +133,7 @@ const HRLeaveBalanceEdit = () => {
                 <th>Present Status</th>
                 <th style={{ width: 60 }}>CL</th>
                 <th style={{ width: 60 }}>SL</th>
-                <th style={{ width: 60 }}>EL</th>
+                {/* <th style={{ width: 60 }}>EL</th> */}
                 <th style={{ width: 60 }}>Comp-off</th>
                 <th style={{ width: 60 }}>LOP</th>
                 <th>Total</th>
@@ -157,9 +157,9 @@ const HRLeaveBalanceEdit = () => {
                       isEditing ? tempRow.casual_leave : l.casual_leave
                     ) +
                     safeParse(isEditing ? tempRow.sick_leave : l.sick_leave) +
-                    safeParse(
-                      isEditing ? tempRow.earned_leave : l.earned_leave
-                    ) +
+                    // safeParse(
+                    //   isEditing ? tempRow.earned_leave : l.earned_leave
+                    // ) +
                     safeParse(isEditing ? tempRow.comp_off : l.comp_off);
 
                   return (
@@ -208,7 +208,7 @@ const HRLeaveBalanceEdit = () => {
                           parseFloat(l.sick_leave || 0)
                         )}
                       </td>
-                      <td>
+                      {/* <td>
                         {isEditing ? (
                           <input
                             min={0}
@@ -225,7 +225,7 @@ const HRLeaveBalanceEdit = () => {
                         ) : (
                           parseFloat(l.earned_leave || 0)
                         )}
-                      </td>
+                      </td> */}
                       <td>
                         {isEditing ? (
                           <input
@@ -260,7 +260,7 @@ const HRLeaveBalanceEdit = () => {
                               className="saveleavebutton"
                             >
                               <img
-                                src="/approve.png"
+                                src="/app2/approve.png"
                                 alt="save"
                                 className="saveleaveimg"
                               />
@@ -274,7 +274,7 @@ const HRLeaveBalanceEdit = () => {
                               className="saveleavebutton"
                             >
                               <img
-                                src="/reject.png"
+                                src="/app2/reject.png"
                                 alt="cancel"
                                 className="saveleaveimg"
                               />
