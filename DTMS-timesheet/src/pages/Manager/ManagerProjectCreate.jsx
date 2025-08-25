@@ -30,6 +30,7 @@ const ManagerProjectCreate = () => {
   // const { employee_id } = useParams();
   const [selectedTeamleadManager, setSelectedTeamleadManager] = useState([]);
   const [discipline, setDiscipline] = useState([]);
+  const [client, setClient] = useState([]);
   const { user } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -43,6 +44,8 @@ const ManagerProjectCreate = () => {
     subdivision: "",
     discipline_code: "",
     discipline: "",
+    client: "",
+    project_budget: 0,
   });
   const [showBuildingPopup, setShowBuildingPopup] = useState(false);
   const [buildingData, setBuildingData] = useState({});
@@ -208,6 +211,7 @@ const ManagerProjectCreate = () => {
     fetchTeamleadManager();
     fetchAdditionalResources();
     fetchDiscipline();
+    fetchClient();
     fetchLastProject();
   }, []);
 
@@ -216,9 +220,20 @@ const ManagerProjectCreate = () => {
       const res = await fetch(`${config.apiBaseURL}/discipline/`);
       const data = await res.json();
       setDiscipline(data);
-      console.log("Disciplines", data);
+      // console.log("Disciplines", data);
     } catch (error) {
       console.error("Error fetching Discipline:", error);
+    }
+  };
+
+  const fetchClient = async () => {
+    try {
+      const res = await fetch(`${config.apiBaseURL}/client/`);
+      const data = await res.json();
+      setClient(data);
+      // console.log("Disciplines", data);
+    } catch (error) {
+      console.error("Error fetching Clients:", error);
     }
   };
 
@@ -250,18 +265,20 @@ const ManagerProjectCreate = () => {
         .getFullYear()
         .toString()
         .slice(-2); // e.g., "25"
-      const disciplineCode = String(formData.discipline_code).padStart(2, "0");
+      // const disciplineCode = String(formData.discipline_code).padStart(2, "0");
+      const disciplineCode = String(formData.discipline_code);
       // console.log("Discipline code", disciplineCode);
 
-      // Extract last 4 digits from last project's code
-      const lastSerial = lastProjectCode.slice(4); // e.g., from "2553736" => "3736"
-      const validSerial = Math.max(parseInt(lastSerial), 800);
+      // Extract last 4 digits from last project's code // RNS_25_0001
+      const lastSerial = lastProjectCode.slice(8); // e.g., from "RNS_25_0001" => "0001"
+      // const validSerial = Math.max(parseInt(lastSerial), 800);
+      const validSerial = parseInt(lastSerial);
       const nextSerial = String(parseInt(validSerial || "0") + 1).padStart(
         4,
         "0"
       );
 
-      const newCode = `${year}${disciplineCode}${nextSerial}`;
+      const newCode = `${disciplineCode}_${year}_${nextSerial}`;
 
       setFormData((prev) => ({
         ...prev,
@@ -333,7 +350,7 @@ const ManagerProjectCreate = () => {
                   name="project_code"
                   value={formData.project_code}
                   onChange={handleChange}
-                  readOnly
+                  // readOnly
                   required
                 />
               </div>
@@ -348,32 +365,24 @@ const ManagerProjectCreate = () => {
                   required
                 />
               </div>
-              <div className="project-form-group">
-                <label>Project Type</label>
-                <input
-                  name="project_type"
-                  value={formData.project_type}
-                  onChange={handleChange}
-                />
-              </div>
 
               <div className="project-form-group">
-                <label>Discipline Code</label>
+                <label>Project Type</label>
                 <select
                   name="discipline_code"
                   value={formData.discipline_code}
                   onChange={(e) => {
-                    const selectedCodee = e.target.value;
-                    const selectedCode = parseInt(selectedCodee);
+                    const selectedCode = e.target.value;
+                    // const selectedCode = parseInt(selectedCodee);
                     const selectedItem = discipline.find(
                       (item) => item.discipline_code === selectedCode
                     );
-                    console.log(
-                      selectedCode,
-                      "Selected code",
-                      selectedItem,
-                      "Item"
-                    );
+                    // console.log(
+                    //   selectedCode,
+                    //   "Selected code",
+                    //   selectedItem,
+                    //   "Item"
+                    // );
                     setFormData({
                       ...formData,
                       discipline_code: selectedCode,
@@ -381,10 +390,32 @@ const ManagerProjectCreate = () => {
                     });
                   }}
                 >
-                  <option value="">Select Discipline</option>
+                  <option value="">Select Project Type</option>
                   {discipline.map((item) => (
                     <option key={item.id} value={item.discipline_code}>
                       {item.discipline_code} - {item.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="project-form-group">
+                <label>Client</label>
+                <select
+                  name="client"
+                  value={formData.client}
+                  onChange={(e) => {
+                    const selectedCode = e.target.value;
+                    setFormData({
+                      ...formData,
+                      client: selectedCode || "",
+                    });
+                  }}
+                >
+                  <option value="">Select Client</option>
+                  {client.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.client_name}
                     </option>
                   ))}
                 </select>
@@ -402,7 +433,7 @@ const ManagerProjectCreate = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     style={{
-                      width: "50%",
+                      width: "80%",
                       height: "30px",
                       marginLeft: "10px",
                     }}
@@ -419,7 +450,6 @@ const ManagerProjectCreate = () => {
                           key={employee.employee_id}
                           className="employee-checkbox"
                         >
-                          {employee.employee_name} - {employee.designation}
                           <input
                             type="checkbox"
                             className="create-checkbox"
@@ -443,6 +473,7 @@ const ManagerProjectCreate = () => {
                               }
                             }}
                           />
+                          {employee.employee_name} - {employee.designation}
                         </div>
                       ))}
                   </div>
@@ -468,7 +499,6 @@ const ManagerProjectCreate = () => {
                           key={employee.employee_id}
                           className="employee-checkbox"
                         >
-                          {employee.employee_name} - {employee.designation}
                           <input
                             type="checkbox"
                             className="create-checkbox"
@@ -492,6 +522,7 @@ const ManagerProjectCreate = () => {
                               }
                             }}
                           />
+                          {employee.employee_name} - {employee.designation}
                         </div>
                       ))}
                   </div>
@@ -652,6 +683,16 @@ const ManagerProjectCreate = () => {
                   type="number"
                   name="estimated_hours"
                   value={formData.estimated_hours}
+                  onChange={handleChange}
+                  className="estd"
+                />
+              </div>
+              <div className="project-form-group-small">
+                <label>Project Budget</label>
+                <input
+                  type="number"
+                  name="project_budget"
+                  value={formData.project_budget}
                   onChange={handleChange}
                   className="estd"
                 />

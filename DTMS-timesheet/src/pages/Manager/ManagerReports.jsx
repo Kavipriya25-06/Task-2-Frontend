@@ -91,15 +91,15 @@ const ManagerReport = () => {
               onChange={(e) => setDepartment(e.target.value)}
             >
               <option value="Management">Management</option>
-              <option value="Mechanical">Mechanical</option>
-              <option value="Process">Process</option>
-              <option value="Piping">Piping</option>
-              <option value="Structural">Structural</option>
-              <option value="EIC">EIC</option>
+              <option value="Business Development">Business Development</option>
+              <option value="Procurement">Procurement</option>
+              {/* <option value="Piping">Piping</option> */}
+              {/* <option value="Structural">Structural</option> */}
+              {/* <option value="EIC">EIC</option> */}
               <option value="Admin">Admin</option>
               <option value="HR">HR</option>
               <option value="Finance">Finance</option>
-              <option value="IT">IT</option>
+              <option value="Technical">Technical</option>
             </select>
           </div>
         )}

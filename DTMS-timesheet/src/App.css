@@ -4277,6 +4277,7 @@ h4 {
   justify-content: flex-start; /* Align to top */
   gap: 0px; /* Controls spacing between tiles */
   padding: 0;
+  width: 90%;
 }
 
 .project-form-group .select-container {
@@ -4287,11 +4288,13 @@ h4 {
   gap: 0px; /* Controls spacing between tiles */
   padding: 0;
   background-color: #f0f0f0;
+  width: 90%;
 }
 
 .file-upload-section {
   display: flex;
   flex-direction: column;
+  width: 90%;
 }
 
 .file-upload-label {
@@ -4649,7 +4652,7 @@ h4 {
   border: 1px solid #ccc;
   font-size: 14px;
   background-color: #f1f1f1;
-  width: 100%;
+  width: 90%;
 }
 
 .building-row input {
@@ -5287,7 +5290,7 @@ h4 {
 .select-container {
   /* display: flex; */
   /* flex-direction: column; */
-  width: 100%;
+  width: 90%;
   /* margin: 20px; */
   min-height: 100px;
   max-height: 150px; /* Limit the height */
@@ -5315,7 +5318,7 @@ h4 {
   /* flex-direction: row; */
   display: grid; /* Aligns the checkbox and name side by side */
   /* vertical-align: middle; */
-  grid-template-columns: 1fr 1.5fr;
+  grid-template-columns: 0.5fr 5fr;
   font-size: smaller;
   align-items: center; /* Vertically aligns the checkbox with the name */
   margin-bottom: 5px;

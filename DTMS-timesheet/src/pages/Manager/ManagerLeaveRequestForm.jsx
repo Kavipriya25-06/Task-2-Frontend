@@ -576,9 +576,7 @@ const ManagerLeaveRequestForm = ({ leaveType, onClose }) => {
                 dropdownMode="select"
                 excludeDates={nonWorkingDates}
                 minDate={
-                  formData.endDate
-                    ? new Date(formData.endDate.getTime() + 86400000)
-                    : null
+                  formData.endDate ? new Date(formData.endDate.getTime()) : null
                 }
               />
               <i className="fas fa-calendar-alt calendar-icon"></i>{" "}

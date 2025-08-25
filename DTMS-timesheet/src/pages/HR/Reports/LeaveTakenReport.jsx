@@ -755,28 +755,36 @@ const LeaveTakenReport = forwardRef(({ year, employeeSearch = "" }, ref) => {
               </thead>
 
               <tbody>
-                {rows.map((l, i) => (
-                  <tr key={i}>
-                    <td>{l.employee?.employee_code}</td>
-                    <td>{l.employee?.employee_name}</td>
-                    <td>
-                      {l.start_date
-                        ? new Date(l.start_date).toLocaleDateString("en-GB")
-                        : ""}
+                {rows.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" style={{ textAlign: "center" }}>
+                      No leave records available.
                     </td>
-                    <td>
-                      {l.end_date
-                        ? new Date(l.end_date).toLocaleDateString("en-GB")
-                        : ""}
-                    </td>
-                    <td>
-                      {isNaN(parseFloat(l.duration))
-                        ? ""
-                        : parseFloat(l.duration)}
-                    </td>
-                    <td>{l.leave_type?.replaceAll("_", " ")}</td>
                   </tr>
-                ))}
+                ) : (
+                  rows.map((l, i) => (
+                    <tr key={i}>
+                      <td>{l.employee?.employee_code}</td>
+                      <td>{l.employee?.employee_name}</td>
+                      <td>
+                        {l.start_date
+                          ? new Date(l.start_date).toLocaleDateString("en-GB")
+                          : ""}
+                      </td>
+                      <td>
+                        {l.end_date
+                          ? new Date(l.end_date).toLocaleDateString("en-GB")
+                          : ""}
+                      </td>
+                      <td>
+                        {isNaN(parseFloat(l.duration))
+                          ? ""
+                          : parseFloat(l.duration)}
+                      </td>
+                      <td>{l.leave_type?.replaceAll("_", " ")}</td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

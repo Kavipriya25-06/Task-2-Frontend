@@ -36,13 +36,118 @@ const ManagerAttendanceAdmin = () => {
     out_time: "",
     work_duration: "",
     ot: "0",
-    total_duration: "",
+    total_duration: "0",
     status: "Present",
     remarks: "",
     holiday: false,
   };
 
   const [newAttendance, setNewAttendance] = useState(initialAttendanceState);
+  const [nonWorkingDates, setNonWorkingDates] = useState([]);
+  // NEW: single or multiple date mode
+  const [dateMode, setDateMode] = useState("single"); // "single" | "multiple"
+
+  const onDateModeChange = (mode) => {
+    setDateMode(mode);
+    // keep API shape predictable:
+    // for single-date, mirror start_date=end_date; clear when switching to multiple
+    setNewAttendance((prev) => {
+      if (mode === "single") {
+        // if there was a single date in prev.start_date, keep it; else blank
+        return {
+          ...prev,
+          // keep existing in/out times & status etc.
+          end_date: prev.start_date || "",
+        };
+      } else {
+        // moving to multiple -> keep start_date, but clear end_date to force user selection
+        return { ...prev, end_date: "" };
+      }
+    });
+  };
+
+  // small helper to store yyyy-MM-dd (backend-friendly)
+  const setDateField = (key, jsDate) => {
+    setNewAttendance((prev) => ({
+      ...prev,
+      [key]: jsDate ? format(jsDate, "yyyy-MM-dd") : "",
+    }));
+    // mirror for single-date mode
+    if (dateMode === "single" && (key === "start_date" || key === "date")) {
+      setNewAttendance((prev) => ({
+        ...prev,
+        start_date: jsDate ? format(jsDate, "yyyy-MM-dd") : "",
+        end_date: jsDate ? format(jsDate, "yyyy-MM-dd") : "",
+      }));
+    }
+  };
+
+  useEffect(() => {
+    fetchCalendar();
+  }, []);
+
+  const fetchCalendar = async () => {
+    const year = new Date().getFullYear();
+    try {
+      const res = await fetch(`${config.apiBaseURL}/calendar/?year=${year}`);
+      const data = await res.json();
+      // setCalendarData(data);
+
+      const nonWorking = data
+        .filter((d) => d.is_weekend || d.is_holiday)
+        .map((d) => new Date(d.date));
+      setNonWorkingDates(nonWorking);
+    } catch (err) {
+      console.error("Failed to fetch calendar", err);
+    }
+  };
+
+  const calculateWorkingDays = (startDate, endDate, nonWorkingDates) => {
+    let count = 0;
+    const current = new Date(startDate);
+
+    while (current <= endDate) {
+      const isHoliday = nonWorkingDates.some(
+        (d) => d.toDateString() === current.toDateString()
+      );
+      if (!isHoliday) count++;
+      current.setDate(current.getDate() + 1);
+    }
+
+    return count;
+  };
+
+  // 3) Count working days between two yyyy-MM-dd inclusive.
+  //    If includeHolidays=true, **count all days**; else exclude dates in nonWorkingDates.
+  const countWorkingDays = (
+    startStr,
+    endStr,
+    includeHolidays,
+    nonWorkingDates
+  ) => {
+    if (!startStr) return 0;
+    const start = new Date(startStr);
+    const end = new Date(endStr || startStr);
+    if (Number.isNaN(+start)) return 0;
+    if (Number.isNaN(+end)) return 1;
+
+    const s = new Date(Math.min(+start, +end));
+    const e = new Date(Math.max(+start, +end));
+
+    // Make a quick lookup set "yyyy-mm-dd" for non-working dates
+    const toISO = (d) => d.toISOString().slice(0, 10);
+    const nwSet = new Set(nonWorkingDates.map((d) => toISO(d)));
+
+    let days = 0;
+    for (let d = new Date(s); d <= e; d.setDate(d.getDate() + 1)) {
+      if (includeHolidays) {
+        days += 1; // count all days
+      } else {
+        if (!nwSet.has(toISO(d))) days += 1; // exclude known non-working dates
+      }
+    }
+    return days;
+  };
 
   // Get the start and end date of the week
   const getWeekDates = (date) => {
@@ -227,13 +332,13 @@ const ManagerAttendanceAdmin = () => {
         .map(Number);
 
       // Parse OT in HH:MM format
-      let otMinutes = 0;
-      if (newAttendance.ot && newAttendance.ot.includes(":")) {
-        const [otHrs, otMins] = newAttendance.ot.split(":").map(Number);
-        otMinutes = (otHrs || 0) * 60 + (otMins || 0);
-      } else {
-        otMinutes = parseFloat(newAttendance.ot || 0) * 60; // fallback for decimal OT
-      }
+      // let otMinutes = 0;
+      // if (newAttendance.ot && newAttendance.ot.includes(":")) {
+      //   const [otHrs, otMins] = newAttendance.ot.split(":").map(Number);
+      //   otMinutes = (otHrs || 0) * 60 + (otMins || 0);
+      // } else {
+      //   otMinutes = parseFloat(newAttendance.ot || 0) * 60; // fallback for decimal OT
+      // }
 
       let start = new Date(0, 0, 0, inHours, inMinutes);
       let end = new Date(0, 0, 0, outHours, outMinutes);
@@ -246,11 +351,31 @@ const ManagerAttendanceAdmin = () => {
       const diffMs = end - start;
       const diffHrs = (diffMs / 1000 / 60 / 60).toFixed(2);
 
-      const ot = parseFloat(newAttendance.ot || 0);
-      const totalDuration = (parseFloat(diffHrs) + ot).toFixed(2);
+      // const ot = parseFloat(newAttendance.ot || 0);
+      // const totalDuration = (parseFloat(diffHrs) + ot).toFixed(2);
 
       const diffHrsDecimal = diffMs / 1000 / 60 / 60;
 
+      // Determine dates
+      // Days to multiply
+      const startStr = newAttendance.start_date || "";
+      const endStr =
+        dateMode === "single"
+          ? newAttendance.start_date
+          : newAttendance.end_date;
+
+      // Number of days (uses nonWorkingDates & the "Include Holidays" toggle)
+      const days =
+        dateMode === "single"
+          ? startStr
+            ? 1
+            : 0
+          : countWorkingDays(
+              startStr,
+              endStr,
+              !!newAttendance.holiday,
+              nonWorkingDates
+            );
       // Work Duration in HH:MM
       const workHours = Math.floor(diffHrsDecimal);
       const workMinutes = Math.round((diffHrsDecimal - workHours) * 60);
@@ -259,27 +384,45 @@ const ManagerAttendanceAdmin = () => {
         .padStart(2, "0")}`;
 
       // OT is assumed to be entered in HH:MM or in decimal, adjust accordingly
-      const otDecimal = otMinutes / 60;
+      // const otDecimal = otMinutes / 60;
 
-      const totalDecimal = diffHrsDecimal + otDecimal;
+      // const totalDecimal = diffHrsDecimal + otDecimal;
+
+      const totalDecimal = (diffHrsDecimal || 0) * (days || 0);
 
       const totalHours = Math.floor(totalDecimal);
       const totalMinutes = Math.round((totalDecimal - totalHours) * 60);
       const totalDurationFormatted = `${totalHours}:${totalMinutes
         .toString()
         .padStart(2, "0")}`;
+      // if newAttendance.start_date
+      const workingDays = calculateWorkingDays(
+        newAttendance.start_date,
+        newAttendance.end_date,
+        nonWorkingDates
+      );
 
       setNewAttendance((prev) => ({
         ...prev,
         // work_duration: workDurationFormatted,
         // total_duration: totalDurationFormatted,
         work_duration: diffHrsDecimal.toFixed(2), // Decimal for payload
-        total_duration: totalDecimal.toFixed(2), // Decimal for payload
+        total_duration: "0",
+        // total_duration: totalDecimal.toFixed(2), // Decimal for payload
         work_duration_display: workDurationFormatted, // HH:MM for UI
         total_duration_display: totalDurationFormatted,
       }));
     }
-  }, [newAttendance.in_time, newAttendance.out_time, newAttendance.ot]);
+  }, [
+    newAttendance.in_time,
+    newAttendance.out_time,
+    newAttendance.start_date,
+    newAttendance.end_date,
+    newAttendance.holiday,
+    dateMode,
+    nonWorkingDates,
+    // newAttendance.ot,
+  ]);
 
   return (
     <div className="attendance-container">
@@ -405,13 +548,87 @@ const ManagerAttendanceAdmin = () => {
               >
                 <option value="">Select Employee</option>
                 {employeeData.map((emp) => (
-                  <option key={emp.employee_id} value={[emp.employee_id]}>
+                  <option key={emp.employee_id} value={emp.employee_id}>
                     {emp.employee_name}
                   </option>
                 ))}
               </select>
 
-              <label>Shift</label>
+              {/* Date mode row + Include Holidays */}
+              <div
+                className="att-row"
+                style={{
+                  display: "flex",
+                  gap: 24,
+                  alignItems: "center",
+                  margin: "8px 0 12px",
+                }}
+              >
+                <label
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    cursor: "pointer",
+                  }}
+                >
+                  <input
+                    type="radio"
+                    name="dateMode"
+                    value="single"
+                    checked={dateMode === "single"}
+                    onChange={() => onDateModeChange("single")}
+                  />
+                  <span>Single Date</span>
+                </label>
+
+                <label
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    cursor: "pointer",
+                  }}
+                >
+                  <input
+                    type="radio"
+                    name="dateMode"
+                    value="multiple"
+                    checked={dateMode === "multiple"}
+                    onChange={() => onDateModeChange("multiple")}
+                  />
+                  <span>Multiple Date</span>
+                </label>
+
+                <label
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    cursor: "pointer",
+                    marginBottom: "10px",
+                    marginTop: "20px",
+                  }}
+                >
+                  <span>Include Holidays</span>
+                  <div className="toggle-switch">
+                    <input
+                      type="checkbox"
+                      checked={newAttendance.holiday}
+                      onChange={(e) =>
+                        setNewAttendance({
+                          ...newAttendance,
+                          holiday: e.target.checked,
+                        })
+                      }
+                      className="toggle-input"
+                    />
+                    <span className="toggle-slider" />
+                  </div>
+                </label>
+              </div>
+
+              {/* <label>Shift</label>
               <select
                 value={newAttendance.shift}
                 onChange={(e) =>
@@ -421,9 +638,9 @@ const ManagerAttendanceAdmin = () => {
                 <option value="">Select Shift</option>
                 <option value="Morning">Morning</option>
                 <option value="Night">Night</option>
-              </select>
+              </select> */}
 
-              <label>Start Date</label>
+              {/* <label>Start Date</label>
 
               <div className="date-input-container">
                 <DatePicker
@@ -441,8 +658,8 @@ const ManagerAttendanceAdmin = () => {
                   showYearDropdown
                   dropdownMode="select"
                 />
-                <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
-                {/* Font Awesome Calendar Icon */}
+                <i className="fas fa-calendar-alt calendar-icon"></i>
+               
               </div>
               <label>End Date</label>
               <div className="date-input-container">
@@ -461,9 +678,9 @@ const ManagerAttendanceAdmin = () => {
                   showYearDropdown
                   dropdownMode="select"
                 />
-                <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
-                {/* Font Awesome Calendar Icon */}
-              </div>
+                <i className="fas fa-calendar-alt calendar-icon"></i>
+              
+              </div> */}
               {/* <input
                 type="date"
                 value={newAttendance.date}
@@ -471,6 +688,83 @@ const ManagerAttendanceAdmin = () => {
                   setNewAttendance({ ...newAttendance, date: e.target.value })
                 }
               /> */}
+
+              {/* SINGLE DATE MODE */}
+              {dateMode === "single" && (
+                <>
+                  <label>Date</label>
+                  <div className="date-input-container">
+                    <DatePicker
+                      selected={
+                        newAttendance.start_date
+                          ? new Date(newAttendance.start_date)
+                          : null
+                      }
+                      onChange={(d) => setDateField("start_date", d)}
+                      dateFormat="dd-MMM-yyyy"
+                      placeholderText="dd-mm-yyyy"
+                      className="input1"
+                      showMonthDropdown
+                      showYearDropdown
+                      dropdownMode="select"
+                    />
+                    <i className="fas fa-calendar-alt calendar-icon"></i>
+                  </div>
+                </>
+              )}
+
+              {/* MULTIPLE DATE MODE */}
+              {dateMode === "multiple" && (
+                <>
+                  <label>Start Date</label>
+                  <div className="date-input-container">
+                    <DatePicker
+                      selected={
+                        newAttendance.start_date
+                          ? new Date(newAttendance.start_date)
+                          : null
+                      }
+                      onChange={(d) => setDateField("start_date", d)}
+                      dateFormat="dd-MMM-yyyy"
+                      placeholderText="dd-mm-yyyy"
+                      className="input1"
+                      showMonthDropdown
+                      showYearDropdown
+                      dropdownMode="select"
+                      maxDate={
+                        newAttendance.end_date
+                          ? new Date(newAttendance.end_date)
+                          : undefined
+                      }
+                    />
+                    <i className="fas fa-calendar-alt calendar-icon"></i>
+                  </div>
+
+                  <label>End Date</label>
+                  <div className="date-input-container">
+                    <DatePicker
+                      selected={
+                        newAttendance.end_date
+                          ? new Date(newAttendance.end_date)
+                          : null
+                      }
+                      onChange={(d) => setDateField("end_date", d)}
+                      dateFormat="dd-MMM-yyyy"
+                      placeholderText="dd-mm-yyyy"
+                      className="input1"
+                      showMonthDropdown
+                      showYearDropdown
+                      dropdownMode="select"
+                      minDate={
+                        newAttendance.start_date
+                          ? new Date(newAttendance.start_date)
+                          : undefined
+                      }
+                    />
+                    <i className="fas fa-calendar-alt calendar-icon"></i>
+                  </div>
+                </>
+              )}
 
               <label>In Time</label>
               <input
@@ -503,7 +797,7 @@ const ManagerAttendanceAdmin = () => {
                 readOnly
               />
 
-              <label>OT</label>
+              {/* <label>OT</label>
               <input
                 type="number"
                 value={newAttendance.ot}
@@ -511,14 +805,18 @@ const ManagerAttendanceAdmin = () => {
                 onChange={(e) =>
                   setNewAttendance({ ...newAttendance, ot: e.target.value })
                 }
-              />
+              /> */}
 
-              <label>Total Duration</label>
-              <input
-                type="text"
-                value={newAttendance.total_duration_display || ""}
-                readOnly
-              />
+              {dateMode === "multiple" && (
+                <>
+                  <label>Total Duration</label>
+                  <input
+                    type="text"
+                    value={newAttendance.total_duration_display || ""}
+                    readOnly
+                  />
+                </>
+              )}
 
               <label>Status</label>
               <select
@@ -528,38 +826,11 @@ const ManagerAttendanceAdmin = () => {
                 }
               >
                 <option value="Present">Present</option>
-                <option value="Absent">Absent</option>
+                {/* <option value="Absent">Absent</option> */}
                 <option value="WFH">WFH</option>
                 <option value="OD">OD</option>
                 <option value="Deputation">Deputation</option>
               </select>
-
-              <label
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  cursor: "pointer",
-                  marginBottom: "10px",
-                  marginTop: "20px",
-                }}
-              >
-                <span>Include Holidays</span>
-                <div className="toggle-switch">
-                  <input
-                    type="checkbox"
-                    checked={newAttendance.holiday}
-                    onChange={(e) =>
-                      setNewAttendance({
-                        ...newAttendance,
-                        holiday: e.target.checked,
-                      })
-                    }
-                    className="toggle-input"
-                  />
-                  <span className="toggle-slider" />
-                </div>
-              </label>
 
               <label>Remarks</label>
               <textarea
