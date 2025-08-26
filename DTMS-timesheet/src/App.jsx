@@ -436,19 +436,19 @@ const App = () => {
                   element={<ManagerProjectCreate />}
                 />
                 <Route
-                  path="buildings/"
+                  path="areas/"
                   element={<Navigate to="/manager/detail/projects" replace />}
                 />
                 <Route
-                  path="buildings/create"
+                  path="areas/create"
                   element={<ManagerBuildingCreate />}
                 />
                 <Route
-                  path="projects/:project_id/buildings/"
+                  path="projects/:project_id/areas/"
                   element={<ManagerProjectRedirect />}
                 />
                 <Route
-                  path="projects/:project_id/buildings/:building_assign_id"
+                  path="projects/:project_id/areas/:building_assign_id"
                   element={<ManagerBuildingView />}
                 />
                 <Route
@@ -458,11 +458,11 @@ const App = () => {
                 <Route path="tasks/create" element={<ManagerTaskCreate />} />
                 <Route path="tasks/:task_id" element={<ManagerTaskEdit />} />
                 <Route
-                  path="projects/:project_id/buildings/:building_assign_id/tasks/"
+                  path="projects/:project_id/areas/:building_assign_id/tasks/"
                   element={<ManagerBuildingTaskRedirect />}
                 />
                 <Route
-                  path="projects/:project_id/buildings/:building_assign_id/tasks/:task_assign_id"
+                  path="projects/:project_id/areas/:building_assign_id/tasks/:task_assign_id"
                   element={<ManagerTaskView />}
                 />
                 <Route path="team-leaders" element={<ManagerTeamLeaders />} />
@@ -573,19 +573,19 @@ const App = () => {
                   element={<TeamLeadProjectView />}
                 />
                 <Route
-                  path="buildings/"
+                  path="areas/"
                   element={<Navigate to="/teamlead/detail/projects" replace />}
                 />
                 <Route
-                  path="buildings/create"
+                  path="areas/create"
                   element={<TeamLeadBuildingCreate />}
                 />
                 <Route
-                  path="projects/:project_id/buildings/"
+                  path="projects/:project_id/areas/"
                   element={<TeamLeadProjectRedirect />}
                 />
                 <Route
-                  path="projects/:project_id/buildings/:building_assign_id"
+                  path="projects/:project_id/areas/:building_assign_id"
                   element={<TeamLeadBuildingView />}
                 />
                 <Route
@@ -595,11 +595,11 @@ const App = () => {
                 <Route path="tasks/create" element={<TeamLeadTaskCreate />} />
                 <Route path="tasks/:task_id" element={<TeamLeadTaskEdit />} />
                 <Route
-                  path="projects/:project_id/buildings/:building_assign_id/tasks/"
+                  path="projects/:project_id/areas/:building_assign_id/tasks/"
                   element={<TeamLeadBuildingTaskRedirect />}
                 />
                 <Route
-                  path="projects/:project_id/buildings/:building_assign_id/tasks/:task_assign_id"
+                  path="projects/:project_id/areas/:building_assign_id/tasks/:task_assign_id"
                   element={<TeamLeadTaskView />}
                 />
                 <Route

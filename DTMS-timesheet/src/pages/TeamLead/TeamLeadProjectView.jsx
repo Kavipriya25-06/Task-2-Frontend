@@ -23,10 +23,13 @@ const TeamLeadProjectView = () => {
   const [teamleadManager, setTeamleadManager] = useState([]);
   const [availableTeamleadManager, setAvailableTeamleadManager] = useState([]);
   const [additionalResources, setAdditionalResources] = useState([]);
+  const [lastProject, setLastProject] = useState([]);
+  const [lastProjectCode, setLastProjectCode] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showAttachments, setShowAttachments] = useState(false);
   const [projectData, setProjectData] = useState(null);
   const [projectStatus, setProjectStatus] = useState(false);
+
   const [buildings, setBuildings] = useState([]);
   const [discipline, setDiscipline] = useState([]);
   const [areas, setAreas] = useState([]);
@@ -40,11 +43,12 @@ const TeamLeadProjectView = () => {
     due_date: "",
     estimated_hours: "",
     project_description: "",
-    // project_code: "",
+    project_code: "",
     subdivision: "",
-    // discipline_code: "",
-    // discipline: "",
-    area_of_work: [],
+    discipline_code: "",
+    discipline: "",
+    client: "",
+    project_budget: 0,
   });
 
   const {
@@ -79,7 +83,7 @@ const TeamLeadProjectView = () => {
     title: "",
     hours: "",
   });
-
+  const [client, setClient] = useState([]);
   const [availableAreas, setAvailableAreas] = useState([]);
   const { project_id } = useParams();
   const [editMode, setEditMode] = useState(false); //  Add this at the top
@@ -93,7 +97,7 @@ const TeamLeadProjectView = () => {
   console.log("Project ID from URL:", project_id);
 
   const buildingClick = (building_assign_id) => {
-    navigate(`buildings/${building_assign_id}`);
+    navigate(`areas/${building_assign_id}`);
   };
 
   const handleRemoveBuilding = async (building) => {
@@ -571,6 +575,8 @@ const TeamLeadProjectView = () => {
     fetchBuilding();
     fetchProjectData();
     fetchDiscipline();
+    fetchClient();
+    fetchLastProject();
   }, [project_id]);
 
   useEffect(() => {
@@ -607,6 +613,29 @@ const TeamLeadProjectView = () => {
       setDiscipline(data);
     } catch (error) {
       console.error("Error fetching Discipline:", error);
+    }
+  };
+
+  const fetchClient = async () => {
+    try {
+      const res = await fetch(`${config.apiBaseURL}/client/`);
+      const data = await res.json();
+      setClient(data);
+      // console.log("Disciplines", data);
+    } catch (error) {
+      console.error("Error fetching Clients:", error);
+    }
+  };
+
+  const fetchLastProject = async () => {
+    try {
+      const res = await fetch(`${config.apiBaseURL}/last-project/`);
+      const data = await res.json();
+      setLastProject(data);
+      // console.log("Last project", data);
+      setLastProjectCode(data.project_code);
+    } catch (error) {
+      console.error("Error fetching last project:", error);
     }
   };
 
@@ -671,11 +700,55 @@ const TeamLeadProjectView = () => {
       console.log("Project data", data);
       console.log("Project assign data", data.assigns);
       console.log("buildings assign data", data.assigns[0].buildings); // Check here later Suriya
-      setFormData(data); // clone for edit
+      // setFormData(data); // clone for edit
+      setFormData({
+        ...data,
+        client: data.client?.id || "", // convert object to just the id
+      });
     } catch (error) {
       console.error("Failed to fetch project:", error);
     }
   };
+
+  useEffect(() => {
+    if (!formData.start_date || !lastProjectCode) return;
+    if (
+      formData.discipline_code === null ||
+      formData.discipline_code === undefined ||
+      formData.discipline_code === ""
+    )
+      return;
+    // if (!formData.discipline_code || !formData.start_date || !lastProjectCode)
+    // return;
+
+    const generateProjectCode = () => {
+      const year = new Date(formData.start_date)
+        .getFullYear()
+        .toString()
+        .slice(-2); // e.g., "25"
+      // const disciplineCode = String(formData.discipline_code).padStart(2, "0");
+      const disciplineCode = String(formData.discipline_code);
+      // console.log("Discipline code", disciplineCode);
+
+      // Extract last 4 digits from last project's code // RNS_25_0001
+      const lastSerial = lastProjectCode.slice(8); // e.g., from "RNS_25_0001" => "0001"
+      // const validSerial = Math.max(parseInt(lastSerial), 800);
+      const validSerial = parseInt(lastSerial);
+      const nextSerial = String(parseInt(validSerial || "0") + 1).padStart(
+        4,
+        "0"
+      );
+
+      const newCode = `${disciplineCode}_${year}_${nextSerial}`;
+
+      setFormData((prev) => ({
+        ...prev,
+        project_code: newCode,
+      }));
+    };
+
+    generateProjectCode();
+  }, [formData.discipline_code, lastProjectCode, formData.start_date]);
 
   useEffect(() => {
     generateBuildingCode();
@@ -833,21 +906,22 @@ const TeamLeadProjectView = () => {
           <div className="left-form">
             <div className="left-form-first">
               <div className="project-form-group">
-                {/* <label>
+                <label>
                   Project Code <span className="required-star">*</span>
                 </label>
                 {editMode ? (
                   <input
                     name="project_code"
-                    value={formData.project_code || ""}
+                    value={formData.project_code}
                     onChange={handleChange}
+                    // readOnly
                     required
                   />
                 ) : (
                   <p className="view-data">{projectData.project_code}</p>
-                )} */}
-                <label>Project Code</label>
-                <p>{projectData?.project_code || ""}</p>
+                )}
+                {/* <label>Project Code</label> */}
+                {/* <p>{projectData?.project_code || ""}</p> */}
               </div>
               <div className="project-form-group">
                 <label>
@@ -865,7 +939,7 @@ const TeamLeadProjectView = () => {
                 )}
               </div>
 
-              <div className="project-form-group">
+              {/* <div className="project-form-group">
                 <label>Project Type</label>
                 {editMode ? (
                   <input
@@ -876,16 +950,16 @@ const TeamLeadProjectView = () => {
                 ) : (
                   <p className="view-data">{projectData.project_type}</p>
                 )}
-              </div>
+              </div> */}
               <div className="project-form-group">
-                <label>Discipline Code</label>
-                {/* {editMode ? (
+                <label>Project Type</label>
+                {editMode ? (
                   <select
                     name="discipline_code"
                     value={formData.discipline_code}
                     onChange={(e) => {
-                      const selectedCodee = e.target.value;
-                      const selectedCode = parseInt(selectedCodee);
+                      const selectedCode = e.target.value;
+                      // const selectedCode = parseInt(selectedCodee);
                       const selectedItem = discipline.find(
                         (item) => item.discipline_code === selectedCode
                       );
@@ -896,7 +970,7 @@ const TeamLeadProjectView = () => {
                       });
                     }}
                   >
-                    <option value="">Select Discipline</option>
+                    <option value="">Select Project Type</option>
                     {discipline.map((item) => (
                       <option key={item.id} value={item.discipline_code}>
                         {item.discipline_code} - {item.name}
@@ -907,12 +981,41 @@ const TeamLeadProjectView = () => {
                   <p className="view-data">
                     {projectData.discipline_code} - {projectData.discipline}
                   </p>
-                )} */}
-                <p>
+                )}
+                {/* <p>
                   {projectData.discipline_code} - {projectData.discipline}
-                </p>
+                </p> */}
+              </div>
+
+              <div className="project-form-group">
+                <label>Client</label>
+                {editMode ? (
+                  <select
+                    name="client"
+                    value={formData.client}
+                    onChange={(e) => {
+                      const selectedCode = e.target.value;
+                      setFormData({
+                        ...formData,
+                        client: selectedCode || "",
+                      });
+                    }}
+                  >
+                    <option value="">Select Client</option>
+                    {client.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.client_name}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <p className="view-data">
+                    {projectData.client?.client_name || "-"}
+                  </p>
+                )}
               </div>
             </div>
+
             <div className="left-form-second">
               <div className="roles-box">
                 <label>Project Roles</label>
@@ -925,7 +1028,7 @@ const TeamLeadProjectView = () => {
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       style={{
-                        width: "50%",
+                        width: "80%",
                         height: "30px",
                         marginLeft: "10px",
                       }}
@@ -942,7 +1045,6 @@ const TeamLeadProjectView = () => {
                             key={employee.employee_id}
                             className="employee-checkbox"
                           >
-                            {employee.employee_name} - {employee.designation}
                             <input
                               type="checkbox"
                               className="larger-checkbox"
@@ -967,9 +1069,11 @@ const TeamLeadProjectView = () => {
                                 }
                               }}
                             />
+                            {employee.employee_name} - {employee.designation}
                           </div>
                         ))}
                     </div>
+                    {/* --- Additional Resources Section --- */}
                     <div>
                       <h4
                         style={{
@@ -991,7 +1095,6 @@ const TeamLeadProjectView = () => {
                             key={employee.employee_id}
                             className="employee-checkbox"
                           >
-                            {employee.employee_name} - {employee.designation}
                             <input
                               type="checkbox"
                               className="create-checkbox"
@@ -1015,6 +1118,7 @@ const TeamLeadProjectView = () => {
                                 }
                               }}
                             />
+                            {employee.employee_name} - {employee.designation}
                           </div>
                         ))}
                     </div>
@@ -1451,6 +1555,20 @@ const TeamLeadProjectView = () => {
                   <p className="view-data">{projectData.estimated_hours}</p>
                 )}
               </div>
+              <div className="project-form-group-small">
+                <label>Project Budget</label>
+                {editMode ? (
+                  <input
+                    type="number"
+                    name="project_budget"
+                    value={formData.project_budget}
+                    onChange={handleChange}
+                    className="estd"
+                  />
+                ) : (
+                  <p className="view-data">{projectData.project_budget}</p>
+                )}
+              </div>
             </div>
             <div className="right-form-second">
               <div className="form-group-full-width">
@@ -1490,6 +1608,14 @@ const TeamLeadProjectView = () => {
                   <i className="fas fa-folder-open" /> Reopen
                 </button>
               )}
+
+              <button
+                type="button"
+                onClick={handleDeleteProject}
+                className="btn-delete"
+              >
+                <i className="fas fa-trash-alt" /> Delete
+              </button>
             </>
           ) : (
             <>

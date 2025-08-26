@@ -74,9 +74,9 @@ const ManagerReport = () => {
             <option value="Weekly Utilization">Weekly Utilization</option>
             <option value="Monthly Utilization">Monthly Utilization</option>
             <option value="Yearly Utilization">Yearly Utilization</option>
-            <option value="Timesheet Client Report">
+            {/* <option value="Timesheet Client Report">
               TimeSheet Client Report
-            </option>
+            </option> */}
             <option value="Department Utilization">
               Department Utilization
             </option>

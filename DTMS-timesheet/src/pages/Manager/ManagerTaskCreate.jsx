@@ -19,6 +19,8 @@ import {
 const ManagerTaskCreate = () => {
   const [taskData, setTaskData] = useState({});
   const [isSending, setIsSending] = useState(false);
+  const [lastTask, setLastTask] = useState([]);
+  const [lastTaskCode, setLastTaskCode] = useState([]);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -28,6 +30,22 @@ const ManagerTaskCreate = () => {
 
   const handleCancel = () => {
     navigate("/manager/detail/projects/");
+  };
+
+  useEffect(() => {
+    fetchLastTask();
+  }, []);
+
+  const fetchLastTask = async () => {
+    try {
+      const res = await fetch(`${config.apiBaseURL}/last-task/`);
+      const data = await res.json();
+      setLastTask(data);
+      // console.log("Last project", data);
+      setLastTaskCode(data.task_code);
+    } catch (error) {
+      console.error("Error fetching last project:", error);
+    }
   };
 
   const handleSubmit = async (e) => {

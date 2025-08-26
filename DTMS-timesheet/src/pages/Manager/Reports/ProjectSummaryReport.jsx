@@ -51,6 +51,9 @@ const ProjectSummaryReport = forwardRef(({ year }, ref) => {
         "Project Name",
         "Allocated Hours",
         "Consumed Hours",
+        "Planned start date",
+        "Planned end date",
+        "Elapsed days",
         "Utilization Ratio",
       ];
       sheet.addRow(headers);
@@ -78,6 +81,19 @@ const ProjectSummaryReport = forwardRef(({ year }, ref) => {
         const allocated = parseFloat(project.total_hours || 0);
         const consumed = parseFloat(project.consumed_hours || 0);
         const ratio = allocated > 0 ? (consumed / allocated) * 100 : 0;
+        const startDate = project.start_date
+          ? new Date(project.start_date)
+          : null;
+        const dueDate = project.due_date ? new Date(project.due_date) : null;
+        const completedDate = project.completed_date
+          ? new Date(project.completed_date)
+          : null;
+
+        let elapsedDays = "";
+        if (completedDate && dueDate) {
+          const dayDifference = completedDate - dueDate;
+          elapsedDays = dayDifference / (1000 * 60 * 60 * 24);
+        }
 
         const row = sheet.addRow([
           index + 1,
@@ -85,11 +101,14 @@ const ProjectSummaryReport = forwardRef(({ year }, ref) => {
           project.project_title,
           allocated,
           consumed,
+          startDate,
+          dueDate,
+          elapsedDays,
           ratio / 100, // Store as fraction for % formatting
         ]);
 
         // Format ratio column as percentage
-        row.getCell(6).numFmt = "0.00%";
+        row.getCell(9).numFmt = "0.00%";
       });
 
       // Auto-width for all columns
@@ -127,6 +146,9 @@ const ProjectSummaryReport = forwardRef(({ year }, ref) => {
                 <th>Project Name</th>
                 <th>Allocated Hours</th>
                 <th>Consumed</th>
+                <th>Planned start date</th>
+                <th>Planned end date</th>
+                <th>Elapsed days</th>
                 <th>Utilization Ratio</th>
               </tr>
             </thead>
@@ -138,6 +160,24 @@ const ProjectSummaryReport = forwardRef(({ year }, ref) => {
                   allocated > 0
                     ? ((consumed / allocated) * 100).toFixed(2) + "%"
                     : "0%";
+                const startDate = project.start_date
+                  ? new Date(project.start_date)
+                  : null;
+                const dueDate = project.due_date
+                  ? new Date(project.due_date)
+                  : null;
+                const completedDate = project.completed_date
+                  ? new Date(project.completed_date)
+                  : null;
+
+                let elapsedDays = "0";
+                if (completedDate && dueDate) {
+                  const dayDifference = completedDate - dueDate;
+                  elapsedDays = dayDifference / (1000 * 60 * 60 * 24);
+                }
+
+                const formatDate = (dateStr) =>
+                  dateStr ? new Date(dateStr).toLocaleDateString("en-GB") : "";
 
                 return (
                   <tr key={project.project_id}>
@@ -147,6 +187,9 @@ const ProjectSummaryReport = forwardRef(({ year }, ref) => {
                     </td>
                     <td>{allocated.toFixed(2)}</td>
                     <td>{consumed.toFixed(2)}</td>
+                    <td>{formatDate(startDate)}</td>
+                    <td>{formatDate(dueDate)}</td>
+                    <td>{elapsedDays}</td>
                     <td>{ratio}</td>
                   </tr>
                 );

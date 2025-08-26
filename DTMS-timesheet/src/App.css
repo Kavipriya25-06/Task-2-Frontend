@@ -2879,7 +2879,7 @@ h3 {
   cursor: pointer;
   padding: 4px 0;
   display: inline-block;
-  margin-left: 59%;
+  margin-left: 54%;
 }
 
 .btn-forgot:hover {
@@ -4215,12 +4215,30 @@ h4 {
   font-size: 14px !important;
   color: gray; /* Dark gray-blue */
   font-weight: 500; /* Medium weight */
-  padding: 8px 12px;
+  padding: 10px;
+  border: 1px solid #ccc;
   background-color: #e5e6e6; /* Light background for contrast */
   border-radius: 6px;
   display: inline-block;
-  margin: 4px 0;
-  max-width: 50%;
+  margin: 0px 0;
+  /* max-width: 90%; */
+  width: 90%;
+  word-wrap: break-word;
+}
+
+.project-form-group .view-data {
+  font-size: 14px !important;
+  color: gray; /* Dark gray-blue */
+  font-weight: 500; /* Medium weight */
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #e5e6e6; /* Light background for contrast */
+  border-radius: 6px;
+  display: inline-block;
+  margin: 0px 0;
+  box-sizing: border-box;
+  /* max-width: 90%; */
+  width: 80%;
   word-wrap: break-word;
 }
 
@@ -4537,12 +4555,12 @@ h4 {
   transform: translateY(-1px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
-
+/* 
 .project-form-group p {
   margin: 0%;
   font-size: 14px;
   margin-left: 2px;
-}
+} */
 
 .area-group,
 .subdivision-group {
@@ -4612,7 +4630,8 @@ h4 {
   border: 1px solid #ccc;
   font-size: 14px;
   background-color: #f1f0f0;
-  width: 90%;
+  width: 80%;
+  box-sizing: border-box;
 }
 
 .comp-off-button {
@@ -4652,7 +4671,7 @@ h4 {
   border: 1px solid #ccc;
   font-size: 14px;
   background-color: #f1f1f1;
-  width: 90%;
+  width: 80%;
 }
 
 .building-row input {

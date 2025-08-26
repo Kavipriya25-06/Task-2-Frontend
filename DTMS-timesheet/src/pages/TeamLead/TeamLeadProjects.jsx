@@ -230,7 +230,7 @@ const TeamLeadProjects = () => {
               <div className="search-bar-container">
                 <input
                   type="text"
-                  placeholder="Search by code, title, or discipline"
+                  placeholder="Search by code, title, or project type"
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
                   className="search-bar"
@@ -279,7 +279,7 @@ const TeamLeadProjects = () => {
                     <th>Variation hours</th>
                     <th>Total hours</th>
                     <th>Consumed hours</th>
-                    <th>Discipline</th>
+                    <th>Project Type</th>
                     <th>
                       Status&nbsp;
                       <span
