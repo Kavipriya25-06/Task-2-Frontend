@@ -383,6 +383,8 @@ const ManagerBuildingView = () => {
       );
       const data = await response.json();
       setBuildingsAssign(data);
+      setBuildingStatus(data.building?.completed_status);
+      setBuildingId(data.building?.building_id);
       setFormData({
         building_hours: data.building_hours || "",
         building_title: data.building?.building_title || "",
@@ -601,7 +603,7 @@ const ManagerBuildingView = () => {
                     {buildingsAssign.tasks.map((t) => (
                       <div key={t.task_assign_id} className="task-tile">
                         <div
-                          // onClick={() => taskClick(t.task_assign_id)}
+                          onClick={() => taskClick(t.task_assign_id)}
                           className="building-tile-small"
                         >
                           {t.task.task_title}
@@ -658,7 +660,7 @@ const ManagerBuildingView = () => {
                     <i className="fas fa-calendar-alt calendar-icon"></i>
                   </div>
                 ) : (
-                  <p className="view-date">
+                  <p className="view-data">
                     {buildingsAssign.building?.start_date &&
                       format(
                         new Date(buildingsAssign.building?.start_date),
@@ -689,7 +691,7 @@ const ManagerBuildingView = () => {
                     <i className="fas fa-calendar-alt calendar-icon"></i>
                   </div>
                 ) : (
-                  <p className="view-date">
+                  <p className="view-data">
                     {buildingsAssign.building?.due_date &&
                       format(
                         new Date(buildingsAssign.building?.due_date),
@@ -747,7 +749,6 @@ const ManagerBuildingView = () => {
                             key={employee.employee_id}
                             className="employee-checkbox"
                           >
-                            {employee.employee_name} - {employee.designation}
                             <input
                               type="checkbox"
                               className="larger-checkbox"
@@ -772,6 +773,7 @@ const ManagerBuildingView = () => {
                                 }
                               }}
                             />
+                            {employee.employee_name} - {employee.designation}
                           </div>
                         ))}
                     </div>
@@ -929,7 +931,7 @@ const ManagerBuildingView = () => {
                           alignItems: "center",
                         }}
                       >
-                        {/* <div className="date-input-container">
+                        <div className="date-input-container">
                           <DatePicker
                             selected={
                               selected.start_date
@@ -970,7 +972,7 @@ const ManagerBuildingView = () => {
                             dropdownMode="select"
                           />
                           <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
-                        </div> */}
+                        </div>
                       </div>
                     </>
                   )}

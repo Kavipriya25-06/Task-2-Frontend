@@ -656,7 +656,7 @@ const ManagerTaskView = () => {
                     <i className="fas fa-calendar-alt calendar-icon"></i>
                   </div>
                 ) : (
-                  <p className="view-date">
+                  <p className="view-data">
                     {formData?.start_date
                       ? format(new Date(formData.start_date), "dd-MMM-yyyy")
                       : ""}
@@ -691,7 +691,7 @@ const ManagerTaskView = () => {
                     <i className="fas fa-calendar-alt calendar-icon"></i>
                   </div>
                 ) : (
-                  <p className="view-date">
+                  <p className="view-data">
                     {formData?.due_date
                       ? format(new Date(formData.due_date), "dd-MMM-yyyy")
                       : ""}
@@ -720,7 +720,7 @@ const ManagerTaskView = () => {
               </div>
             </div>
             <div className="right-form-second">
-              <div className="project-form-group">
+              <div className="form-group-full-width">
                 <label>Priority</label>
                 {editMode ? (
                   <select
@@ -735,10 +735,10 @@ const ManagerTaskView = () => {
                     <option value="Critical">Critical</option>
                   </select>
                 ) : (
-                  <p className="view-text">{taskData?.priority || ""}</p>
+                  <p className="view-data">{taskData?.priority || ""}</p>
                 )}
               </div>
-              <div className="project-form-group">
+              <div className="form-group-full-width">
                 <label>Comments</label>
                 {editMode ? (
                   <textarea

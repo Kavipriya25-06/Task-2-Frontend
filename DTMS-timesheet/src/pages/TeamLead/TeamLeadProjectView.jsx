@@ -83,6 +83,7 @@ const TeamLeadProjectView = () => {
     title: "",
     hours: "",
   });
+
   const [client, setClient] = useState([]);
   const [availableAreas, setAvailableAreas] = useState([]);
   const { project_id } = useParams();
@@ -97,7 +98,7 @@ const TeamLeadProjectView = () => {
   console.log("Project ID from URL:", project_id);
 
   const buildingClick = (building_assign_id) => {
-    navigate(`areas/${building_assign_id}`);
+    navigate(`buildings/${building_assign_id}`);
   };
 
   const handleRemoveBuilding = async (building) => {
@@ -529,6 +530,8 @@ const TeamLeadProjectView = () => {
         building_code: buildingData.building_code,
         building_title: buildingData.building_title,
         building_description: buildingData.building_description,
+        start_date: buildingData.start_date,
+        due_date: buildingData.due_date,
       },
       assign: {
         building_hours: buildingData.building_hours,
@@ -1353,7 +1356,7 @@ const TeamLeadProjectView = () => {
                   </div>
                 ) : attachments.length > 0 ? (
                   <>
-                    {/* 📎 Toggle View */}
+                    {/*  Toggle View */}
                     <a
                       href="#"
                       onClick={(e) => {
@@ -1507,7 +1510,7 @@ const TeamLeadProjectView = () => {
                     <i className="fas fa-calendar-alt calendar-icon"></i>
                   </div>
                 ) : (
-                  <p className="view-date">
+                  <p className="view-data">
                     {formData.start_date &&
                       format(new Date(formData.start_date), "dd-MMM-yyyy")}
                   </p>
@@ -1535,7 +1538,7 @@ const TeamLeadProjectView = () => {
                     <i className="fas fa-calendar-alt calendar-icon"></i>
                   </div>
                 ) : (
-                  <p className="view-date">
+                  <p className="view-data">
                     {formData.due_date &&
                       format(new Date(formData.due_date), "dd-MMM-yyyy")}
                   </p>
@@ -1671,6 +1674,52 @@ const TeamLeadProjectView = () => {
                         onChange={handleBuildingChange}
                         className="bottom-inputs"
                       />
+                    </div>
+                  </div>
+                  <div className="bottom-element">
+                    <div className="project-form-group-small">
+                      <label>Start Date</label>
+                      <br />
+                      <div className="date-input-container">
+                        <DatePicker
+                          selected={buildingData.start_date}
+                          onChange={(date) =>
+                            setFormData({
+                              ...buildingData,
+                              start_date: format(date, "yyyy-MM-dd"),
+                            })
+                          }
+                          dateFormat="dd-MMM-yyyy"
+                          placeholderText="dd-mm-yyyy"
+                          showMonthDropdown
+                          showYearDropdown
+                          dropdownMode="select"
+                        />
+                        <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+                        {/* Font Awesome Calendar Icon */}
+                      </div>
+                    </div>
+                    <div className="project-form-group-small">
+                      <label>End Date</label>
+                      <br />
+                      <div className="date-input-container">
+                        <DatePicker
+                          selected={buildingData.due_date}
+                          onChange={(date) =>
+                            setFormData({
+                              ...buildingData,
+                              due_date: format(date, "yyyy-MM-dd"),
+                            })
+                          }
+                          dateFormat="dd-MMM-yyyy"
+                          placeholderText="dd-mm-yyyy"
+                          showMonthDropdown
+                          showYearDropdown
+                          dropdownMode="select"
+                        />
+                        <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+                        {/* Font Awesome Calendar Icon */}
+                      </div>
                     </div>
                   </div>
                   <div className="bottom-element">

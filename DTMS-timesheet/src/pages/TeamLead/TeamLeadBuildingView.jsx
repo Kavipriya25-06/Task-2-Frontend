@@ -191,6 +191,9 @@ const TeamLeadBuildingView = () => {
       // building_title: "",
       // building_description: "",
       // building_code: "",
+      building_title: formData.building_title,
+      building_description: formData.building_description,
+      building_code: formData.building_code,
       completed_status: formData.completed_status,
       start_date: formData.start_date
         ? format(new Date(formData.start_date), "yyyy-MM-dd")
@@ -204,6 +207,52 @@ const TeamLeadBuildingView = () => {
       employee: availableTeamleadManager.map((e) => e.employee_id),
       status: "inprogress",
     };
+
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/buildings/${formData.building_id}/`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(buildingPayload),
+        }
+      );
+
+      if (response.ok) {
+        console.log("Building updated!");
+        // showSuccessToast("Sub-Division Updated");
+        // setEditMode(false);
+        // setSearchQuery("");
+      } else {
+        showErrorToast("Failed to update project");
+      }
+    } catch (err) {
+      console.error("Update error:", err);
+      showErrorToast(err);
+    }
+
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/buildings/${buildingId}/`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(buildingPayload),
+        }
+      );
+
+      if (response.ok) {
+        console.log("Building updated!");
+        showSuccessToast("Sub-Division Updated");
+        setEditMode(false);
+        setSearchQuery("");
+      } else {
+        showErrorToast("Failed to update project");
+      }
+    } catch (err) {
+      console.error("Update error:", err);
+      showErrorToast(err);
+    }
 
     try {
       const response = await fetch(
@@ -554,7 +603,7 @@ const TeamLeadBuildingView = () => {
                     {buildingsAssign.tasks.map((t) => (
                       <div key={t.task_assign_id} className="task-tile">
                         <div
-                          // onClick={() => taskClick(t.task_assign_id)}
+                          onClick={() => taskClick(t.task_assign_id)}
                           className="building-tile-small"
                         >
                           {t.task.task_title}
@@ -611,7 +660,7 @@ const TeamLeadBuildingView = () => {
                     <i className="fas fa-calendar-alt calendar-icon"></i>
                   </div>
                 ) : (
-                  <p className="view-date">
+                  <p className="view-data">
                     {buildingsAssign.building?.start_date &&
                       format(
                         new Date(buildingsAssign.building?.start_date),
@@ -642,7 +691,7 @@ const TeamLeadBuildingView = () => {
                     <i className="fas fa-calendar-alt calendar-icon"></i>
                   </div>
                 ) : (
-                  <p className="view-date">
+                  <p className="view-data">
                     {buildingsAssign.building?.due_date &&
                       format(
                         new Date(buildingsAssign.building?.due_date),
@@ -700,7 +749,6 @@ const TeamLeadBuildingView = () => {
                             key={employee.employee_id}
                             className="employee-checkbox"
                           >
-                            {employee.employee_name} - {employee.designation}
                             <input
                               type="checkbox"
                               className="larger-checkbox"
@@ -725,6 +773,7 @@ const TeamLeadBuildingView = () => {
                                 }
                               }}
                             />
+                            {employee.employee_name} - {employee.designation}
                           </div>
                         ))}
                     </div>
@@ -796,15 +845,37 @@ const TeamLeadBuildingView = () => {
         <div className="form-buttons">
           {!editMode ? (
             <>
-              <button
-                type="button"
-                onClick={() => handleDeleteBuilding(formData.building_id)}
-                className="btn-delete"
-              >
-                <i className="fas fa-trash-alt" /> Delete
-              </button>
+              {!buildingStatus ? (
+                <button
+                  type="button"
+                  onClick={handleBuildingComplete}
+                  className="btn-complete"
+                >
+                  <i className="fas fa-check" /> Mark as Completed
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleBuildingInComplete}
+                  className="btn-complete"
+                >
+                  <i className="fas fa-folder-open" /> Reopen
+                </button>
+              )}
             </>
           ) : (
+            //   (
+            // {!editMode ? (
+            //   <>
+            //     <button
+            //       type="button"
+            //       onClick={() => handleDeleteBuilding(formData.building_id)}
+            //       className="btn-delete"
+            //     >
+            //       <i className="fas fa-trash-alt" /> Delete
+            //     </button>
+            //   </>
+            // ) :
             <>
               <button
                 type="submit"
@@ -860,7 +931,7 @@ const TeamLeadBuildingView = () => {
                           alignItems: "center",
                         }}
                       >
-                        {/* <div className="date-input-container">
+                        <div className="date-input-container">
                           <DatePicker
                             selected={
                               selected.start_date
@@ -901,7 +972,7 @@ const TeamLeadBuildingView = () => {
                             dropdownMode="select"
                           />
                           <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
-                        </div> */}
+                        </div>
                       </div>
                     </>
                   )}

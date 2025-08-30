@@ -386,7 +386,8 @@ textarea {
   overflow-y: auto;
   border: none;
   border-radius: 8px;
-  padding: 10px;
+  /* padding: 10px; */
+  width: 90%;
   position: relative;
   z-index: 1;
   scrollbar-width: thin; /* For Firefox */
@@ -3530,8 +3531,8 @@ button.delete-building:hover {
 .right-form-second {
   padding: 0px;
   display: grid;
-  gap: 10%;
-  grid-template-rows: 1fr 0.4fr;
+  gap: 20px;
+  grid-template-rows: 1fr 2fr;
   margin-top: 6%;
 
   /* grid-template-columns: 1fr 1fr; */
@@ -3641,7 +3642,7 @@ button.delete-building:hover {
   padding: 10px;
   display: grid;
   gap: 30px;
-  grid-template-rows: 1fr 2fr;
+  grid-template-rows: 1fr 1fr 2fr;
 }
 
 .edit-task-elements {
@@ -4017,7 +4018,7 @@ h4 {
   background-color: #ebebeb;
   border: 1px solid rgb(202, 202, 202);
   height: 100px;
-  width: 100%;
+  width: 90%;
   border-radius: 8px;
   display: flex;
   flex-direction: column;
@@ -4226,6 +4227,38 @@ h4 {
   word-wrap: break-word;
 }
 
+.project-form-group-small .view-data {
+  font-size: 14px !important;
+  color: gray; /* Dark gray-blue */
+  font-weight: 500; /* Medium weight */
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #e5e6e6; /* Light background for contrast */
+  border-radius: 6px;
+  display: inline-block;
+  margin: 0px 0;
+  box-sizing: border-box;
+  /* max-width: 90%; */
+  width: 100%;
+  word-wrap: break-word;
+}
+
+.form-group-full-width .view-data {
+  font-size: 14px !important;
+  color: gray; /* Dark gray-blue */
+  font-weight: 500; /* Medium weight */
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #e5e6e6; /* Light background for contrast */
+  border-radius: 6px;
+  display: inline-block;
+  margin: 0px 0;
+  box-sizing: border-box;
+  /* max-width: 90%; */
+  width: 100%;
+  word-wrap: break-word;
+}
+
 .project-form-group .view-data {
   font-size: 14px !important;
   color: gray; /* Dark gray-blue */
@@ -4247,7 +4280,8 @@ h4 {
 }
 
 .view-text {
-  color: gray;
+  font-size: 14px !important;
+  /* color: gray; */
 }
 
 .view-date {
@@ -4263,7 +4297,8 @@ h4 {
   word-wrap: break-word;
 }
 
-.view-description {
+/* .project-form-group-small  */
+.form-group-full-width .view-description {
   font-size: 14px !important;
   color: gray; /* Dark gray-blue */
   font-weight: 500; /* Medium weight */
@@ -4272,8 +4307,9 @@ h4 {
   border-radius: 6px;
   display: inline-block;
   margin: 4px 0;
-  min-width: 80%;
-  max-width: 80%;
+  /* min-width: 80%;
+  max-width: 80%; */
+  /* width: 100%; */
   word-wrap: break-word;
   height: 80px;
 }
@@ -4671,7 +4707,7 @@ h4 {
   border: 1px solid #ccc;
   font-size: 14px;
   background-color: #f1f1f1;
-  width: 80%;
+  width: 90%;
 }
 
 .building-row input {
@@ -5396,6 +5432,14 @@ h4 {
   width: 100%;
   height: 150%;
   margin-top: 5px;
+}
+.form-group-full-width select {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  background-color: #f1f1f1;
+  width: 100%;
 }
 
 /* .button-group {

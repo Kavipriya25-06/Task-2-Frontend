@@ -106,6 +106,8 @@ const ManagerProjectCreate = () => {
               building_code: b.building_code,
               employee: [],
               building_hours: b.building_hours,
+              start_date: b.start_date,
+              due_date: b.due_date,
               // status: "pending",
             }))
           : [
@@ -758,6 +760,52 @@ const ManagerProjectCreate = () => {
                       onChange={handleBuildingChange}
                       className="bottom-inputs"
                     />
+                  </div>
+                </div>
+                <div className="bottom-element">
+                  <div className="project-form-group-small">
+                    <label>Start Date</label>
+                    <br />
+                    <div className="date-input-container">
+                      <DatePicker
+                        selected={buildingData.start_date}
+                        onChange={(date) =>
+                          setFormData({
+                            ...buildingData,
+                            start_date: format(date, "yyyy-MM-dd"),
+                          })
+                        }
+                        dateFormat="dd-MMM-yyyy"
+                        placeholderText="dd-mm-yyyy"
+                        showMonthDropdown
+                        showYearDropdown
+                        dropdownMode="select"
+                      />
+                      <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+                      {/* Font Awesome Calendar Icon */}
+                    </div>
+                  </div>
+                  <div className="project-form-group-small">
+                    <label>End Date</label>
+                    <br />
+                    <div className="date-input-container">
+                      <DatePicker
+                        selected={buildingData.due_date}
+                        onChange={(date) =>
+                          setFormData({
+                            ...buildingData,
+                            due_date: format(date, "yyyy-MM-dd"),
+                          })
+                        }
+                        dateFormat="dd-MMM-yyyy"
+                        placeholderText="dd-mm-yyyy"
+                        showMonthDropdown
+                        showYearDropdown
+                        dropdownMode="select"
+                      />
+                      <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
+                      {/* Font Awesome Calendar Icon */}
+                    </div>
                   </div>
                 </div>
                 <div className="bottom-element">
