@@ -568,69 +568,67 @@ const ManagerProjectCreate = () => {
               <div className="project-form-group">
                 <label className="file-upload-label">Attachments</label>
 
-                <div className="file-upload-section">
-                  <div className="plus-upload-wrappers">
-                    <label
-                      htmlFor="file-upload-input"
-                      className="plus-upload-button"
-                    >
-                      +
-                    </label>
-                    <input
-                      type="file"
-                      id="file-upload-input"
-                      name="attachments"
-                      multiple
-                      accept=".pdf,.jpg,.jpeg,.png"
-                      style={{ display: "none" }}
-                      onChange={handleAttachmentChange}
-                      className="real-file-input"
-                    />
+                <div className="plus-upload-wrappers">
+                  <label
+                    htmlFor="file-upload-input"
+                    className="plus-upload-button"
+                  >
+                    +
+                  </label>
+                  <input
+                    type="file"
+                    id="file-upload-input"
+                    name="attachments"
+                    multiple
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    style={{ display: "none" }}
+                    onChange={handleAttachmentChange}
+                    className="real-file-input"
+                  />
 
-                    {/* File chips go here */}
-                    {(attachments.length > 0 || newAttachments.length > 0) && (
-                      <div className="selected-files">
-                        {attachments.map((file, index) => (
-                          <div key={`existing-${index}`} className="file-chip">
-                            <a
-                              href={file.url || "#"}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="file-name"
-                            >
-                              {file.name}
-                            </a>
-                            <button
-                              type="button"
-                              className="remove-file"
-                              onClick={() => removeExistingAttachment(index)}
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                        {newAttachments.map((file, index) => (
-                          <div key={`new-${index}`} className="file-chip">
-                            <a
-                              href={URL.createObjectURL(file)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="file-name"
-                            >
-                              {file.name}
-                            </a>
-                            <button
-                              type="button"
-                              className="remove-file"
-                              onClick={() => removeNewAttachment(index)}
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  {/* File chips go here */}
+                  {(attachments.length > 0 || newAttachments.length > 0) && (
+                    <div className="selected-files">
+                      {attachments.map((file, index) => (
+                        <div key={`existing-${index}`} className="file-chip">
+                          <a
+                            href={file.url || "#"}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="file-name"
+                          >
+                            {file.name}
+                          </a>
+                          <button
+                            type="button"
+                            className="remove-file"
+                            onClick={() => removeExistingAttachment(index)}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                      {newAttachments.map((file, index) => (
+                        <div key={`new-${index}`} className="file-chip">
+                          <a
+                            href={URL.createObjectURL(file)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="file-name"
+                          >
+                            {file.name}
+                          </a>
+                          <button
+                            type="button"
+                            className="remove-file"
+                            onClick={() => removeNewAttachment(index)}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

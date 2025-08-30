@@ -4700,7 +4700,15 @@ h4 {
   outline: none;
 }
 
-.project-form-group select,
+.project-form-group select {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  background-color: #f1f1f1;
+  width: 80%;
+}
+
 .project-form-group textarea {
   padding: 10px;
   border-radius: 6px;

@@ -19,6 +19,8 @@ import Cropper from "react-easy-crop";
 import getCroppedImg from "../../constants/cropimage"; // Path to the helper
 import Slider from "@mui/material/Slider";
 import Modal from "@mui/material/Modal";
+import TinyDepartmentInput from "../../constants/TinyDepartmentInput";
+import TinyDesignationInput from "../../constants/TinyDesignationInput";
 
 import {
   showSuccessToast,
@@ -34,6 +36,8 @@ const AddEmployee = () => {
   const managerId = user.employee_id;
   const navigate = useNavigate();
   const [managers, setManagers] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [designations, setDesignations] = useState([]);
   const [lastEmployee, setLastEmployee] = useState({});
   const [lastEmployeeCode, setLastEmployeeCode] = useState("");
   const [attachments, setAttachments] = useState([
@@ -184,6 +188,26 @@ const AddEmployee = () => {
       );
       const data = await response.json();
       setManagers(data); // Store managers data
+    } catch (error) {
+      console.error("Error fetching managers:", error);
+    }
+  };
+
+  const fetchDepartment = async () => {
+    try {
+      const response = await fetch(`${config.apiBaseURL}/department/`);
+      const data = await response.json();
+      setDepartments(data); // Store managers data
+    } catch (error) {
+      console.error("Error fetching managers:", error);
+    }
+  };
+
+  const fetchDesignation = async () => {
+    try {
+      const response = await fetch(`${config.apiBaseURL}/designation/`);
+      const data = await response.json();
+      setDesignations(data); // Store managers data
     } catch (error) {
       console.error("Error fetching managers:", error);
     }
@@ -491,7 +515,6 @@ const AddEmployee = () => {
               <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
             </div>
           </div>
-
           <div className="individual-tabs">
             <label>Location</label>
             <input
@@ -510,6 +533,18 @@ const AddEmployee = () => {
               placeholder="Title"
             />
           </div>
+          {/* <select
+              name="designation"
+              value={formData.designation}
+              onChange={handleChange}
+            >
+              <option value="">Select Title</option>
+              {designations.map((d) => (
+                <option key={d.id} value={d.designation}>
+                  {d.designation}
+                </option>
+              ))}
+            </select>
           {/* <input
             name="role"
             placeholder="Role"
@@ -536,6 +571,18 @@ const AddEmployee = () => {
               onChange={handleChange}
               placeholder="Department"
             />
+            {/* <select
+              name="department"
+              value={formData.department}
+              onChange={handleChange}
+            >
+              <option value="">Select Department</option>
+              {departments.map((d) => (
+                <option key={d.id} value={d.department}>
+                  {d.department}
+                </option>
+              ))}
+            </select> */}
           </div>
           <div className="individual-tabs">
             <label>Employee Status</label>
@@ -592,7 +639,6 @@ const AddEmployee = () => {
               ))}
             </select>
           </div>
-
           <div className="individual-tabs">
             <label>Seating Location</label>
             <input
@@ -602,7 +648,6 @@ const AddEmployee = () => {
               placeholder="Seating Location"
             />
           </div>
-
           <div className="individual-tabs">
             <label>Employment Type</label>
             <select
