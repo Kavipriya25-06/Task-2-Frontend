@@ -265,7 +265,7 @@ const HRSettings = () => {
               name="days_to_expire"
               className="estd"
               style={{ width: "20%", marginTop: "10px" }}
-              value={compOffExpiry.days_to_expire}
+              value={compOffExpiry?.days_to_expire || "0"}
               onChange={handleChange}
             />
           </div>

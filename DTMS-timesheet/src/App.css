@@ -5415,6 +5415,8 @@ h4 {
 
 .form-group-full-width {
   /* display: grid; */
+  display: flex;
+  flex-direction: column;
   padding: 0px;
   margin-top: -2%;
   /* grid-column: span 2; */
