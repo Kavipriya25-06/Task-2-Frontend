@@ -25,6 +25,8 @@ import LogoutPopup from "./pages/Logout_popup.jsx"; // adjust the import path as
 import Login from "./pages/Login.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import HeroSlider from "./components/HeroSlider.jsx";
+import LeaveRequestForm from "./components/LeaveRequestForm.jsx";
+import LeaveRequests from "./components/LeaveRequests.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import HomeRedirect from "./pages/HomeRedirect.jsx";
@@ -74,6 +76,7 @@ import HRLeaveRequestForm from "./pages/HR/HRLeaveRequestForm.jsx";
 import HRLeaveRequestsList from "./pages/HR/HRLeaveRequestsList.jsx";
 import HRTimeSheetEntry from "./pages/HR/HRTimeSheetEntry.jsx";
 import HRWeeklyTimeSheetEntry from "./pages/HR/HRWeeklyTimeSheetEntry.jsx";
+import AddAttendance from "./pages/HR/AddAttendance.jsx";
 
 // Manager pages
 import ManagerDashboard from "./pages/Manager/ManagerDashboard.jsx";
@@ -365,12 +368,16 @@ const App = () => {
                 <Route path="leave-requests" element={<HRLeaveRequests />} />
                 <Route path="leave-balance" element={<HRLeaveBalanceEdit />} />
                 <Route path="attendance" element={<HRAttendance />} />
+                <Route
+                  path="attendance/attendance-admin"
+                  element={<AddAttendance />}
+                />
                 <Route path="settings" element={<HRSettings />} />
                 <Route path="reports" element={<HRReports />} />
                 <Route path="compoffrequest" element={<HRCompoffRequest />} />
                 <Route
                   path="leave-requests/Leaveapplication"
-                  element={<HRLeaveRequestsList />}
+                  element={<LeaveRequests />}
                 />
                 <Route
                   path="leave-requests/create"
@@ -502,7 +509,7 @@ const App = () => {
                 />
                 <Route
                   path="leave-requests/Leaveapplication"
-                  element={<ManagerLeaveApplication />}
+                  element={<LeaveRequests />}
                 />
                 <Route
                   path="time-sheet-entry"
@@ -631,10 +638,7 @@ const App = () => {
                   element={<TeamLeadWeeklyTimeSheetEntry />}
                 />
                 <Route path="employees" element={<TeamLeadEmployees />} />
-                <Route
-                  path="leave-requests"
-                  element={<TeamLeadLeaveRequests />}
-                />
+                <Route path="leave-requests" element={<LeaveRequests />} />
                 <Route
                   path="leave-requests/create"
                   element={<TeamLeadLeaveRequestForm />}
@@ -725,10 +729,7 @@ const App = () => {
                 />
 
                 <Route path="tasks" element={<EmployeeTasks />} />
-                <Route
-                  path="leave-requests"
-                  element={<EmployeeLeaveRequests />}
-                />
+                <Route path="leave-requests" element={<LeaveRequests />} />
                 <Route
                   path="leave-requests/create"
                   element={<EmployeeLeaveRequestForm />}

@@ -156,6 +156,10 @@ const HRAttendance = () => {
     setCurrentWeek(newDate);
   };
 
+  const handleAttendanceClick = () => {
+    navigate(`attendance-admin/`);
+  };
+
   useEffect(() => {
     fetchAttendanceData();
   }, [currentWeek]);
@@ -210,20 +214,30 @@ const HRAttendance = () => {
             }}
           />
         </div>
-        <button
-          onClick={() => handleBiometricSync()}
-          className="report-btn"
-          disabled={isSending}
-          style={{ pointerEvents: isSending ? "none" : "auto" }}
-        >
-          {isSending ? (
-            <>
-              <span className="spinner-otp" /> Syncing...
-            </>
-          ) : (
-            "Sync Biometric"
-          )}
-        </button>
+        <div>
+          <button
+            style={{ marginRight: "20px" }}
+            className="btn-save"
+            onClick={() => handleAttendanceClick()}
+          >
+            Add Attendance
+          </button>
+
+          <button
+            onClick={() => handleBiometricSync()}
+            className="report-btn"
+            disabled={isSending}
+            style={{ pointerEvents: isSending ? "none" : "auto" }}
+          >
+            {isSending ? (
+              <>
+                <span className="spinner-otp" /> Syncing...
+              </>
+            ) : (
+              "Sync Biometric"
+            )}
+          </button>
+        </div>
       </div>
 
       <div className="attendance-scroll-container">
