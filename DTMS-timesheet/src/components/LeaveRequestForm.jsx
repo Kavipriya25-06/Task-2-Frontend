@@ -285,6 +285,8 @@ const LeaveRequestForm = ({ leaveType, onClose }) => {
 
     setFormData((prev) => {
       // If Comp-off selected, lock end to same day
+      const durNum = parseFloat(prev.duration || "1");
+      const isHalf = durNum < 1;
       const lockSameDay =
         prev.leaveType === "Comp off" && prev.compoff_request_id;
       return {
@@ -292,6 +294,8 @@ const LeaveRequestForm = ({ leaveType, onClose }) => {
         startDate: date,
         endDate: lockSameDay ? date : prev.endDate || date,
         // leaveDayType for Comp-off already forced by select; for normal leave keep as is
+        leaveDayType: lockSameDay && isHalf ? "half" : "full",
+        //
       };
     });
   };
@@ -483,6 +487,9 @@ const LeaveRequestForm = ({ leaveType, onClose }) => {
     );
     if (formData.attachment) {
       data.append("attachment", formData.attachment);
+    }
+    if (formData.compoff_request_id) {
+      data.append("comp_off", formData.compoff_request_id);
     }
     data.append("employee", user.employee_id); // Assuming employee_id like "EMP_00068"
     data.append("status", "pending"); // Default status when submitted

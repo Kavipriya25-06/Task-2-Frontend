@@ -7,6 +7,13 @@ import config from "../config";
 
 import LeaveRequestForm from "./LeaveRequestForm";
 import { format, parse } from "date-fns";
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast,
+  ToastContainerComponent,
+} from "../constants/Toastify";
 
 const LeaveRequests = () => {
   const { user } = useAuth();
@@ -18,6 +25,7 @@ const LeaveRequests = () => {
     // earned: 0,
     lop: 0,
   });
+  const [isSending, setIsSending] = useState(false);
   const [leaveRequests, setLeaveRequests] = useState([]);
   const [selectedLeaveType, setSelectedLeaveType] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -74,6 +82,100 @@ const LeaveRequests = () => {
     }
   };
 
+  const handleDelete = async (
+    leave_taken_id,
+    leaveTypeKey,
+    duration,
+    employee_id,
+    compoff_request_id
+  ) => {
+    setIsSending(true);
+
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/leaves-taken/${leave_taken_id}/`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Error updating leave: ${response.statusText}`);
+      }
+
+      console.log("Leave rejected successfully");
+      showSuccessToast("Leave deleted successfully");
+      await patchLeaveAvailability(leaveTypeKey, duration, employee_id);
+      if (leaveTypeKey === "comp_off" && compoff_request_id) {
+        await handleStatusUpdate(compoff_request_id, "approved");
+      }
+      fetchLeaveRequests(); // Refresh the leave requests after rejection
+      fetchLeaveSummary();
+    } catch (error) {
+      console.error("Error rejecting leave", error);
+      showErrorToast("Error deleting leave", error);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const handleStatusUpdate = async (id, newStatus) => {
+    setIsSending(true);
+    try {
+      // Step 1: PATCH status of comp-off request
+      const statusResponse = await fetch(
+        `${config.apiBaseURL}/comp-off-request/${id}/`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: newStatus }),
+        }
+      );
+
+      if (!statusResponse.ok) {
+        showErrorToast("Failed to update comp-off request status");
+        return;
+      }
+    } catch (error) {
+      console.error("Error updating comp-off status", error);
+      alert("Something went wrong while updating status.");
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const patchLeaveAvailability = async (
+    leaveTypeKey,
+    duration,
+    employee_id
+  ) => {
+    const patchURL = `${config.apiBaseURL}/leaves-available/by_employee/${employee_id}/`;
+
+    try {
+      // Step 1: Fetch current available leave
+      const res = await fetch(patchURL);
+      const currentData = await res.json();
+
+      const currentLeave = parseFloat(currentData[leaveTypeKey] || 0);
+      const newLeaveBalance = currentLeave + parseFloat(duration);
+
+      // Step 2: Patch with updated value
+      const patchRes = await fetch(patchURL, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [leaveTypeKey]: newLeaveBalance }),
+      });
+
+      if (!patchRes.ok) {
+        const err = await patchRes.json();
+        console.error("Leave availability update failed:", err);
+      }
+    } catch (err) {
+      console.error("Error patching leave availability:", err);
+    }
+  };
+
   const keyMap = {
     Sick: "sick",
     Casual: "casual",
@@ -109,7 +211,6 @@ const LeaveRequests = () => {
                 );
               })}
             </div>
-
             {/* Leave Requests Table */}
             <table className="leave-requests-table">
               <thead>
@@ -167,7 +268,29 @@ const LeaveRequests = () => {
                           : "-"}
                       </td>
                       <td>{request.reason}</td>
-                      <td>{request.status}</td>
+                      <td>
+                        {request.status === "pending" ? (
+                          <span>
+                            {request.status}
+                            <i
+                              className="fas fa-trash-alt"
+                              onClick={() =>
+                                handleDelete(
+                                  request.leave_taken_id,
+                                  request.leave_type,
+                                  request.duration,
+                                  request.employee,
+                                  request.comp_off
+                                )
+                              }
+                              style={{ cursor: "pointer", marginLeft: "5px" }}
+                              disabled={isSending}
+                            ></i>
+                          </span>
+                        ) : (
+                          request.status
+                        )}
+                      </td>
                       <td>
                         {request.attachments &&
                         request.attachments.length > 1 ? (
@@ -282,6 +405,7 @@ const LeaveRequests = () => {
                 />
               </button>
             </div>
+            <ToastContainerComponent />
           </>
         ) : (
           <LeaveRequestForm
