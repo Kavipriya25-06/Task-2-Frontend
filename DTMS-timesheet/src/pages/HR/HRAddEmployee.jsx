@@ -184,7 +184,7 @@ const AddEmployee = () => {
   const fetchManagers = async () => {
     try {
       const response = await fetch(
-        `${config.apiBaseURL}/teamlead-and-managers/`
+        `${config.apiBaseURL}/active-teamlead-and-managers/`
       );
       const data = await response.json();
       setManagers(data); // Store managers data

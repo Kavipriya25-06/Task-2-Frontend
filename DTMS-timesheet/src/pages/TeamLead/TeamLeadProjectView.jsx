@@ -645,7 +645,7 @@ const TeamLeadProjectView = () => {
   const fetchTeamleadManager = async () => {
     try {
       const response = await fetch(
-        `${config.apiBaseURL}/emp-details/${user.employee_id}/`
+        `${config.apiBaseURL}/active-emp-details/${user.employee_id}/`
       );
       const data = await response.json();
       setTeamleadManager(data);

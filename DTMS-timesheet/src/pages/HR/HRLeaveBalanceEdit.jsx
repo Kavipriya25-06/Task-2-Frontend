@@ -32,7 +32,7 @@ const HRLeaveBalanceEdit = () => {
 
   const fetchLeaves = () => {
     setLoading(true);
-    fetch(`${config.apiBaseURL}/leaves-available-report/?year=${year}`)
+    fetch(`${config.apiBaseURL}/active-leaves-available-report/?year=${year}`)
       .then((res) => res.json())
       .then((json) => {
         setLeaveData(json);

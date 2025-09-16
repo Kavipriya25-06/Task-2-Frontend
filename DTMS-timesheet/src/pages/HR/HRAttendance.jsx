@@ -110,7 +110,9 @@ const HRAttendance = () => {
 
   const fetchEmployee = async () => {
     try {
-      const response = await fetch(`${config.apiBaseURL}/emp-details/`);
+      const response = await fetch(
+        `${config.apiBaseURL}/emp-details-resg/?today=${weekDays[0].mapdate}`
+      );
       const data = await response.json();
       console.log("User data", data);
       setEmployeeData(data);
@@ -162,11 +164,12 @@ const HRAttendance = () => {
 
   useEffect(() => {
     fetchAttendanceData();
-  }, [currentWeek]);
-
-  useEffect(() => {
     fetchEmployee();
-  }, [user]);
+  }, [currentWeek, user]);
+
+  // useEffect(() => {
+  //   fetchEmployee();
+  // }, [user]);
 
   useEffect(() => {
     setCurrentPage(1);

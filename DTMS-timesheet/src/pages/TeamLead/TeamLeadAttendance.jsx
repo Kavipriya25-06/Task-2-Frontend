@@ -88,7 +88,7 @@ const TeamLeadAttendance = () => {
   const fetchEmployee = async () => {
     try {
       const response = await fetch(
-        `${config.apiBaseURL}/emp-details/${user.employee_id}/`
+        `${config.apiBaseURL}/emp-details-resg/${user.employee_id}/?today=${weekDays[0].mapdate}`
       );
       const data = await response.json();
       console.log("User data", data);
@@ -118,11 +118,12 @@ const TeamLeadAttendance = () => {
 
   useEffect(() => {
     fetchAttendanceData();
-  }, [currentWeek]);
-
-  useEffect(() => {
     fetchEmployee();
-  }, [user]);
+  }, [currentWeek, user]);
+
+  // useEffect(() => {
+  //   fetchEmployee();
+  // }, [user]);
 
   const formatToHHMM = (decimalHours) => {
     const hours = Math.floor(decimalHours);
