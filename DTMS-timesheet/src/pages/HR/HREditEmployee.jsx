@@ -65,6 +65,11 @@ const EditEmployee = () => {
       name: "ID Proof/Driving ID/Voter ID",
       files: [],
     },
+    {
+      document_type: "revisedappraisal",
+      name: "Revised appraisal letter",
+      files: [],
+    },
   ]);
 
   const [assets, setAssets] = useState([]);

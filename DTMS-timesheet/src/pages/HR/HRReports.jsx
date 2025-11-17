@@ -16,10 +16,14 @@ import {
 import LeaveTakenReport from "./Reports/LeaveTakenReport";
 import LeaveBalanceReport from "./Reports/LeaveBalanceReport";
 import LOPReport from "./Reports/LOPReport";
+import AttritionReport from "./Reports/AttritionReport";
+import MonthlyAttendanceReport from "./Reports/MonthlyAttendanceReport";
+import LeaveMonthlyLedger from "./Reports/LeaveMonthlyLedger";
 
 const HRReports = () => {
   //new onee
   const [year, setYear] = useState(new Date().getFullYear());
+  const [month, setMonth] = useState(new Date().getMonth() + 1); // 1-12
   const [employeeSearch, setEmployeeSearch] = useState("");
 
   const [selectedReport, setSelectedReport] = useState("Leave Taken Report");
@@ -36,10 +40,48 @@ const HRReports = () => {
       case "Leave Taken Report":
         return <LeaveTakenReport {...commonProps} />;
       case "Leave Balance Report":
-        return <LeaveBalanceReport {...commonProps} />;
+        return (
+          <LeaveMonthlyLedger
+            ref={reportRef}
+            year={year}
+            month={month}
+            employeeSearch={employeeSearch}
+          />
+        );
       case "LOP Report":
         return <LOPReport {...commonProps} />;
+      case "Attrition Report":
+        return <AttritionReport {...commonProps} />;
+      case "Monthly Attendance Report":
+        return (
+          <MonthlyAttendanceReport
+            ref={reportRef}
+            year={year}
+            month={month}
+            employeeSearch={employeeSearch}
+          />
+        );
     }
+  };
+
+  // month navigation helpers
+  const decMonth = () => {
+    setMonth((m) => {
+      if (m === 1) {
+        setYear((y) => y - 1);
+        return 12;
+      }
+      return m - 1;
+    });
+  };
+  const incMonth = () => {
+    setMonth((m) => {
+      if (m === 12) {
+        setYear((y) => y + 1);
+        return 1;
+      }
+      return m + 1;
+    });
   };
 
   return (
@@ -50,6 +92,10 @@ const HRReports = () => {
             <option value="Leave Taken Report">Leave Taken Report</option>
             <option value="Leave Balance Report">Leave Balance Report</option>
             <option value="LOP Report">LOP Report</option>
+            <option value="Attrition Report">Attrition Report</option>
+            <option value="Monthly Attendance Report">
+              Monthly Attendance Report
+            </option>
           </select>
         </div>
         <div style={{ margin: "10px 0", textAlign: "center" }}>
@@ -96,6 +142,28 @@ const HRReports = () => {
               &gt;
             </button>
           </div>
+          {(selectedReport === "Monthly Attendance Report" ||
+            selectedReport === "Leave Balance Report") && (
+            <div
+              className="report-form-group"
+              style={{ display: "flex", alignItems: "center", gap: 8 }}
+            >
+              <button onClick={decMonth}>&lt;</button>
+              <span
+                style={{
+                  minWidth: 90,
+                  textAlign: "center",
+                  fontWeight: "bold",
+                  fontSize: 18,
+                }}
+              >
+                {new Date(year, month - 1, 1).toLocaleString("en-GB", {
+                  month: "long",
+                })}
+              </span>
+              <button onClick={incMonth}>&gt;</button>
+            </div>
+          )}
         </div>
 
         <button
@@ -116,7 +184,7 @@ const HRReports = () => {
       </div>
       <div
         className="table-wrapper"
-        style={{ maxHeight: "400px" }}
+        style={{ maxHeight: "60vh" }}
         onScroll={(e) => {
           const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
           if (

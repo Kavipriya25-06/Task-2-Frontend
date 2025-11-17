@@ -16,6 +16,11 @@ export const ManagerBuildingTaskRedirect = () => {
   );
 };
 
+export const ManagerClientRedirect = () => {
+  const { id } = useParams();
+  return <Navigate to={`/manager/detail/clients/view/${id}/`} replace />;
+};
+
 export const TeamLeadProjectRedirect = () => {
   const { project_id } = useParams();
   return <Navigate to={`/teamlead/detail/projects/${project_id}/`} replace />;

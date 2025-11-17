@@ -19,6 +19,8 @@ const ManagerDashboard = () => {
 
   const tiles = [
     { label: "Projects", path: "detail/projects" },
+    { label: "Clients", path: "detail/clients" },
+    // { label: "Client-POC", path: "detail/pocs" },
     { label: "Team Leaders", path: "detail/team-leaders" },
     { label: "Employees", path: "detail/employees" },
     { label: "Time Sheet Entry", path: "detail/time-sheet-entry" },

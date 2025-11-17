@@ -492,3 +492,28 @@
 .th-popover .th-checkbox-item span {
   white-space: nowrap;
 } /* keep "sick leave" tight */
+
+/* somewhere in your global CSS */
+.disabled-link {
+  pointer-events: none;
+  opacity: 0.5;
+  text-decoration: none;
+  cursor: not-allowed;
+}
+
+
+/* somewhere in your global CSS */
+.disabled-link-add-user-btn {
+  align-self: flex-end;
+  padding: 10px 20px;
+  background: #c16b03;
+  border: none;
+  /* cursor: pointer; */
+  border-radius: 8px;
+  margin-bottom: 10px;
+  color: black;
+  pointer-events: none;
+  opacity: 0.5;
+  /* text-decoration: none; */
+  cursor: not-allowed;
+}

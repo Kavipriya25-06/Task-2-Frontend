@@ -79,6 +79,57 @@ const ManagerProjects = () => {
     }
   };
 
+  // NEW: status checkbox-filter state (default: both selected)
+  const [selectedStatuses, setSelectedStatuses] = useState(
+    new Set(["In progress", "Completed"])
+  );
+
+  // NEW: tiny popover state (mirrors your LeaveTakenReport approach)
+  const [openMenu, setOpenMenu] = useState(null); // "status" | null
+  const popoverRef = useRef(null);
+  const [menuPos, setMenuPos] = useState({ top: 0, left: 0, width: 220 });
+
+  const openMenuAt = (e, key) => {
+    e.stopPropagation();
+    const rect = e.currentTarget.getBoundingClientRect();
+    const gap = 6;
+    let left = Math.max(20, Math.min(rect.left, window.innerWidth - 320 - 20));
+    // let left = 20;
+    let top = rect.bottom + gap;
+    setMenuPos({ top, left, width: 220 });
+    setOpenMenu((prev) => (prev === key ? null : key));
+  };
+
+  // close popover on outside click / ESC / scroll
+  useEffect(() => {
+    const onDocClick = (ev) => {
+      if (!popoverRef.current) return;
+      if (!popoverRef.current.contains(ev.target)) setOpenMenu(null);
+    };
+    const onEsc = (ev) => ev.key === "Escape" && setOpenMenu(null);
+    const onScroll = () => setOpenMenu(null);
+    document.addEventListener("mousedown", onDocClick);
+    document.addEventListener("keydown", onEsc);
+    window.addEventListener("scroll", onScroll, true);
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener("keydown", onEsc);
+      window.removeEventListener("scroll", onScroll, true);
+    };
+  }, []);
+
+  const toggleStatus = (label) => {
+    setSelectedStatuses((prev) => {
+      const next = new Set(prev);
+      if (next.has(label)) next.delete(label);
+      else next.add(label);
+      return next;
+    });
+  };
+  const selectAllStatuses = () =>
+    setSelectedStatuses(new Set(["In progress", "Completed"]));
+  const clearAllStatuses = () => setSelectedStatuses(new Set());
+
   const fetchReports = async () => {
     try {
       const response = await fetch(`${config.apiBaseURL}/export-report/`, {
@@ -178,6 +229,54 @@ const ManagerProjects = () => {
     fetchTasks();
   }, []);
 
+  // useEffect(() => {
+  //   if (searchTimeout.current) {
+  //     clearTimeout(searchTimeout.current);
+  //   }
+
+  //   searchTimeout.current = setTimeout(() => {
+  //     const lowerSearch = searchText.toLowerCase();
+  //     const filtered = projects.filter((u) => {
+  //       const code = u.project_code?.toLowerCase() || "";
+  //       const name = u.project_title?.toLowerCase() || "";
+  //       const discipline = u.discipline?.toLowerCase() || "";
+  //       // const matchesStatus = String(u.status).toLowerCase() || "";
+  //       // return (
+  //       //   code.includes(lowerSearch) ||
+  //       //   name.includes(lowerSearch) ||
+  //       //   discipline.includes(lowerSearch) ||
+  //       //   matchesStatus.includes(statusFilter)
+  //       // );
+
+  //       const matchesSearch =
+  //         code.includes(lowerSearch) ||
+  //         name.includes(lowerSearch) ||
+  //         discipline.includes(lowerSearch);
+
+  //       const matchesStatus =
+  //         statusFilter === "" || String(u.status) === statusFilter;
+
+  //       return matchesSearch && matchesStatus;
+  //     });
+  //     setFilteredProjects(filtered);
+  //     setVisibleProjects(10);
+  //     setHasMoreProjects(filtered.length > 10);
+
+  //     if (searchText && filtered.length === 0) {
+  //       // toast.info("No users found", {
+  //       //   className: "custom-toast",
+  //       //   bodyClassName: "custom-toast-body",
+  //       //   progressClassName: "custom-toast-progress",
+  //       //   position: "top-center",
+  //       //   autoClose: 2000,
+  //       //   hideProgressBar: true,
+  //       // });
+  //     }
+  //   }, 100);
+
+  //   return () => clearTimeout(searchTimeout.current);
+  // }, [searchText, projects, statusFilter]);
+
   useEffect(() => {
     if (searchTimeout.current) {
       clearTimeout(searchTimeout.current);
@@ -185,46 +284,32 @@ const ManagerProjects = () => {
 
     searchTimeout.current = setTimeout(() => {
       const lowerSearch = searchText.toLowerCase();
+
       const filtered = projects.filter((u) => {
         const code = u.project_code?.toLowerCase() || "";
         const name = u.project_title?.toLowerCase() || "";
         const discipline = u.discipline?.toLowerCase() || "";
-        // const matchesStatus = String(u.status).toLowerCase() || "";
-        // return (
-        //   code.includes(lowerSearch) ||
-        //   name.includes(lowerSearch) ||
-        //   discipline.includes(lowerSearch) ||
-        //   matchesStatus.includes(statusFilter)
-        // );
-
         const matchesSearch =
           code.includes(lowerSearch) ||
           name.includes(lowerSearch) ||
           discipline.includes(lowerSearch);
 
-        const matchesStatus =
-          statusFilter === "" || String(u.status) === statusFilter;
+        // IMPORTANT: use 'completed_status' (boolean) not 'status'
+        const label = u.completed_status ? "Completed" : "In progress";
+        const matchesStatus = selectedStatuses.has(label);
 
+        // If you still want the old cycle-icon filter, remove it now
+        // or keep both (then also AND with statusFilter if needed).
         return matchesSearch && matchesStatus;
       });
+
       setFilteredProjects(filtered);
       setVisibleProjects(10);
       setHasMoreProjects(filtered.length > 10);
-
-      if (searchText && filtered.length === 0) {
-        // toast.info("No users found", {
-        //   className: "custom-toast",
-        //   bodyClassName: "custom-toast-body",
-        //   progressClassName: "custom-toast-progress",
-        //   position: "top-center",
-        //   autoClose: 2000,
-        //   hideProgressBar: true,
-        // });
-      }
     }, 100);
 
     return () => clearTimeout(searchTimeout.current);
-  }, [searchText, projects, statusFilter]);
+  }, [searchText, projects, selectedStatuses]);
 
   // console.log("status filter", statusFilter);
   useEffect(() => {
@@ -345,13 +430,16 @@ const ManagerProjects = () => {
                 <thead>
                   <tr>
                     <th>Project code</th>
-                    <th>Project name</th>
-                    <th>Estd. hours</th>
-                    <th>Variation hours</th>
-                    <th>Total hours</th>
-                    <th>Consumed hours</th>
                     <th>Project Type</th>
-                    <th>
+                    <th>Project name</th>
+                    <th>Consumed hours</th>
+                    <th>Start date</th>
+                    {/* <th>Estd. hours</th>
+                    <th>Variation hours</th> */}
+                    <th>Client</th>
+                    <th>Total hours</th>
+
+                    {/* <th>
                       Status&nbsp;
                       <span
                         onClick={() => {
@@ -388,6 +476,19 @@ const ManagerProjects = () => {
                           ></i>
                         )}
                       </span>
+                    </th> */}
+                    <th className="th-with-filter">
+                      <div className="th-label">Status</div>
+                      <button
+                        className="th-filter-btn"
+                        title="Filter by Project Status"
+                        onClick={(e) => openMenuAt(e, "status")}
+                      >
+                        <i className="fa-solid fa-filter"></i>
+                      </button>
+                      {selectedStatuses.size !== 2 && (
+                        <span className="th-chip">{selectedStatuses.size}</span>
+                      )}
                     </th>
                   </tr>
                 </thead>
@@ -414,12 +515,14 @@ const ManagerProjects = () => {
                           >
                             {project.project_code}
                           </td>
-                          <td>{project.project_title}</td>
-                          <td>{project.estimated_hours}</td>
-                          <td>{project.variation_hours}</td>
-                          <td>{project.total_hours}</td>
-                          <td>{project.consumed_hours}</td>
                           <td>{project.discipline}</td>
+                          <td>{project.project_title}</td>
+                          <td>{project.consumed_hours}</td>
+                          <td>{project.start_date}</td>
+                          <td>{project.client?.client_name || "-"}</td>
+                          {/* <td>{project.estimated_hours}</td> */}
+                          {/* <td>{project.variation_hours}</td> */}
+                          <td>{project.total_hours}</td>
                           <td>
                             {project.completed_status
                               ? "Completed"
@@ -437,6 +540,63 @@ const ManagerProjects = () => {
                 <div className="no-message">No more data</div>
               )}
             </div>
+            {openMenu === "status" && (
+              <div
+                ref={popoverRef}
+                className="th-popover"
+                style={{
+                  position: "fixed",
+                  top: menuPos.top,
+                  left: menuPos.left,
+                  width: menuPos.width,
+                  maxHeight: "60vh",
+                  overflowY: "auto",
+                  zIndex: 9999,
+                  background: "#fff",
+                  border: "1px solid #ddd",
+                  borderRadius: 8,
+                  boxShadow: "0 6px 24px rgba(0,0,0,0.12)",
+                  padding: 12,
+                }}
+                onMouseDown={(e) => e.stopPropagation()}
+              >
+                <div style={{ fontWeight: 600, marginBottom: 8 }}>
+                  Project Status
+                </div>
+                <div
+                  className="th-checkbox-list"
+                  style={{ display: "grid", gap: 6 }}
+                >
+                  {["In progress", "Completed"].map((t) => (
+                    <label
+                      key={t}
+                      className="th-checkbox-item"
+                      style={{ display: "flex", gap: 8 }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedStatuses.has(t)}
+                        onChange={() => toggleStatus(t)}
+                      />
+                      <span>{t}</span>
+                    </label>
+                  ))}
+                </div>
+                <div
+                  className="th-popover-actions"
+                  style={{
+                    display: "flex",
+                    gap: 8,
+                    justifyContent: "flex-end",
+                    marginTop: 10,
+                  }}
+                >
+                  <button onClick={selectAllStatuses}>Select All</button>
+                  <button onClick={clearAllStatuses}>Clear</button>
+                  <button onClick={() => setOpenMenu(null)}>Done</button>
+                </div>
+              </div>
+            )}
             <ToastContainer />
           </div>
         );

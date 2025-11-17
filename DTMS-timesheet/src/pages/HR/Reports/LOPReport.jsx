@@ -432,7 +432,7 @@ const LOPReport = forwardRef(({ year, employeeSearch = "" }, ref) => {
 
       <div
         className="table-wrapper"
-        style={{ maxHeight: 400, overflowY: "auto" }}
+        style={{overflowY: "auto" }}
       >
         {loading ? (
           <div style={{ padding: 20 }}>Loading leave data...</div>

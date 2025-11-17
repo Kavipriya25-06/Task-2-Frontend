@@ -768,7 +768,7 @@ const ManagerProjectCreate = () => {
                       <DatePicker
                         selected={buildingData.start_date}
                         onChange={(date) =>
-                          setFormData({
+                          setBuildingData({
                             ...buildingData,
                             start_date: format(date, "yyyy-MM-dd"),
                           })
@@ -790,7 +790,7 @@ const ManagerProjectCreate = () => {
                       <DatePicker
                         selected={buildingData.due_date}
                         onChange={(date) =>
-                          setFormData({
+                          setBuildingData({
                             ...buildingData,
                             due_date: format(date, "yyyy-MM-dd"),
                           })

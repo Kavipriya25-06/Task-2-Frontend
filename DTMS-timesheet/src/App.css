@@ -1162,7 +1162,7 @@ table input[type="number"]:focus {
 }
 
 .attendance-scroll-container {
-  max-height: 400px;
+  max-height: 60vh;
   overflow-x: auto;
   overflow-y: auto;
 }
@@ -2470,6 +2470,22 @@ h3 {
   margin-top: 5%;
 }
 
+/* Hover effect for active (enabled) buttons */
+.week-navigation button:hover:not(:disabled) {
+  background-color: #bfbfbf;
+  transform: scale(1.05);
+}
+
+/* Disabled state styling */
+.week-navigation button:disabled {
+  background-color: #f0f0f0; /* Lighter background */
+  color: #aaa; /* Dim text color */
+  cursor: not-allowed; /* Show "not-allowed" cursor */
+  opacity: 0.6; /* Slightly faded */
+  transform: none; /* Disable scale animation */
+  box-shadow: none; /* Remove any shadows if present */
+}
+
 .attendance-admin button {
   background-color: #f1890d;
 }
@@ -2508,6 +2524,52 @@ h3 {
   border: 1.5px solid #303030;
   text-align: center;
   font-style: italic;
+}
+
+/* Color border only, keep background same */
+.attendance-tile.status-approved {
+  border: 2px solid #28a745; /* Green */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.attendance-tile.status-rejected {
+  border: 2px solid #dc3545; /* Red */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.attendance-tile.status-pending {
+  border: 2px solid #ffc107; /* Yellow */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.attendance-tile.leave {
+  border: 2px solid #ffc107; /* Yellow */
+  background-color: #ffffe0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.attendance-tile.nobio {
+  /* border: 2px solid #ff0f07;  */
+  background-color: #ffe8e8;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.attendance-tile.holiday {
+  border: 2px solid #ffc107; /* Yellow */
+  background-color: #fdf1cd;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 /* .attendance-table .table-attend {
@@ -5749,6 +5811,11 @@ table {
   margin-top: -5px;
   background-color: #d6d6d6;
   border-radius: 5px;
+}
+
+.report-navigation {
+  display: flex;
+  flex-direction: row;
 }
 
 .report-navigation button {

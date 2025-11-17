@@ -271,175 +271,286 @@ const TeamLeadProjectView = () => {
     }
   };
 
-  const handleUpdate = async () => {
-    setIsSending(true);
-    // 1️ Update Project
+  // This async helper for API post and patch
+
+  async function apiRequest(url, method = "GET", body = null) {
+    const options = { method, headers: { "Content-Type": "application/json" } };
+    if (body) options.body = JSON.stringify(body);
+
+    const res = await fetch(url, options);
+    if (!res.ok) throw new Error(`API error: ${res.status}`);
+    return res.json().catch(() => ({})); // handle empty response
+  }
+
+  function formatDateOrNull(date) {
+    return date ? format(new Date(date), "yyyy-MM-dd") : null;
+  }
+
+  // Async functions for each update
+  async function updateProject(projectId, formData, user) {
     const payload = {
       ...formData,
-      start_date: formData.start_date
-        ? format(new Date(formData.start_date), "yyyy-MM-dd")
-        : null,
-      due_date: formData.due_date
-        ? format(new Date(formData.due_date), "yyyy-MM-dd")
-        : null,
-      area_of_work: formData.area_of_work,
+      start_date: formatDateOrNull(formData.start_date),
+      due_date: formatDateOrNull(formData.due_date),
       created_by: user.employee_id,
     };
+    await apiRequest(
+      `${config.apiBaseURL}/projects/${projectId}/`,
+      "PATCH",
+      payload
+    );
+  }
 
-    try {
-      const response = await fetch(
-        `${config.apiBaseURL}/projects/${project_id}/`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }
-      );
-
-      if (!response.ok) {
-        showErrorToast("Failed to update project");
-        return;
-      }
-    } catch (err) {
-      console.error("Project update error:", err);
-      return;
-    }
-
-    // 2️ Update Project Assign (employees + hours)
-    const assignId = projectData.assigns[0].project_assign_id;
-
-    const assignPayload = {
-      employee: availableTeamleadManager.map((e) => e.employee_id),
+  async function updateProjectAssign(assignId, formData, team) {
+    if (!assignId || team.length === 0) return;
+    const payload = {
+      employee: team.map((e) => e.employee_id),
       project_hours: formData.estimated_hours,
       status: "pending",
     };
-
-    try {
-      const teamRes = await fetch(
+    await apiRequest(
         `${config.apiBaseURL}/projects-assign-update/${assignId}/`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(assignPayload),
-        }
-      );
+      "PATCH",
+      payload
+    );
+  }
 
-      if (!teamRes.ok) {
-        showErrorToast("Failed to update project assign");
-        return;
+  async function updateBuildingAssignments(assignId, availableBuildings) {
+    if (!assignId || availableBuildings.length === 0) return;
+
+    const updates = availableBuildings.map((b) => ({
+      building_assign_id: b.building_assign_id || null,
+      building_id: b.building?.building_id || b.building_id,
+      building_hours: b.building_hours || 0,
+      status: "pending",
+    }));
+
+    if (updates.length === 0) return;
+    await apiRequest(
+      `${config.apiBaseURL}/buildings-assign-update/?project_assign_id=${assignId}`,
+      "PATCH",
+      updates
+    );
       }
-    } catch (err) {
-      console.error("Project assign update error:", err);
-      return;
+
+  async function uploadAttachments(projectId, files) {
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("project", projectId);
+      const res = await fetch(`${config.apiBaseURL}/attachments/`, {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) console.error("Failed to upload:", file.name);
     }
-    // 3️ Handle new and updated variations:
-    // const updatedVariations = variations.map(async (variation) => {
-    //   if (variation.id) {
-    //     // Update existing variation using PATCH
-    //     const updateResponse = await fetch(
-    //       `${config.apiBaseURL}/variation/${variation.id}/`,
+  }
+
+  // const handleUpdate = async () => {
+  //   setIsSending(true);
+  //   // 1️ Update Project
+  //   const payload = {
+  //     ...formData,
+  //     start_date: formData.start_date
+  //       ? format(new Date(formData.start_date), "yyyy-MM-dd")
+  //       : null,
+  //     due_date: formData.due_date
+  //       ? format(new Date(formData.due_date), "yyyy-MM-dd")
+  //       : null,
+  //     area_of_work: formData.area_of_work,
+  //     created_by: user.employee_id,
+  //   };
+
+  //   try {
+  //     const response = await fetch(
+  //       `${config.apiBaseURL}/projects/${project_id}/`,
     //       {
     //         method: "PATCH",
     //         headers: { "Content-Type": "application/json" },
-    //         body: JSON.stringify(variation),
+  //         body: JSON.stringify(payload),
     //       }
     //     );
-    //     if (!updateResponse.ok) {
-    //       console.error("Failed to update variation:", variation);
-    //       showErrorToast("Failed to update variations");
-    //     }
-    //   }
-    // });
 
-    // const newVariationRequests = newVariations.map(async (newVariation) => {
-    //   // Create new variation using POST
-    //   const postResponse = await fetch(`${config.apiBaseURL}/variation/`, {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify(newVariation),
+  //     if (!response.ok) {
+  //       showErrorToast("Failed to update project");
+  //       return;
+  //     }
+  //   } catch (err) {
+  //     console.error("Project update error:", err);
+  //     return;
+  //   }
+
+  //   // 2️ Update Project Assign (employees + hours)
+  //   const assignId = projectData.assigns[0].project_assign_id;
+
+  //   const assignPayload = {
+  //     employee: availableTeamleadManager.map((e) => e.employee_id),
+  //     project_hours: formData.estimated_hours,
+  //     status: "pending",
+  //   };
+
+  //   try {
+  //     const teamRes = await fetch(
+  //       `${config.apiBaseURL}/projects-assign-update/${assignId}/`,
+  //       {
+  //         method: "PATCH",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify(assignPayload),
+  //       }
+  //     );
+
+  //     if (!teamRes.ok) {
+  //       showErrorToast("Failed to update project assign");
+  //       return;
+  //     }
+  //   } catch (err) {
+  //     console.error("Project assign update error:", err);
+  //     return;
+  //   }
+  //   // 3️ Handle new and updated variations:
+  //   // const updatedVariations = variations.map(async (variation) => {
+  //   //   if (variation.id) {
+  //   //     // Update existing variation using PATCH
+  //   //     const updateResponse = await fetch(
+  //   //       `${config.apiBaseURL}/variation/${variation.id}/`,
+  //   //       {
+  //   //         method: "PATCH",
+  //   //         headers: { "Content-Type": "application/json" },
+  //   //         body: JSON.stringify(variation),
+  //   //       }
+  //   //     );
+  //   //     if (!updateResponse.ok) {
+  //   //       console.error("Failed to update variation:", variation);
+  //   //       showErrorToast("Failed to update variations");
+  //   //     }
+  //   //   }
+  //   // });
+
+  //   // const newVariationRequests = newVariations.map(async (newVariation) => {
+  //   //   // Create new variation using POST
+  //   //   const postResponse = await fetch(`${config.apiBaseURL}/variation/`, {
+  //   //     method: "POST",
+  //   //     headers: { "Content-Type": "application/json" },
+  //   //     body: JSON.stringify(newVariation),
+  //   //   });
+  //   //   if (!postResponse.ok) {
+  //   //     console.error("Failed to post new variation:", newVariation);
+  //   //     // showErrorToast("Failed to add new variation");
+  //   //   }
+  //   // });
+
+  //   // // Wait for all PATCH and POST requests to complete
+  //   // await Promise.all([...updatedVariations, ...newVariationRequests]);
+
+  //   // // Clear new variations after submission
+  //   // setNewVariations([{ date: "", title: "", hours: "", project: "" }]);
+
+  //   if (newAttachments.length > 0) {
+  //     for (const file of newAttachments) {
+  //       const formData = new FormData();
+  //       formData.append("file", file);
+  //       formData.append("project", project_id);
+
+  //       const uploadRes = await fetch(`${config.apiBaseURL}/attachments/`, {
+  //         method: "POST",
+  //         body: formData,
+  //       });
+
+  //       if (!uploadRes.ok) {
+  //         console.error("Failed to upload file:", file.name);
+  //       }
+  //     }
+  //     setNewAttachments([]);
+
+  //     // Refresh the list after all uploads
+  //     const attachResponse = await fetch(
+  //       `${config.apiBaseURL}/attachments/project/${project_id}`
+  //     );
+  //     const attachData = await attachResponse.json();
+  //     setAttachments(attachData);
+  //     setNewAttachments([]);
+  //   }
+
+  //   // const buildingUpdates = availableBuildings.map((b) => ({
+  //   //   building_assign_id: b.building_assign_id || null,
+  //   //   building_id: b.building?.building_id || b.building_id,
+  //   //   building_hours: b.building_hours || 0,
+  //   //   status: "pending",
+  //   // }));
+
+  //   const buildingUpdates = availableBuildings.map((b) => {
+  //     const update = {
+  //       building_id: b.building?.building_id || b.building_id,
+  //       building_hours: b.building_hours || 0,
+  //       status: "pending",
+  //     };
+  //     if (b.building_assign_id) {
+  //       update.building_assign_id = b.building_assign_id;
+  //     }
+  //     return update;
     //   });
-    //   if (!postResponse.ok) {
-    //     console.error("Failed to post new variation:", newVariation);
-    //     // showErrorToast("Failed to add new variation");
-    //   }
-    // });
 
-    // // Wait for all PATCH and POST requests to complete
-    // await Promise.all([...updatedVariations, ...newVariationRequests]);
+  //   try {
+  //     const buildingRes = await fetch(
+  //       `${config.apiBaseURL}/buildings-assign-update/?project_assign_id=${assignId}`,
+  //       {
+  //         method: "PATCH",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify(buildingUpdates),
+  //       }
+  //     );
 
-    // // Clear new variations after submission
-    // setNewVariations([{ date: "", title: "", hours: "", project: "" }]);
+  //     if (!buildingRes.ok) {
+  //       showErrorToast("Failed to update Sub-Division assignments");
+  //       return;
+  //     }
+  //   } catch (err) {
+  //     console.error("Building assign update error:", err);
+  //     return;
+  //   }
 
-    if (newAttachments.length > 0) {
-      for (const file of newAttachments) {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("project", project_id);
+  //   // If all succeeded
+  //   showSuccessToast("Project updated successfully!");
+  //   setEditMode(false);
+  //   setSearchQuery("");
+  //   setIsSending(false);
+  //   fetchProjectData(); // refresh UI
+  // };
 
-        const uploadRes = await fetch(`${config.apiBaseURL}/attachments/`, {
-          method: "POST",
-          body: formData,
-        });
-
-        if (!uploadRes.ok) {
-          console.error("Failed to upload file:", file.name);
-        }
-      }
-      setNewAttachments([]);
-
-      // Refresh the list after all uploads
-      const attachResponse = await fetch(
-        `${config.apiBaseURL}/attachments/project/${project_id}`
-      );
-      const attachData = await attachResponse.json();
-      setAttachments(attachData);
-      setNewAttachments([]);
-    }
-
-    // const buildingUpdates = availableBuildings.map((b) => ({
-    //   building_assign_id: b.building_assign_id || null,
-    //   building_id: b.building?.building_id || b.building_id,
-    //   building_hours: b.building_hours || 0,
-    //   status: "pending",
-    // }));
-
-    const buildingUpdates = availableBuildings.map((b) => {
-      const update = {
-        building_id: b.building?.building_id || b.building_id,
-        building_hours: b.building_hours || 0,
-        status: "pending",
-      };
-      if (b.building_assign_id) {
-        update.building_assign_id = b.building_assign_id;
-      }
-      return update;
-    });
+  const handleUpdate = async () => {
+    setIsSending(true);
 
     try {
-      const buildingRes = await fetch(
-        `${config.apiBaseURL}/buildings-assign-update/?project_assign_id=${assignId}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(buildingUpdates),
-        }
+      const assignId = projectData.assigns[0]?.project_assign_id;
+
+      // Step 1 & 2 sequential (must update project before assign)
+      await updateProject(project_id, formData, user);
+      await updateProjectAssign(assignId, formData, availableTeamleadManager);
+
+      // Step 3: Parallel operations
+      await Promise.all([
+        updateBuildingAssignments(assignId, availableBuildings),
+        uploadAttachments(project_id, newAttachments),
+        // handleVariations(variations, newVariations) // if you re-enable that logic
+      ]);
+
+      // Refresh attachments list
+      const attachData = await apiRequest(
+        `${config.apiBaseURL}/attachments/project/${project_id}`
       );
+      setAttachments(attachData);
+      setNewAttachments([]);
 
-      if (!buildingRes.ok) {
-        showErrorToast("Failed to update Sub-Division assignments");
-        return;
-      }
-    } catch (err) {
-      console.error("Building assign update error:", err);
-      return;
-    }
-
-    // If all succeeded
     showSuccessToast("Project updated successfully!");
     setEditMode(false);
     setSearchQuery("");
+    } catch (error) {
+      console.error("Update failed:", error);
+      showErrorToast("Something went wrong during update.");
+    } finally {
     setIsSending(false);
-    fetchProjectData(); // refresh UI
+      fetchProjectData();
+    }
   };
 
   const handleBuildingChange = (e) => {
@@ -687,9 +798,21 @@ const TeamLeadProjectView = () => {
       const data = await response.json();
       setProjectData(data);
       setProjectStatus(data.completed_status);
+      setFormData({
+        ...data,
+        client: data.client?.id || "", // convert object to just the id
+      });
 
-      setAvailableBuildings(data.assigns[0].buildings);
-      setAvailableTeamleadManager(data.assigns[0].employee);
+      // setAvailableBuildings(data.assigns[0]?.buildings);
+      setAvailableBuildings(
+        data.assigns?.[0]?.buildings ? data.assigns[0].buildings : []
+      );
+
+      // setAvailableTeamleadManager(data.assigns[0]?.employee);
+      setAvailableTeamleadManager(
+        data.assigns?.[0]?.employee ? data.assigns[0].employee : []
+      );
+
       setVariations(data.variation);
       // setAvailableAreas(data.area_of_work);
 
@@ -702,12 +825,8 @@ const TeamLeadProjectView = () => {
 
       console.log("Project data", data);
       console.log("Project assign data", data.assigns);
-      console.log("buildings assign data", data.assigns[0].buildings); // Check here later Suriya
+      console.log("buildings assign data", data.assigns[0]?.buildings); // Check here later Suriya
       // setFormData(data); // clone for edit
-      setFormData({
-        ...data,
-        client: data.client?.id || "", // convert object to just the id
-      });
     } catch (error) {
       console.error("Failed to fetch project:", error);
     }
@@ -1052,7 +1171,7 @@ const TeamLeadProjectView = () => {
                               type="checkbox"
                               className="larger-checkbox"
                               value={employee.employee_id}
-                              checked={availableTeamleadManager.some(
+                              checked={availableTeamleadManager?.some(
                                 (e) => e.employee_id === employee.employee_id
                               )}
                               onChange={(e) => {
@@ -1102,7 +1221,7 @@ const TeamLeadProjectView = () => {
                               type="checkbox"
                               className="create-checkbox"
                               value={employee.employee_id}
-                              checked={availableTeamleadManager.some(
+                              checked={availableTeamleadManager?.some(
                                 (e) => e.employee_id === employee.employee_id
                               )}
                               onChange={(e) => {
@@ -1115,7 +1234,8 @@ const TeamLeadProjectView = () => {
                                 } else {
                                   setAvailableTeamleadManager((prev) =>
                                     prev.filter(
-                                      (id) => id !== employee.employee_id
+                                      (emp) =>
+                                        emp.employee_id !== employee.employee_id
                                     )
                                   );
                                 }
@@ -1128,7 +1248,7 @@ const TeamLeadProjectView = () => {
                   </div>
                 ) : (
                   <div className="select-container">
-                    {availableTeamleadManager.map((emp) => (
+                    {availableTeamleadManager?.map((emp) => (
                       <p key={emp.employee_id} className="view-roles">
                         {emp.employee_name} - {emp.designation}
                       </p>
@@ -1140,7 +1260,7 @@ const TeamLeadProjectView = () => {
                 <label>Sub-Division</label>
                 {editMode ? (
                   <div className="building-row">
-                    {availableBuildings.map((b, i) => (
+                    {availableBuildings?.map((b, i) => (
                       <div key={i} className="building-tile">
                         <div className="building-tile-small">
                           {console.log("building individual", b)}
@@ -1166,7 +1286,7 @@ const TeamLeadProjectView = () => {
                   </div>
                 ) : (
                   <div className="building-row">
-                    {availableBuildings.map((b, i) => (
+                    {availableBuildings?.map((b, i) => (
                       <div key={i} className="building-tile">
                         <div
                           onClick={() => buildingClick(b.building_assign_id)}
@@ -1511,8 +1631,9 @@ const TeamLeadProjectView = () => {
                   </div>
                 ) : (
                   <p className="view-data">
-                    {formData.start_date &&
-                      format(new Date(formData.start_date), "dd-MMM-yyyy")}
+                    {formData.start_date
+                      ? format(new Date(formData.start_date), "dd-MMM-yyyy")
+                      : "-"}
                   </p>
                 )}
               </div>
@@ -1539,8 +1660,9 @@ const TeamLeadProjectView = () => {
                   </div>
                 ) : (
                   <p className="view-data">
-                    {formData.due_date &&
-                      format(new Date(formData.due_date), "dd-MMM-yyyy")}
+                    {formData.due_date
+                      ? format(new Date(formData.due_date), "dd-MMM-yyyy")
+                      : "-"}
                   </p>
                 )}
               </div>
@@ -1684,7 +1806,7 @@ const TeamLeadProjectView = () => {
                         <DatePicker
                           selected={buildingData.start_date}
                           onChange={(date) =>
-                            setFormData({
+                            setBuildingData({
                               ...buildingData,
                               start_date: format(date, "yyyy-MM-dd"),
                             })
@@ -1706,7 +1828,7 @@ const TeamLeadProjectView = () => {
                         <DatePicker
                           selected={buildingData.due_date}
                           onChange={(date) =>
-                            setFormData({
+                            setBuildingData({
                               ...buildingData,
                               due_date: format(date, "yyyy-MM-dd"),
                             })

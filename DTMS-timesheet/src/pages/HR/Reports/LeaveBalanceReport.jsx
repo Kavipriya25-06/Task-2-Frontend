@@ -455,7 +455,7 @@ const LeaveBalanceReport = forwardRef(({ year, employeeSearch = "" }, ref) => {
 
       <div
         className="table-wrapper"
-        style={{ maxHeight: 400, overflowY: "auto" }}
+        style={{ maxHeight: "60vh", overflowY: "auto" }}
       >
         {loading ? (
           <div style={{ padding: 20 }}>Loading leave data...</div>

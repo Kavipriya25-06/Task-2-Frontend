@@ -79,6 +79,130 @@ const TeamLeadProjects = () => {
     }
   };
 
+  // NEW: status checkbox-filter state (default: both selected)
+  const [selectedStatuses, setSelectedStatuses] = useState(
+    new Set(["In progress", "Completed"])
+  );
+
+  // NEW: tiny popover state (mirrors your LeaveTakenReport approach)
+  const [openMenu, setOpenMenu] = useState(null); // "status" | null
+  const popoverRef = useRef(null);
+  const [menuPos, setMenuPos] = useState({ top: 0, left: 0, width: 220 });
+
+  const openMenuAt = (e, key) => {
+    e.stopPropagation();
+    const rect = e.currentTarget.getBoundingClientRect();
+    const gap = 6;
+    let left = Math.max(20, Math.min(rect.left, window.innerWidth - 320 - 20));
+    // let left = 20;
+    let top = rect.bottom + gap;
+    setMenuPos({ top, left, width: 220 });
+    setOpenMenu((prev) => (prev === key ? null : key));
+  };
+
+  // close popover on outside click / ESC / scroll
+  useEffect(() => {
+    const onDocClick = (ev) => {
+      if (!popoverRef.current) return;
+      if (!popoverRef.current.contains(ev.target)) setOpenMenu(null);
+    };
+    const onEsc = (ev) => ev.key === "Escape" && setOpenMenu(null);
+    const onScroll = () => setOpenMenu(null);
+    document.addEventListener("mousedown", onDocClick);
+    document.addEventListener("keydown", onEsc);
+    window.addEventListener("scroll", onScroll, true);
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener("keydown", onEsc);
+      window.removeEventListener("scroll", onScroll, true);
+    };
+  }, []);
+
+  const toggleStatus = (label) => {
+    setSelectedStatuses((prev) => {
+      const next = new Set(prev);
+      if (next.has(label)) next.delete(label);
+      else next.add(label);
+      return next;
+    });
+  };
+  const selectAllStatuses = () =>
+    setSelectedStatuses(new Set(["In progress", "Completed"]));
+  const clearAllStatuses = () => setSelectedStatuses(new Set());
+
+  const fetchReports = async () => {
+    try {
+      const response = await fetch(`${config.apiBaseURL}/export-report/`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "text/csv",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to download CSV");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+
+      // Set default filename (optional: you can get it from headers too)
+      const now = new Date();
+      const istNow = new Date(now.getTime() + 5.5 * 60 * 60 * 1000); // Add 5.5 hours
+      const formattedIST = istNow
+        .toISOString()
+        .slice(0, 19)
+        .replace("T", "_")
+        .replace(/:/g, "-");
+
+      link.download = `projects_report_${formattedIST}.csv`;
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading CSV:", error);
+    }
+  };
+
+  // const handleReportClick = () => {
+  //   fetchReports();
+  // };
+
+  const handleDeleteTask = async (task_id) => {
+    const confirmDelete = await confirm({
+      message: `Are you sure you want to delete this task?`,
+    });
+    if (!confirmDelete) return;
+    try {
+      const response = await fetch(
+        `${config.apiBaseURL}/tasks/${task_id}/`, //  Match fetch URL
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        showSuccessToast("Task deleted successfully.");
+        fetchTasks();
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to delete:", errorData);
+        showErrorToast("Failed to delete the task.");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      showWarningToast("Something went wrong while deleting the project.");
+    }
+  };
+
   const handleAddClick = () => {
     navigate(`create`);
   };
@@ -112,6 +236,7 @@ const TeamLeadProjects = () => {
 
     searchTimeout.current = setTimeout(() => {
       const lowerSearch = searchText.toLowerCase();
+
       const filtered = projects.filter((u) => {
         const code = u.project_code?.toLowerCase() || "";
         const name = u.project_title?.toLowerCase() || "";
@@ -129,11 +254,15 @@ const TeamLeadProjects = () => {
           name.includes(lowerSearch) ||
           discipline.includes(lowerSearch);
 
-        const matchesStatus =
-          statusFilter === "" || String(u.status) === statusFilter;
+        // IMPORTANT: use 'completed_status' (boolean) not 'status'
+        const label = u.completed_status ? "Completed" : "In progress";
+        const matchesStatus = selectedStatuses.has(label);
 
+        // If you still want the old cycle-icon filter, remove it now
+        // or keep both (then also AND with statusFilter if needed).
         return matchesSearch && matchesStatus;
       });
+
       setFilteredProjects(filtered);
       setVisibleProjects(10);
       setHasMoreProjects(filtered.length > 10);
@@ -151,7 +280,7 @@ const TeamLeadProjects = () => {
     }, 100);
 
     return () => clearTimeout(searchTimeout.current);
-  }, [searchText, projects, statusFilter]);
+  }, [searchText, projects, selectedStatuses]);
 
   useEffect(() => {
     if (searchTimeout.current) {
@@ -271,16 +400,16 @@ const TeamLeadProjects = () => {
                 <thead>
                   <tr>
                     <th>Project code</th>
-                    <th>Project name</th>
-
-                    {/* <th>Building</th> */}
-
-                    <th>Estd. hours</th>
-                    <th>Variation hours</th>
-                    <th>Total hours</th>
-                    <th>Consumed hours</th>
                     <th>Project Type</th>
-                    <th>
+                    <th>Project name</th>
+                    <th>Consumed hours</th>
+                    <th>Start date</th>
+                    {/* <th>Estd. hours</th>
+                    <th>Variation hours</th> */}
+                    <th>Client</th>
+                    <th>Total hours</th>
+
+                    {/* <th>
                       Status&nbsp;
                       <span
                         onClick={() => {
@@ -317,6 +446,19 @@ const TeamLeadProjects = () => {
                           ></i>
                         )}
                       </span>
+                    </th> */}
+                    <th className="th-with-filter">
+                      <div className="th-label">Status</div>
+                      <button
+                        className="th-filter-btn"
+                        title="Filter by Project Status"
+                        onClick={(e) => openMenuAt(e, "status")}
+                      >
+                        <i className="fa-solid fa-filter"></i>
+                      </button>
+                      {selectedStatuses.size !== 2 && (
+                        <span className="th-chip">{selectedStatuses.size}</span>
+                      )}
                     </th>
                   </tr>
                 </thead>
@@ -343,12 +485,14 @@ const TeamLeadProjects = () => {
                           >
                             {project.project_code}
                           </td>
-                          <td>{project.project_title}</td>
-                          <td>{project.estimated_hours}</td>
-                          <td>{project.variation_hours}</td>
-                          <td>{project.total_hours}</td>
-                          <td>{project.consumed_hours}</td>
                           <td>{project.discipline}</td>
+                          <td>{project.project_title}</td>
+                          <td>{project.consumed_hours}</td>
+                          <td>{project.start_date}</td>
+                          <td>{project.client?.client_name || "-"}</td>
+                          {/* <td>{project.estimated_hours}</td> */}
+                          {/* <td>{project.variation_hours}</td> */}
+                          <td>{project.total_hours}</td>
                           <td>
                             {project.completed_status
                               ? "Completed"
@@ -366,6 +510,63 @@ const TeamLeadProjects = () => {
                 <div className="no-message">No more data</div>
               )}
             </div>
+            {openMenu === "status" && (
+              <div
+                ref={popoverRef}
+                className="th-popover"
+                style={{
+                  position: "fixed",
+                  top: menuPos.top,
+                  left: menuPos.left,
+                  width: menuPos.width,
+                  maxHeight: "60vh",
+                  overflowY: "auto",
+                  zIndex: 9999,
+                  background: "#fff",
+                  border: "1px solid #ddd",
+                  borderRadius: 8,
+                  boxShadow: "0 6px 24px rgba(0,0,0,0.12)",
+                  padding: 12,
+                }}
+                onMouseDown={(e) => e.stopPropagation()}
+              >
+                <div style={{ fontWeight: 600, marginBottom: 8 }}>
+                  Project Status
+                </div>
+                <div
+                  className="th-checkbox-list"
+                  style={{ display: "grid", gap: 6 }}
+                >
+                  {["In progress", "Completed"].map((t) => (
+                    <label
+                      key={t}
+                      className="th-checkbox-item"
+                      style={{ display: "flex", gap: 8 }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedStatuses.has(t)}
+                        onChange={() => toggleStatus(t)}
+                      />
+                      <span>{t}</span>
+                    </label>
+                  ))}
+                </div>
+                <div
+                  className="th-popover-actions"
+                  style={{
+                    display: "flex",
+                    gap: 8,
+                    justifyContent: "flex-end",
+                    marginTop: 10,
+                  }}
+                >
+                  <button onClick={selectAllStatuses}>Select All</button>
+                  <button onClick={clearAllStatuses}>Clear</button>
+                  <button onClick={() => setOpenMenu(null)}>Done</button>
+                </div>
+              </div>
+            )}
             <ToastContainer />
           </div>
         );

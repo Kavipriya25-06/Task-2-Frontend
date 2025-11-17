@@ -661,11 +661,11 @@ const ManagerBuildingView = () => {
                   </div>
                 ) : (
                   <p className="view-data">
-                    {buildingsAssign.building?.start_date &&
+                    {buildingsAssign.building?.start_date ?
                       format(
                         new Date(buildingsAssign.building?.start_date),
                         "dd-MMM-yyyy"
-                      )}
+                      ): "-"}
                   </p>
                 )}
               </div>
@@ -692,11 +692,12 @@ const ManagerBuildingView = () => {
                   </div>
                 ) : (
                   <p className="view-data">
-                    {buildingsAssign.building?.due_date &&
-                      format(
-                        new Date(buildingsAssign.building?.due_date),
-                        "dd-MMM-yyyy"
-                      )}
+                    {buildingsAssign.building?.due_date
+                      ? format(
+                          new Date(buildingsAssign.building?.due_date),
+                          "dd-MMM-yyyy"
+                        )
+                      : "-"}
                   </p>
                 )}
               </div>
@@ -931,7 +932,7 @@ const ManagerBuildingView = () => {
                           alignItems: "center",
                         }}
                       >
-                        <div className="date-input-container">
+                        {/* <div className="date-input-container">
                           <DatePicker
                             selected={
                               selected.start_date
@@ -972,7 +973,7 @@ const ManagerBuildingView = () => {
                             dropdownMode="select"
                           />
                           <i className="fas fa-calendar-alt calendar-icon"></i>{" "}
-                        </div>
+                        </div> */}
                       </div>
                     </>
                   )}

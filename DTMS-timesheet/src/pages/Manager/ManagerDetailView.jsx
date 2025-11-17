@@ -16,6 +16,8 @@ const ManagerDetailView = () => {
       path: "projects",
       tabname: ["projects", "buildings", "tasks"],
     },
+    { label: "Clients", path: "clients", tabname: ["clients"] },
+    // { label: "Client-POC", path: "pocs", tabname: ["pocs"] },
     { label: "Team Leaders", path: "team-leaders", tabname: ["team-leaders"] },
     { label: "Employees", path: "employees", tabname: ["employees"] },
     {

@@ -18,7 +18,7 @@ const EmployeeList = () => {
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [searchText, setSearchText] = useState("");
   const navigate = useNavigate();
-  const [visibleEmployees, setVisibleEmployees] = useState(10);
+  const [visibleEmployees, setVisibleEmployees] = useState(15);
   const [isLoadingMoreEmployees, setIsLoadingMoreEmployees] = useState(false);
   const [hasMoreEmployees, setHasMoreEmployees] = useState(true);
   const searchTimeout = useRef(null);
@@ -66,8 +66,8 @@ const EmployeeList = () => {
         );
       });
       setFilteredEmployees(filtered);
-      setVisibleEmployees(10);
-      setHasMoreEmployees(filtered.length > 10);
+      setVisibleEmployees(15);
+      setHasMoreEmployees(filtered.length > 15);
 
       if (searchText && filtered.length === 0) {
         showInfoToast("No users found");
@@ -96,17 +96,17 @@ const EmployeeList = () => {
       </div>
       <div
         className="table-wrapper"
-        style={{ maxHeight: "400px" }}
+        style={{ maxHeight: "60vh" }}
         onScroll={(e) => {
           const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
           if (
-            scrollTop + clientHeight >= scrollHeight - 10 &&
+            scrollTop + clientHeight >= scrollHeight - 15 &&
             !isLoadingMoreEmployees &&
             hasMoreEmployees
           ) {
             setIsLoadingMoreEmployees(true);
             setTimeout(() => {
-              const nextVisible = visibleEmployees + 10;
+              const nextVisible = visibleEmployees + 15;
               if (nextVisible >= filteredEmployees.length) {
                 setVisibleEmployees(filteredEmployees.length);
                 setHasMoreEmployees(false);

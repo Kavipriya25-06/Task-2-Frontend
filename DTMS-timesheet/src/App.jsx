@@ -35,6 +35,7 @@ import {
   ManagerBuildingTaskRedirect,
   TeamLeadProjectRedirect,
   TeamLeadBuildingTaskRedirect,
+  ManagerClientRedirect,
 } from "./pages/Redirects.jsx";
 import RoleSwitcher from "./pages/RoleSwitcher.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
@@ -109,6 +110,13 @@ import ManagerLeaveRequestForm from "./pages/Manager/ManagerLeaveRequestForm.jsx
 
 import ManagerCompoff from "./pages/Manager/ManagerCompoff.jsx";
 import ManagerCompoffRequest from "./pages/Manager/ManagerCompoffRequest.jsx";
+
+import ManagerClientList from "./pages/Manager/ManagerClientList.jsx";
+import ManagerClientAdd from "./pages/Manager/ManagerClientAdd.jsx";
+import ManagerClientEdit from "./pages/Manager/ManagerClientEdit.jsx";
+import ManagerClientPOCList from "./pages/Manager/ManagerClientPOCList.jsx";
+import ManagerClientPOCAdd from "./pages/Manager/ManagerClientPOCAdd.jsx";
+import ManagerClientPOCEdit from "./pages/Manager/ManagerClientPOCEdit.jsx";
 
 // Team Lead pages
 import TeamLeadDashboard from "./pages/TeamLead/TeamLeadDashboard.jsx";
@@ -538,6 +546,33 @@ const App = () => {
                 <Route path="reports" element={<ManagerReports />} />
 
                 <Route path="Compoff" element={<ManagerCompoff />} />
+                <Route path="clients" element={<ManagerClientList />} />
+                <Route path="pocs" element={<ManagerClientPOCList />} />
+                <Route path="clients/add" element={<ManagerClientAdd />} />
+                <Route
+                  path="clients/view/:id"
+                  element={<ManagerClientEdit />}
+                />
+                <Route
+                  path="clients/view"
+                  element={<Navigate to="/manager/detail/clients" replace />}
+                />
+                <Route
+                  path="clients/view/:id/pocs/add"
+                  element={<ManagerClientPOCAdd />}
+                />
+                <Route
+                  path="clients/view/:id/pocs"
+                  element={<ManagerClientRedirect />}
+                />
+                <Route
+                  path="clients/view/:id/pocs/view/:pocid"
+                  element={<ManagerClientPOCEdit />}
+                />
+                <Route
+                  path="clients/view/:id/pocs/view"
+                  element={<ManagerClientRedirect />}
+                />
                 <Route
                   path="Compoff/compoffrequest"
                   element={<ManagerCompoffRequest />}
