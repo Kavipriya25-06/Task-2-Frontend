@@ -535,10 +535,10 @@ const ManagerProjectView = () => {
       ]);
 
       // Refresh attachments list
-      const attachData = await apiRequest(
-        `${config.apiBaseURL}/attachments/project/${project_id}`
-      );
-      setAttachments(attachData);
+      // const attachData = await apiRequest(
+      //   `${config.apiBaseURL}/attachments/project/${project_id}`
+      // );
+      // setAttachments(attachData);
       setNewAttachments([]);
 
       showSuccessToast("Project updated successfully!");
@@ -816,11 +816,11 @@ const ManagerProjectView = () => {
       setVariations(data.variation);
       // setAvailableAreas(data.area_of_work);
 
-      const attachResponse = await fetch(
-        `${config.apiBaseURL}/attachments/project/${project_id}`
-      );
-      const attachData = await attachResponse.json();
-      setAttachments(attachData);
+      // const attachResponse = await fetch(
+      //   `${config.apiBaseURL}/attachments/project/${project_id}`
+      // );
+      // const attachData = await attachResponse.json();
+      setAttachments(data.attachments);
       setNewAttachments([]);
 
       console.log("Project data", data);
@@ -1877,7 +1877,7 @@ const ManagerProjectView = () => {
                       <input
                         type="number"
                         name="building_hours"
-                        value={buildingData.building_hours || ""}
+                        value={buildingData.building_hours || 0}
                         onChange={handleBuildingChange}
                         className="sub-division-hours"
                       />

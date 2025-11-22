@@ -309,7 +309,7 @@ const TeamLeadProjectView = () => {
       status: "pending",
     };
     await apiRequest(
-        `${config.apiBaseURL}/projects-assign-update/${assignId}/`,
+      `${config.apiBaseURL}/projects-assign-update/${assignId}/`,
       "PATCH",
       payload
     );
@@ -331,7 +331,7 @@ const TeamLeadProjectView = () => {
       "PATCH",
       updates
     );
-      }
+  }
 
   async function uploadAttachments(projectId, files) {
     for (const file of files) {
@@ -364,12 +364,12 @@ const TeamLeadProjectView = () => {
   //   try {
   //     const response = await fetch(
   //       `${config.apiBaseURL}/projects/${project_id}/`,
-    //       {
-    //         method: "PATCH",
-    //         headers: { "Content-Type": "application/json" },
+  //       {
+  //         method: "PATCH",
+  //         headers: { "Content-Type": "application/json" },
   //         body: JSON.stringify(payload),
-    //       }
-    //     );
+  //       }
+  //     );
 
   //     if (!response.ok) {
   //       showErrorToast("Failed to update project");
@@ -488,7 +488,7 @@ const TeamLeadProjectView = () => {
   //       update.building_assign_id = b.building_assign_id;
   //     }
   //     return update;
-    //   });
+  //   });
 
   //   try {
   //     const buildingRes = await fetch(
@@ -535,20 +535,20 @@ const TeamLeadProjectView = () => {
       ]);
 
       // Refresh attachments list
-      const attachData = await apiRequest(
-        `${config.apiBaseURL}/attachments/project/${project_id}`
-      );
-      setAttachments(attachData);
+      // const attachData = await apiRequest(
+      //   `${config.apiBaseURL}/attachments/project/${project_id}`
+      // );
+      // setAttachments(attachData);
       setNewAttachments([]);
 
-    showSuccessToast("Project updated successfully!");
-    setEditMode(false);
-    setSearchQuery("");
+      showSuccessToast("Project updated successfully!");
+      setEditMode(false);
+      setSearchQuery("");
     } catch (error) {
       console.error("Update failed:", error);
       showErrorToast("Something went wrong during update.");
     } finally {
-    setIsSending(false);
+      setIsSending(false);
       fetchProjectData();
     }
   };
@@ -816,11 +816,11 @@ const TeamLeadProjectView = () => {
       setVariations(data.variation);
       // setAvailableAreas(data.area_of_work);
 
-      const attachResponse = await fetch(
-        `${config.apiBaseURL}/attachments/project/${project_id}`
-      );
-      const attachData = await attachResponse.json();
-      setAttachments(attachData);
+      // const attachResponse = await fetch(
+      //   `${config.apiBaseURL}/attachments/project/${project_id}`
+      // );
+      // const attachData = await attachResponse.json();
+      setAttachments(data.attachments);
       setNewAttachments([]);
 
       console.log("Project data", data);
@@ -1862,7 +1862,7 @@ const TeamLeadProjectView = () => {
                       <input
                         type="number"
                         name="building_hours"
-                        value={buildingData.building_hours || ""}
+                        value={buildingData.building_hours || 0}
                         onChange={handleBuildingChange}
                         className="sub-division-hours"
                       />

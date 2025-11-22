@@ -36,9 +36,9 @@ const ManagerProjectCreate = () => {
   const [formData, setFormData] = useState({
     project_title: "",
     project_type: "",
-    start_date: "",
-    due_date: "",
-    estimated_hours: "",
+    start_date: null,
+    due_date: null,
+    estimated_hours: 0,
     project_description: "",
     project_code: "",
     subdivision: "",
@@ -824,7 +824,7 @@ const ManagerProjectCreate = () => {
                     <input
                       type="number"
                       name="building_hours"
-                      value={buildingData.building_hours || ""}
+                      value={buildingData.building_hours || 0}
                       onChange={handleBuildingChange}
                       className="sub-division-hours"
                     />

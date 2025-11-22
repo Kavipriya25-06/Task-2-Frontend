@@ -352,7 +352,9 @@ const AddAttendance = () => {
 
   const fetchEmployee = async () => {
     try {
-      const response = await fetch(`${config.apiBaseURL}/emp-details/`);
+      const response = await fetch(
+        `${config.apiBaseURL}/emp-details-resg/?today=${weekDays[0].mapdate}`
+      );
       const data = await response.json();
       console.log("User data", data);
       setEmployeeData(data);
