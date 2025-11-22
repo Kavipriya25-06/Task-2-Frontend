@@ -9,6 +9,7 @@ const useWorkingDays = (startDate, endDate) => {
   const [duration, setDuration] = useState(0);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [error, setError] = useState(null);
+  const [nonWorkingDates, setNonWorkingDates] = useState([]);
 
   const fetchCalendar = async () => {
     try {
@@ -17,6 +18,10 @@ const useWorkingDays = (startDate, endDate) => {
       ); // adjust URL
       const data = await res.json();
       setCalendarData(data);
+      const nonWorking = data
+        .filter((d) => d.is_weekend || d.is_holiday)
+        .map((d) => new Date(d.date));
+      setNonWorkingDates(nonWorking);
       setLoading(false);
     } catch (err) {
       setError("Failed to fetch calendar");
@@ -46,10 +51,16 @@ const useWorkingDays = (startDate, endDate) => {
 
     for (const dt of dateRange(start, end)) {
       // const dateStr = dt.toISOString().split("T")[0];
-      const dateStr = dt.toDateString();
+      // const dateStr = dt.toDateString();
       console.log("date string", dateStr);
-      const cal = calendarData.find((c) => c.date === dateStr);
-      if (cal && !cal.is_weekend && !cal.is_holiday) {
+      // const cal = calendarData.find((c) => c.date === dateStr);
+      const isHoliday = nonWorkingDates.some(
+        (d) => d.toDateString() === dateStr
+      );
+      // if (cal && !cal.is_weekend && !cal.is_holiday) {
+      //   count++;
+      // }
+      if (!isHoliday) {
         count++;
       }
     }
