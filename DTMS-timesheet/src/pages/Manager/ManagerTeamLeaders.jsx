@@ -66,7 +66,9 @@ const ManagerTeamLeaders = () => {
         ) : (
           teamLeads.map((teamlead) => (
             <div className="teamlead-card" key={teamlead.teamlead_id}>
-              <h3>{teamlead.teamlead_name}</h3>
+              <h3>
+                {teamlead.teamlead_name} {teamlead.last_name}
+              </h3>
               <div className="teamlead-stats">
                 <div className="projects-container">
                   <div className="projects">

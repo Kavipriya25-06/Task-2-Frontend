@@ -62,7 +62,15 @@ const ManagerProjectView = () => {
   } = useAttachmentManager([]);
 
   const [showBuildingPopup, setShowBuildingPopup] = useState(false);
-  const [buildingData, setBuildingData] = useState({});
+  const [buildingData, setBuildingData] = useState({
+    building_code: "",
+    building_description: "",
+    building_hours: 0,
+    building_title: "",
+    due_date: null,
+    employee: [],
+    start_date: null,
+  });
   const [showAreaPopup, setShowAreaPopup] = useState(false);
   const [showVariationPopup, setShowVariationPopup] = useState(false);
   const [selectedBuildings, setSelectedBuildings] = useState([]);
@@ -1191,7 +1199,8 @@ const ManagerProjectView = () => {
                                 }
                               }}
                             />
-                            {employee.employee_name} - {employee.designation}
+                            {employee.employee_name} {employee.last_name} -{" "}
+                            {employee.designation}
                           </div>
                         ))}
                     </div>
@@ -1241,7 +1250,8 @@ const ManagerProjectView = () => {
                                 }
                               }}
                             />
-                            {employee.employee_name} - {employee.designation}
+                            {employee.employee_name} {employee.last_name} -{" "}
+                            {employee.designation}
                           </div>
                         ))}
                     </div>

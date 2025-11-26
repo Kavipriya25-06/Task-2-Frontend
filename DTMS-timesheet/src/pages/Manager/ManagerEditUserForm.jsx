@@ -17,7 +17,7 @@ import {
 
 // import Breadcrumbs from "../../components/Breadcrumbs";
 
-const EditUserForm = () => {
+const ManagerEditUserForm = () => {
   const { user_id } = useParams();
   const navigate = useNavigate();
 
@@ -295,4 +295,4 @@ const EditUserForm = () => {
   );
 };
 
-export default EditUserForm;
+export default ManagerEditUserForm;

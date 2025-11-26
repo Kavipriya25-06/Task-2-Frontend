@@ -562,7 +562,9 @@ const ManagerAttendance = () => {
               const total = totalHoursForEmp(emp);
               return (
                 <tr key={emp.employee_id}>
-                  <td>{emp.employee_name}</td>
+                  <td>
+                    {emp.employee_name} {emp.last_name}
+                  </td>
 
                   {emp.week.map((d) => {
                     const leave = d.leave; // preferred when present

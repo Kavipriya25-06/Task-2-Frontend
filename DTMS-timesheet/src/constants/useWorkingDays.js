@@ -51,7 +51,7 @@ const useWorkingDays = (startDate, endDate) => {
 
     for (const dt of dateRange(start, end)) {
       // const dateStr = dt.toISOString().split("T")[0];
-      // const dateStr = dt.toDateString();
+      const dateStr = dt.toDateString();
       console.log("date string", dateStr);
       // const cal = calendarData.find((c) => c.date === dateStr);
       const isHoliday = nonWorkingDates.some(

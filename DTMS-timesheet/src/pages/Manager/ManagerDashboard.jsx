@@ -30,6 +30,10 @@ const ManagerDashboard = () => {
     { label: "Comp-off", path: "detail/Compoff" },
     { label: "Reports", path: "detail/reports" },
     { label: "Company Policy", path: "detail/company-policy" },
+
+    ...(user.employee_id === "EMP_00002"
+      ? [{ label: "Users", path: "detail/users" }]
+      : []),
   ];
 
   // Current tab from path name

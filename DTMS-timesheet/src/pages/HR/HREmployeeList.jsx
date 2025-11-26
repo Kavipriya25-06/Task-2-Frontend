@@ -123,6 +123,7 @@ const EmployeeList = () => {
             <tr>
               <th>Employee Code</th>
               <th>Employee Name</th>
+              <th>Last Name</th>
               <th>Department</th>
               <th>Role</th>
               <th>Reporting Manager</th>
@@ -141,6 +142,7 @@ const EmployeeList = () => {
                   {emp.employee_code}
                 </td>
                 <td>{emp.employee_name}</td>
+                <td>{emp.last_name}</td>
                 <td>{emp.department}</td>
                 <td>{emp.designation}</td>
                 <td>

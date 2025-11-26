@@ -96,8 +96,9 @@ const ManagerReport = () => {
               {/* <option value="Piping">Piping</option> */}
               {/* <option value="Structural">Structural</option> */}
               {/* <option value="EIC">EIC</option> */}
-              <option value="Admin">Admin</option>
-              <option value="HR">HR</option>
+              {/* <option value="Admin">Admin</option>
+              <option value="HR">HR</option> */}
+              <option value="HR & Admin">HR & Admin</option>
               <option value="Finance">Finance</option>
               <option value="Technical">Technical</option>
             </select>

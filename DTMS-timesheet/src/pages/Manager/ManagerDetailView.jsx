@@ -20,6 +20,7 @@ const ManagerDetailView = () => {
     // { label: "Client-POC", path: "pocs", tabname: ["pocs"] },
     { label: "Team Leaders", path: "team-leaders", tabname: ["team-leaders"] },
     { label: "Employees", path: "employees", tabname: ["employees"] },
+    // { label: "Users", path: "users", tabname: ["users"] },
     {
       label: "Time Sheet Entry",
       path: "time-sheet-entry",
@@ -38,6 +39,9 @@ const ManagerDetailView = () => {
       path: "company-policy",
       tabname: ["company-policy"],
     },
+    ...(user.employee_id === "EMP_00002"
+      ? [{ label: "Users", path: "users", tabname: ["users"] }]
+      : []),
   ];
 
   return (

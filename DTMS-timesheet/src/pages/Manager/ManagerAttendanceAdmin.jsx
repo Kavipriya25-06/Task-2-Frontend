@@ -455,7 +455,9 @@ const ManagerAttendanceAdmin = () => {
               if (!isGrouped) {
                 return (
                   <tr key={firstRecord.biometric_id}>
-                    <td>{firstRecord.employee_name}</td>
+                    <td>
+                      {firstRecord.employee_name} {firstRecord.last_name}
+                    </td>
                     <td>
                       {new Date(firstRecord.date).toLocaleDateString("en-IN")}
                     </td>
@@ -487,8 +489,8 @@ const ManagerAttendanceAdmin = () => {
                         <span style={{ marginRight: "8px" }}>
                           {group.isExpanded ? "▼" : "▶"}
                         </span>
-                        {firstRecord.employee_name} — {group.records.length}{" "}
-                        records
+                        {firstRecord.employee_name} {firstRecord.last_name} —{" "}
+                        {group.records.length} records
                       </span>
                     </td>
                     <td>
@@ -549,7 +551,7 @@ const ManagerAttendanceAdmin = () => {
                 <option value="">Select Employee</option>
                 {employeeData.map((emp) => (
                   <option key={emp.employee_id} value={emp.employee_id}>
-                    {emp.employee_name}
+                    {emp.employee_name} {emp.last_name}
                   </option>
                 ))}
               </select>

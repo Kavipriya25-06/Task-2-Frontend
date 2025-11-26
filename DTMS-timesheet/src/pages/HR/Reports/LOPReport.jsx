@@ -324,6 +324,7 @@ const LOPReport = forwardRef(({ year, employeeSearch = "" }, ref) => {
           "S.No",
           "Employee Code",
           "Employee Name",
+          "Last Name",
           "DOJ",
           "Present Status",
           "Resigned",
@@ -342,6 +343,7 @@ const LOPReport = forwardRef(({ year, employeeSearch = "" }, ref) => {
             index + 1,
             l.employee_code || "",
             l.employee_name || "",
+            l.last_name || "",
             l.doj ? new Date(l.doj) : "",
             l.status || "",
             l.resignation_date ? new Date(l.resignation_date) : "",
@@ -367,7 +369,7 @@ const LOPReport = forwardRef(({ year, employeeSearch = "" }, ref) => {
         });
 
         // Column widths/formats
-        const baseWidths = [8, 18, 22, 15, 18, 15]; // until "Resigned"
+        const baseWidths = [8, 18, 18, 22, 15, 18, 15]; // until "Resigned"
         ws.columns = [
           ...baseWidths.map((width, idx) => ({
             width,
@@ -430,10 +432,7 @@ const LOPReport = forwardRef(({ year, employeeSearch = "" }, ref) => {
         })}
       </div>
 
-      <div
-        className="table-wrapper"
-        style={{overflowY: "auto" }}
-      >
+      <div className="table-wrapper" style={{ overflowY: "auto" }}>
         {loading ? (
           <div style={{ padding: 20 }}>Loading leave data...</div>
         ) : filteredRows.length === 0 ? (
@@ -478,8 +477,8 @@ const LOPReport = forwardRef(({ year, employeeSearch = "" }, ref) => {
                     <i className="fa-solid fa-sort" />
                   )}
                 </th>
-                {/* <th>DOJ</th>
-                <th>Present Status</th>
+                <th>Last Name</th>
+                {/* <th>Present Status</th>
                 <th>Resigned</th> */}
                 {months.map((m) => (
                   <th key={m.key}>{m.label}</th>
@@ -497,6 +496,7 @@ const LOPReport = forwardRef(({ year, employeeSearch = "" }, ref) => {
                   <tr key={`${l.employee_code || "-"}_${i}`}>
                     <td>{l.employee_code}</td>
                     <td>{l.employee_name}</td>
+                    <td>{l.last_name}</td>
                     {/* <td>{l.doj ? new Date(l.doj).toLocaleDateString("en-GB") : "-"}</td>
                     <td>{l.status || "-"}</td>
                     <td>

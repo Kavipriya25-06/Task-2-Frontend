@@ -86,7 +86,7 @@ const LeaveMonthlyLedger = forwardRef(
         const ws = wb.addWorksheet("Monthly Leave Balance");
 
         // Row 1: title + month
-        ws.mergeCells("A1", "N1");
+        ws.mergeCells("A1", "O1");
         ws.getCell("A1").value = `Monthly Leave Balance — ${new Date(
           year,
           month - 1,
@@ -103,6 +103,7 @@ const LeaveMonthlyLedger = forwardRef(
         ws.addRow([
           "Emp Code",
           "Name",
+          "Last Name",
           "Status",
           "Joining date",
           "Opening",
@@ -117,12 +118,13 @@ const LeaveMonthlyLedger = forwardRef(
           "Date of Exit",
         ]);
         // merge group headers
-        ws.mergeCells("E2", "G2");
-        ws.mergeCells("H2", "J2");
-        ws.mergeCells("K2", "M2");
+        ws.mergeCells("F2", "H2");
+        ws.mergeCells("I2", "K2");
+        ws.mergeCells("L2", "N2");
 
         // Row 3 (sub headers)
         ws.addRow([
+          "",
           "",
           "",
           "",
@@ -163,6 +165,7 @@ const LeaveMonthlyLedger = forwardRef(
           ws.addRow([
             r.employee_code || "",
             r.employee_name || "",
+            r.last_name || "",
             r.employment_type || "",
             r.doj ? new Date(r.doj) : "",
             num(r.open_cl),
@@ -182,6 +185,7 @@ const LeaveMonthlyLedger = forwardRef(
         ws.columns = [
           { width: 12 },
           { width: 22 },
+          { width: 12 },
           { width: 12 },
           { width: 14, style: { numFmt: "dd/mm/yyyy" } },
           { width: 8 },
@@ -230,6 +234,7 @@ const LeaveMonthlyLedger = forwardRef(
                 >
                   Name
                 </th>
+                <th rowSpan={2}>Last Name</th>
                 <th
                   rowSpan={2}
                   onClick={() => onSort("status")}
@@ -280,6 +285,7 @@ const LeaveMonthlyLedger = forwardRef(
                   <tr key={`${r.employee_id || r.employee_code || i}`}>
                     <td>{r.employee_code || "-"}</td>
                     <td>{r.employee_name || "-"}</td>
+                    <td>{r.last_name || "-"}</td>
                     <td>{r.employment_type || "-"}</td>
                     <td>
                       {r.doj

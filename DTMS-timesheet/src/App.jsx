@@ -117,6 +117,9 @@ import ManagerClientEdit from "./pages/Manager/ManagerClientEdit.jsx";
 import ManagerClientPOCList from "./pages/Manager/ManagerClientPOCList.jsx";
 import ManagerClientPOCAdd from "./pages/Manager/ManagerClientPOCAdd.jsx";
 import ManagerClientPOCEdit from "./pages/Manager/ManagerClientPOCEdit.jsx";
+import ManagerAddUserForm from "./pages/Manager/ManagerAddUserForm.jsx";
+import ManagerEditUserForm from "./pages/Manager/ManagerEditUserForm.jsx";
+import ManagerUsersPage from "./pages/Manager/ManagerUsersPage.jsx";
 
 // Team Lead pages
 import TeamLeadDashboard from "./pages/TeamLead/TeamLeadDashboard.jsx";
@@ -576,6 +579,40 @@ const App = () => {
                 <Route
                   path="Compoff/compoffrequest"
                   element={<ManagerCompoffRequest />}
+                />
+                <Route
+                  path="users"
+                  element={
+                    user?.employee_id === "EMP_00002" ? (
+                      <ManagerUsersPage />
+                    ) : (
+                      <Navigate to="/404" replace />
+                    )
+                  }
+                ></Route>
+                <Route
+                  path="users/add-user"
+                  element={
+                    user?.employee_id === "EMP_00002" ? (
+                      <ManagerAddUserForm />
+                    ) : (
+                      <Navigate to="/404" replace />
+                    )
+                  }
+                />
+                <Route
+                  path="users/edit-user/"
+                  element={<Navigate to="/manager/detail/users" replace />}
+                />
+                <Route
+                  path="users/edit-user/:user_id"
+                  element={
+                    user?.employee_id === "EMP_00002" ? (
+                      <ManagerEditUserForm />
+                    ) : (
+                      <Navigate to="/404" replace />
+                    )
+                  }
                 />
                 <Route path="*" element={<Navigate to="/404" replace />} />
               </Route>

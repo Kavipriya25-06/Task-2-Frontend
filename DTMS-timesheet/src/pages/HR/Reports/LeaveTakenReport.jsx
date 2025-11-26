@@ -462,6 +462,7 @@ const LeaveTakenReport = forwardRef(({ year, employeeSearch = "" }, ref) => {
           "S.No",
           "Employee Code",
           "Employee Name",
+          "Last Name",
           "Start Date",
           "End Date",
           "No. of Days",
@@ -474,6 +475,7 @@ const LeaveTakenReport = forwardRef(({ year, employeeSearch = "" }, ref) => {
             index + 1,
             leave?.employee?.employee_code || "",
             leave?.employee?.employee_name || "",
+            leave?.employee?.last_name || "",
             leave?.start_date ? new Date(leave.start_date) : "",
             leave?.end_date ? new Date(leave.end_date) : "",
             isNaN(parseFloat(leave?.duration))
@@ -503,6 +505,7 @@ const LeaveTakenReport = forwardRef(({ year, employeeSearch = "" }, ref) => {
           { key: "sno", width: 8 },
           { key: "empCode", width: 18 },
           { key: "empName", width: 25 },
+          { key: "lastName", width: 25 },
           { key: "startDate", width: 15, style: { numFmt: "dd/mm/yyyy" } },
           { key: "endDate", width: 15, style: { numFmt: "dd/mm/yyyy" } },
           { key: "days", width: 15, style: { numFmt: "0.00" } },
@@ -696,6 +699,8 @@ const LeaveTakenReport = forwardRef(({ year, employeeSearch = "" }, ref) => {
                     )}
                   </th>
 
+                  <th>Last Name</th>
+
                   <th className="th-with-filter">
                     <div className="th-label">Start Date</div>
                     <button
@@ -766,6 +771,7 @@ const LeaveTakenReport = forwardRef(({ year, employeeSearch = "" }, ref) => {
                     <tr key={i}>
                       <td>{l.employee?.employee_code}</td>
                       <td>{l.employee?.employee_name}</td>
+                      <td>{l.employee?.last_name}</td>
                       <td>
                         {l.start_date
                           ? new Date(l.start_date).toLocaleDateString("en-GB")

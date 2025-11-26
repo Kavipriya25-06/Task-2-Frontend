@@ -449,7 +449,9 @@ const AddAttendance = () => {
               )
               .map((emp) => (
                 <tr key={emp.employee_id}>
-                  <td>{emp.employee_name}</td>
+                  <td>
+                    {emp.employee_name} {emp.last_name}
+                  </td>
                   {/* For each day of the week, check if attendance data exists */}
                   {weekDays.map((day) => {
                     // Find the attendance record for this employee on this specific day

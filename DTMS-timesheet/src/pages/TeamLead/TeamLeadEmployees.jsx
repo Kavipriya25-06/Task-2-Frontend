@@ -59,6 +59,7 @@ const TeamLeadEmployees = () => {
       setTeamleadData(data.teamleads);
       setVisibleEmployees(10); // Reset visible count
       setHasMoreEmployees((data.teamleads || []).length > 10);
+
       console.log("Org data", data);
       console.log("Manager data", data.teamleads);
     } catch (err) {
@@ -86,6 +87,7 @@ const TeamLeadEmployees = () => {
               <tr>
                 <th>Employee Code</th>
                 <th>Employee Name</th>
+                <th>Last Name</th>
                 <th>Designation</th>
                 <th>Reporting To</th>
               </tr>
@@ -95,6 +97,7 @@ const TeamLeadEmployees = () => {
                 <tr key={teamlead.teamlead_id}>
                   <td>{teamlead.employee_code}</td>
                   <td>{teamlead.teamlead_name}</td>
+                  <td>{teamlead.last_name}</td>
                   <td>{teamlead.teamlead_role}</td>
                   <td>{teamlead.reporting_to || "-"}</td>
                 </tr>

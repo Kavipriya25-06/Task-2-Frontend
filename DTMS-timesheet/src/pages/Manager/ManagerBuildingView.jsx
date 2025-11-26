@@ -391,6 +391,8 @@ const ManagerBuildingView = () => {
         building_description: data.building?.building_description || "",
         building_code: data.building?.building_code || "",
         building_id: data.building?.building_id || "",
+        start_date: data.building?.start_date || "",
+        due_date: data.building?.due_date || "",
       });
       setAvailableTeamleadManager(data.employee);
 
@@ -661,11 +663,12 @@ const ManagerBuildingView = () => {
                   </div>
                 ) : (
                   <p className="view-data">
-                    {buildingsAssign.building?.start_date ?
-                      format(
-                        new Date(buildingsAssign.building?.start_date),
-                        "dd-MMM-yyyy"
-                      ): "-"}
+                    {buildingsAssign.building?.start_date
+                      ? format(
+                          new Date(buildingsAssign.building?.start_date),
+                          "dd-MMM-yyyy"
+                        )
+                      : "-"}
                   </p>
                 )}
               </div>
@@ -774,7 +777,8 @@ const ManagerBuildingView = () => {
                                 }
                               }}
                             />
-                            {employee.employee_name} - {employee.designation}
+                            {employee.employee_name} {employee.last_name} -{" "}
+                            {employee.designation}
                           </div>
                         ))}
                     </div>

@@ -65,6 +65,7 @@ const MonthlyAttendanceReport = forwardRef(
           "DEPARTMENT",
           "EMP CODE",
           "NAME",
+          "LAST NAME",
           "ABSENT",
           "Notes",
           "LATE",
@@ -96,6 +97,7 @@ const MonthlyAttendanceReport = forwardRef(
             r.department || "-",
             r.employee_code || "-",
             r.name || "-",
+            r.last_name || "-",
             Number(r.absent || 0),
             r.notes || "",
             Number(r.late || 0),
@@ -111,6 +113,7 @@ const MonthlyAttendanceReport = forwardRef(
           { width: 18 }, // DEPARTMENT
           { width: 14 }, // EMP CODE
           { width: 24 }, // NAME
+          { width: 10 }, // LAST NAME
           { width: 10 }, // ABSENT
           { width: 45 }, // Notes (wider)
           { width: 10 }, // LATE
@@ -150,6 +153,7 @@ const MonthlyAttendanceReport = forwardRef(
                   <th>DEPARTMENT</th>
                   <th>EMP CODE</th>
                   <th>NAME</th>
+                  <th>LAST NAME</th>
                   <th>ABSENT</th>
                   <th>Notes</th>
                   <th>LATE</th>
@@ -163,6 +167,7 @@ const MonthlyAttendanceReport = forwardRef(
                     <td>{r.department || "-"}</td>
                     <td>{r.employee_code || "-"}</td>
                     <td>{r.name || "-"}</td>
+                    <td>{r.last_name || "-"}</td>
                     <td>{Number(r.absent || 0)}</td>
                     <td style={{ textAlign: "left", whiteSpace: "pre-wrap" }}>
                       {r.notes || ""}

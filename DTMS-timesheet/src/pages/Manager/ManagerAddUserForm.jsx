@@ -16,7 +16,7 @@ import {
 
 // import Breadcrumbs from "../../components/Breadcrumbs";
 
-const AddUserForm = ({ onCancel, onSave }) => {
+const ManagerAddUserForm = ({ onCancel, onSave }) => {
   const [employeeID, setEmployeeID] = useState("");
   const [role, setRole] = useState("");
   const [email, setEmail] = useState("");
@@ -70,7 +70,7 @@ const AddUserForm = ({ onCancel, onSave }) => {
 
       showSuccessToast("New User Added Successfully");
       setTimeout(() => {
-        navigate("/admin/detail/users");
+        navigate("/manager/detail/users");
       }, 2000); // waits for 2 seconds (2000ms)
     } catch (error) {
       showErrorToast(`Failed to create user: ${error.message}`);
@@ -81,7 +81,7 @@ const AddUserForm = ({ onCancel, onSave }) => {
   };
 
   const handleCancel = () => {
-    navigate("/admin/detail/users");
+    navigate("/manager/detail/users");
   };
 
   return (
@@ -205,4 +205,4 @@ const AddUserForm = ({ onCancel, onSave }) => {
   );
 };
 
-export default AddUserForm;
+export default ManagerAddUserForm;

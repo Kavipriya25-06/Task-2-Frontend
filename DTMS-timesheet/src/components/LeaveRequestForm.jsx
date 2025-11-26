@@ -490,6 +490,7 @@ const LeaveRequestForm = ({ leaveType, onClose }) => {
     }
     if (formData.compoff_request_id) {
       data.append("comp_off", formData.compoff_request_id);
+      data.append("comp_off_date", format(formData.compOffDate, "yyyy-MM-dd"));
     }
     data.append("employee", user.employee_id); // Assuming employee_id like "EMP_00068"
     data.append("status", "pending"); // Default status when submitted

@@ -145,6 +145,7 @@ const ManagerCompoff = () => {
               <tr>
                 <th>Employee Code</th>
                 <th>Employee Name</th>
+                <th>Last Name</th>
                 <th>Date</th>
                 <th>Number of Tasks</th>
                 {activeTab === 0 && <th>Actions</th>}
@@ -153,7 +154,7 @@ const ManagerCompoff = () => {
             <tbody>
               {currentRows.length === 0 ? (
                 <tr>
-                  <td colSpan="5" style={{ textAlign: "center" }}>
+                  <td colSpan="6" style={{ textAlign: "center" }}>
                     No {tabLabels[activeTab]} comp-off requests.
                   </td>
                 </tr>
@@ -162,6 +163,7 @@ const ManagerCompoff = () => {
                   <tr key={req.compoff_request_id}>
                     <td>{req.employee?.employee_code || "--"}</td>
                     <td>{req.employee?.employee_name || "--"}</td>
+                    <td>{req.employee?.last_name || "--"}</td>
                     <td>
                       {req.date
                         ? format(new Date(req.date), "dd-MMM-yyyy")

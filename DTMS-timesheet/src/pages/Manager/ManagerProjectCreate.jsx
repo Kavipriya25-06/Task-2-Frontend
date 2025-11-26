@@ -48,7 +48,15 @@ const ManagerProjectCreate = () => {
     project_budget: 0,
   });
   const [showBuildingPopup, setShowBuildingPopup] = useState(false);
-  const [buildingData, setBuildingData] = useState({});
+  const [buildingData, setBuildingData] = useState({
+    building_code: "",
+    building_description: "",
+    building_hours: 0,
+    building_title: "",
+    due_date: null,
+    employee: [],
+    start_date: null,
+  });
   const [selectedBuildings, setSelectedBuildings] = useState([]);
   const [isSending, setIsSending] = useState(false);
 
@@ -475,7 +483,8 @@ const ManagerProjectCreate = () => {
                               }
                             }}
                           />
-                          {employee.employee_name} - {employee.designation}
+                          {employee.employee_name} {employee.last_name} -{" "}
+                          {employee.designation}
                         </div>
                       ))}
                   </div>
@@ -524,7 +533,8 @@ const ManagerProjectCreate = () => {
                               }
                             }}
                           />
-                          {employee.employee_name} - {employee.designation}
+                          {employee.employee_name} {employee.last_name} -{" "}
+                          {employee.designation}
                         </div>
                       ))}
                   </div>

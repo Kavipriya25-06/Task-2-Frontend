@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import { useAuth } from "../AuthContext";
 import config from "../config";
-
+import confirm from "../constants/ConfirmDialog";
 import LeaveRequestForm from "./LeaveRequestForm";
 import { format, parse } from "date-fns";
 import {
@@ -38,6 +38,56 @@ const LeaveRequests = () => {
   );
   const totalPages = Math.ceil(leaveRequests.length / rowsPerPage);
   const [showDropdowns, setShowDropdowns] = useState({});
+
+  const [selectedLeave, setSelectedLeave] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [leaveBalance, setLeaveBalance] = useState(null);
+  const [balanceLoading, setBalanceLoading] = useState(false);
+  const [balanceError, setBalanceError] = useState(null);
+
+  const openLeaveModal = async (leave) => {
+    setSelectedLeave(leave);
+    setIsModalOpen(true);
+
+    setLeaveBalance(null);
+    setBalanceError(null);
+    setBalanceLoading(true);
+
+    try {
+      const employeeId = leave?.employee?.employee_id;
+      if (!employeeId) throw new Error("Employee ID missing");
+
+      // year from start_date
+      const leaveYear = leave?.start_date
+        ? new Date(leave.start_date).getFullYear()
+        : new Date().getFullYear();
+
+      // current month (1–12)
+      const currentMonth = new Date().getMonth() + 1;
+
+      const url = `${config.apiBaseURL}/leave/opening-monthly/${employeeId}/${leaveYear}/?month=${currentMonth}`;
+
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Failed to fetch leave balance");
+
+      const data = await res.json();
+      setLeaveBalance(data);
+    } catch (err) {
+      console.error(err);
+      setBalanceError(err.message || "Balance fetch error");
+    } finally {
+      setBalanceLoading(false);
+    }
+  };
+
+  const closeLeaveModal = () => {
+    setSelectedLeave(null);
+    setIsModalOpen(false);
+    setLeaveBalance(null);
+    setBalanceError(null);
+    setBalanceLoading(false);
+  };
 
   useEffect(() => {
     fetchLeaveSummary();
@@ -82,6 +132,36 @@ const LeaveRequests = () => {
     }
   };
 
+  const handleRevoke = async (leave_taken_id) => {
+    const confirmPatch = await confirm({
+      message: `Are you sure you want to revoke this leave ?`,
+    });
+    if (!confirmPatch) return;
+    setIsSending(true);
+    try {
+      const res = await fetch(
+        `${config.apiBaseURL}/leaves-taken/${leave_taken_id}/`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "pending" }),
+        }
+      );
+
+      if (!res.ok) throw new Error("Revoke failed");
+
+      showSuccessToast("Leave revoked and moved to pending");
+      fetchLeaveRequests();
+      fetchLeaveSummary();
+      closeLeaveModal();
+    } catch (err) {
+      console.error(err);
+      showErrorToast("Error revoking leave");
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   const handleDelete = async (
     leave_taken_id,
     leaveTypeKey,
@@ -89,6 +169,10 @@ const LeaveRequests = () => {
     employee_id,
     compoff_request_id
   ) => {
+    const confirmPatch = await confirm({
+      message: `Are you sure you want to delete this leave ?`,
+    });
+    if (!confirmPatch) return;
     setIsSending(true);
 
     try {
@@ -228,13 +312,18 @@ const LeaveRequests = () => {
               <tbody>
                 {currentLeaveRequests.length === 0 ? (
                   <tr>
-                    <td colSpan="7" style={{ textAlign: "center" }}>
+                    <td colSpan="8" style={{ textAlign: "center" }}>
                       No Leaves taken.
                     </td>
                   </tr>
                 ) : (
                   currentLeaveRequests.map((request, idx) => (
-                    <tr key={idx}>
+                    <tr
+                      key={request.leave_taken_id}
+                      className="leave-row"
+                      onClick={() => openLeaveModal(request)}
+                      style={{ cursor: "pointer" }}
+                    >
                       <td>
                         {request.leave_type === "earned_leave"
                           ? "Earned Leave"
@@ -269,7 +358,7 @@ const LeaveRequests = () => {
                       </td>
                       <td>{request.reason}</td>
                       <td>
-                        {request.status === "pending" ? (
+                        {/* {request.status === "pending" ? (
                           <span>
                             {request.status}
                             <i
@@ -289,9 +378,10 @@ const LeaveRequests = () => {
                           </span>
                         ) : (
                           request.status
-                        )}
+                        )} */}
+                        {request.status}
                       </td>
-                      <td>
+                      <td onClick={(e) => e.stopPropagation()}>
                         {request.attachments &&
                         request.attachments.length > 1 ? (
                           <div>
@@ -405,6 +495,246 @@ const LeaveRequests = () => {
                 />
               </button>
             </div>
+            {isModalOpen && selectedLeave && (
+              <div className="modal-overlay" onClick={closeLeaveModal}>
+                <div
+                  className="modal-card"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="modal-header">
+                    <h3>Leave Details</h3>
+                    <button className="modal-close" onClick={closeLeaveModal}>
+                      ×
+                    </button>
+                  </div>
+
+                  <div className="modal-body">
+                    <div className="modal-grid">
+                      <div>
+                        <strong>Employee Code:</strong>{" "}
+                        {selectedLeave.employee?.employee_code}
+                      </div>
+                      <div>
+                        <strong>Name:</strong>{" "}
+                        {selectedLeave.employee?.employee_name}{" "}
+                        {selectedLeave.employee?.last_name}
+                      </div>
+
+                      <div>
+                        <strong>Leave Type:</strong>{" "}
+                        {selectedLeave.leave_type === "earned_leave"
+                          ? "Earned Leave"
+                          : selectedLeave.leave_type === "comp_off"
+                          ? "Comp Off"
+                          : selectedLeave.leave_type === "casual_leave"
+                          ? "Casual Leave"
+                          : selectedLeave.leave_type === "sick_leave"
+                          ? "Sick Leave"
+                          : selectedLeave.leave_type === "lop"
+                          ? "LOP"
+                          : ""}
+                      </div>
+
+                      <div>
+                        <strong>Status:</strong> {selectedLeave.status}
+                      </div>
+                      <div>
+                        <strong>Duration:</strong> {selectedLeave.duration}
+                      </div>
+
+                      <div>
+                        <strong>Start Date:</strong>{" "}
+                        {selectedLeave.start_date
+                          ? format(
+                              new Date(selectedLeave.start_date),
+                              "dd-MMM-yyyy"
+                            )
+                          : "-"}
+                      </div>
+
+                      <div>
+                        <strong>End Date:</strong>{" "}
+                        {selectedLeave.end_date
+                          ? format(
+                              new Date(selectedLeave.end_date),
+                              "dd-MMM-yyyy"
+                            )
+                          : "-"}
+                      </div>
+
+                      <div>
+                        <strong>Comp-Off Date:</strong>{" "}
+                        {selectedLeave.comp_off_date
+                          ? format(
+                              new Date(selectedLeave.comp_off_date),
+                              "dd-MMM-yyyy"
+                            )
+                          : "-"}
+                      </div>
+
+                      <div>
+                        <strong>Resumption Date:</strong>{" "}
+                        {selectedLeave.resumption_date
+                          ? format(
+                              new Date(selectedLeave.resumption_date),
+                              "dd-MMM-yyyy"
+                            )
+                          : "-"}
+                      </div>
+
+                      <div>
+                        <strong>Created At:</strong>{" "}
+                        {selectedLeave.created_at
+                          ? format(
+                              new Date(selectedLeave.created_at),
+                              "dd-MMM-yyyy, hh:mm a"
+                            )
+                          : "-"}
+                      </div>
+
+                      <div>
+                        <strong>Updated At:</strong>{" "}
+                        {selectedLeave.updated_at
+                          ? format(
+                              new Date(selectedLeave.updated_at),
+                              "dd-MMM-yyyy, hh:mm a"
+                            )
+                          : "-"}
+                      </div>
+
+                      <div>
+                        <strong>
+                          {selectedLeave.status === "approved"
+                            ? "Approved By:"
+                            : selectedLeave.status === "rejected"
+                            ? "Rejected by"
+                            : "Pending approval"}
+                        </strong>{" "}
+                        {selectedLeave.approved_by
+                          ? `${selectedLeave.approved_by.employee_name} ${selectedLeave.approved_by.last_name} (${selectedLeave.approved_by.employee_code})`
+                          : "-"}
+                      </div>
+
+                      <div className="modal-reason">
+                        <strong>Reason:</strong>
+                        <p>{selectedLeave.reason || "-"}</p>
+                      </div>
+
+                      {selectedLeave.status === "rejected" && (
+                        <div>
+                          <strong>Rejected reason:</strong>{" "}
+                          {selectedLeave.rejection_reason || "-"}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Attachments */}
+                    <div className="modal-attachments">
+                      <strong>Attachments:</strong>
+                      <ul>
+                        {selectedLeave.attachments &&
+                        selectedLeave.attachments.length > 0 ? (
+                          selectedLeave.attachments.map((file) => {
+                            const fullFilename = file.file.split("/").pop();
+                            const match = fullFilename.match(
+                              /^(.+?)_[a-zA-Z0-9]+\.(\w+)$/
+                            );
+                            const filename = match
+                              ? `${match[1]}.${match[2]}`
+                              : fullFilename;
+
+                            return (
+                              <li key={file.id}>
+                                <a
+                                  href={config.apiBaseURL + file.file}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  {filename}
+                                </a>
+                              </li>
+                            );
+                          })
+                        ) : (
+                          <li>No attachments</li>
+                        )}
+                      </ul>
+                    </div>
+
+                    {/* Leave Balance */}
+                    {/* <div className="modal-balance">
+                      <strong>Leave Balance (Current Month):</strong>
+
+                      {balanceLoading && <p>Loading balance...</p>}
+                      {balanceError && (
+                        <p style={{ color: "red" }}>{balanceError}</p>
+                      )}
+
+                      {!balanceLoading && !balanceError && leaveBalance && (
+                        <div className="balance-grid">
+                          <div>
+                            <span>Casual Remaining:</span>
+                            <b>{leaveBalance.casual_leave_remaining}</b>
+                          </div>
+                          <div>
+                            <span>Sick Remaining:</span>
+                            <b>{leaveBalance.sick_leave_remaining}</b>
+                          </div>
+                          <div>
+                            <span>Earned Remaining:</span>
+                            <b>{leaveBalance.earned_leave_remaining}</b>
+                          </div>
+                          <div>
+                            <span>Comp-Off Remaining:</span>
+                            <b>{leaveBalance.comp_off_remaining}</b>
+                          </div>
+                          <div>
+                            <span>LOP Availed:</span>
+                            <b>{leaveBalance.lop_availed}</b>
+                          </div>
+                        </div>
+                      )}
+                    </div> */}
+                  </div>
+
+                  {/* Footer Actions */}
+                  <div className="modal-footer">
+                    {/* Pending => Delete */}
+                    {selectedLeave.status === "pending" && (
+                      <button
+                        className="reject-btn"
+                        disabled={isSending}
+                        onClick={() =>
+                          handleDelete(
+                            selectedLeave.leave_taken_id,
+                            selectedLeave.leave_type,
+                            selectedLeave.duration,
+                            selectedLeave.employee?.employee_id, // FIXED
+                            selectedLeave.comp_off // compoff_request_id
+                          )
+                        }
+                      >
+                        Delete
+                      </button>
+                    )}
+
+                    {/* Approved => Revoke */}
+                    {selectedLeave.status === "approved" && (
+                      <button
+                        className="approve-btn"
+                        disabled={isSending}
+                        onClick={() =>
+                          handleRevoke(selectedLeave.leave_taken_id)
+                        }
+                      >
+                        Revoke
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
             <ToastContainerComponent />
           </>
         ) : (

@@ -87,6 +87,7 @@ const ManagerEmployees = () => {
               <tr>
                 <th>Employee Code</th>
                 <th>Employee Name</th>
+                <th>Last Name</th>
                 <th>Designation</th>
                 <th>Reporting To</th>
               </tr>
@@ -96,6 +97,7 @@ const ManagerEmployees = () => {
                 <tr key={teamlead.teamlead_id}>
                   <td>{teamlead.employee_code}</td>
                   <td>{teamlead.teamlead_name}</td>
+                  <td>{teamlead.last_name}</td>
                   <td>{teamlead.teamlead_role}</td>
                   <td>{teamlead.reporting_to || "-"}</td>
                 </tr>

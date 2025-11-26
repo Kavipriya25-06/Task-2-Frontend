@@ -129,6 +129,7 @@ const HRLeaveBalanceEdit = () => {
               <tr>
                 <th>Employee Code</th>
                 <th>Employee Name</th>
+                <th>Last Name</th>
                 <th>DOJ</th>
                 <th>Present Status</th>
                 <th style={{ width: 60 }}>CL</th>
@@ -166,6 +167,7 @@ const HRLeaveBalanceEdit = () => {
                     <tr key={l.leave_avail_id}>
                       <td>{l.employee.employee_code}</td>
                       <td>{l.employee.employee_name}</td>
+                      <td>{l.employee.last_name}</td>
                       <td>
                         {l.employee?.doj
                           ? new Date(l.employee.doj).toLocaleDateString("en-GB")

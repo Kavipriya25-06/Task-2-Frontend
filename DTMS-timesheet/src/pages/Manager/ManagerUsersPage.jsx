@@ -16,7 +16,7 @@ import {
 // import Breadcrumbs from "../../components/Breadcrumbs";
 // import editIcon from "src/assets/edit.png";
 
-const UsersPage = () => {
+const ManagerUsersPage = () => {
   const { user } = useAuth();
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
@@ -188,4 +188,4 @@ const UsersPage = () => {
   );
 };
 
-export default UsersPage;
+export default ManagerUsersPage;
