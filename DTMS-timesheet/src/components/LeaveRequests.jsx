@@ -196,6 +196,7 @@ const LeaveRequests = () => {
       }
       fetchLeaveRequests(); // Refresh the leave requests after rejection
       fetchLeaveSummary();
+      closeLeaveModal();
     } catch (error) {
       console.error("Error rejecting leave", error);
       showErrorToast("Error deleting leave", error);
