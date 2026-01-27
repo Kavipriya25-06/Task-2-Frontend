@@ -1,7 +1,7 @@
 // timesheet\src\config.js
 import { isDev } from "./constants/devmode";
 
-const devApiBaseURL = "http://127.0.0.1:8000/api";
+const devApiBaseURL = "http://127.0.0.1:8000";
 // const prodApiBaseURL = "http://148.135.138.195:9000/api";
 
 const devHomeURL = "503";
