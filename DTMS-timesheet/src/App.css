@@ -1244,21 +1244,22 @@ table input[type="number"]:focus {
   margin: 0px;
 }
 
-.search-bar-containers {
+.search-bar-container {
   position: relative;
   width: 100%;
   max-width: 400px;
   margin: 0 auto;
+  margin-right: 10px;  
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  transform: translateX(-25%); /* Nudges slightly to the right */
+  /* transform: translateX(-25%); Nudges slightly to the right */
 }
 
 .search-bar {
   width: 100%;
-  padding: 7px 40px 7px 15px;
+  padding: 5px 40px 5px 15px;
   border: 1.4px solid #ccc;
   border-radius: 10px;
   font-size: 16px;
@@ -5131,6 +5132,75 @@ h4 {
   cursor: pointer;
   color: #000000;
 }
+
+.user-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.status-btn {
+  padding: 6px 14px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+/* .active-btn {
+  color: #0f5132;
+  border-color: #198754;
+} */
+
+.inactive-btn {
+  color: #664d03;
+  border-color: #ffc107;
+}
+.inactive-btn {
+  color: #664d03;
+  border: 1px solid #ffc107;
+  background-color: transparent;
+  transition: all 0.3s ease;
+}
+
+.inactive-btn:hover {
+  color: #664d03;
+  background-color: #ffecb5; /* softer yellow */
+  border-color: #ffc107;
+  cursor: pointer;
+}
+.inactive-btn:focus,
+.inactive-btn:active {
+  color: #664d03;
+  background-color: #ffe08a; 
+  border-color: #ffc107;
+  outline: none;
+}
+
+.resigned-btn {
+  color: #842029;
+  border-color: #dc3545;
+}
+.resigned-btn {
+  color: #842029;
+  border: 1px solid #dc3545;
+  background-color: transparent;
+  transition: all 0.3s ease; /* smooth effect */
+}
+
+.resigned-btn:hover {
+  color: #fff;
+  background-color: #dc3545; /* highlight */
+  border-color: #dc3545;
+  cursor: pointer;
+}
+
 
 /* .select-container .task-tile {
   display: inline-flex;
