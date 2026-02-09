@@ -48,6 +48,8 @@ const EmployeeLeaveRequestForm = ({ leaveType, onClose }) => {
   const {
     attachments,
     setAttachments,
+
+    
     newAttachments,
     handleAttachmentChange,
     setNewAttachments,

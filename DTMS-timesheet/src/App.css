@@ -5154,6 +5154,53 @@ h4 {
 }
 
 
+/* .active-btn {
+  color: #0f5132;
+  border-color: #198754;
+} */
+
+.inactive-btn {
+  color: #664d03;
+  border-color: #ffc107;
+}
+.inactive-btn {
+  color: #664d03;
+  border: 1px solid #ffc107;
+  background-color: transparent;
+  transition: all 0.3s ease;
+}
+
+.inactive-btn:hover {
+  color: #664d03;
+  background-color: #ffecb5; /* softer yellow */
+  border-color: #ffc107;
+  cursor: pointer;
+}
+.inactive-btn:focus,
+.inactive-btn:active {
+  color: #664d03;
+  background-color: #ffe08a; 
+  border-color: #ffc107;
+  outline: none;
+}
+
+.resigned-btn {
+  color: #842029;
+  border-color: #dc3545;
+}
+.resigned-btn {
+  color: #842029;
+  border: 1px solid #dc3545;
+  background-color: transparent;
+  transition: all 0.3s ease; /* smooth effect */
+}
+
+.resigned-btn:hover {
+  color: #fff;
+  background-color: #dc3545; /* highlight */
+  border-color: #dc3545;
+  cursor: pointer;
+}
 
 
 /* .select-container .task-tile {
