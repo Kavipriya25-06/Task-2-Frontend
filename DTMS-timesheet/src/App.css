@@ -1244,21 +1244,22 @@ table input[type="number"]:focus {
   margin: 0px;
 }
 
-.search-bar-containers {
+.search-bar-container {
   position: relative;
   width: 100%;
   max-width: 400px;
   margin: 0 auto;
+  margin-right: 10px;  
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  transform: translateX(-25%); /* Nudges slightly to the right */
+  /* transform: translateX(-25%); Nudges slightly to the right */
 }
 
 .search-bar {
   width: 100%;
-  padding: 7px 40px 7px 15px;
+  padding: 5px 40px 5px 15px;
   border: 1.4px solid #ccc;
   border-radius: 10px;
   font-size: 16px;
@@ -5132,6 +5133,29 @@ h4 {
   color: #000000;
 }
 
+.user-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.status-btn {
+  padding: 6px 14px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+
+
+
 /* .select-container .task-tile {
   display: inline-flex;
   max-width: fit-content;
@@ -6119,4 +6143,30 @@ table {
 .policy-upload-btn:disabled {
   background-color: #8fbdf7;
   cursor: not-allowed;
+}
+
+button.status-btn {
+  background: transparent !important;
+  padding: 6px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* KEEP SELECTED BUTTON COLORED */
+button.status-btn.selected.active-btn {
+  background-color: #198754;
+  color: green;
+  border-color: #198754;
+}
+
+button.status-btn.selected.inactive-btn {
+  background-color: #ffc107;
+  color: orange;
+  border-color: #ffc107;
+}
+
+button.status-btn.selected.resigned-btn {
+  background-color: #dc3545;
+  color: red;
+  border-color: #dc3545;
 }
