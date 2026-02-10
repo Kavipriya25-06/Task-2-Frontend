@@ -409,6 +409,9 @@ const EmployeeList = () => {
               <th>Department</th>
               <th>Role</th>
               <th>Reporting Manager</th>
+              {statusFilter === "resigned" && <th>Resignation Date</th>}
+
+
             </tr>
           </thead>
           <tbody>
@@ -430,6 +433,10 @@ const EmployeeList = () => {
                 <td>
                   {emp.hierarchy_details[0]?.reporting_to?.employee_name || "-"}
                 </td>
+                {statusFilter === "resigned" && (
+                <td>{emp.resignation_date || "-"}
+                </td>
+                  )}
               </tr>
             ))}
           </tbody>

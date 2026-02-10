@@ -6193,7 +6193,7 @@ table {
 }
 
 button.status-btn {
-  background: transparent !important;
+  /* background: transparent !important; */
   padding: 6px 14px;
   border-radius: 4px;
   cursor: pointer;
@@ -6201,19 +6201,19 @@ button.status-btn {
 
 /* KEEP SELECTED BUTTON COLORED */
 button.status-btn.selected.active-btn {
-  background-color: #198754;
-  color: green;
+  background-color: green;
+  color: black;
   border-color: #198754;
 }
 
 button.status-btn.selected.inactive-btn {
-  background-color: #ffc107;
-  color: orange;
+  background-color: yellow;
+  color: black;
   border-color: #ffc107;
 }
 
 button.status-btn.selected.resigned-btn {
-  background-color: #dc3545;
-  color: red;
+  background-color: red;
+  color: black;
   border-color: #dc3545;
 }

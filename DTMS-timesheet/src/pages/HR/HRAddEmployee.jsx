@@ -603,6 +603,18 @@ const AddEmployee = () => {
               <option value="resigned">Resigned</option>
             </select>
           </div>
+          {formData.status === "resigned" && (
+  <div className="individual-tabs">
+    <label>Resignation Date</label>
+    <input
+      type="date"
+      name="resignation_date"
+      value={formData.resignation_date}
+      onChange={handleChange}
+    />
+  </div>
+)}
+
           <div className="individual-tabs">
             <label>Source of Hire</label>
             <input
